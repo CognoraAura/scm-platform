@@ -82,11 +82,8 @@ public class KafkaDataSyncConsumer {
     private Span createSpanWithRemoteContext(DataSyncEvent event) {
         if (event.getTraceId() != null && event.getSpanId() != null) {
             // 恢复远程上下文
-            SpanContext remoteContext = SpanContext.createFromRemoteParent(
-                    event.getTraceId(),
-                    event.getSpanId(),
-                    TraceFlags.getSampled(),
-                    TraceState.getDefault()
+            SpanContext remoteContext = SpanContext.createFromRemoteParent(event.getTraceId(), event.getSpanId(),
+                    TraceFlags.getSampled(), TraceState.getDefault()
             );
 
             return tracer.spanBuilder("datasync.consume")

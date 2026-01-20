@@ -38,7 +38,6 @@ import java.util.concurrent.atomic.AtomicReference;
 @Component
 @RequiredArgsConstructor
 public class CertificateReloaderRestClient {
-
     private final Resource keystoreResource;
     private final String keystorePassword;
     private final Resource truststoreResource;
@@ -52,8 +51,7 @@ public class CertificateReloaderRestClient {
     private volatile FileTime lastTruststoreModified;
 
     // 监听器列表（线程安全）
-    private final CopyOnWriteArrayList<CertificateReloadListener> listeners =
-        new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<CertificateReloadListener> listeners = new CopyOnWriteArrayList<>();
 
     /**
      * 初始化加载证书
@@ -112,10 +110,7 @@ public class CertificateReloaderRestClient {
 
         // 创建 SSLContext
         SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(
-            kmf.getKeyManagers(),
-            tmf.getTrustManagers(),
-            new SecureRandom()
+        sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom()
         );
 
         // 原子性更新 SSLContext

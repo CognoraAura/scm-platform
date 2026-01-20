@@ -46,8 +46,7 @@ public class FeignPermissionAccess implements PermissionService {
     private final SysPermissionServiceClient permissionServiceClient;
     private final MeterRegistry meterRegistry;
 
-    public FeignPermissionAccess(SysPermissionServiceClient permissionServiceClient,
-                                 MeterRegistry meterRegistry) {
+    public FeignPermissionAccess(SysPermissionServiceClient permissionServiceClient, MeterRegistry meterRegistry) {
         this.permissionServiceClient = permissionServiceClient;
         this.meterRegistry = meterRegistry;
     }

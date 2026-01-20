@@ -50,8 +50,8 @@
 
         <!-- Spring Boot 4.0 Kafka auto-configuration (provides KafkaProperties) -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-kafka</artifactId>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
         </dependency>
 
         <dependency>

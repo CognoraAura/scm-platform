@@ -49,8 +49,7 @@ public class SqlInjectionFilter implements Filter {
     );
 
     private static final Pattern XSS_PATTERN = Pattern.compile(
-            "<script[^>]*?>.*?</script>|javascript:|<iframe.*?>|<img[^>]*?onerror\\s*=",
-            Pattern.CASE_INSENSITIVE
+            "<script[^>]*?>.*?</script>|javascript:|<iframe.*?>|<img[^>]*?onerror\\s*=", Pattern.CASE_INSENSITIVE
     );
 
     public SqlInjectionFilter(SecurityFilterProperties properties, SecurityMetrics securityMetrics) {
@@ -115,13 +114,10 @@ public class SqlInjectionFilter implements Filter {
         return StrUtil.isNotBlank(contentType) && StrUtil.startWithIgnoreCase(contentType, "multipart/");
     }
 
-    private HttpServletRequest scanJsonBody(HttpServletRequest request,
-                                            HttpServletResponse response,
-                                            String uri,
+    private HttpServletRequest scanJsonBody(HttpServletRequest request, HttpServletResponse response, String uri,
                                             boolean monitorOnly) throws IOException {
         String contentType = request.getContentType();
-        if (StrUtil.isBlank(contentType)
-                || !StrUtil.startWithIgnoreCase(contentType, "application/json")
+        if (StrUtil.isBlank(contentType) || !StrUtil.startWithIgnoreCase(contentType, "application/json")
                 || !StrUtil.equalsAnyIgnoreCase(request.getMethod(), "POST", "PUT", "PATCH")) {
             return request;
         }
@@ -151,9 +147,7 @@ public class SqlInjectionFilter implements Filter {
         return new CachedBodyHttpServletRequest(request, bodyBytes);
     }
 
-    private DetectionState scanParameters(HttpServletRequest request,
-                                          HttpServletResponse response,
-                                          String uri,
+    private DetectionState scanParameters(HttpServletRequest request, HttpServletResponse response, String uri,
                                           boolean monitorOnly) throws IOException {
         for (String paramName : request.getParameterMap().keySet()) {
             String[] paramValues = request.getParameterValues(paramName);
@@ -189,11 +183,8 @@ public class SqlInjectionFilter implements Filter {
         return DetectionState.NONE;
     }
 
-    private DetectionState containsMaliciousInJson(Object node,
-                                                   HttpServletRequest req,
-                                                   HttpServletResponse resp,
-                                                   String uri,
-                                                   boolean monitorOnly) throws IOException {
+    private DetectionState containsMaliciousInJson(Object node, HttpServletRequest req, HttpServletResponse resp,
+                                                   String uri, boolean monitorOnly) throws IOException {
         switch (node) {
             case null -> {
                 return DetectionState.NONE;
@@ -230,12 +221,8 @@ public class SqlInjectionFilter implements Filter {
         return DetectionState.NONE;
     }
 
-    private DetectionState isMalicious(String value,
-                                       String field,
-                                       String uri,
-                                       HttpServletRequest req,
-                                       HttpServletResponse resp,
-                                       boolean monitorOnly) throws IOException {
+    private DetectionState isMalicious(String value, String field, String uri, HttpServletRequest req,
+                                       HttpServletResponse resp, boolean monitorOnly) throws IOException {
         if (StrUtil.isBlank(value)) return DetectionState.NONE;
 
         if (SQL_INJECTION_PATTERN.matcher(value).find()) {
@@ -257,19 +244,12 @@ public class SqlInjectionFilter implements Filter {
         return DetectionState.NONE;
     }
 
-    private DetectionState handleDetection(HttpServletRequest request,
-                                           HttpServletResponse response,
-                                           String code,
-                                           String message,
-                                           boolean monitorOnly,
-                                           boolean isSql) throws IOException {
+    private DetectionState handleDetection(HttpServletRequest request, HttpServletResponse response, String code,
+                                           String message, boolean monitorOnly, boolean isSql) throws IOException {
         securityMetrics.increment(isSql ? "security.sql.detected" : "security.xss.detected");
         if (!monitorOnly) {
             securityMetrics.increment(isSql ? "security.sql.blocked" : "security.xss.blocked");
-            SecurityErrorResponseWriter.write(request, response,
-                    HttpServletResponse.SC_FORBIDDEN,
-                    code,
-                    message);
+            SecurityErrorResponseWriter.write(request, response, HttpServletResponse.SC_FORBIDDEN, code, message);
             return DetectionState.BLOCKED;
         }
         if (response.getHeader(ALERT_HEADER) == null) {

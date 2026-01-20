@@ -86,8 +86,7 @@ public class IdempotentAspect {
 
 
     private String getTokenFromRequest() {
-        ServletRequestAttributes attributes =
-                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
         if (attributes == null) {
             throw new BusinessException("无法获取请求上下文");
@@ -104,8 +103,7 @@ public class IdempotentAspect {
     }
 
     private String getRequestPath() {
-        ServletRequestAttributes attributes =
-                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
         if (attributes == null) {
             return "unknown";

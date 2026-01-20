@@ -7,6 +7,7 @@ import io.opentelemetry.api.trace.Tracer;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -73,8 +74,7 @@ public class KafkaIntegrationAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory(
-            ConsumerFactory<String, Object> consumerFactory,
-            DefaultErrorHandler kafkaErrorHandler) {
+            ConsumerFactory<String, Object> consumerFactory, DefaultErrorHandler kafkaErrorHandler) {
         ConcurrentKafkaListenerContainerFactory<String, Object> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
@@ -86,15 +86,13 @@ public class KafkaIntegrationAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public KafkaMessagePublisher kafkaMessagePublisher(KafkaTemplate<String, Object> kafkaTemplate,
-                                                       ObservationRegistry observationRegistry,
-                                                       Tracer tracer) {
+                                                       ObservationRegistry observationRegistry, Tracer tracer) {
         return new KafkaMessagePublisher(kafkaTemplate, observationRegistry, tracer);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public InstrumentedKafkaConsumer instrumentedKafkaConsumer(ObservationRegistry observationRegistry,
-                                                               Tracer tracer) {
+    public InstrumentedKafkaConsumer instrumentedKafkaConsumer(ObservationRegistry observationRegistry, Tracer tracer) {
         return new InstrumentedKafkaConsumer(observationRegistry, tracer);
     }
 
@@ -105,7 +103,7 @@ public class KafkaIntegrationAutoConfiguration {
             return new DefaultErrorHandler();
         }
         DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(kafkaTemplate,
-                (record, ex) -> new org.apache.kafka.common.TopicPartition(
+                (record, ex) -> new TopicPartition(
                         record.topic() + properties.getDlqSuffix(), record.partition()));
         int maxAttempts = Math.max(1, properties.getMaxAttempts());
         ExponentialBackOff backOff = new ExponentialBackOff();

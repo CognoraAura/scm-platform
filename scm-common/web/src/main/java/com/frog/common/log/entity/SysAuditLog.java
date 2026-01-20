@@ -34,10 +34,7 @@ import lombok.experimental.Accessors;
         name="SysAuditLog 对象",
         description="操作审计日志表"
 )
-public class SysAuditLog implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class SysAuditLog {
 
     @Schema(description = "日志 ID")
     @TableId(value = "id", type = IdType.AUTO)

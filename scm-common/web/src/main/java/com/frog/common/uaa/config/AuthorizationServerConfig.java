@@ -1,5 +1,6 @@
 package com.frog.common.uaa.config;
 
+import com.frog.common.util.UUIDv7Util;
 import com.frog.common.web.domain.SecurityUser;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -14,9 +15,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +26,8 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
+import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
@@ -74,22 +75,25 @@ public class AuthorizationServerConfig {
      */
     @Bean
     @Order(1)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) {
-		OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
+    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
 
-		// 仅匹配授权服务器端点；精确忽略 CSRF
-		http
-				.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
-				.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-				.csrf(csrf -> csrf.ignoringRequestMatchers(authorizationServerConfigurer.getEndpointsMatcher()))
-				.exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
-				.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+        // 仅匹配授权服务器端点；精确忽略 CSRF
+        http
+                .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())  // 现在方法签名声明了throws Exception
+                .csrf(csrf ->
+                        csrf.ignoringRequestMatchers(authorizationServerConfigurer.getEndpointsMatcher()))
+                .exceptionHandling(exceptions ->
+                        exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
+                .oauth2ResourceServer(oauth2 ->
+                        oauth2.jwt(Customizer.withDefaults()));
 
-		// 启用 OIDC 支持
-		authorizationServerConfigurer.oidc(Customizer.withDefaults());
-		http.with(authorizationServerConfigurer, Customizer.withDefaults());
+        // 启用 OIDC 支持
+        authorizationServerConfigurer.oidc(Customizer.withDefaults());
+        http.with(authorizationServerConfigurer, Customizer.withDefaults());
 
-		return http.build();
+        return http.build();
     }
 
     /**
@@ -97,7 +101,7 @@ public class AuthorizationServerConfig {
      */
     @Bean
     @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) {
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/actuator/**", "/login", "/error").permitAll()
@@ -115,7 +119,7 @@ public class AuthorizationServerConfig {
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
         // Web 客户端
-        RegisteredClient webClient = RegisteredClient.withId(UUID.randomUUID().toString())
+        RegisteredClient webClient = RegisteredClient.withId(UUIDv7Util.generateString())
                 .clientId("nearsync-web")
                 .clientSecret(passwordEncoder().encode("web-secret-2024"))
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
@@ -142,7 +146,7 @@ public class AuthorizationServerConfig {
                 .build();
 
         // 移动客户端（使用PKCE）
-        RegisteredClient mobileClient = RegisteredClient.withId(UUID.randomUUID().toString())
+        RegisteredClient mobileClient = RegisteredClient.withId(UUIDv7Util.generateString())
                 .clientId("nearsync-mobile")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.NONE) // 公开客户端
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
@@ -162,7 +166,7 @@ public class AuthorizationServerConfig {
                 .build();
 
         // 服务间调用客户端
-        RegisteredClient serviceClient = RegisteredClient.withId(UUID.randomUUID().toString())
+        RegisteredClient serviceClient = RegisteredClient.withId(UUIDv7Util.generateString())
                 .clientId("internal-service")
                 .clientSecret(passwordEncoder().encode("service-secret-2024"))
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)

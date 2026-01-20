@@ -42,7 +42,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.0.0</version>
+    <version>3.5.5</version>
     <relativePath/>
   </parent>
 
@@ -53,7 +53,8 @@
     <java.version>21</java.version>
 
     <!-- Spring Ecosystem -->
-    <spring-boot.version>4.0.1</spring-boot.version>
+    <spring-boot.version>3.5.5</spring-boot.version>
+    <spring-boot4.version>4.0.1</spring-boot4.version>
     <spring-boot-aop.version>4.0.0-M2</spring-boot-aop.version>
     <spring-cloud.version>2025.1.0</spring-cloud.version>
     <spring-cloud-alibaba.version>2025.0.0.0</spring-cloud-alibaba.version>
@@ -67,6 +68,7 @@
     <!-- Distributed Transaction & Job Scheduling -->
     <seata.version>2.0.0</seata.version>
     <xxl-job.version>3.3.1</xxl-job.version>
+    <dubbo.version>3.3.6</dubbo.version>
 
     <!-- Search & Data Sync -->
     <elasticsearch.version>8.11.4</elasticsearch.version>
@@ -84,7 +86,7 @@
     <uuid-creator.version>6.1.1</uuid-creator.version>
     <hutool.version>5.8.40</hutool.version>
     <guava.version>33.5.0-jre</guava.version>
-    <fastjson2.version>2.0.9</fastjson2.version>
+    <fastjson2.version>2.0.53</fastjson2.version>
 
     <!-- Messaging -->
     <rabbitmq.version>5.14.2</rabbitmq.version>
@@ -165,12 +167,22 @@
         <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
         <version>${spring-cloud-alibaba.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.alibaba.cloud</groupId>
+        <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        <version>${spring-cloud-alibaba.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.alibaba.cloud</groupId>
+        <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        <version>${spring-cloud-alibaba.version}</version>
+      </dependency>
 
       <!-- Spring Kafka -->
       <dependency>
         <groupId>org.springframework.kafka</groupId>
         <artifactId>spring-kafka</artifactId>
-        <version>${spring-boot.version}</version>
+        <version>${spring-boot4.version}</version>
       </dependency>
 
       <!-- Spring State Machine for Order Workflow -->
@@ -199,6 +211,25 @@
         <groupId>com.xuxueli</groupId>
         <artifactId>xxl-job-core</artifactId>
         <version>${xxl-job.version}</version>
+      </dependency>
+
+      <!-- Dubbo RPC Framework -->
+      <dependency>
+        <groupId>org.apache.dubbo</groupId>
+        <artifactId>dubbo-spring-boot-starter</artifactId>
+        <version>${dubbo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.dubbo</groupId>
+        <artifactId>dubbo-registry-nacos</artifactId>
+        <version>${dubbo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.dubbo</groupId>
+        <artifactId>dubbo-dependencies-bom</artifactId>
+        <version>${dubbo.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
       <!-- ==================== Database & Persistence ==================== -->
@@ -235,7 +266,7 @@
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
-        <version>${spring-boot.version}</version>
+        <version>${spring-boot4.version}</version>
       </dependency>
       <dependency>
         <groupId>co.elastic.clients</groupId>
@@ -244,11 +275,11 @@
       </dependency>
 
       <!-- Canal Client for MySQL Binlog Sync -->
-      <dependency>
-        <groupId>com.alibaba.otter</groupId>
-        <artifactId>canal.client</artifactId>
-        <version>${canal.version}</version>
-      </dependency>
+<!--      <dependency>-->
+<!--        <groupId>com.alibaba.otter</groupId>-->
+<!--        <artifactId>canal.client</artifactId>-->
+<!--        <version>${canal.version}</version>-->
+<!--      </dependency>-->
 
       <!-- ==================== Security ==================== -->
 
@@ -383,6 +414,31 @@
             </exclude>
           </excludes>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <id>enforce-banned-dependencies</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <bannedDependencies>
+                  <excludes>
+                    <!-- Ban old javax.servlet in favor of jakarta.servlet -->
+                    <exclude>javax.servlet:servlet-api</exclude>
+                    <exclude>javax.servlet:javax.servlet-api</exclude>
+                  </excludes>
+                  <message>Project uses Jakarta EE (jakarta.servlet), not old javax.servlet!</message>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

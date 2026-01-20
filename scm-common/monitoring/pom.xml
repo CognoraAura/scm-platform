@@ -58,6 +58,17 @@
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-spring-webmvc-6x-adapter</artifactId>
             <version>1.8.6</version>
+            <exclusions>
+                <!-- Exclude old javax.servlet API, use jakarta.servlet instead -->
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>javax.servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Sentinel 参数限流 -->

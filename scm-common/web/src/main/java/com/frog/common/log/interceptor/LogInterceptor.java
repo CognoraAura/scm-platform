@@ -1,6 +1,7 @@
 package com.frog.common.log.interceptor;
 
 import com.frog.common.log.util.LogUtils;
+import com.frog.common.util.UUIDv7Util;
 import com.frog.common.web.util.SecurityUtils;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +26,7 @@ public class LogInterceptor implements HandlerInterceptor {
     public boolean preHandle(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response,
                              @Nonnull Object handler) {
         // 设置 RequestId
-        String requestId = UUID.randomUUID().toString().replace("-", "");
+        String requestId = UUIDv7Util.generateString().replace("-", "");
         LogUtils.setRequestId(requestId);
         response.setHeader("X-Request-Id", requestId);
 
@@ -52,8 +53,7 @@ public class LogInterceptor implements HandlerInterceptor {
             Long startTime = (Long) request.getAttribute("startTime");
             if (startTime != null) {
                 long duration = System.currentTimeMillis() - startTime;
-                LogUtils.api(request.getMethod(), request.getRequestURI(),
-                        duration, response.getStatus());
+                LogUtils.api(request.getMethod(), request.getRequestURI(), duration, response.getStatus());
             }
         } finally {
             LogUtils.clear();

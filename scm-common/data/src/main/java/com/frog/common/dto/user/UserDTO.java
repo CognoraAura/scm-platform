@@ -1,8 +1,8 @@
 package com.frog.common.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.frog.common.security.annotation.Sensitive;
-import com.frog.common.security.enums.SensitiveType;
+import com.frog.common.web.annotation.Sensitive;
+import com.frog.common.web.enums.SensitiveType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

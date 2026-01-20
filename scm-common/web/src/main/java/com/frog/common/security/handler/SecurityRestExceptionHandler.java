@@ -59,9 +59,7 @@ public class SecurityRestExceptionHandler {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", sanitizeMessage(ex.getMessage()), request);
     }
 
-    private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status,
-                                                              String error,
-                                                              String sanitizedMessage,
+    private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String error, String sanitizedMessage,
                                                               HttpServletRequest request) {
         String traceId = sanitizeTraceId(request.getHeader("X-Request-ID"));
         if (traceId == null) {
@@ -90,14 +88,15 @@ public class SecurityRestExceptionHandler {
      * Builds the response body with all values properly sanitized.
      * This method ensures no user-controlled input reaches the response without sanitization.
      */
-    private static Map<String, Object> buildSafeResponseBody(int code, String error, String message,
-                                                             String traceId, String rawPath) {
+    private static Map<String, Object> buildSafeResponseBody(int code, String error, String message, String traceId,
+                                                             String rawPath) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("code", code);
         body.put("error", error);
         body.put("message", message);
         body.put("traceId", traceId);
         body.put("path", encodePath(rawPath));
+
         return body;
     }
 

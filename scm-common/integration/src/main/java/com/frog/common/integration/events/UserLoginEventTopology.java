@@ -1,9 +1,6 @@
 package com.frog.common.integration.events;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,7 +14,7 @@ public class UserLoginEventTopology {
 
     @Bean
     public Queue userLoginQueue() {
-        return org.springframework.amqp.core.QueueBuilder.durable(UserLoginEventChannels.QUEUE).build();
+        return QueueBuilder.durable(UserLoginEventChannels.QUEUE).build();
     }
 
     @Bean

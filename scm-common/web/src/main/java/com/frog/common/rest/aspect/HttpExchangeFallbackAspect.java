@@ -60,9 +60,8 @@ public class HttpExchangeFallbackAspect {
      * 拦截所有 @SentinelResource 注解的方法
      */
     @Around("@annotation(sentinelResource)")
-    public Object handleSentinelResource(
-        ProceedingJoinPoint joinPoint,
-        SentinelResource sentinelResource) throws Throwable {
+    public Object handleSentinelResource(ProceedingJoinPoint joinPoint, SentinelResource sentinelResource)
+            throws Throwable {
 
         String resourceName = sentinelResource.value();
         String fallbackMethod = sentinelResource.fallback();
@@ -72,34 +71,33 @@ public class HttpExchangeFallbackAspect {
             Object result = joinPoint.proceed();
 
             // 记录成功指标
-            meterRegistry.counter("http.exchange.success",
-                                  "resource", resourceName).increment();
+            meterRegistry.counter("http.exchange.success", "resource", resourceName).increment();
 
             return result;
 
         } catch (BlockException ex) {
             // Sentinel 限流/降级
-            meterRegistry.counter("http.exchange.blocked",
-                                  "resource", resourceName).increment();
+            meterRegistry.counter("http.exchange.blocked", "resource", resourceName).increment();
+
             log.warn("HTTP Exchange blocked by Sentinel: resource={}, reason={}",
-                     resourceName, ex.getRule());
+                    resourceName, ex.getRule());
 
             return invokeFallback(joinPoint, fallbackMethod, ex);
 
         } catch (ResourceAccessException | SocketTimeoutException | TimeoutException ex) {
             // 超时异常
-            meterRegistry.counter("http.exchange.timeout",
-                                  "resource", resourceName).increment();
+            meterRegistry.counter("http.exchange.timeout", "resource", resourceName).increment();
+
             log.error("HTTP Exchange timeout: resource={}, error={}",
-                      resourceName, ex.getMessage());
+                    resourceName, ex.getMessage());
 
             return invokeFallback(joinPoint, fallbackMethod, ex);
 
         } catch (Exception ex) {
             // 其他异常
-            meterRegistry.counter("http.exchange.failure",
-                                  "resource", resourceName,
-                                  "exception", ex.getClass().getSimpleName()).increment();
+            meterRegistry.counter("http.exchange.failure", "resource", resourceName, "exception",
+                    ex.getClass().getSimpleName()).increment();
+
             log.error("HTTP Exchange failed: resource={}, exception={}",
                       resourceName, ex.getClass().getSimpleName(), ex);
 
@@ -122,10 +120,8 @@ public class HttpExchangeFallbackAspect {
      * @param cause 异常
      * @return 降级结果
      */
-    private Object invokeFallback(
-        ProceedingJoinPoint joinPoint,
-        String fallbackMethodName,
-        Throwable cause) throws Throwable {
+    private Object invokeFallback(ProceedingJoinPoint joinPoint, String fallbackMethodName, Throwable cause)
+            throws Throwable {
 
         if (fallbackMethodName == null || fallbackMethodName.isEmpty()) {
             // 无降级方法，直接抛出异常
@@ -137,11 +133,7 @@ public class HttpExchangeFallbackAspect {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 
         // 查找降级方法
-        Method fallbackMethod = findFallbackMethod(
-            signature.getDeclaringType(),
-            fallbackMethodName,
-            args
-        );
+        Method fallbackMethod = findFallbackMethod(signature.getDeclaringType(), fallbackMethodName, args);
 
         if (fallbackMethod != null) {
             try {
@@ -174,17 +166,13 @@ public class HttpExchangeFallbackAspect {
      * @param originalArgs 原始参数
      * @return 降级方法，未找到则返回 null
      */
-    private Method findFallbackMethod(
-        Class<?> declaringType,
-        String methodName,
-        Object[] originalArgs) {
+    private Method findFallbackMethod(Class<?> declaringType, String methodName, Object[] originalArgs) {
 
         try {
             // 构建参数类型数组（原参数 + Throwable）
             Class<?>[] paramTypes = new Class[originalArgs.length + 1];
             for (int i = 0; i < originalArgs.length; i++) {
-                paramTypes[i] = originalArgs[i] != null ?
-                    originalArgs[i].getClass() : Object.class;
+                paramTypes[i] = originalArgs[i] != null ? originalArgs[i].getClass() : Object.class;
             }
             paramTypes[originalArgs.length] = Throwable.class;
 
@@ -194,9 +182,8 @@ public class HttpExchangeFallbackAspect {
         } catch (NoSuchMethodException e) {
             // 尝试松散匹配（参数类型可能不完全匹配）
             for (Method method : declaringType.getDeclaredMethods()) {
-                if (method.getName().equals(methodName) &&
-                    method.isDefault() &&
-                    method.getParameterCount() == originalArgs.length + 1) {
+                if (method.getName().equals(methodName) && method.isDefault() &&
+                        method.getParameterCount() == originalArgs.length + 1) {
 
                     // 检查最后一个参数是否为 Throwable
                     Class<?>[] types = method.getParameterTypes();

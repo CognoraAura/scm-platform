@@ -131,8 +131,7 @@ public class ReadWriteRoutingAspect {
         }
     }
 
-    private <T extends Annotation> T getAnnotation(
-            ProceedingJoinPoint joinPoint, Class<T> annotationClass) {
+    private <T extends Annotation> T getAnnotation(ProceedingJoinPoint joinPoint, Class<T> annotationClass) {
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();

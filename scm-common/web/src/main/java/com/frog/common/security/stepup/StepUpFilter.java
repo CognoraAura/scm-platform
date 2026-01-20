@@ -47,8 +47,7 @@ public class StepUpFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain)
-            throws ServletException, IOException {
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         if (!properties.isEnabled()) {
             filterChain.doFilter(request, response);
@@ -77,21 +76,27 @@ public class StepUpFilter extends OncePerRequestFilter {
         } catch (BlockException ex) {
             // Sentinel circuit is open or rate limited
             if (properties.getCircuitBreaker().isBypassOnOpen()) {
+
                 log.warn("Step-up evaluation BLOCKED by Sentinel, bypassing: uri={}", uri, ex);
                 response.setHeader("X-StepUp-Bypass", "sentinel-circuit");
+
                 securityMetrics.increment("security.stepup.bypass.circuit");
                 filterChain.doFilter(request, response);
                 return;
             } else {
+
                 log.error("Step-up evaluation BLOCKED by Sentinel, denying access: uri={}", uri, ex);
+
                 throw new ServletException("Step-up evaluation blocked by circuit breaker", ex);
             }
 
         } catch (Exception ex) {
             // Evaluation logic failed
             if (properties.getCircuitBreaker().isBypassOnOpen()) {
+
                 log.error("Step-up evaluation failed, bypassing: {}", ex.getMessage(), ex);
                 response.setHeader("X-StepUp-Bypass", "error");
+
                 securityMetrics.increment("security.stepup.bypass.error");
                 filterChain.doFilter(request, response);
                 return;
@@ -112,10 +117,8 @@ public class StepUpFilter extends OncePerRequestFilter {
         if (requirement != StepUpRequirement.NONE) {
             String require = requirement == StepUpRequirement.MFA ? "mfa" : "webauthn";
             response.setHeader("X-StepUp-Required", require);
-            SecurityErrorResponseWriter.write(request, response,
-                    HttpServletResponse.SC_UNAUTHORIZED,
-                    "STEP_UP_REQUIRED",
-                    "Step-up required: " + require);
+            SecurityErrorResponseWriter.write(request, response, HttpServletResponse.SC_UNAUTHORIZED,
+                    "STEP_UP_REQUIRED", "Step-up required: " + require);
             securityMetrics.increment("security.stepup.required");
 
             if (user != null) {
@@ -131,6 +134,7 @@ public class StepUpFilter extends OncePerRequestFilter {
                 );
             }
             UUID userIdLog = user != null ? user.getUserId() : null;
+
             log.info("Step-up required: traceId={} userId={} method={} uri={} -> {}",
                     request.getHeader("X-Request-ID"), userIdLog, request.getMethod(), request.getRequestURI(), require);
             return;

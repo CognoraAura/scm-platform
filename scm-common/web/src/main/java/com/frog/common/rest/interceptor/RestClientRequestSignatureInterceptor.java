@@ -56,10 +56,8 @@ public class RestClientRequestSignatureInterceptor implements ClientHttpRequestI
     private String secretKey;
 
     @Override
-    public ClientHttpResponse intercept(
-            HttpRequest request,
-            byte[] body,
-            ClientHttpRequestExecution execution) throws IOException {
+    public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
+            throws IOException {
 
         // 生成时间戳和 nonce
         String timestamp = String.valueOf(System.currentTimeMillis());

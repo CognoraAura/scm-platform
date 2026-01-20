@@ -93,8 +93,7 @@ public class DynamicPermissionLoader {
 
         try {
             // 查询所有 API类型的权限
-            List<ApiPermissionDTO> apiPermissions = permissionServiceClient
-                    .findApiPermissions();
+            List<ApiPermissionDTO> apiPermissions = permissionServiceClient.findApiPermissions();
 
             Map<String, Set<String>> newCache = new HashMap<>();
 
@@ -270,8 +269,7 @@ public class DynamicPermissionLoader {
                 return true;
             }
 
-            if (patternSeg.equals(pathSegments[pathIdx]) ||
-                    "*".equals(patternSeg) ||
+            if (patternSeg.equals(pathSegments[pathIdx]) || "*".equals(patternSeg) ||
                     (patternSeg.startsWith("{") && patternSeg.endsWith("}"))) {
                 patternIdx++;
                 pathIdx++;

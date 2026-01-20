@@ -41,11 +41,8 @@ public class KafkaDataSyncPublisher implements DataSyncPublisher {
     private final Counter deadLetterCounter;
     private final Timer publishTimer;
 
-    public KafkaDataSyncPublisher(KafkaTemplate<String, String> kafkaTemplate,
-                                   ObjectMapper objectMapper,
-                                   DataSyncProperties properties,
-                                   MeterRegistry meterRegistry,
-                                   Tracer tracer) {
+    public KafkaDataSyncPublisher(KafkaTemplate<String, String> kafkaTemplate, ObjectMapper objectMapper,
+                                  DataSyncProperties properties, MeterRegistry meterRegistry, Tracer tracer) {
         this.kafkaTemplate = kafkaTemplate;
         this.objectMapper = objectMapper;
         this.properties = properties;

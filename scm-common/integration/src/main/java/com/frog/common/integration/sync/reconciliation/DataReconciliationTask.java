@@ -32,9 +32,8 @@ public class DataReconciliationTask {
     private final Counter reconcileFailureCounter;
     private final Counter reconcileFixCounter;
 
-    public DataReconciliationTask(DataSyncProperties properties,
-                                   List<DataSyncHandler> handlerList,
-                                   MeterRegistry meterRegistry) {
+    public DataReconciliationTask(DataSyncProperties properties, List<DataSyncHandler> handlerList,
+                                  MeterRegistry meterRegistry) {
         this.properties = properties;
 
         if (handlerList != null) {
@@ -97,8 +96,7 @@ public class DataReconciliationTask {
     /**
      * 对账单个聚合类型
      */
-    private ReconciliationResult reconcileAggregate(String aggregateType,
-                                                     DataSyncHandler handler) {
+    private ReconciliationResult reconcileAggregate(String aggregateType, DataSyncHandler handler) {
         ReconciliationResult result = new ReconciliationResult();
 
         // 这里需要实现具体的对账逻辑：

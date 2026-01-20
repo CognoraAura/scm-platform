@@ -39,10 +39,8 @@ public class RetryableEventProcessor {
     private final Counter retryCounter;
     private final Timer processTimer;
 
-    public RetryableEventProcessor(IdempotentChecker idempotentChecker,
-                                    DataSyncPublisher publisher,
-                                    DataSyncProperties properties,
-                                    MeterRegistry meterRegistry) {
+    public RetryableEventProcessor(IdempotentChecker idempotentChecker, DataSyncPublisher publisher,
+                                   DataSyncProperties properties, MeterRegistry meterRegistry) {
         this.idempotentChecker = idempotentChecker;
         this.publisher = publisher;
         this.properties = properties;
@@ -154,8 +152,8 @@ public class RetryableEventProcessor {
     }
 
     private long calculateBackoff(int attempt, DataSyncProperties.RetryConfig config) {
-        long interval = (long) (config.getInitialIntervalMs() *
-                Math.pow(config.getMultiplier(), attempt - 1));
+        long interval = (long) (config.getInitialIntervalMs() * Math.pow(config.getMultiplier(), attempt - 1));
+
         return Math.min(interval, config.getMaxIntervalMs());
     }
 

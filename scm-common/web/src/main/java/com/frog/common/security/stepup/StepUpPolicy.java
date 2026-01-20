@@ -6,7 +6,6 @@ import java.util.List;
 
 @Data
 public class StepUpPolicy {
-
     private Stepup stepup;
 
     @Data
