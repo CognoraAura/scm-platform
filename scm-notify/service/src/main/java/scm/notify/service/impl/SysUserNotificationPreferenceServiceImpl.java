@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
  * @since 2025-12-26
  */
 @Service
-public class SysUserNotificationPreferenceServiceImpl extends ServiceImpl<SysUserNotificationPreferenceMapper, SysUserNotificationPreference> implements ISysUserNotificationPreferenceService {
+public class SysUserNotificationPreferenceServiceImpl
+        extends ServiceImpl<SysUserNotificationPreferenceMapper, SysUserNotificationPreference>
+        implements ISysUserNotificationPreferenceService {
 
 }

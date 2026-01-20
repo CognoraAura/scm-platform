@@ -18,31 +18,33 @@ spring:
         namespace: ${NACOS_NAMESPACE:public}
         group: ${NACOS_GROUP:DEFAULT_GROUP}
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lowerCaseServiceId: true
-      routes:
-        - id: auth-service
-          uri: lb://auth-service
-          predicates:
-            - Path=/auth/**
-          filters:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          routes:
+            - id: auth-service
+              uri: lb://auth-service
+              predicates:
+                - Path=/auth/**
+              filters:
+                - StripPrefix=1
+            - id: system-service
+              uri: lb://system-service
+              predicates:
+                - Path=/system/**
+              filters:
+                - StripPrefix=1
+            - id: common-service
+              uri: lb://common-service
+              predicates:
+                - Path=/common/**
+              filters:
+                - StripPrefix=1
+          default-filters:
             - StripPrefix=1
-        - id: system-service
-          uri: lb://system-service
-          predicates:
-            - Path=/system/**
-          filters:
-            - StripPrefix=1
-        - id: common-service
-          uri: lb://common-service
-          predicates:
-            - Path=/common/**
-          filters:
-            - StripPrefix=1
-      default-filters:
-        - StripPrefix=1
 
 security:
   signature:
@@ -50,7 +52,7 @@ security:
     default-version: HMAC-SHA256-V2
     allowed-clock-skew: 5m
     nonce-ttl: 5m
-    nonce-key-prefix: api:nonce:
+    nonce-key-prefix: "api:nonce:"
     whitelist:
       - /public/**
       - /actuator/**

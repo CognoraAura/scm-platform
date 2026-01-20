@@ -16,7 +16,7 @@ import java.util.UUID;
 
 /**
  * 配额检查 AOP 拦截器
- *
+
  * 使用方式：
  * <pre>
  * @RequireQuotaCheck(quotaType = QuotaType.ORDERS, increment = 1)
@@ -33,7 +33,6 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class QuotaChecker {
-
     private final QuotaService quotaService;
 
     /**
@@ -41,7 +40,7 @@ public class QuotaChecker {
      */
     @Before("@annotation(com.frog.common.tenant.quota.RequireQuotaCheck)")
     public void checkQuota(JoinPoint joinPoint) {
-        // 获取租户ID
+        // 获取租户 ID
         UUID tenantId = TenantContextHolder.getTenantId();
         if (tenantId == null) {
             log.warn("Tenant ID is null, skipping quota check");

@@ -84,8 +84,7 @@ public class SysRoleController {
             businessType = "ROLE",
             riskLevel = 4
     )
-    public ApiResponse<Void> update(@PathVariable UUID id,
-                               @Validated @RequestBody RoleDTO roleDTO) {
+    public ApiResponse<Void> update(@PathVariable UUID id, @Validated @RequestBody RoleDTO roleDTO) {
         roleDTO.setId(id);
         roleService.updateRole(roleDTO);
 
@@ -120,8 +119,7 @@ public class SysRoleController {
             businessType = "ROLE",
             riskLevel = 4
     )
-    public ApiResponse<Void> grantPermissions(@PathVariable UUID id,
-                                         @RequestBody List<UUID> permissionIds) {
+    public ApiResponse<Void> grantPermissions(@PathVariable UUID id, @RequestBody List<UUID> permissionIds) {
         roleService.grantPermissions(id, permissionIds);
 
         return ApiResponse.success();

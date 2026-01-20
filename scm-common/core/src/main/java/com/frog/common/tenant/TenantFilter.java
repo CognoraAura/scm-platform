@@ -13,7 +13,7 @@ import java.util.UUID;
 /**
  * 租户过滤器
  * 从请求头中提取租户ID，设置到 ThreadLocal
- *
+
  * 支持的租户ID来源（优先级从高到低）：
  * 1. HTTP Header: X-Tenant-Id
  * 2. HTTP Header: Tenant-Id
@@ -27,7 +27,6 @@ import java.util.UUID;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
 public class TenantFilter implements Filter {
-
     private static final String HEADER_TENANT_ID = "X-Tenant-Id";
     private static final String HEADER_TENANT_ID_ALT = "Tenant-Id";
     private static final String PARAM_TENANT_ID = "tenantId";
@@ -61,7 +60,7 @@ public class TenantFilter implements Filter {
 
     /**
      * 从请求中提取租户ID
-     *
+
      * 优先级：
      * 1. X-Tenant-Id header
      * 2. Tenant-Id header
@@ -87,7 +86,7 @@ public class TenantFilter implements Filter {
         //     tenantIdStr = extractFromJwtToken(request);
         // }
 
-        // 转换为UUID
+        // 转换为 UUID
         if (tenantIdStr != null && !tenantIdStr.trim().isEmpty()) {
             try {
                 return UUID.fromString(tenantIdStr.trim());

@@ -2,8 +2,8 @@ package scm.product.sync;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import scm.product.search.document.ProductDocument;
@@ -37,13 +37,10 @@ import java.time.ZoneId;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class ProductSyncConsumer {
-
-    @Autowired
-    private ProductSearchRepository productSearchRepository;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ProductSearchRepository productSearchRepository;
+    private final ObjectMapper objectMapper;
 
     /**
      * 监听商品 SPU 变更事件
@@ -88,7 +85,7 @@ public class ProductSyncConsumer {
     /**
      * 处理新增操作（Create/Read）
      */
-    private void handleCreate(JsonNode event) throws Exception {
+    private void handleCreate(JsonNode event) {
         JsonNode after = event.get("after");
         if (after == null) {
             log.warn("⚠️  [数据同步-Create] after 字段为空，跳过处理");
@@ -105,7 +102,7 @@ public class ProductSyncConsumer {
     /**
      * 处理更新操作（Update）
      */
-    private void handleUpdate(JsonNode event) throws Exception {
+    private void handleUpdate(JsonNode event) {
         JsonNode after = event.get("after");
         if (after == null) {
             log.warn("⚠️  [数据同步-Update] after 字段为空，跳过处理");

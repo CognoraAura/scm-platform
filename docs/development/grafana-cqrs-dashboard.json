@@ -1,0 +1,932 @@
+{
+  "dashboard": {
+    "title": "SCM CQRS Performance Dashboard",
+    "tags": ["scm", "cqrs", "performance", "system-service"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h"],
+      "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d", "30d"]
+    },
+    "templating": {
+      "list": [
+        {
+          "name": "datasource",
+          "label": "Data Source",
+          "type": "datasource",
+          "query": "prometheus",
+          "current": {
+            "text": "Prometheus",
+            "value": "Prometheus"
+          }
+        },
+        {
+          "name": "method",
+          "label": "CQRS Method",
+          "type": "query",
+          "datasource": "${datasource}",
+          "query": "label_values(cross_db_query_seconds_count, method)",
+          "multi": true,
+          "includeAll": true,
+          "allValue": ".*",
+          "current": {
+            "text": "All",
+            "value": "$__all"
+          }
+        },
+        {
+          "name": "class",
+          "label": "Service Class",
+          "type": "query",
+          "datasource": "${datasource}",
+          "query": "label_values(cross_db_query_seconds_count, class)",
+          "multi": true,
+          "includeAll": true,
+          "allValue": ".*",
+          "current": {
+            "text": "All",
+            "value": "$__all"
+          }
+        },
+        {
+          "name": "pool",
+          "label": "Database Pool",
+          "type": "query",
+          "datasource": "${datasource}",
+          "query": "label_values(hikaricp_connections_active, pool)",
+          "multi": true,
+          "includeAll": true,
+          "allValue": ".*",
+          "current": {
+            "text": "All",
+            "value": "$__all"
+          }
+        }
+      ]
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Service Health Overview",
+        "type": "row",
+        "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+        "collapsed": false
+      },
+      {
+        "id": 2,
+        "title": "Total Requests",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "sum(increase(cross_db_query_seconds_count{method=~\"$method\",class=~\"$class\"}[$__range]))",
+            "legendFormat": "Total Requests",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "colorMode": "value",
+          "orientation": "auto",
+          "textMode": "value_and_name",
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": null, "color": "green" },
+                { "value": 10000, "color": "yellow" },
+                { "value": 50000, "color": "red" }
+              ]
+            },
+            "unit": "short",
+            "decimals": 0
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Average Latency",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "sum(rate(cross_db_query_seconds_sum{method=~\"$method\",class=~\"$class\"}[5m])) / sum(rate(cross_db_query_seconds_count{method=~\"$method\",class=~\"$class\"}[5m]))",
+            "legendFormat": "Avg Latency",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "colorMode": "value",
+          "orientation": "auto",
+          "textMode": "value_and_name",
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": null, "color": "green" },
+                { "value": 0.1, "color": "yellow" },
+                { "value": 0.2, "color": "red" }
+              ]
+            },
+            "unit": "s",
+            "decimals": 3
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "P95 Latency",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(cross_db_query_seconds_bucket{method=~\"$method\",class=~\"$class\"}[5m])) by (le))",
+            "legendFormat": "P95 Latency",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "colorMode": "value",
+          "orientation": "auto",
+          "textMode": "value_and_name",
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": null, "color": "green" },
+                { "value": 0.2, "color": "yellow" },
+                { "value": 0.5, "color": "red" }
+              ]
+            },
+            "unit": "s",
+            "decimals": 3
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Error Rate",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "(sum(rate(cross_db_query_seconds_count{method=~\"$method\",class=~\"$class\",outcome=\"ERROR\"}[5m])) / sum(rate(cross_db_query_seconds_count{method=~\"$method\",class=~\"$class\"}[5m]))) * 100",
+            "legendFormat": "Error Rate",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "colorMode": "value",
+          "orientation": "auto",
+          "textMode": "value_and_name",
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": null, "color": "green" },
+                { "value": 0.1, "color": "yellow" },
+                { "value": 1, "color": "red" }
+              ]
+            },
+            "unit": "percent",
+            "decimals": 2
+          }
+        }
+      },
+      {
+        "id": 10,
+        "title": "Method-Level Performance",
+        "type": "row",
+        "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+        "collapsed": false
+      },
+      {
+        "id": 11,
+        "title": "Request Rate by Method",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "sum(rate(cross_db_query_seconds_count{method=~\"$method\",class=~\"$class\"}[1m])) by (method)",
+            "legendFormat": "{{method}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "spanNulls": true,
+              "showPoints": "never",
+              "pointSize": 5,
+              "stacking": { "mode": "none", "group": "A" },
+              "axisPlacement": "auto"
+            },
+            "color": { "mode": "palette-classic" },
+            "unit": "reqps",
+            "decimals": 2
+          }
+        },
+        "options": {
+          "tooltip": { "mode": "multi", "sort": "desc" },
+          "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max"] }
+        }
+      },
+      {
+        "id": 12,
+        "title": "Latency Heatmap",
+        "type": "heatmap",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "sum(increase(cross_db_query_seconds_bucket{method=~\"$method\",class=~\"$class\"}[1m])) by (le)",
+            "format": "heatmap",
+            "legendFormat": "{{le}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "calculate": false,
+          "cellGap": 2,
+          "color": {
+            "mode": "scheme",
+            "scheme": "Spectral",
+            "steps": 128
+          },
+          "yAxis": {
+            "decimals": 0,
+            "unit": "s"
+          },
+          "legend": { "show": true }
+        }
+      },
+      {
+        "id": 13,
+        "title": "Top 10 Slowest Methods (P95 Latency)",
+        "type": "bargauge",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "topk(10, histogram_quantile(0.95, sum(rate(cross_db_query_seconds_bucket{method=~\"$method\",class=~\"$class\"}[5m])) by (le, method)))",
+            "legendFormat": "{{method}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": null, "color": "green" },
+                { "value": 0.2, "color": "yellow" },
+                { "value": 0.5, "color": "red" }
+              ]
+            },
+            "unit": "s",
+            "decimals": 3,
+            "min": 0,
+            "max": 1
+          }
+        },
+        "options": {
+          "orientation": "horizontal",
+          "displayMode": "gradient",
+          "showUnfilled": true
+        }
+      },
+      {
+        "id": 14,
+        "title": "Cache Hit Rate",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "sum(rate(cache_gets{cache=~\"userRoles|userPermissionCodes|userDataScope\",result=\"hit\"}[5m])) by (cache) / sum(rate(cache_gets{cache=~\"userRoles|userPermissionCodes|userDataScope\"}[5m])) by (cache) * 100",
+            "legendFormat": "{{cache}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 20,
+              "gradientMode": "opacity",
+              "spanNulls": true,
+              "showPoints": "never",
+              "stacking": { "mode": "none", "group": "A" },
+              "axisPlacement": "auto"
+            },
+            "color": { "mode": "palette-classic" },
+            "unit": "percent",
+            "decimals": 1,
+            "min": 0,
+            "max": 100
+          }
+        },
+        "options": {
+          "tooltip": { "mode": "multi", "sort": "desc" },
+          "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "min", "max"] }
+        }
+      },
+      {
+        "id": 20,
+        "title": "Database Performance",
+        "type": "row",
+        "gridPos": { "h": 1, "w": 24, "x": 0, "y": 22 },
+        "collapsed": false
+      },
+      {
+        "id": 21,
+        "title": "Connection Pool Usage",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 23 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "hikaricp_connections_active{pool=~\"$pool\"}",
+            "legendFormat": "{{pool}} - Active",
+            "refId": "A"
+          },
+          {
+            "expr": "hikaricp_connections_idle{pool=~\"$pool\"}",
+            "legendFormat": "{{pool}} - Idle",
+            "refId": "B"
+          },
+          {
+            "expr": "hikaricp_connections_max{pool=~\"$pool\"}",
+            "legendFormat": "{{pool}} - Max",
+            "refId": "C"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "spanNulls": true,
+              "showPoints": "never",
+              "stacking": { "mode": "none", "group": "A" },
+              "axisPlacement": "auto"
+            },
+            "color": { "mode": "palette-classic" },
+            "unit": "short",
+            "decimals": 0
+          }
+        },
+        "options": {
+          "tooltip": { "mode": "multi", "sort": "desc" },
+          "legend": { "displayMode": "table", "placement": "right", "calcs": ["last", "mean", "max"] }
+        }
+      },
+      {
+        "id": 22,
+        "title": "Connection Acquisition Time (P95)",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 23 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(hikaricp_connections_acquire_seconds_bucket{pool=~\"$pool\"}[5m])) by (le, pool))",
+            "legendFormat": "{{pool}} - P95",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 20,
+              "gradientMode": "opacity",
+              "spanNulls": true,
+              "showPoints": "never",
+              "stacking": { "mode": "none", "group": "A" },
+              "axisPlacement": "auto"
+            },
+            "color": { "mode": "palette-classic" },
+            "unit": "s",
+            "decimals": 4
+          }
+        },
+        "options": {
+          "tooltip": { "mode": "multi", "sort": "desc" },
+          "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max"] }
+        }
+      },
+      {
+        "id": 23,
+        "title": "Database Query Time (MyBatis)",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 31 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(mybatis_query_seconds_bucket{mapper=~\"SysUser.*|SysRole.*|SysDept.*\"}[5m])) by (le, mapper))",
+            "legendFormat": "{{mapper}} - P95",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "spanNulls": true,
+              "showPoints": "never",
+              "stacking": { "mode": "none", "group": "A" },
+              "axisPlacement": "auto"
+            },
+            "color": { "mode": "palette-classic" },
+            "unit": "s",
+            "decimals": 4
+          }
+        },
+        "options": {
+          "tooltip": { "mode": "multi", "sort": "desc" },
+          "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max"] }
+        }
+      },
+      {
+        "id": 24,
+        "title": "Read-Write Separation (Master vs Slave)",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 31 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "sum(rate(cross_db_query_seconds_count{datasource_type=\"master\"}[1m]))",
+            "legendFormat": "Master Requests",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(rate(cross_db_query_seconds_count{datasource_type=\"slave\"}[1m]))",
+            "legendFormat": "Slave Requests",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 20,
+              "gradientMode": "opacity",
+              "spanNulls": true,
+              "showPoints": "never",
+              "stacking": { "mode": "normal", "group": "A" },
+              "axisPlacement": "auto"
+            },
+            "color": { "mode": "palette-classic" },
+            "unit": "reqps",
+            "decimals": 2
+          }
+        },
+        "options": {
+          "tooltip": { "mode": "multi", "sort": "desc" },
+          "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max"] }
+        }
+      },
+      {
+        "id": 30,
+        "title": "Error Analysis",
+        "type": "row",
+        "gridPos": { "h": 1, "w": 24, "x": 0, "y": 39 },
+        "collapsed": false
+      },
+      {
+        "id": 31,
+        "title": "Error Count by Method",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 40 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "sum(rate(cross_db_query_seconds_count{method=~\"$method\",class=~\"$class\",outcome=\"ERROR\"}[5m])) by (method)",
+            "legendFormat": "{{method}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 20,
+              "gradientMode": "opacity",
+              "spanNulls": true,
+              "showPoints": "never",
+              "stacking": { "mode": "normal", "group": "A" },
+              "axisPlacement": "auto"
+            },
+            "color": { "mode": "palette-classic" },
+            "unit": "short",
+            "decimals": 2
+          }
+        },
+        "options": {
+          "tooltip": { "mode": "multi", "sort": "desc" },
+          "legend": { "displayMode": "table", "placement": "right", "calcs": ["sum", "max"] }
+        }
+      },
+      {
+        "id": 32,
+        "title": "Error Rate Trend",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 40 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "(sum(rate(cross_db_query_seconds_count{method=~\"$method\",class=~\"$class\",outcome=\"ERROR\"}[5m])) / sum(rate(cross_db_query_seconds_count{method=~\"$method\",class=~\"$class\"}[5m]))) * 100",
+            "legendFormat": "Error Rate %",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 20,
+              "gradientMode": "opacity",
+              "spanNulls": true,
+              "showPoints": "auto",
+              "stacking": { "mode": "none", "group": "A" },
+              "axisPlacement": "auto"
+            },
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": null, "color": "green" },
+                { "value": 0.1, "color": "yellow" },
+                { "value": 1, "color": "red" }
+              ]
+            },
+            "unit": "percent",
+            "decimals": 2,
+            "min": 0,
+            "max": 5
+          }
+        },
+        "options": {
+          "tooltip": { "mode": "single" },
+          "legend": { "displayMode": "list", "placement": "bottom" }
+        }
+      },
+      {
+        "id": 33,
+        "title": "Exception Types",
+        "type": "piechart",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 48 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "sum(increase(cross_db_query_seconds_count{method=~\"$method\",class=~\"$class\",outcome=\"ERROR\"}[1h])) by (exception)",
+            "legendFormat": "{{exception}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "pieType": "pie",
+          "displayLabels": ["name", "percent"],
+          "legend": {
+            "displayMode": "table",
+            "placement": "right",
+            "calcs": ["sum"]
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "palette-classic" },
+            "unit": "short",
+            "decimals": 0
+          }
+        }
+      },
+      {
+        "id": 34,
+        "title": "Slow Query Log (>500ms)",
+        "type": "table",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 48 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "topk(20, cross_db_query_seconds_max{method=~\"$method\",class=~\"$class\"} > 0.5)",
+            "format": "table",
+            "instant": true,
+            "refId": "A"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "Time": true
+              },
+              "indexByName": {
+                "method": 0,
+                "class": 1,
+                "Value": 2
+              },
+              "renameByName": {
+                "method": "Method",
+                "class": "Service Class",
+                "Value": "Max Latency (s)"
+              }
+            }
+          }
+        ],
+        "options": {
+          "showHeader": true,
+          "sortBy": [
+            {
+              "displayName": "Max Latency (s)",
+              "desc": true
+            }
+          ]
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto"
+            },
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": null, "color": "green" },
+                { "value": 0.5, "color": "yellow" },
+                { "value": 1, "color": "red" }
+              ]
+            },
+            "decimals": 3
+          },
+          "overrides": [
+            {
+              "matcher": { "id": "byName", "options": "Max Latency (s)" },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "s"
+                },
+                {
+                  "id": "custom.displayMode",
+                  "value": "color-background"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": 40,
+        "title": "Resource Utilization",
+        "type": "row",
+        "gridPos": { "h": 1, "w": 24, "x": 0, "y": 56 },
+        "collapsed": false
+      },
+      {
+        "id": 41,
+        "title": "JVM Heap Usage",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 57 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "jvm_memory_used_bytes{area=\"heap\",application=\"system-service\"} / jvm_memory_max_bytes{area=\"heap\",application=\"system-service\"} * 100",
+            "legendFormat": "Heap Usage %",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 20,
+              "gradientMode": "opacity",
+              "spanNulls": true,
+              "showPoints": "never",
+              "stacking": { "mode": "none", "group": "A" },
+              "axisPlacement": "auto"
+            },
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": null, "color": "green" },
+                { "value": 70, "color": "yellow" },
+                { "value": 85, "color": "red" }
+              ]
+            },
+            "unit": "percent",
+            "decimals": 1,
+            "min": 0,
+            "max": 100
+          }
+        },
+        "options": {
+          "tooltip": { "mode": "single" },
+          "legend": { "displayMode": "list", "placement": "bottom" }
+        }
+      },
+      {
+        "id": 42,
+        "title": "CPU Usage",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 57 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "system_cpu_usage{application=\"system-service\"} * 100",
+            "legendFormat": "System CPU",
+            "refId": "A"
+          },
+          {
+            "expr": "process_cpu_usage{application=\"system-service\"} * 100",
+            "legendFormat": "Process CPU",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "spanNulls": true,
+              "showPoints": "never",
+              "stacking": { "mode": "none", "group": "A" },
+              "axisPlacement": "auto"
+            },
+            "color": { "mode": "palette-classic" },
+            "unit": "percent",
+            "decimals": 1,
+            "min": 0,
+            "max": 100
+          }
+        },
+        "options": {
+          "tooltip": { "mode": "multi", "sort": "desc" },
+          "legend": { "displayMode": "list", "placement": "bottom" }
+        }
+      },
+      {
+        "id": 43,
+        "title": "Garbage Collection Pause Time",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 65 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "rate(jvm_gc_pause_seconds_sum{application=\"system-service\"}[5m]) / rate(jvm_gc_pause_seconds_count{application=\"system-service\"}[5m])",
+            "legendFormat": "{{action}} - {{cause}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "spanNulls": true,
+              "showPoints": "never",
+              "stacking": { "mode": "none", "group": "A" },
+              "axisPlacement": "auto"
+            },
+            "color": { "mode": "palette-classic" },
+            "unit": "s",
+            "decimals": 4
+          }
+        },
+        "options": {
+          "tooltip": { "mode": "multi", "sort": "desc" },
+          "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max"] }
+        }
+      },
+      {
+        "id": 44,
+        "title": "Active Threads",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 65 },
+        "datasource": "${datasource}",
+        "targets": [
+          {
+            "expr": "jvm_threads_live{application=\"system-service\"}",
+            "legendFormat": "Live Threads",
+            "refId": "A"
+          },
+          {
+            "expr": "jvm_threads_daemon{application=\"system-service\"}",
+            "legendFormat": "Daemon Threads",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "spanNulls": true,
+              "showPoints": "never",
+              "stacking": { "mode": "none", "group": "A" },
+              "axisPlacement": "auto"
+            },
+            "color": { "mode": "palette-classic" },
+            "unit": "short",
+            "decimals": 0
+          }
+        },
+        "options": {
+          "tooltip": { "mode": "multi", "sort": "desc" },
+          "legend": { "displayMode": "list", "placement": "bottom" }
+        }
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "name": "Deployments",
+          "datasource": "${datasource}",
+          "enable": true,
+          "iconColor": "blue",
+          "expr": "changes(process_start_time_seconds{application=\"system-service\"}[1m]) > 0"
+        }
+      ]
+    }
+  }
+}

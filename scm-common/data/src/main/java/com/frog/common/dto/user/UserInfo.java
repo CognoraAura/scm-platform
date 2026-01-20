@@ -1,6 +1,8 @@
 package com.frog.common.dto.user;
 
 import com.frog.common.dto.permission.PermissionDTO;
+import com.frog.common.security.annotation.Sensitive;
+import com.frog.common.security.enums.SensitiveType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,9 +25,12 @@ import java.util.UUID;
 public class UserInfo {
     private UUID userId;
     private String username;
+    @Sensitive(type = SensitiveType.NAME)
     private String realName;
     private String avatar;
+    @Sensitive(type = SensitiveType.EMAIL)
     private String email;
+    @Sensitive(type = SensitiveType.MOBILE)
     private String phone;
     private UUID deptId;
     private String deptName;

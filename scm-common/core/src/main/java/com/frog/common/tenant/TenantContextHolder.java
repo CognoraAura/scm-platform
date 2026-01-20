@@ -13,11 +13,10 @@ import java.util.UUID;
  */
 @Slf4j
 public class TenantContextHolder {
-
     private static final ThreadLocal<UUID> TENANT_ID_HOLDER = new ThreadLocal<>();
 
     /**
-     * 设置当前租户ID
+     * 设置当前租户 ID
      */
     public static void setTenantId(UUID tenantId) {
         if (tenantId == null) {
@@ -28,7 +27,7 @@ public class TenantContextHolder {
     }
 
     /**
-     * 获取当前租户ID
+     * 获取当前租户 ID
      */
     public static UUID getTenantId() {
         UUID tenantId = TENANT_ID_HOLDER.get();
@@ -50,7 +49,7 @@ public class TenantContextHolder {
     }
 
     /**
-     * 清除当前租户ID
+     * 清除当前租户 ID
      */
     public static void clear() {
         UUID tenantId = TENANT_ID_HOLDER.get();

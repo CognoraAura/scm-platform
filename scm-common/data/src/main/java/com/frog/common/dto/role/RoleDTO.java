@@ -20,6 +20,8 @@ import java.util.UUID;
 public class RoleDTO {
     private UUID id;
 
+    private UUID tenantId;
+
     @NotBlank(message = "角色编码不能为空")
     @Pattern(regexp = "^ROLE_[A-Z_]+$", message = "角色编码必须以ROLE_开头，只能包含大写字母和下划线")
     private String roleCode;
@@ -30,6 +32,10 @@ public class RoleDTO {
 
     @Size(max = 255, message = "角色描述长度不能超过255位")
     private String roleDesc;
+
+    private String roleType;
+
+    private String roleCategory;
 
     @NotNull(message = "角色级别不能为空")
     @Min(value = 0, message = "角色级别不能小于0")
@@ -43,6 +49,8 @@ public class RoleDTO {
     private BigDecimal maxApprovalAmount;
 
     private String businessScope;
+
+    private List<UUID> customDeptIds;
 
     private Integer status;
 

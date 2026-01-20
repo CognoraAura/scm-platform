@@ -8,8 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
@@ -28,9 +26,7 @@ import java.util.UUID;
         name = "SysUserNotificationPreference 对象",
         description = "用户通知偏好表"
 )
-public class SysUserNotificationPreference implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class SysUserNotificationPreference {
 
     @Schema(description = "主键 ID")
     @TableId(value = "id", type = IdType.ASSIGN_UUID)

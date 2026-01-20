@@ -32,7 +32,6 @@ import cn.hutool.core.util.StrUtil;
 @Component
 @Slf4j
 public class SqlInjectionFilter implements Filter {
-
     private static final String ALERT_HEADER = "X-Sql-Guard";
 
     private final SecurityFilterProperties properties;

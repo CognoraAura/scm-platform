@@ -4,8 +4,8 @@ import com.frog.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import scm.product.search.dto.ProductSearchRequest;
@@ -30,11 +30,10 @@ import scm.product.search.service.ProductSearchService;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/products/search")
+@RequiredArgsConstructor
 @Tag(name = "商品搜索", description = "商品搜索 API - 支持全文搜索、分类筛选、品牌筛选、价格区间查询")
 public class ProductSearchController {
-
-    @Autowired
-    private ProductSearchService productSearchService;
+    private final ProductSearchService productSearchService;
 
     /**
      * 综合搜索

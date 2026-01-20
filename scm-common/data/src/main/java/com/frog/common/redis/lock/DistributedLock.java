@@ -46,8 +46,7 @@ public class DistributedLock {
     private final DefaultRedisScript<Long> renewScript;
     private final String ownerId;
 
-    public DistributedLock(RedisTemplate<String, Object> redisTemplate,
-                           LockLeaseManager leaseManager,
+    public DistributedLock(RedisTemplate<String, Object> redisTemplate, LockLeaseManager leaseManager,
                            LockMetricsRecorder metricsRecorder) {
         this.redisTemplate = redisTemplate;
         this.leaseManager = leaseManager;
@@ -61,10 +60,7 @@ public class DistributedLock {
         return acquire(lockKey, ttl, Duration.ZERO, DEFAULT_RETRY_INTERVAL);
     }
 
-    public LockHandle acquire(String lockKey,
-                              Duration ttl,
-                              Duration maxWait,
-                              Duration retryInterval) {
+    public LockHandle acquire(String lockKey, Duration ttl, Duration maxWait, Duration retryInterval) {
         Objects.requireNonNull(lockKey, "lockKey");
         Objects.requireNonNull(ttl, "ttl");
         if (ttl.isZero() || ttl.isNegative()) {
@@ -98,25 +94,18 @@ public class DistributedLock {
         throw new LockAcquisitionException(lockKey, maxWait);
     }
 
-    public <T> T executeWithLock(String lockKey,
-                                 Duration ttl,
-                                 Supplier<T> action) {
+    public <T> T executeWithLock(String lockKey, Duration ttl, Supplier<T> action) {
         return executeWithLock(lockKey, ttl, DEFAULT_WAIT, DEFAULT_RETRY_INTERVAL, action);
     }
 
-    public <T> T executeWithLock(String lockKey,
-                                 Duration ttl,
-                                 Duration maxWait,
-                                 Duration retryInterval,
+    public <T> T executeWithLock(String lockKey, Duration ttl, Duration maxWait, Duration retryInterval,
                                  Supplier<T> action) {
         try (LockHandle handle = acquire(lockKey, ttl, maxWait, retryInterval)) {
             return action.get();
         }
     }
 
-    public void executeWithLock(String lockKey,
-                                Duration ttl,
-                                Runnable action) {
+    public void executeWithLock(String lockKey, Duration ttl, Runnable action) {
         executeWithLock(lockKey, ttl, DEFAULT_WAIT, DEFAULT_RETRY_INTERVAL, () -> {
             action.run();
             return null;
@@ -136,10 +125,7 @@ public class DistributedLock {
      * Backwards compatible API: prefer acquire().
      */
     @Deprecated
-    public String tryLockWithRetry(String lockKey,
-                                   Duration expireTime,
-                                   Duration waitTime,
-                                   Duration retryInterval) {
+    public String tryLockWithRetry(String lockKey, Duration expireTime, Duration waitTime, Duration retryInterval) {
         LockToken token = tryAcquire(lockKey, expireTime);
         if (token != null) {
             return token.lockValue();

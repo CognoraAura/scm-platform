@@ -2,6 +2,8 @@ package scm.tenant.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
+import java.io.Serial;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -26,7 +28,7 @@ import lombok.experimental.Accessors;
 @TableName("tenant")
 @Schema(description = "租户表")
 public class Tenant implements Serializable {
-
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.NONE)

@@ -11,8 +11,7 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 /**
@@ -24,6 +23,9 @@ import lombok.experimental.Accessors;
  * @since 2025-12-26
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("inv_snapshot")
@@ -64,5 +66,4 @@ public class InvSnapshot implements Serializable {
 
     @TableField("create_time")
     private LocalDateTime createTime;
-
 }

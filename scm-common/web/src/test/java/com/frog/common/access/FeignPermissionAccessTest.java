@@ -1,7 +1,7 @@
 package com.frog.common.access;
 
 import com.alibaba.csp.sentinel.slots.block.BlockException;
-import com.frog.common.feign.client.SysPermissionServiceClient;
+import com.frog.common.rest.client.SysPermissionServiceClient;
 import com.frog.common.response.ApiResponse;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -22,15 +22,17 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 /**
- * FeignPermissionAccess Test Suite
+ * FeignPermissionAccess Test Suite (using RestClient)
  *
  * SECURITY CRITICAL: Tests fail-closed pattern for permission lookups
  * - Service failures must DENY access (not grant)
  * - Sentinel circuit open must DENY access
  * - Metrics tracking for security events
+ *
+ * MIGRATED: Changed from Feign to RestClient + @HttpExchange (2025-12-29)
  */
 @ExtendWith(MockitoExtension.class)
-@DisplayName("Feign Permission Access Security Tests")
+@DisplayName("RestClient Permission Access Security Tests")
 class FeignPermissionAccessTest {
 
     @Mock
@@ -187,7 +189,7 @@ class FeignPermissionAccessTest {
     }
 
     @Test
-    @DisplayName("Should handle Feign timeout gracefully - DENY access")
+    @DisplayName("Should handle RestClient timeout gracefully - DENY access")
     void testFindPermissionsByUrl_FeignTimeout_DeniesAccess() {
         // Arrange
         when(permissionServiceClient.findPermissionsByUrl(testUrl, testMethod))

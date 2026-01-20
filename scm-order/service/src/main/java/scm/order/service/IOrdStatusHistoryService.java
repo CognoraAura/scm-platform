@@ -1,9 +1,7 @@
 package scm.order.service;
 
--order/service.service;
-
-import scm-order/service.domain.entity.OrdStatusHistory;
 import com.baomidou.mybatisplus.extension.service.IService;
+import scm.order.domain.entity.OrdStatusHistory;
 
 /**
  * <p>

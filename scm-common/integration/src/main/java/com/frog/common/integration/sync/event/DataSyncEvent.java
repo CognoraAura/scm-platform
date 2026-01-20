@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
@@ -26,9 +24,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DataSyncEvent implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class DataSyncEvent {
 
     /**
      * 事件唯一ID（用于幂等处理）

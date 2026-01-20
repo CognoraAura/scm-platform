@@ -1,5 +1,7 @@
 package com.frog.system.api;
 
+import com.frog.common.dto.user.UserDTO;
+import com.frog.common.dto.user.UserInfo;
 import com.frog.common.web.domain.SecurityUser;
 
 import java.time.LocalDateTime;
@@ -7,17 +9,17 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Dubbo API for internal high-speed RPC between services.
- * Provides high-performance user-related operations for authentication and authorization.
+ * Dubbo API 用于服务间的高速内部 RPC 通信。
+ * 提供高性能的用户相关操作，包括身份验证和授权。
  */
 public interface UserDubboService {
 
     /**
-     * Get user by username for authentication.
-     * Used by Spring Security's UserDetailsService.
+     * 根据用户名获取用户进行身份验证。
+     * 由 Spring Security 的 UserDetailsService 使用。
      *
-     * @param username the username to search for
-     * @return SecurityUser containing authentication information, or null if not found
+     * @param username 要搜索的用户名
+     * @return 包含身份验证信息的 SecurityUser 对象，如果找不到则返回 null
      */
     SecurityUser getUserByUsername(String username);
 
@@ -57,7 +59,7 @@ public interface UserDubboService {
     void updateLastLogin(UUID userId, String ipAddress, LocalDateTime loginTime);
 
     /**
-     * Get user name by userId.
+     * Get username by userId.
      *
      * @param userId the user ID
      * @return UserDTO

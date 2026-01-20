@@ -1,6 +1,6 @@
 package com.frog.auth.service.Impl;
 
-import com.frog.common.feign.client.SysUserServiceClient;
+import com.frog.common.rest.client.SysUserServiceClient;
 import com.frog.system.api.UserDubboService;
 import com.frog.common.metrics.BusinessMetrics;
 import com.frog.common.web.domain.SecurityUser;
@@ -91,6 +91,12 @@ public class SysAuthServiceImpl implements ISysAuthService {
 
             // 4. 检查双因素认证（MFA）
             if (Boolean.TRUE.equals(user.getTwoFactorEnabled())) {
+                // 修复: MFA 启用时必须提供验证码
+                if (!StringUtils.hasText(request.getTwoFactorCode())) {
+                    auditLogService.recordLoginFailure(username, ipAddress, "MFA已启用但未提供验证码");
+                    businessMetrics.recordLoginAttempt(false, "mfa");
+                    throw new BadCredentialsException("双因素认证已启用，必须提供验证码");
+                }
                 if (!verifyTwoFactor(user.getTwoFactorSecret(), request.getTwoFactorCode(), user.getUserId())) {
                     auditLogService.recordLoginFailure(username, ipAddress, "双因素认证失败");
                     businessMetrics.recordLoginAttempt(false, "mfa");
@@ -101,7 +107,12 @@ public class SysAuthServiceImpl implements ISysAuthService {
             // 5. 检查密码是否过期
             if (user.getPasswordExpireTime() != null && user.getPasswordExpireTime().isBefore(LocalDateTime.now())) {
                 auditLogService.recordLogin(user.getUserId(), username, ipAddress, true, "密码已过期");
+                // 修复: 密码过期时不返回 token，显式设置为 null 防止安全漏洞
                 return LoginResponse.builder()
+                        .accessToken(null)
+                        .refreshToken(null)
+                        .userId(user.getUserId())
+                        .username(username)
                         .needChangePassword(true)
                         .message("密码已过期，请修改密码")
                         .build();
@@ -225,7 +236,8 @@ public class SysAuthServiceImpl implements ISysAuthService {
 
     @Override
     public LoginResponse refreshToken(String refreshToken, String deviceId, String ipAddress) {
-        if (!jwtUtils.isRefreshTokenInvalid(refreshToken)) {
+        // 修复: 移除逻辑反转 - isRefreshTokenInvalid() 返回 true 表示无效
+        if (jwtUtils.isRefreshTokenInvalid(refreshToken)) {
             throw new BadCredentialsException("刷新令牌无效或已过期");
         }
 
@@ -236,14 +248,15 @@ public class SysAuthServiceImpl implements ISysAuthService {
         Set<String> roles = userDubboService.findRolesByUserId(userId);
         Set<String> permissions = userDubboService.findPermissionsByUserId(userId);
 
-        String newAccessToken = jwtUtils.refreshToken(
+        // 使用刷新令牌轮换机制（推荐）- 生成新的访问令牌和刷新令牌
+        JwtUtils.TokenPair tokenPair = jwtUtils.refreshTokenWithRotation(
                 refreshToken, roles, permissions, deviceId, ipAddress);
 
-        log.info("Token refreshed for user: {}", username);
+        log.info("Token refreshed with rotation for user: {}", username);
 
         return LoginResponse.builder()
-                .accessToken(newAccessToken)
-                .refreshToken(refreshToken)
+                .accessToken(tokenPair.getAccessToken())
+                .refreshToken(tokenPair.getRefreshToken())
                 .tokenType("Bearer")
                 .expiresIn(jwtProperties.getExpiration() / 1000)
                 .userId(userId)

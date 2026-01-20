@@ -29,9 +29,7 @@ import java.util.UUID;
         name = "SysNotificationTemplate 对象",
         description = "通知模板表"
 )
-public class SysNotificationTemplate implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class SysNotificationTemplate {
 
     @Schema(description = "主键 ID")
     @TableId(value = "id", type = IdType.ASSIGN_UUID)

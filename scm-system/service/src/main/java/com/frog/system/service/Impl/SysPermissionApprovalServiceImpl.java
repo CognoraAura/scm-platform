@@ -10,8 +10,11 @@ import com.frog.common.web.util.SecurityUtils;
 import com.frog.system.domain.entity.SysPermissionApproval;
 import com.frog.system.domain.entity.SysUser;
 import com.frog.system.mapper.SysPermissionApprovalMapper;
-import com.frog.system.service.CrossDatabaseQueryService;
 import com.frog.system.service.ISysPermissionApprovalService;
+import com.frog.system.service.command.UserRoleCrossDatabaseCommandService;
+import com.frog.system.service.query.DeptCrossDatabaseQueryService;
+import com.frog.system.service.query.RoleCrossDatabaseQueryService;
+import com.frog.system.service.query.UserCrossDatabaseQueryService;
 import com.frog.system.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +38,10 @@ public class SysPermissionApprovalServiceImpl
         implements ISysPermissionApprovalService {
     private final SysPermissionApprovalMapper approvalMapper;
     private final NotificationService notificationService;
-    private final CrossDatabaseQueryService crossDatabaseQueryService;
+    private final UserCrossDatabaseQueryService userQueryService;
+    private final RoleCrossDatabaseQueryService roleQueryService;
+    private final DeptCrossDatabaseQueryService deptQueryService;
+    private final UserRoleCrossDatabaseCommandService userRoleCommandService;
 
     /** 系统管理员角色编码 */
     private static final String ROLE_ADMIN = "ROLE_ADMIN";
@@ -202,7 +208,7 @@ public class SysPermissionApprovalServiceImpl
                     Optional.ofNullable(approval.getRoleIds())
                             .ifPresent(roleIdsArray -> {
                                 List<UUID> roleIds = Arrays.asList(roleIdsArray);
-                                crossDatabaseQueryService.batchInsertUserRoles(targetUserId, roleIds, currentUserId);
+                                userRoleCommandService.batchInsertUserRoles(targetUserId, roleIds, currentUserId);
                                 log.info("Permanent roles granted: userId={}, roleIds={}", targetUserId, roleIds);
                             });
 
@@ -214,7 +220,7 @@ public class SysPermissionApprovalServiceImpl
                     Optional.ofNullable(approval.getRoleIds())
                             .ifPresent(roleIdsArray -> {
                                 List<UUID> roleIds = Arrays.asList(roleIdsArray);
-                                crossDatabaseQueryService.batchInsertTemporaryUserRoles(
+                                userRoleCommandService.batchInsertTemporaryUserRoles(
                                         targetUserId,
                                         roleIds,
                                         approval.getEffectiveTime(),
@@ -300,7 +306,7 @@ public class SysPermissionApprovalServiceImpl
         List<UUID> chain = new ArrayList<>();
 
         // 通过 CrossDatabaseQueryService 跨库查询申请人信息 (db_user)
-        SysUser applicant = crossDatabaseQueryService.getUserBasicInfo(applicantId);
+        SysUser applicant = userQueryService.getUserBasicInfo(applicantId);
         if (applicant == null) {
             log.warn("Cannot build approval chain: applicant not found, id={}", applicantId);
             return chain;
@@ -355,21 +361,21 @@ public class SysPermissionApprovalServiceImpl
         if (deptId == null) {
             return null;
         }
-        return crossDatabaseQueryService.getDeptLeaderId(deptId);
+        return deptQueryService.getDeptLeaderId(deptId);
     }
 
     /**
      * 获取系统管理员（第一个拥有 ROLE_ADMIN 角色的用户）
      */
     private UUID getSystemAdmin() {
-        return crossDatabaseQueryService.findFirstUserIdByRoleCode(ROLE_ADMIN);
+        return roleQueryService.findFirstUserIdByRoleCode(ROLE_ADMIN);
     }
 
     /**
      * 获取超级管理员（第一个拥有 ROLE_SUPER_ADMIN 角色的用户）
      */
     private UUID getSuperAdmin() {
-        return crossDatabaseQueryService.findFirstUserIdByRoleCode(ROLE_SUPER_ADMIN);
+        return roleQueryService.findFirstUserIdByRoleCode(ROLE_SUPER_ADMIN);
     }
 
     /**
@@ -386,14 +392,14 @@ public class SysPermissionApprovalServiceImpl
             }
 
             // 通过 CrossDatabaseQueryService 跨库查询审批人信息 (db_user)
-            SysUser approver = crossDatabaseQueryService.getUserBasicInfo(approverId);
+            SysUser approver = userQueryService.getUserBasicInfo(approverId);
             if (approver == null) {
                 log.warn("Approver not found: {}", approverId);
                 return;
             }
 
             // 通过 CrossDatabaseQueryService 跨库查询申请人信息 (db_user)
-            SysUser applicant = crossDatabaseQueryService.getUserBasicInfo(approval.getApplicantId());
+            SysUser applicant = userQueryService.getUserBasicInfo(approval.getApplicantId());
             String applicantName = applicant != null ? applicant.getRealName() : "Unknown";
 
             // 构建通知参数
@@ -427,7 +433,7 @@ public class SysPermissionApprovalServiceImpl
     private void sendResultNotification(SysPermissionApproval approval, boolean approved) {
         try {
             // 通过 CrossDatabaseQueryService 跨库查询申请人信息 (db_user)
-            SysUser applicant = crossDatabaseQueryService.getUserBasicInfo(approval.getApplicantId());
+            SysUser applicant = userQueryService.getUserBasicInfo(approval.getApplicantId());
             if (applicant == null) {
                 log.warn("Applicant not found: {}", approval.getApplicantId());
                 return;

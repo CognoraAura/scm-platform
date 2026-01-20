@@ -25,8 +25,8 @@ import java.time.LocalDateTime;
  * @since 2025-12-26
  */
 @Data
-@Document(indexName = "scm_product", createIndex = true)
-@Setting(shards = 5, replicas = 1)
+@Document(indexName = "scm_product")
+@Setting(shards = 5)
 public class ProductDocument {
 
     /**

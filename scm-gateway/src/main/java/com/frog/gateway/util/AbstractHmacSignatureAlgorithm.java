@@ -29,22 +29,25 @@ public abstract class AbstractHmacSignatureAlgorithm implements SignatureAlgorit
     private static final DefaultDataBufferFactory BUFFER_FACTORY = new DefaultDataBufferFactory();
 
     @Override
-    public Mono<String> calculate(ServerHttpRequest request, String appId, String timestamp,
-                                  String nonce, String secretKey) {
+    public Mono<String> calculate(ServerHttpRequest request, String appId, String timestamp, String nonce,
+                                  String secretKey) {
+
         return canonicalPayload(request, appId, timestamp, nonce)
                 .map(payload -> SecureUtil.hmac(HmacAlgorithm.HmacSHA256, secretKey).digestHex(payload));
     }
 
     @Override
-    public Mono<Boolean> verify(ServerHttpRequest request, String signature, String appId,
-                                String timestamp, String nonce, String secretKey) {
+    public Mono<Boolean> verify(ServerHttpRequest request, String signature, String appId, String timestamp,
+                                String nonce, String secretKey) {
         byte[] provided = signature.getBytes(StandardCharsets.UTF_8);
+
         return canonicalPayload(request, appId, timestamp, nonce)
                 .map(payload -> SecureUtil.hmac(HmacAlgorithm.HmacSHA256, secretKey).digestHex(payload))
                 .map(calculated -> MessageDigest.isEqual(provided, calculated.getBytes(StandardCharsets.UTF_8)));
     }
 
     private Mono<String> canonicalPayload(ServerHttpRequest request, String appId, String timestamp, String nonce) {
+
         return extractBodyBytes(request)
                 .map(bodyBytes -> buildCanonicalRequest(request, appId, timestamp, nonce, bodyBytes));
     }
@@ -53,33 +56,40 @@ public abstract class AbstractHmacSignatureAlgorithm implements SignatureAlgorit
         if (request instanceof CachedBodyRequestDecorator cached) {
             return Mono.just(cached.getCachedBody());
         }
+
         return DataBufferUtils.join(request.getBody())
                 .defaultIfEmpty(BUFFER_FACTORY.wrap(new byte[0]))
                 .map(buffer -> {
-                    byte[] bytes = new byte[buffer.readableByteCount()];
-                    buffer.read(bytes);
-                    DataBufferUtils.release(buffer);
-                    return bytes;
+                    try {
+                        byte[] bytes = new byte[buffer.readableByteCount()];
+                        buffer.read(bytes);
+                        return bytes;
+                    } finally {
+                        DataBufferUtils.release(buffer);
+                    }
                 });
     }
 
-    private String buildCanonicalRequest(ServerHttpRequest request, String appId, String timestamp,
-                                         String nonce, byte[] bodyBytes) {
+    private String buildCanonicalRequest(ServerHttpRequest request, String appId, String timestamp, String nonce,
+                                         byte[] bodyBytes) {
         String bodyHash = DigestUtils.sha256Hex(bodyBytes);
         String query = canonicalizeQuery(request.getQueryParams());
+
         return String.format("""
                             ts=%s
                             nonce=%s
                             appId=%s
                             path=%s
                             query=%s
-                            bodyHash=%s""", timestamp, nonce, appId, request.getURI().getRawPath(), query, bodyHash);
+                            bodyHash=%s
+                            """, timestamp, nonce, appId, request.getURI().getRawPath(), query, bodyHash);
     }
 
     private String canonicalizeQuery(MultiValueMap<String, String> queryParams) {
         if (queryParams.isEmpty()) {
             return "";
         }
+
         return queryParams.entrySet().stream()
                 .flatMap(entry -> toEntries(entry.getKey(), entry.getValue()))
                 .sorted(Comparator.comparing(Map.Entry<String, String>::getKey)
@@ -92,6 +102,7 @@ public abstract class AbstractHmacSignatureAlgorithm implements SignatureAlgorit
         if (values == null || values.isEmpty()) {
             return Stream.of(Map.entry(key, ""));
         }
+
         return values.stream().map(value -> Map.entry(key, value));
     }
 

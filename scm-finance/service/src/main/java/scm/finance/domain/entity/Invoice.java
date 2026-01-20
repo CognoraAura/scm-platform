@@ -1,6 +1,5 @@
 package scm.finance.domain.entity;
 
-import java.io.Serial;
 import java.math.BigDecimal;
 
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -9,7 +8,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,9 +26,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("invoice")
 @Schema(description = "发票表")
-public class Invoice implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class Invoice {
 
     @TableId(value = "id", type = IdType.NONE)
     private String id;

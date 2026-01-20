@@ -14,7 +14,7 @@ import java.util.UUID;
 
 /**
  * MyBatis-Plus 审计字段自动填充处理器
- *
+
  * 自动填充字段：
  * 1. id - UUIDv7（INSERT时）
  * 2. tenant_id - 从ThreadLocal获取（INSERT时）
@@ -23,7 +23,7 @@ import java.util.UUID;
  * 5. update_time - 当前时间（INSERT和UPDATE时）
  * 6. update_by - 当前用户ID（UPDATE时）
  * 7. deleted - false（INSERT时）
- *
+
  * 使用方式：
  * 实体类字段添加 @TableField 注解：
  * <pre>
@@ -107,7 +107,7 @@ public class AuditMetaObjectHandler implements MetaObjectHandler {
 
     /**
      * 获取当前登录用户ID
-     *
+
      * TODO: 从 Spring Security / JWT / Session 中获取当前用户ID
      * 这里提供默认实现，实际项目需要根据具体认证方式调整
      */

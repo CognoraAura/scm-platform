@@ -10,24 +10,26 @@ spring:
       config:
         enabled: false
     gateway:
-      discovery:
-        locator:
-          enabled: false
-      routes:
-        - id: auth-service
-          uri: http://localhost:8106
-          predicates:
-            - Path=/auth/**
-          filters:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: false
+          routes:
+            - id: auth-service
+              uri: http://localhost:8106
+              predicates:
+                - Path=/auth/**
+              filters:
+                - StripPrefix=1
+            - id: system-service
+              uri: http://localhost:8107
+              predicates:
+                - Path=/system/**
+              filters:
+                - StripPrefix=1
+          default-filters:
             - StripPrefix=1
-        - id: system-service
-          uri: http://localhost:8107
-          predicates:
-            - Path=/system/**
-          filters:
-            - StripPrefix=1
-      default-filters:
-        - StripPrefix=1
 
 security:
   signature:
@@ -35,7 +37,7 @@ security:
     default-version: HMAC-SHA256-V2
     allowed-clock-skew: 5m
     nonce-ttl: 5m
-    nonce-key-prefix: api:nonce:
+    nonce-key-prefix: "api:nonce:"
     whitelist:
       - /public/**
       - /actuator/**

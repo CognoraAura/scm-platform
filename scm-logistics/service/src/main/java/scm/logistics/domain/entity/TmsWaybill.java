@@ -1,5 +1,6 @@
 package scm.logistics.domain.entity;
 
+import java.io.Serial;
 import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -26,7 +27,7 @@ import lombok.experimental.Accessors;
 @TableName("tms_waybill")
 @Schema(description = "运单表")
 public class TmsWaybill implements Serializable {
-
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.NONE)

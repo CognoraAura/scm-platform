@@ -4,10 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 
-import java.io.Serial;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -27,9 +25,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("prod_brand")
 @Schema(description = "商品品牌表")
-public class ProdBrand implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class ProdBrand {
 
     @TableId(value = "id", type = IdType.NONE)
     @Schema(description = "品牌 ID")

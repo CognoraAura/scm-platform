@@ -1,7 +1,7 @@
 package com.frog.system.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.frog.common.feign.client.SysAuthServiceClient;
+import com.frog.common.rest.client.SysAuthServiceClient;
 import com.frog.common.log.annotation.AuditLog;
 import com.frog.common.domain.PageResult;
 import com.frog.common.response.ApiResponse;
@@ -88,8 +88,7 @@ public class SysUserController {
             operation = "修改用户",
             businessType = "USER"
     )
-    public ApiResponse<Void> update(@PathVariable UUID id,
-                               @Validated @RequestBody UserDTO userDTO) {
+    public ApiResponse<Void> update(@PathVariable UUID id, @Validated @RequestBody UserDTO userDTO) {
         userDTO.setId(id);
         userService.updateUser(userDTO);
 
@@ -149,8 +148,7 @@ public class SysUserController {
             businessType = "USER",
             riskLevel = 4
     )
-    public ApiResponse<Void> grantRoles(@PathVariable UUID id,
-                                   @RequestBody List<UUID> roleIds) {
+    public ApiResponse<Void> grantRoles(@PathVariable UUID id, @RequestBody List<UUID> roleIds) {
         userService.grantRoles(id, roleIds);
 
         return ApiResponse.success();
@@ -199,9 +197,8 @@ public class SysUserController {
             riskLevel = 4
     )
     @Operation(summary = "授予临时角色")
-    public ApiResponse<String> grantTemporaryRoles(
-            @PathVariable UUID id,
-            @RequestBody @Validated TemporaryRoleGrantDTO dto) {
+    public ApiResponse<String> grantTemporaryRoles(@PathVariable UUID id,
+                                                   @RequestBody @Validated TemporaryRoleGrantDTO dto) {
         userService.grantTemporaryRoles(
                 id,
                 dto.getRoleIds(),
@@ -243,9 +240,7 @@ public class SysUserController {
             riskLevel = 3
     )
     @Operation(summary = "终止临时角色")
-    public ApiResponse<String> terminateTemporaryRole(
-            @PathVariable UUID userId,
-            @PathVariable UUID roleId) {
+    public ApiResponse<String> terminateTemporaryRole(@PathVariable UUID userId, @PathVariable UUID roleId) {
         userService.terminateTemporaryRole(userId, roleId);
 
         return ApiResponse.success("临时角色已终止");
@@ -280,8 +275,7 @@ public class SysUserController {
      */
     @GetMapping("/{userId}/update-login")
     @Operation(summary = "更新最后登录信息")
-    public ApiResponse<Void> updateLastLogin(@PathVariable UUID userId,
-                                             @RequestParam("ipAddress") String ipAddress) {
+    public ApiResponse<Void> updateLastLogin(@PathVariable UUID userId, @RequestParam("ipAddress") String ipAddress) {
         userService.updateLastLogin(userId, ipAddress);
 
         return ApiResponse.success();

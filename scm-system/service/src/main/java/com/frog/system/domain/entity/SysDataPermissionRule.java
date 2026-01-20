@@ -10,8 +10,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -30,15 +28,13 @@ import java.util.UUID;
         name = "SysDataPermissionRule 对象",
         description = "数据权限规则表"
 )
-public class SysDataPermissionRule implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class SysDataPermissionRule {
 
     @Schema(description = "主键 ID")
     @TableId(value = "id", type = IdType.ASSIGN_UUID)
     private UUID id;
 
-    @Schema(description = "租户ID")
+    @Schema(description = "租户 ID")
     @TableField("tenant_id")
     private UUID tenantId;
 

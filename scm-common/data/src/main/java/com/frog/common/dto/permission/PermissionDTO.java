@@ -47,6 +47,10 @@ public class PermissionDTO {
 
     private String httpMethod;
 
+    @NotBlank(message = "权限归属不能为空")
+    @Pattern(regexp = "^(PLATFORM|TENANT)$", message = "权限归属必须是PLATFORM或TENANT")
+    private String permissionScope;
+
     @NotNull(message = "权限等级不能为空")
     @Min(value = 1, message = "权限等级必须在1-4之间")
     @Max(value = 4, message = "权限等级必须在1-4之间")

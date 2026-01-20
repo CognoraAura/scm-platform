@@ -14,17 +14,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Docker & Docker Compose (for infrastructure)
 - PostgreSQL 14+ (primary database)
 
+### Project Structure Note
+The parent POM is located at `com.scm.parent/pom.xml`. Build from project root or that directory.
+
 ### Building the Project
 
 ```bash
-# Build all modules
-mvn clean install
+# Build all modules (from project root)
+mvn clean install -f com.scm.parent/pom.xml
 
 # Build without tests (faster)
-mvn clean install -DskipTests
+mvn clean install -DskipTests -f com.scm.parent/pom.xml
 
 # Build specific module
-cd scm-product/service && mvn clean package
+mvn clean package -pl scm-product/service -am -f com.scm.parent/pom.xml
+
+# Or build from module directory
+cd scm-product/service
+mvn clean package
 ```
 
 ### Running Services
@@ -32,17 +39,23 @@ cd scm-product/service && mvn clean package
 **IMPORTANT: Start services in this specific order due to dependencies:**
 
 ```bash
-# 1. Start infrastructure first
+# 1. Start infrastructure first (uses docker-compose.yml in project root)
 docker-compose up -d
 
+# Alternative: Start with Debezium for CDC
+docker-compose -f docker-compose-debezium.yml up -d
+
 # 2. Start gateway service (Port 8761)
-cd scm-gateway && mvn spring-boot:run
+cd scm-gateway
+mvn spring-boot:run
 
 # 3. Start auth service (Port 8106)
-cd scm-auth && mvn spring-boot:run
+cd scm-auth
+mvn spring-boot:run
 
 # 4. Start system service (Port 8081) - user/dept/role/permission management
-cd scm-system/service && mvn spring-boot:run
+cd scm-system/service
+mvn spring-boot:run
 
 # 5. Start base infrastructure services
 cd scm-approval/service && mvn spring-boot:run    # Approval workflow
@@ -78,6 +91,9 @@ mvn test -Dtest=OrderServiceTest
 
 # Run specific test method
 mvn test -Dtest=OrderServiceTest#testCreateOrder
+
+# Run tests for a specific module
+mvn test -pl scm-order/service -f com.scm.parent/pom.xml
 ```
 
 ### Access Points
@@ -220,27 +236,28 @@ The data layer (`scm-common/data`) implements automatic read-write separation wi
 
 ### Technology Stack Details
 
-**Core Framework**:
+**Core Framework** (versions from `com.scm.parent/pom.xml`):
 - Java 21 with virtual threads (use for I/O-bound operations)
-- Spring Boot 4.0.0 / Spring Cloud 2025.1.0 / Spring Cloud Alibaba 2025.0.0.0
+- Spring Boot 4.0.1 / Spring Cloud 2025.1.0 / Spring Cloud Alibaba 2025.0.0.0
 
 **Distributed Components**:
-- **Seata 2.2.0**: AT mode for distributed transactions
+- **Seata 2.0.0**: AT mode for distributed transactions
 - **Sentinel**: Traffic control, circuit breaking (configuration in Nacos)
-- **XXL-Job 2.4.3**: Distributed task scheduling (e.g., order timeout cancellation)
+- **XXL-Job 3.3.1**: Distributed task scheduling (e.g., order timeout cancellation)
 - **Nacos**: Service discovery + configuration center
+- **Dubbo**: High-performance RPC framework
 
 **Data Layer**:
-- **PostgreSQL**: Primary storage (multi-database per tenant)
+- **PostgreSQL 42.6.0**: Primary storage (multi-database per tenant)
 - **MyBatis-Plus 3.5.15**: ORM with automatic CRUD
 - **ShardingSphere 5.5.1**: Database sharding (ready, not yet configured)
 - **Redis**: L2 cache + distributed locks + inventory counters
 - **Elasticsearch 8.11.4**: Product search with IK analyzer
-- **Canal 1.1.7**: MySQL binlog → Elasticsearch sync
+- **Canal 1.1.7**: Database binlog → Elasticsearch sync
 
 **Messaging**:
 - **Kafka**: High-throughput event streaming (order events, inventory changes)
-- **RabbitMQ**: Reliable message delivery with DLQ retry
+- **RabbitMQ 5.14.2**: Reliable message delivery with DLQ retry
 
 ## Development Patterns
 
@@ -350,6 +367,129 @@ public class UserService {
     }
 }
 ```
+
+### CQRS Architecture for Cross-Database Operations
+
+The system service (scm-system) uses **CQRS (Command Query Responsibility Segregation)** pattern for cross-database operations. The original monolithic `CrossDatabaseQueryService` (777 lines) has been refactored into 6 specialized services following SOLID principles.
+
+#### Service Structure
+
+```
+scm-system/service/src/main/java/com/frog/system/service/
+├── query/                           # Query Services (Read Operations)
+│   ├── UserCrossDatabaseQueryService.java
+│   ├── RoleCrossDatabaseQueryService.java
+│   ├── DeptCrossDatabaseQueryService.java
+│   └── PermissionCrossDatabaseQueryService.java
+│
+└── command/                         # Command Services (Write Operations)
+    ├── UserRoleCrossDatabaseCommandService.java
+    └── DeptRoleCrossDatabaseCommandService.java
+```
+
+#### When to Use CQRS Services
+
+**Use Query Services** for read-only cross-database operations:
+- User information queries (basic info, roles, permissions)
+- Role information queries (level, tenant, expiration)
+- Department hierarchy queries (tree, access control)
+- Permission queries (menu tree)
+
+**Use Command Services** for write operations:
+- User-role associations (insert, delete, extend, terminate)
+- Department-role associations (delete)
+
+#### Service Responsibility Matrix
+
+| Service | Responsibility | Methods | Database Access |
+|---------|---------------|---------|----------------|
+| **UserCrossDatabaseQueryService** | User info, roles, permissions, temporary roles | 16 | db_user ↔ db_permission ↔ db_org |
+| **RoleCrossDatabaseQueryService** | Role info, user-role relations, expiration | 5 | db_permission ↔ db_user |
+| **DeptCrossDatabaseQueryService** | Dept tree, hierarchy, user statistics | 5 | db_org ↔ db_user |
+| **PermissionCrossDatabaseQueryService** | Menu permissions | 1 | db_permission |
+| **UserRoleCrossDatabaseCommandService** | User-role write operations | 5 | db_permission (write) |
+| **DeptRoleCrossDatabaseCommandService** | Dept-role write operations | 1 | db_permission (write) |
+
+#### Usage Examples
+
+**Example 1: Query User Roles**
+```java
+@Service
+@RequiredArgsConstructor
+public class MyService {
+    private final UserCrossDatabaseQueryService userQueryService;
+
+    public Set<String> getUserRoles(UUID userId) {
+        // Automatically routes to slave database (@Slave)
+        return userQueryService.findRoleCodesByUserId(userId);
+    }
+}
+```
+
+**Example 2: Assign Roles to User**
+```java
+@Service
+@RequiredArgsConstructor
+public class MyService {
+    private final UserRoleCrossDatabaseCommandService userRoleCommandService;
+
+    @Transactional
+    public void assignRoles(UUID userId, List<UUID> roleIds, UUID operatorId) {
+        // Automatically routes to master database (@Master)
+        userRoleCommandService.batchInsertUserRoles(userId, roleIds, operatorId);
+    }
+}
+```
+
+**Example 3: Complex Query - Check Department Access**
+```java
+@Service
+@RequiredArgsConstructor
+public class MyService {
+    private final DeptCrossDatabaseQueryService deptQueryService;
+
+    public boolean canAccessDept(UUID userId, UUID deptId) {
+        // Performs multi-database query: db_permission → db_user → db_org
+        return deptQueryService.hasAccessToDept(userId, deptId);
+    }
+}
+```
+
+#### Key Features
+
+1. **Read-Write Separation**: Query services use `@Slave`, command services use `@Master`
+2. **Performance Monitoring**: All methods tagged with `@Timed` for Micrometer metrics
+3. **Caching**: Frequently accessed queries cached with `@Cacheable`
+4. **Transaction Management**: Write operations are transactional with automatic rollback
+5. **Null Safety**: All services handle null inputs gracefully
+
+#### Migration from Legacy Code
+
+**❌ Old Pattern (Deprecated)**:
+```java
+@Autowired
+private CrossDatabaseQueryService crossDbService;  // Don't use!
+
+Set<String> roles = crossDbService.findRoleCodesByUserId(userId);
+```
+
+**✅ New Pattern (CQRS)**:
+```java
+@Autowired
+private UserCrossDatabaseQueryService userQueryService;
+
+Set<String> roles = userQueryService.findRoleCodesByUserId(userId);
+```
+
+The deprecated `CrossDatabaseQueryService` will be removed in a future release. All new code should use the CQRS services.
+
+#### Performance Monitoring
+
+CQRS services expose Prometheus metrics at `/actuator/prometheus`:
+- `cross_db_query_seconds_count` - Total query count
+- `cross_db_query_seconds_sum` - Total query time
+- `cross_db_query_seconds_max` - Slowest query
+- Percentiles: P50, P95, P99
 
 ### Search Integration
 
@@ -730,10 +870,185 @@ Services use SLF4J with Logback. Log files are in:
 - Console: Colorized output
 - File: `logs/{service-name}.log` (if file appender configured)
 
+## Claude Skills Integration
+
+The SCM platform includes specialized Claude skills for document generation, testing, and workflow automation. These skills extend Claude's capabilities for supply chain management scenarios.
+
+### Available Skills
+
+**Document Processing Skills** (`.claude/skills/documents/`)
+- **scm-pdf**: Generate business documents (invoices, contracts, waybills) and extract PDF content
+- **scm-xlsx**: Export supply chain data to Excel with formulas, formatting, and charts
+- **scm-docx**: Create technical documentation (ADRs, API docs) and business documents (contracts, SLAs)
+
+**Testing Skills** (`.claude/skills/testing/`)
+- **scm-webapp-testing**: Automated API and E2E testing using Playwright, integrated with Maven
+
+**Workflow Management** (`.claude/commands/workflow/`)
+- **complete**: Full Java project commit workflow (Issue → Branch → PR)
+- **business-service**: Workflow for business services (product, inventory, warehouse, etc.)
+- **critical-service**: Workflow for critical services (order, finance) with stricter requirements
+- **foundation-service**: Workflow for foundation services (auth, system, tenant, etc.)
+- **infrastructure**: Workflow for infrastructure changes (gateway, common modules)
+
+### Using Skills
+
+Skills are automatically available in Claude Code. Reference them in conversations:
+
+```
+Generate an invoice PDF for order #12345
+→ Uses: scm-pdf skill
+
+Export inventory report to Excel for tenant ABC
+→ Uses: scm-xlsx skill
+
+Run integration tests for the order service
+→ Uses: scm-webapp-testing skill
+
+I've completed changes to scm-product, validate before commit
+→ Uses: business-service workflow
+```
+
+### Skill Configuration
+
+**Document Skills Requirements**:
+```bash
+# Install Python dependencies
+pip install reportlab pypdf pdfplumber pytesseract pandas openpyxl python-docx
+
+# For PDF generation
+apt-get install tesseract-ocr tesseract-ocr-chi-sim
+
+# For DOCX to PDF conversion
+apt-get install libreoffice
+```
+
+**Testing Skills Requirements**:
+```bash
+# Install Playwright
+pip install playwright pytest
+playwright install chromium
+
+# Or use Maven plugin
+mvn com.microsoft.playwright:playwright-maven-plugin:install
+```
+
+**Storage Configuration** (application.yml):
+```yaml
+scm:
+  pdf:
+    storage:
+      base-path: /data/pdf-storage
+      retention-days: 365
+  report:
+    storage:
+      base-path: /data/reports
+      max-file-size: 50MB
+      retention-days: 90
+  document:
+    storage:
+      base-path: /data/documents
+      templates: /templates
+```
+
+### Integration Examples
+
+**Generate Invoice PDF** (scm-finance):
+```java
+@Service
+public class InvoiceService {
+    public String generateInvoicePDF(Long invoiceId) {
+        // Skill: scm-pdf automatically handles PDF generation
+        // with tenant isolation and audit logging
+    }
+}
+```
+
+**Export Inventory Report** (scm-inventory):
+```java
+@Service
+public class ReportExportService {
+    @Async
+    public CompletableFuture<String> exportInventoryReport(String tenantId) {
+        // Skill: scm-xlsx handles Excel generation with formulas
+        // Automatically recalculates formulas using LibreOffice
+    }
+}
+```
+
+**Automated Testing** (CI/CD):
+```bash
+# Maven test with Playwright integration
+mvn verify  # Runs unit tests + integration tests + E2E tests
+
+# Coverage check (enforces 80%+ for business services)
+mvn jacoco:check
+```
+
+### Workflow Integration
+
+When committing code, Claude automatically detects the service type and applies the appropriate workflow:
+
+- **scm-auth, scm-system, scm-tenant** → foundation-service workflow
+- **scm-product, scm-inventory, scm-warehouse** → business-service workflow
+- **scm-order, scm-finance** → critical-service workflow (stricter checks)
+- **scm-gateway, scm-common** → infrastructure workflow
+
+Each workflow validates:
+- Build success (`mvn clean verify`)
+- Code quality (Checkstyle, SpotBugs)
+- Test coverage (varies by service type: 80-90%)
+- Architecture patterns (Seata transactions, multi-tenant @DS annotations)
+- Security checks (dependency vulnerabilities)
+
+### Extending Skills
+
+To create custom skills for your specific needs:
+
+1. Create skill file in `.claude/skills/{category}/your-skill.md`
+2. Follow Anthropic skill format:
+```yaml
+---
+name: your-skill-name
+description: What this skill does and when to use it
+tools: Bash, Read, Write, Grep
+model: inherit
+---
+
+# Skill instructions here
+```
+
+3. Reference from `.claude/agents/` for complex workflows
+
+See `.claude/skills/` directory for examples.
+
 ## Additional Documentation
 
-- **Detailed Design**: `docs/SCM_DESIGN_PLAN.md` (Chinese)
-- **Database Scripts**: `scripts/db/microservices/README.md`
-- **Multi-Tenant Migration**: `docs/SCM_SYSTEM_MULTI_TENANT_MIGRATION.md`
-- **Permission Design**: `docs/PERMISSION_MULTI_TENANT_DESIGN.md`
-- **Service Architecture**: `docs/SERVICE_ARCHITECTURE_OVERVIEW.md`
+The project documentation is organized under `docs/`. See `docs/README.md` for full index.
+
+### Key Documentation
+
+**Architecture & Design**:
+- `docs/design/ARCHITECTURE.md` - Microservices architecture overview
+- `docs/design/CQRS_ARCHITECTURE.md` - CQRS pattern for cross-database queries
+- `docs/design/ADR.md` - Architecture Decision Records
+
+**Development**:
+- `docs/development/DEVELOPMENT_STANDARDS.md` - Coding standards and conventions
+- `docs/technical/API_DESIGN.md` - RESTful API design standards
+- `docs/technical/DATABASE_DESIGN.md` - Database schema design
+
+**Multi-Tenant**:
+- `docs/multi-tenant/MULTI_TENANT_GUIDE.md` - Complete multi-tenant implementation guide
+
+**Integration Guides**:
+- `docs/guides/SEATA_INTEGRATION_GUIDE.md` - Distributed transactions
+- `docs/guides/ELASTICSEARCH_INTEGRATION_GUIDE.md` - Product search
+- `docs/guides/XXL_JOB_INTEGRATION_GUIDE.md` - Task scheduling
+- `docs/guides/DISTRIBUTED_TRANSACTION_EXAMPLE.md` - Code examples
+
+**Operations**:
+- `docs/operations/OPERATIONS_MANUAL.md` - Deployment and monitoring
+- `docs/product/PRD.md` - Product requirements
+
+**Database Scripts**: `scripts/db/microservices/` - See `scripts/db/microservices/README.md`

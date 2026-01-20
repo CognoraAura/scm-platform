@@ -252,3 +252,62 @@ dubbo:
     port: -1
   registry:
     address: nacos://${spring.cloud.nacos.server-addr}
+
+# ========== Monitoring & Metrics Configuration ==========
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+      base-path: /actuator
+
+  # Micrometer metrics configuration
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      service: system-service
+      environment: ${ENVIRONMENT:dev}
+
+    # Enable percentile histograms for accurate P95/P99 calculations
+    distribution:
+      percentiles-histogram:
+        "[cross_db_query]": true
+        "[http.server.requests]": true
+
+      # Service Level Objectives (SLO) boundaries in nanoseconds
+      slo:
+        "[cross_db_query]": 50000000,100000000,200000000,500000000,1000000000,2000000000
+        "[http.server.requests]": 100000000,200000000,500000000,1000000000,2000000000,5000000000
+
+      # Minimum expected value (for histogram optimization) in nanoseconds
+      minimum-expected-value:
+        "[cross_db_query]": 1000000
+
+      # Maximum expected value (for histogram optimization) in nanoseconds
+      maximum-expected-value:
+        "[cross_db_query]": 5000000000
+
+    # Enable JVM and system metrics
+    enable:
+      jvm: true
+      process: true
+      system: true
+      tomcat: true
+      hikaricp: true
+      logback: true
+
+# ========== Logging Configuration ==========
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  level:
+    # Enable debug logging for read-write routing (to verify @Slave/@Master)
+    com.frog.common.data.rw: INFO
+    com.frog.system.service.query: ${CQRS_LOG_LEVEL:INFO}
+    com.frog.system.service.command: ${CQRS_LOG_LEVEL:INFO}
+
+    # HikariCP connection pool logging
+    com.zaxxer.hikari: INFO
+
+    # MyBatis SQL logging (disable in production)
+    com.frog.system.mapper: ${SQL_LOG_LEVEL:INFO}

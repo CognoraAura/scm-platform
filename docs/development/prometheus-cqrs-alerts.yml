@@ -1,0 +1,434 @@
+# Prometheus Alert Rules for SCM CQRS Performance Monitoring
+# Place this file in Prometheus config directory: prometheus/alerts/cqrs_performance_alerts.yml
+
+groups:
+  - name: cqrs_performance_alerts
+    interval: 30s
+    rules:
+      # ========================================
+      # Latency Alerts
+      # ========================================
+
+      # High P95 Latency - Warning
+      - alert: HighCQRSLatency
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(cross_db_query_seconds_bucket[5m])) by (le, method)
+          ) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          service: system-service
+          category: performance
+        annotations:
+          summary: "High CQRS query latency detected"
+          description: "Method {{ $labels.method }} P95 latency is {{ $value | humanizeDuration }} (threshold: 500ms)"
+          runbook: "https://docs.scm-platform.com/runbooks/high-cqrs-latency"
+
+      # Critical P95 Latency - Critical
+      - alert: CriticalCQRSLatency
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(cross_db_query_seconds_bucket[5m])) by (le, method)
+          ) > 1
+        for: 2m
+        labels:
+          severity: critical
+          service: system-service
+          category: performance
+        annotations:
+          summary: "CRITICAL: CQRS query latency exceeds 1s"
+          description: "Method {{ $labels.method }} P95 latency is {{ $value | humanizeDuration }}"
+          runbook: "https://docs.scm-platform.com/runbooks/critical-cqrs-latency"
+          action_required: "Immediate investigation required - check database and connection pool"
+
+      # P99 Latency Spike
+      - alert: CQRSP99LatencySpike
+        expr: |
+          histogram_quantile(0.99,
+            sum(rate(cross_db_query_seconds_bucket[5m])) by (le, method)
+          ) > 2
+        for: 3m
+        labels:
+          severity: warning
+          service: system-service
+          category: performance
+        annotations:
+          summary: "P99 latency spike detected"
+          description: "Method {{ $labels.method }} P99 latency is {{ $value | humanizeDuration }} (threshold: 2s)"
+
+      # ========================================
+      # Error Rate Alerts
+      # ========================================
+
+      # High Error Rate - Warning
+      - alert: HighCQRSErrorRate
+        expr: |
+          (
+            sum(rate(cross_db_query_seconds_count{outcome="ERROR"}[5m])) by (method)
+            /
+            sum(rate(cross_db_query_seconds_count[5m])) by (method)
+          ) > 0.01
+        for: 5m
+        labels:
+          severity: warning
+          service: system-service
+          category: reliability
+        annotations:
+          summary: "High CQRS error rate detected"
+          description: "Method {{ $labels.method }} error rate is {{ $value | humanizePercentage }} (threshold: 1%)"
+          runbook: "https://docs.scm-platform.com/runbooks/high-error-rate"
+
+      # Critical Error Rate
+      - alert: CriticalCQRSErrorRate
+        expr: |
+          (
+            sum(rate(cross_db_query_seconds_count{outcome="ERROR"}[5m])) by (method)
+            /
+            sum(rate(cross_db_query_seconds_count[5m])) by (method)
+          ) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          service: system-service
+          category: reliability
+        annotations:
+          summary: "CRITICAL: CQRS error rate exceeds 5%"
+          description: "Method {{ $labels.method }} error rate is {{ $value | humanizePercentage }}"
+          action_required: "Service degradation - check logs and database connectivity"
+
+      # Sudden Error Spike
+      - alert: CQRSErrorSpike
+        expr: |
+          (
+            sum(rate(cross_db_query_seconds_count{outcome="ERROR"}[1m]))
+            /
+            sum(rate(cross_db_query_seconds_count[1m]))
+          )
+          >
+          (
+            sum(rate(cross_db_query_seconds_count{outcome="ERROR"}[10m]))
+            /
+            sum(rate(cross_db_query_seconds_count[10m]))
+          ) * 3
+        for: 1m
+        labels:
+          severity: warning
+          service: system-service
+          category: reliability
+        annotations:
+          summary: "Sudden spike in CQRS errors detected"
+          description: "Error rate increased by 3x compared to 10-minute baseline"
+
+      # ========================================
+      # Cache Performance Alerts
+      # ========================================
+
+      # Low Cache Hit Rate
+      - alert: LowCacheHitRate
+        expr: |
+          (
+            sum(rate(cache_gets{cache=~"userRoles|userPermissionCodes|userDataScope",result="hit"}[10m]))
+            /
+            sum(rate(cache_gets{cache=~"userRoles|userPermissionCodes|userDataScope"}[10m]))
+          ) < 0.6
+        for: 10m
+        labels:
+          severity: warning
+          service: system-service
+          category: performance
+        annotations:
+          summary: "Low cache hit rate detected"
+          description: "Cache {{ $labels.cache }} hit rate is {{ $value | humanizePercentage }} (threshold: 60%)"
+          runbook: "https://docs.scm-platform.com/runbooks/low-cache-hit-rate"
+
+      # Critical Cache Hit Rate
+      - alert: CriticalCacheHitRate
+        expr: |
+          (
+            sum(rate(cache_gets{cache=~"userRoles|userPermissionCodes",result="hit"}[10m]))
+            /
+            sum(rate(cache_gets{cache=~"userRoles|userPermissionCodes"}[10m]))
+          ) < 0.4
+        for: 5m
+        labels:
+          severity: critical
+          service: system-service
+          category: performance
+        annotations:
+          summary: "CRITICAL: Cache hit rate below 40%"
+          description: "Cache {{ $labels.cache }} hit rate is {{ $value | humanizePercentage }}"
+          action_required: "Check cache configuration and Redis connectivity"
+
+      # High Cache Eviction Rate
+      - alert: HighCacheEvictionRate
+        expr: |
+          rate(cache_evictions{cache=~"userRoles|userPermissionCodes"}[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          service: system-service
+          category: performance
+        annotations:
+          summary: "High cache eviction rate detected"
+          description: "Cache {{ $labels.cache }} evictions: {{ $value | humanize }} per second"
+          runbook: "https://docs.scm-platform.com/runbooks/high-cache-evictions"
+
+      # ========================================
+      # Database Connection Pool Alerts
+      # ========================================
+
+      # High Connection Pool Usage - Warning
+      - alert: HighConnectionPoolUsage
+        expr: |
+          (
+            hikaricp_connections_active{pool=~"user|permission|org"}
+            /
+            hikaricp_connections_max{pool=~"user|permission|org"}
+          ) > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          service: system-service
+          category: database
+        annotations:
+          summary: "High database connection pool usage"
+          description: "Pool {{ $labels.pool }} usage is {{ $value | humanizePercentage }} (threshold: 85%)"
+          runbook: "https://docs.scm-platform.com/runbooks/high-connection-pool-usage"
+
+      # Critical Connection Pool Usage
+      - alert: CriticalConnectionPoolUsage
+        expr: |
+          (
+            hikaricp_connections_active{pool=~"user|permission|org"}
+            /
+            hikaricp_connections_max{pool=~"user|permission|org"}
+          ) > 0.95
+        for: 2m
+        labels:
+          severity: critical
+          service: system-service
+          category: database
+        annotations:
+          summary: "CRITICAL: Connection pool near exhaustion"
+          description: "Pool {{ $labels.pool }} usage is {{ $value | humanizePercentage }}"
+          action_required: "Increase pool size or investigate connection leaks"
+
+      # Connection Acquisition Timeout
+      - alert: SlowConnectionAcquisition
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(hikaricp_connections_acquire_seconds_bucket[5m])) by (le, pool)
+          ) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          service: system-service
+          category: database
+        annotations:
+          summary: "Slow database connection acquisition"
+          description: "Pool {{ $labels.pool }} P95 acquisition time is {{ $value | humanizeDuration }} (threshold: 100ms)"
+
+      # Connection Pool Pending Threads
+      - alert: ConnectionPoolPendingThreads
+        expr: |
+          hikaricp_connections_pending{pool=~"user|permission|org"} > 5
+        for: 3m
+        labels:
+          severity: warning
+          service: system-service
+          category: database
+        annotations:
+          summary: "Threads waiting for database connections"
+          description: "Pool {{ $labels.pool }} has {{ $value }} threads waiting for connections"
+
+      # ========================================
+      # Read-Write Separation Alerts
+      # ========================================
+
+      # No Slave Traffic - Critical
+      - alert: NoSlaveTraffic
+        expr: |
+          (
+            sum(rate(cross_db_query_seconds_count{datasource_type="slave"}[10m]))
+            == 0
+          )
+          and
+          (
+            sum(rate(cross_db_query_seconds_count[10m])) > 10
+          )
+        for: 10m
+        labels:
+          severity: critical
+          service: system-service
+          category: database
+        annotations:
+          summary: "Read-write separation failure: No slave traffic detected"
+          description: "All read queries are routing to master database"
+          action_required: "Check @Slave annotations and read-write separation configuration"
+
+      # Unbalanced Read-Write Traffic
+      - alert: UnbalancedReadWriteTraffic
+        expr: |
+          (
+            sum(rate(cross_db_query_seconds_count{datasource_type="master"}[5m]))
+            /
+            sum(rate(cross_db_query_seconds_count[5m]))
+          ) > 0.5
+        for: 15m
+        labels:
+          severity: warning
+          service: system-service
+          category: database
+        annotations:
+          summary: "High proportion of master database traffic"
+          description: "{{ $value | humanizePercentage }} of queries routing to master (expected < 50%)"
+
+      # ========================================
+      # Throughput Alerts
+      # ========================================
+
+      # Low Request Rate (Service Availability Check)
+      - alert: LowCQRSRequestRate
+        expr: |
+          sum(rate(cross_db_query_seconds_count[5m])) < 10
+        for: 10m
+        labels:
+          severity: warning
+          service: system-service
+          category: availability
+        annotations:
+          summary: "Unusually low CQRS request rate"
+          description: "Request rate is {{ $value }} QPS (threshold: 10 QPS)"
+          runbook: "https://docs.scm-platform.com/runbooks/low-request-rate"
+
+      # High Request Rate (Potential Attack)
+      - alert: HighCQRSRequestRate
+        expr: |
+          sum(rate(cross_db_query_seconds_count[1m]))
+          >
+          sum(rate(cross_db_query_seconds_count[10m])) * 3
+        for: 2m
+        labels:
+          severity: warning
+          service: system-service
+          category: security
+        annotations:
+          summary: "Sudden spike in CQRS request rate"
+          description: "Request rate increased by 3x compared to 10-minute baseline"
+
+      # ========================================
+      # Method-Specific Alerts
+      # ========================================
+
+      # Slow findMenuTreeByUserId
+      - alert: SlowMenuTreeQuery
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(cross_db_query_seconds_bucket{method="findMenuTreeByUserId"}[5m])) by (le)
+          ) > 0.3
+        for: 5m
+        labels:
+          severity: warning
+          service: system-service
+          category: performance
+        annotations:
+          summary: "Slow menu tree query detected"
+          description: "findMenuTreeByUserId P95 latency is {{ $value | humanizeDuration }} (threshold: 300ms)"
+
+      # Slow findAccessibleDeptIds (Recursive CTE)
+      - alert: SlowDeptHierarchyQuery
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(cross_db_query_seconds_bucket{method="findAccessibleDeptIds"}[5m])) by (le)
+          ) > 0.3
+        for: 5m
+        labels:
+          severity: warning
+          service: system-service
+          category: performance
+        annotations:
+          summary: "Slow department hierarchy query detected"
+          description: "findAccessibleDeptIds P95 latency is {{ $value | humanizeDuration }} (threshold: 300ms)"
+
+      # Slow countUsersByDeptIds (Batch Query)
+      - alert: SlowBatchUserCount
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(cross_db_query_seconds_bucket{method="countUsersByDeptIds"}[5m])) by (le)
+          ) > 0.25
+        for: 5m
+        labels:
+          severity: warning
+          service: system-service
+          category: performance
+        annotations:
+          summary: "Slow batch user count query detected"
+          description: "countUsersByDeptIds P95 latency is {{ $value | humanizeDuration }} (threshold: 250ms)"
+
+      # ========================================
+      # JVM & Resource Alerts
+      # ========================================
+
+      # High JVM Heap Usage
+      - alert: HighJVMHeapUsage
+        expr: |
+          (
+            jvm_memory_used_bytes{area="heap",application="system-service"}
+            /
+            jvm_memory_max_bytes{area="heap",application="system-service"}
+          ) > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          service: system-service
+          category: resource
+        annotations:
+          summary: "High JVM heap usage detected"
+          description: "Heap usage is {{ $value | humanizePercentage }} (threshold: 85%)"
+
+      # High GC Pause Time
+      - alert: HighGCPauseTime
+        expr: |
+          rate(jvm_gc_pause_seconds_sum{application="system-service"}[5m])
+          /
+          rate(jvm_gc_pause_seconds_count{application="system-service"}[5m])
+          > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          service: system-service
+          category: resource
+        annotations:
+          summary: "High GC pause time detected"
+          description: "Average GC pause time is {{ $value | humanizeDuration }} (threshold: 100ms)"
+
+      # ========================================
+      # Service Availability Alerts
+      # ========================================
+
+      # Service Down
+      - alert: SystemServiceDown
+        expr: |
+          up{job="scm-system-service"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: system-service
+          category: availability
+        annotations:
+          summary: "System service is down"
+          description: "Service has been unreachable for 1 minute"
+          action_required: "URGENT: Check service health and restart if necessary"
+
+      # Service Restart Detected
+      - alert: SystemServiceRestarted
+        expr: |
+          changes(process_start_time_seconds{application="system-service"}[5m]) > 0
+        labels:
+          severity: info
+          service: system-service
+          category: availability
+        annotations:
+          summary: "System service restarted"
+          description: "Service restart detected at {{ $value | humanizeTimestamp }}"

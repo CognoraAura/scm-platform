@@ -38,8 +38,7 @@ public interface ISysPermissionService extends IService<SysPermission> {
      * @param permission 权限动作（如：READ、WRITE、DELETE 等）
      * @return true 表示拥有该资源权限；false 表示不拥有
      */
-    boolean hasResourcePermission(UUID userId, String resourceType,
-                                  Serializable resourceId, String permission);
+    boolean hasResourcePermission(UUID userId, String resourceType, Serializable resourceId, String permission);
 
     /**
      * 查询用户所拥有的角色编码集合。

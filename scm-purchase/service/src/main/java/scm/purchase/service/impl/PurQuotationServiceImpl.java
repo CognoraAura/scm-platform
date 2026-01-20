@@ -1,12 +1,9 @@
-package scm.purchase.service.impl
+package scm.purchase.service.impl;
 
--purchase/service/src/main/java.service.impl;
-
-import scm-purchase/service/src/main/java.domain.entity.PurQuotation;
-import scm-purchase/service/src/main/java.mapper.PurQuotationMapper;
-import scm-purchase/service/src/main/java.service.IPurQuotationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import scm.purchase.domain.entity.PurQuotation;
+import scm.purchase.mapper.PurQuotationMapper;
 import scm.purchase.service.IPurQuotationService;
 
 /**

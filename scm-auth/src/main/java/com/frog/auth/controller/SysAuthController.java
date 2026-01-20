@@ -6,7 +6,6 @@ import com.frog.common.dto.user.LoginRequest;
 import com.frog.common.dto.user.LoginResponse;
 import com.frog.common.dto.user.RefreshTokenRequest;
 import com.frog.common.dto.user.UserInfo;
-import com.frog.common.feign.client.SysUserServiceClient;
 import com.frog.common.log.annotation.AuditLog;
 import com.frog.common.response.ApiResponse;
 import com.frog.common.security.util.HttpServletRequestUtils;
@@ -56,7 +55,6 @@ import org.springframework.web.bind.annotation.RestController;
 )
 public class SysAuthController {
     private final ISysAuthService authService;
-    private final SysUserServiceClient userServiceClient;
     private final HttpServletRequestUtils httpServletRequestUtils;
     private final UserDubboService userDubboService;
 
@@ -165,19 +163,15 @@ public class SysAuthController {
             return ApiResponse.fail(401, "Unauthorized");
         }
 
-        // 优先使用 Dubbo，失败回退到 Feign
+        // 如果 Dubbo 不可用，说明系统异常，应该快速失败
         UserInfo userInfo;
         try {
             userInfo = userDubboService.getUserInfo(userId);
         } catch (Exception ex) {
-            try {
-                userInfo = userServiceClient.getUserInfo(userId).data();
-            } catch (Exception ex2) {
-                String traceId = traceId(request);
-                log.error("getUserInfo failed traceId={} userId={} dubboErr={} feignErr={}",
-                        traceId, userId, ex.getMessage(), ex2.getMessage());
-                return ApiResponse.fail(503, "User info unavailable");
-            }
+            String traceId = traceId(request);
+            log.error("getUserInfo failed via Dubbo traceId={} userId={} error={}",
+                    traceId, userId, ex.getMessage());
+            return ApiResponse.fail(503, "User service unavailable");
         }
 
         return ApiResponse.success(userInfo);

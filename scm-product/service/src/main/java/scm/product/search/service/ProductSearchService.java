@@ -1,8 +1,8 @@
 package scm.product.search.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,10 +29,9 @@ import scm.product.search.repository.ProductSearchRepository;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ProductSearchService {
-
-    @Autowired
-    private ProductSearchRepository productSearchRepository;
+    private final ProductSearchRepository productSearchRepository;
 
     /**
      * 商品状态：上架

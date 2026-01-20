@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,9 +17,7 @@ import java.util.UUID;
 @Setter
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class MessageEnvelope<T> implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class MessageEnvelope<T> {
 
     /**
      * Unique identifier for this event instance.

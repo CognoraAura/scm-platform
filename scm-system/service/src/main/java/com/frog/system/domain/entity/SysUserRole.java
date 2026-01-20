@@ -8,8 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -27,9 +25,7 @@ import java.util.UUID;
         name = "SysUserRole 对象",
         description = "用户角色关联表"
 )
-public class SysUserRole implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class SysUserRole {
 
     @Schema(description = "主键 ID")
     @TableId(value = "id", type = IdType.ASSIGN_UUID)

@@ -1,12 +1,13 @@
 package scm.supplier.domain.entity;
 
 import java.math.BigDecimal;
+
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,21 +26,10 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("sup_supplier_evaluation")
 @Schema(description = "供应商评价表")
-public class SupSupplierEvaluation implements Serializable {
+public class SupSupplierEvaluation {
 
-    private static final long serialVersionUID = 1L;
-
-    @TableField("id")
+    @TableId(value = "id", type = IdType.NONE)
     private String id;
-
-    @TableId(value = "id", type = IdType.UUID)
-    private String id;
-
-    @TableField("supplier_id")
-    private String supplierId;
-
-    @TableField("supplier_id")
-    private String supplierId;
 
     @TableField("supplier_id")
     private String supplierId;
@@ -107,6 +97,4 @@ public class SupSupplierEvaluation implements Serializable {
 
     @TableField("remark")
     private String remark;
-
-
 }

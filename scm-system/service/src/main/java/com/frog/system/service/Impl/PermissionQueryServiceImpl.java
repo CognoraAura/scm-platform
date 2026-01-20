@@ -10,11 +10,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 权限查询服务实现类
- *
+
  * 提供权限、角色、数据权限等查询功能，支持缓存
  *
  * @author Claude Code
@@ -24,7 +23,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PermissionQueryServiceImpl implements PermissionQueryService {
-
     private final SysUserRoleMapper userRoleMapper;
     private final SysUserMapper userMapper;
     private final SysDeptMapper deptMapper;
@@ -60,7 +58,7 @@ public class PermissionQueryServiceImpl implements PermissionQueryService {
 
     /**
      * 获取用户的数据权限范围（带缓存）
-     *
+
      * 取用户所有角色中权限范围最大的（数值最小的）
      * NULL = 1（全部）, DEPT = 2（本部门）, DEPT_AND_SUB = 3（本部门及下级）, SELF = 4（仅本人）, CUSTOM = 5（自定义）
      */
@@ -136,7 +134,7 @@ public class PermissionQueryServiceImpl implements PermissionQueryService {
             return Collections.emptyList();
         }
 
-        // 获取用户部门ID
+        // 获取用户部门 ID
         UUID userDeptId = getUserDeptId(userId);
         if (userDeptId == null) {
             return Collections.emptyList();
@@ -187,7 +185,7 @@ public class PermissionQueryServiceImpl implements PermissionQueryService {
             return null;
         }
 
-        // 获取用户所有有效角色ID
+        // 获取用户所有有效角色 ID
         List<UUID> roleIds = userRoleMapper.findEffectiveRoleIds(userId);
         if (roleIds == null || roleIds.isEmpty()) {
             return null;

@@ -2,9 +2,7 @@ package com.frog.system.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 
-import java.io.Serial;
 import java.time.LocalDateTime;
-import java.io.Serializable;
 import java.util.UUID;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,9 +27,7 @@ import lombok.experimental.Accessors;
         name="SysPermission 对象",
         description="权限表"
 )
-public class SysPermission implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class SysPermission {
 
     @Schema(description = "权限 ID")
     @TableId(value = "id", type = IdType.NONE)

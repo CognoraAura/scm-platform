@@ -1,7 +1,7 @@
 package com.frog.common.security.loader;
 
 import com.frog.common.dto.permission.ApiPermissionDTO;
-import com.frog.common.feign.client.SysPermissionServiceClient;
+import com.frog.common.rest.client.SysPermissionServiceClient;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.Getter;

@@ -10,8 +10,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -30,9 +28,7 @@ import java.util.UUID;
         name = "SysSensitiveOperationLog 对象",
         description = "敏感操作日志表"
 )
-public class SysSensitiveOperationLog implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class SysSensitiveOperationLog {
 
     @Schema(description = "主键 ID")
     @TableId(value = "id", type = IdType.ASSIGN_UUID)

@@ -14,9 +14,6 @@ import java.util.Map;
 @Setter
 @ConfigurationProperties(prefix = "monitoring")
 public class MonitoringProperties {
-    /**
-     * Logical service name used for telemetry resources.
-     */
     private String serviceName = "newnearsync-service";
 
     private final Otel otel = new Otel();

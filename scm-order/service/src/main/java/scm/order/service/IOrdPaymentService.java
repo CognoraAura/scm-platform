@@ -1,9 +1,7 @@
 package scm.order.service;
 
--order/service.service;
-
-import scm-order/service.domain.entity.OrdPayment;
 import com.baomidou.mybatisplus.extension.service.IService;
+import scm.order.domain.entity.OrdPayment;
 
 /**
  * <p>

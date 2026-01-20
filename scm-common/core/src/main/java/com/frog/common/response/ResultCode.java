@@ -46,6 +46,19 @@ public enum ResultCode {
 
     PERMISSION_DENIED(1201, "权限不足"),
     ROLE_NOT_FOUND(1202, "角色不存在"),
+    ROLE_REQUIRED(1203, "需要指定角色"),
+    ROLE_ASSIGNMENT_DENIED(1204, "无权分配该角色"),
+    DATA_ACCESS_DENIED(1205, "无权访问该数据"),
+
+    // 多租户错误 13xx
+    TENANT_CONTEXT_MISSING(1301, "租户上下文未设置，请求被拒绝"),
+    DATA_TENANT_MISSING(1302, "数据未关联租户"),
+    TENANT_DATA_ACCESS_DENIED(1303, "无权访问其他租户的数据"),
+    TENANT_ROLE_ACCESS_DENIED(1304, "无权访问其他租户的角色"),
+    TENANT_PERMISSION_ACCESS_DENIED(1305, "无权访问其他租户的权限"),
+    PLATFORM_RESOURCE_ACCESS_DENIED(1306, "只有平台管理员可以创建平台级资源"),
+    DEPT_TENANT_MISSING(1307, "部门未关联租户"),
+    TENANT_DEPT_ACCESS_DENIED(1308, "无权访问其他租户的部门"),
 
     // 服务间调用错误 2xxx
     FEIGN_ERROR(2001, "服务调用失败"),

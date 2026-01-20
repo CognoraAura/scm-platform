@@ -59,11 +59,14 @@ public class ApiSignatureFilter implements GlobalFilter, Ordered {
         return DataBufferUtils.join(request.getBody())
                 .defaultIfEmpty(BUFFER_FACTORY.wrap(new byte[0]))
                 .map(buffer -> {
-                    byte[] bytes = new byte[buffer.readableByteCount()];
-                    buffer.read(bytes);
-                    DataBufferUtils.release(buffer);
-                    ServerHttpRequest decorated = new CachedBodyRequestDecorator(request, bytes);
-                    return exchange.mutate().request(decorated).build();
+                    try {
+                        byte[] bytes = new byte[buffer.readableByteCount()];
+                        buffer.read(bytes);
+                        ServerHttpRequest decorated = new CachedBodyRequestDecorator(request, bytes);
+                        return exchange.mutate().request(decorated).build();
+                    } finally {
+                        DataBufferUtils.release(buffer);
+                    }
                 });
     }
 
@@ -85,8 +88,7 @@ public class ApiSignatureFilter implements GlobalFilter, Ordered {
             return unauthorized(exchange, "MISSING_PARAMETERS", "Missing signature parameters");
         }
 
-        assert timestamp != null && nonce != null && signature != null && appId != null : "Parameters already validated";
-
+        // Parameters validated above - guaranteed non-null
         long current = System.currentTimeMillis();
         long requestTime;
         try {
@@ -96,14 +98,13 @@ public class ApiSignatureFilter implements GlobalFilter, Ordered {
         }
 
         long skew = properties.getAllowedClockSkew().toMillis();
-        if (skew < 1000) {
-            skew = Duration.ofMinutes(1).toMillis();
-        }
         if (Math.abs(current - requestTime) > skew) {
             return unauthorized(exchange, "REQUEST_EXPIRED", "Request expired");
         }
 
         String nonceKey = properties.getNonceKeyPrefix() + appId + ":" + nonce;
+        long verificationStartTime = System.currentTimeMillis();
+
         return redisTemplate.hasKey(nonceKey)
                 .flatMap(exists -> {
                     if (exists) {
@@ -129,6 +130,20 @@ public class ApiSignatureFilter implements GlobalFilter, Ordered {
 
                     return algorithm.verify(request, signature, appId, timestamp, nonce, secretKey)
                             .flatMap(valid -> {
+                                long verificationDuration = System.currentTimeMillis() - verificationStartTime;
+
+                                // Track slow signature verification (threshold: 100ms)
+                                if (verificationDuration > 100) {
+                                    meterRegistry.counter("gateway.signature.slow_verification").increment();
+                                    log.warn("Slow signature verification detected: {}ms traceId={} appId={} path={}",
+                                            verificationDuration, exchange.getRequest().getId(), appId,
+                                            request.getURI().getPath());
+                                }
+
+                                // Record verification duration metric
+                                meterRegistry.timer("gateway.signature.verification_duration")
+                                        .record(java.time.Duration.ofMillis(verificationDuration));
+
                                 if (!valid) {
                                     meterRegistry.counter("gateway.signature.invalid").increment();
                                     log.warn("Signature verification failed traceId={} appId={} path={}",

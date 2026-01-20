@@ -7,6 +7,7 @@ import com.frog.inventory.mapper.InvInventoryMapper;
 import com.frog.inventory.mapper.InvSnapshotMapper;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,13 +28,10 @@ import java.util.List;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class InventorySnapshotJobHandler {
-
-    @Autowired
-    private InvInventoryMapper inventoryMapper;
-
-    @Autowired
-    private InvSnapshotMapper snapshotMapper;
+    private final InvInventoryMapper inventoryMapper;
+    private final InvSnapshotMapper snapshotMapper;
 
     /**
      * 库存快照同步任务
