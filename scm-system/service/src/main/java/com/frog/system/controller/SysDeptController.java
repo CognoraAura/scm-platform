@@ -58,8 +58,7 @@ public class SysDeptController {
             businessType = "DEPT",
             riskLevel = 3
     )
-    public ApiResponse<Void> update(@PathVariable UUID id,
-                                    @Validated @RequestBody DeptDTO deptDTO) {
+    public ApiResponse<Void> update(@PathVariable UUID id, @Validated @RequestBody DeptDTO deptDTO) {
         deptDTO.setId(id);
         deptService.updateDept(deptDTO);
 

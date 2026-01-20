@@ -46,12 +46,8 @@ public final class FilterBypassHelper {
      * @param bypassPermissions 旁路权限列表
      * @return 是否应该旁路
      */
-    public static boolean shouldBypass(String uri,
-                                       SecurityUser user,
-                                       List<String> bypassPaths,
-                                       List<String> bypassUsers,
-                                       List<String> bypassRoles,
-                                       List<String> bypassPermissions) {
+    public static boolean shouldBypass(String uri, SecurityUser user, List<String> bypassPaths, List<String> bypassUsers,
+                                       List<String> bypassRoles, List<String> bypassPermissions) {
         // 1. 检查路径匹配
         if (matchesAny(uri, bypassPaths)) {
             return true;
@@ -77,6 +73,7 @@ public final class FilterBypassHelper {
         // 4. 检查权限匹配
         Set<String> permissions = user.getPermissions();
         return permissions != null && bypassPermissions != null &&
-                permissions.stream().anyMatch(bypassPermissions::contains);
+                permissions.stream()
+                        .anyMatch(bypassPermissions::contains);
     }
 }

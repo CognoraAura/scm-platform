@@ -10,8 +10,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Getter;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -31,9 +29,7 @@ import java.util.UUID;
         name = "NotificationAuditLog 对象",
         description = "通知发送审计表"
 )
-public class NotificationAuditLog implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class NotificationAuditLog {
 
     @Schema(description = "主键 ID")
     @TableId(value = "id", type = IdType.ASSIGN_UUID)

@@ -7,8 +7,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -26,9 +24,7 @@ import java.util.UUID;
         name = "SysTempPermission 对象",
         description = "临时权限表"
 )
-public class SysTempPermission implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class SysTempPermission {
 
     @Schema(description = "主键 ID")
     @TableId(value = "id", type = IdType.ASSIGN_UUID)

@@ -14,21 +14,21 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Dubbo-backed implementation for PermissionService interface.
+ * 基于 Dubbo 的 PermissionService 接口实现。
  *
- * <p>REFACTORED: Moved from common/web to system/service module.
- * This follows proper layering - business module provides implementation,
- * infrastructure module (common/web) depends on interface.
+ * <p>重构：已从 common/web 模块迁移到 system/service 模块。
+ * 这符合正确的架构分层——业务模块提供实现，
+ * 基础设施模块 (common/web) 依赖于接口。
  *
- * <p>SECURITY: Implements fail-closed pattern - throws exception on service failure
- * to prevent unauthorized access due to permission check failures.
+ * <p>安全性：实现了故障关闭模式——在服务失败时抛出异常，
+ * 以防止由于权限检查失败而导致未经授权的访问。
  *
- * <p>Architecture Benefits:
- * - Common modules no longer depend on business modules
- * - Follows Dependency Inversion Principle (DIP)
- * - Enables different PermissionService implementations per project
+ * <p>架构优势：
+ * - 通用模块不再依赖于业务模块
+ * - 遵循依赖倒置原则 (DIP)
+ * - 允许每个项目使用不同的 PermissionService 实现
  *
- * @author Refactored from DubboPermissionAccess
+ * @author 重构自 DubboPermissionAccess
  * @version 2.0
  * @since 2025-12-12
  */

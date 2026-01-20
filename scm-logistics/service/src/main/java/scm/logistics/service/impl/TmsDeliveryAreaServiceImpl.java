@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
  * @since 2025-12-26
  */
 @Service
-public class TmsDeliveryAreaServiceImpl extends ServiceImpl<TmsDeliveryAreaMapper, TmsDeliveryArea> implements ITmsDeliveryAreaService {
+public class TmsDeliveryAreaServiceImpl extends ServiceImpl<TmsDeliveryAreaMapper, TmsDeliveryArea>
+        implements ITmsDeliveryAreaService {
 
 }

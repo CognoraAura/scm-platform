@@ -25,9 +25,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("ord_order_item")
 @Schema(description = "订单明细表")
-public class OrdOrderItem implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class OrdOrderItem {
 
     @TableId(value = "id", type = IdType.NONE)
     private String id;
@@ -53,7 +51,7 @@ public class OrdOrderItem implements Serializable {
     @TableField("spu_name")
     private String spuName;
 
-    @Schema(description = "下单时SKU属性快照")
+    @Schema(description = "下单时 SKU属性快照")
     @TableField("attributes")
     private String attributes;
 
@@ -92,6 +90,4 @@ public class OrdOrderItem implements Serializable {
 
     @TableField("remark")
     private String remark;
-
-
 }

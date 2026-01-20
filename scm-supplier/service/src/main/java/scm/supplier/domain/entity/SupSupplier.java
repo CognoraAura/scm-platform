@@ -1,12 +1,13 @@
 package scm.supplier.domain.entity;
 
 import java.math.BigDecimal;
+
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,18 +26,10 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("sup_supplier")
 @Schema(description = "供应商表")
-public class SupSupplier implements Serializable {
+public class SupSupplier {
 
-    private static final long serialVersionUID = 1L;
-
-    @TableField("id")
+    @TableId(value = "id", type = IdType.NONE)
     private String id;
-
-    @TableId(value = "id", type = IdType.UUID)
-    private String id;
-
-    @TableField("supplier_code")
-    private String supplierCode;
 
     @TableField("supplier_code")
     private String supplierCode;
@@ -46,10 +39,6 @@ public class SupSupplier implements Serializable {
 
     @TableField("supplier_name_en")
     private String supplierNameEn;
-
-    @Schema(description = "类型:1-生产商,2-贸易商,3-代理商,4-其他")
-    @TableField("supplier_type")
-    private Integer supplierType;
 
     @Schema(description = "类型:1-生产商,2-贸易商,3-代理商,4-其他")
     @TableField("supplier_type")

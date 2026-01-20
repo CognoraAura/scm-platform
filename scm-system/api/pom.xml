@@ -20,6 +20,17 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.frog</groupId>
+            <artifactId>scm-common-security-core</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
 
+        <!-- 添加: 公共 DTO 模块依赖 -->
+        <dependency>
+            <groupId>com.frog</groupId>
+            <artifactId>scm-common-data</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>

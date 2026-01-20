@@ -3,6 +3,9 @@ package com.frog.system.service.Impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.frog.common.exception.BusinessException;
+import com.frog.common.response.ResultCode;
+import com.frog.common.security.PermissionChecker;
+import com.frog.common.tenant.TenantValidationUtil;
 import com.frog.common.util.UUIDv7Util;
 import com.frog.common.dto.permission.ApiPermissionDTO;
 import com.frog.common.dto.permission.PermissionDTO;
@@ -40,7 +43,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
     private final SysPermissionMapper sysPermissionMapper;
     private final SysTempPermissionMapper tempPermissionMapper;
     private final SysRolePermissionMapper rolePermissionMapper;
-    private final com.frog.common.security.PermissionChecker permissionChecker;
+    private final PermissionChecker permissionChecker;
 
     /**
      * 检查用户是否有指定权限
@@ -170,13 +173,16 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
         permissionChecker.requirePermission(operatorId, "permission:add");
 
         // 2. 区分平台权限和租户权限的创建
-        UUID tenantId = null;
+        UUID tenantId;
         String permissionScope = permissionDTO.getPermissionScope();
 
         if ("PLATFORM".equals(permissionScope)) {
             // 创建平台权限 - 只有平台管理员可以创建
-            if (!com.frog.common.tenant.TenantValidationUtil.isPlatformAdmin()) {
-                throw new BusinessException("PERMISSION_DENIED", "只有平台管理员可以创建平台权限");
+            if (TenantValidationUtil.isTenantUser()) {
+                throw new BusinessException(
+                    ResultCode.PLATFORM_RESOURCE_ACCESS_DENIED.getCode(),
+                    "只有平台管理员可以创建平台权限"
+                );
             }
             // 平台权限的 tenant_id 为 NULL
             tenantId = null;
@@ -205,7 +211,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 
         // 6. 记录租户操作日志
         if (tenantId != null) {
-            com.frog.common.tenant.TenantValidationUtil.logTenantOperation("CREATE", "PERMISSION", permission.getId());
+            TenantValidationUtil.logTenantOperation("CREATE", "PERMISSION", permission.getId());
         }
 
         log.info("权限创建成功: {} ({}), 操作人: {}", permission.getPermissionCode(),
@@ -239,13 +245,15 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
         // 4. 验证数据归属（区分平台权限和租户权限）
         if ("PLATFORM".equals(existPermission.getPermissionScope())) {
             // 修改平台权限 - 只有平台管理员可以修改
-            if (!com.frog.common.tenant.TenantValidationUtil.isPlatformAdmin()) {
-                throw new BusinessException("PERMISSION_DENIED", "只有平台管理员可以修改平台权限");
+            if (TenantValidationUtil.isTenantUser()) {
+                throw new BusinessException(
+                    ResultCode.PLATFORM_RESOURCE_ACCESS_DENIED.getCode(),
+                    "只有平台管理员可以修改平台权限"
+                );
             }
         } else {
             // 修改租户权限 - 验证租户上下文和数据归属
-            UUID tenantId = com.frog.common.tenant.TenantValidationUtil.getRequiredTenantId();
-            com.frog.common.tenant.TenantValidationUtil.validateDataOwnership(existPermission.getTenantId());
+            TenantValidationUtil.validateDataOwnership(existPermission.getTenantId());
         }
 
         // 5. 执行业务逻辑
@@ -258,7 +266,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 
         // 6. 记录日志
         if (existPermission.getTenantId() != null) {
-            com.frog.common.tenant.TenantValidationUtil.logTenantOperation("UPDATE", "PERMISSION", permissionDTO.getId());
+            TenantValidationUtil.logTenantOperation("UPDATE", "PERMISSION", permissionDTO.getId());
         }
 
         log.info("权限更新成功: {} ({}), 操作人: {}", permission.getPermissionCode(),
@@ -294,13 +302,15 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
         // 3. 验证数据归属（区分平台权限和租户权限）
         if ("PLATFORM".equals(permission.getPermissionScope())) {
             // 删除平台权限 - 只有平台管理员可以删除
-            if (!com.frog.common.tenant.TenantValidationUtil.isPlatformAdmin()) {
-                throw new BusinessException("PERMISSION_DENIED", "只有平台管理员可以删除平台权限");
+            if (TenantValidationUtil.isTenantUser()) {
+                throw new BusinessException(
+                    ResultCode.PLATFORM_RESOURCE_ACCESS_DENIED.getCode(),
+                    "只有平台管理员可以删除平台权限"
+                );
             }
         } else {
             // 删除租户权限 - 验证租户上下文和数据归属
-            UUID tenantId = com.frog.common.tenant.TenantValidationUtil.getRequiredTenantId();
-            com.frog.common.tenant.TenantValidationUtil.validateDataOwnership(permission.getTenantId());
+            TenantValidationUtil.validateDataOwnership(permission.getTenantId());
         }
 
         // 4. 检查是否有子权限
@@ -328,7 +338,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 
         // 8. 记录日志
         if (permission.getTenantId() != null) {
-            com.frog.common.tenant.TenantValidationUtil.logTenantOperation("DELETE", "PERMISSION", id);
+            TenantValidationUtil.logTenantOperation("DELETE", "PERMISSION", id);
         }
 
         log.info("权限删除成功: {} ({}), 操作人: {}", permission.getPermissionCode(),

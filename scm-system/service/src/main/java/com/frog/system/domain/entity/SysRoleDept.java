@@ -7,8 +7,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -26,9 +24,7 @@ import java.util.UUID;
         name = "SysRoleDept 对象",
         description = "角色部门关联表"
 )
-public class SysRoleDept implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class SysRoleDept {
 
     @Schema(description = "主键 ID")
     @TableId(value = "id", type = IdType.ASSIGN_UUID)

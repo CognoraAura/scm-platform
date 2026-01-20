@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -55,6 +56,7 @@ public final class SecurityUtils {
     }
 
     static final class SpringSecurityCurrentUserProvider implements CurrentUserProvider {
+
         @Override public Optional<String> getCurrentUsername() {
             Authentication a = SecurityContextHolder.getContext().getAuthentication();
             if (a == null || !a.isAuthenticated()) return Optional.empty();
@@ -112,7 +114,7 @@ public final class SecurityUtils {
 
         @Override public Collection<String> getAuthorities() {
             Authentication a = SecurityContextHolder.getContext().getAuthentication();
-            if (a == null) return java.util.List.of();
+            if (a == null) return List.of();
             return a.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
         }
 

@@ -9,13 +9,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Configuration binding for API signature settings with security validation.
- * Implements fail-fast principle: application won't start with missing critical secrets.
+ * 用于 API 签名设置的配置绑定，并包含安全验证功能。
+ * 遵循快速失败原则：如果缺少关键密钥，应用程序将无法启动。
  */
 @Slf4j
 @Configuration
@@ -36,6 +37,13 @@ public class ApiSignatureConfiguration {
 
         boolean isProduction = isProductionEnvironment();
         List<String> issues = new ArrayList<>();
+
+        // Validate clock skew
+        Duration skew = properties.getAllowedClockSkew();
+        if (skew.toMillis() < 1000) {
+            log.warn("allowedClockSkew is too small ({}ms), using default 1 minute", skew.toMillis());
+            properties.setAllowedClockSkew(Duration.ofMinutes(1));
+        }
 
         // Validate app secrets
         Map<String, String> appSecrets = properties.getAppSecrets();
@@ -58,11 +66,11 @@ public class ApiSignatureConfiguration {
             String message = """
                 API Signature Configuration Issues:
                   - %s
-                
+
                 REQUIRED: Set secrets via environment variables:
                   export API_SECRET_WEB_APP='<secure-random-string-min-32-chars>'
                   export API_SECRET_INTERNAL_SERVICE='<secure-random-string-min-32-chars>'
-                
+
                 Generate secure secrets:
                   openssl rand -base64 48
                   or use password manager
@@ -81,9 +89,7 @@ public class ApiSignatureConfiguration {
     }
 
     private boolean isProductionEnvironment() {
-        return activeProfile != null &&
-               (activeProfile.contains("prod") ||
-                activeProfile.contains("production") ||
+        return activeProfile != null && (activeProfile.contains("prod") || activeProfile.contains("production") ||
                 activeProfile.contains("staging"));
     }
 }

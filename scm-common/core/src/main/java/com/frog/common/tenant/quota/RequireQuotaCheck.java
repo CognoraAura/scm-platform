@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 
 /**
  * 配额检查注解
- *
+
  * 使用示例：
  * <pre>
  * @RequireQuotaCheck(quotaType = QuotaType.ORDERS, increment = 1)

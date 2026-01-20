@@ -1,12 +1,9 @@
-package scm.purchase.service.impl
+package scm.purchase.service.impl;
 
--purchase/service/src/main/java.service.impl;
-
-import scm-purchase/service/src/main/java.domain.entity.PurRequest;
-import scm-purchase/service/src/main/java.mapper.PurRequestMapper;
-import scm-purchase/service/src/main/java.service.IPurRequestService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import scm.purchase.domain.entity.PurRequest;
+import scm.purchase.mapper.PurRequestMapper;
 import scm.purchase.service.IPurRequestService;
 
 /**

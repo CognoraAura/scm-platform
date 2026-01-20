@@ -9,6 +9,7 @@
         <groupId>com.frog</groupId>
         <artifactId>scm-common</artifactId>
         <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>scm-common-security-api</artifactId>

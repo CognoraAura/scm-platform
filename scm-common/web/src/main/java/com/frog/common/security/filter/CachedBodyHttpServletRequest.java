@@ -25,7 +25,9 @@ public class CachedBodyHttpServletRequest extends HttpServletRequestWrapper {
     @Override
     public ServletInputStream getInputStream() {
         final ByteArrayInputStream bais = new ByteArrayInputStream(cachedBody);
+
         return new ServletInputStream() {
+
             @Override
             public int read() {
                 return bais.read();
@@ -51,4 +53,3 @@ public class CachedBodyHttpServletRequest extends HttpServletRequestWrapper {
         return new BufferedReader(new InputStreamReader(getInputStream(), StandardCharsets.UTF_8));
     }
 }
-

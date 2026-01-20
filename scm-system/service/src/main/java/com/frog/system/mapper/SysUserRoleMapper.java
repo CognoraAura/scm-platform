@@ -457,4 +457,23 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
             WHERE role_id = #{roleId}
             """)
     Integer countUsersByRoleId(@Param("roleId") UUID roleId);
+
+    /**
+     * 获取用户的最大角色等级
+     * <p>
+     * role_level 字段值越小，权限越高
+     * 返回用户所有有效角色中 role_level 的最小值
+     *
+     * @param userId 用户 ID
+     * @return 最大角色等级（最小的 role_level 值），如果用户没有角色则返回 null
+     */
+    @Select("""
+            SELECT MIN(r.role_level) FROM sys_role r
+            INNER JOIN sys_user_role ur ON r.id = ur.role_id
+            WHERE ur.user_id = #{userId}
+            AND r.status = 1 AND NOT r.deleted
+            AND ur.approval_status = 2
+            AND (ur.expire_time IS NULL OR ur.expire_time > NOW())
+            """)
+    Integer getUserMaxRoleLevel(@Param("userId") UUID userId);
 }

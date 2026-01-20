@@ -124,7 +124,7 @@ public class SysPermissionController {
      * 对应 Dubbo: PermissionDubboService.findPermissionsByUrl
      */
     @GetMapping("/find-by-url")
-    @Operation(summary = "根据URL查询权限")
+    @Operation(summary = "根据 URL查询权限")
     public List<String> findPermissionsByUrl(@RequestParam("url") String url,
                                               @RequestParam("method") String method) {
         return permissionService.findPermissionsByUrl(url, method);
@@ -135,7 +135,7 @@ public class SysPermissionController {
      * 用于 DynamicPermissionLoader 加载权限映射
      */
     @GetMapping("/api")
-    @Operation(summary = "查询所有API权限")
+    @Operation(summary = "查询所有 API权限")
     public List<ApiPermissionDTO> findApiPermissions() {
         return permissionService.findApiPermissions();
     }

@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
  * @since 2025-12-26
  */
 @Service
-public class SysSensitiveOperationLogServiceImpl extends ServiceImpl<SysSensitiveOperationLogMapper, SysSensitiveOperationLog> implements ISysSensitiveOperationLogService {
+public class SysSensitiveOperationLogServiceImpl
+        extends ServiceImpl<SysSensitiveOperationLogMapper, SysSensitiveOperationLog>
+        implements ISysSensitiveOperationLogService {
 
 }

@@ -6,9 +6,13 @@ import com.frog.common.util.UUIDv7Util;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -37,6 +41,31 @@ public class JwtUtils {
     private static final String TOKEN_FINGERPRINT_PREFIX = "jwt:fingerprint:";
     private static final String REFRESH_LOCK_PREFIX = "jwt:refresh:lock:";
 
+    // ThreadLocal cache for parsed tokens within same request
+    private static final ThreadLocal<Map<String, Claims>> TOKEN_CACHE = ThreadLocal.withInitial(HashMap::new);
+
+    // Lua script for atomic token metadata storage
+    // KEYS[1] = userTokensHash, KEYS[2] = fingerprintKey
+    // ARGV[1] = deviceId, ARGV[2] = token, ARGV[3] = ttl (seconds)
+    // ARGV[4] = userId, ARGV[5] = ipAddress, ARGV[6] = issueTime
+    private static final String STORE_TOKEN_METADATA_SCRIPT = """
+        redis.call('HSET', KEYS[1], ARGV[1], ARGV[2])
+        redis.call('EXPIRE', KEYS[1], ARGV[3])
+        redis.call('HMSET', KEYS[2], 'userId', ARGV[4], 'deviceId', ARGV[1], 'ipAddress', ARGV[5], 'issueTime', ARGV[6])
+        redis.call('EXPIRE', KEYS[2], ARGV[3])
+        return 1
+        """;
+
+
+    // Lua script for atomic blacklist addition
+    // KEYS[1] = blacklistKey
+    // ARGV[1] = revokeTime, ARGV[2] = reason, ARGV[3] = userId, ARGV[4] = ttl (seconds)
+    private static final String ADD_TO_BLACKLIST_SCRIPT = """
+        redis.call('HMSET', KEYS[1], 'revokeTime', ARGV[1], 'reason', ARGV[2], 'userId', ARGV[3])
+        redis.call('EXPIRE', KEYS[1], ARGV[4])
+        return 1
+        """;
+
     @PostConstruct
     public void init() {
         String secret = jwtProperties.getSecret();
@@ -55,49 +84,31 @@ public class JwtUtils {
     /**
      * 生成访问令牌
      */
-    public String generateAccessToken(UUID userId, String username,
-                                      Set<String> roles, Set<String> permissions,
+    public String generateAccessToken(UUID userId, String username, Set<String> roles, Set<String> permissions,
                                       String deviceId, String ipAddress) {
-        String jti = UUID.randomUUID().toString();
-        String tokenType = "access";
-
-        Map<String, Object> claims = buildClaims(
-                userId, username, roles, permissions,
-                tokenType, deviceId, ipAddress, jti
-        );
-
-        String token = createToken(claims, userId.toString(),
-                jwtProperties.getExpiration());
-
-        // 存储 Token元数据
-        storeTokenMetadata(userId, deviceId, token, jti, ipAddress,
-                jwtProperties.getExpiration());
-
-        return token;
+        return generateAccessToken(userId, username, roles, permissions, deviceId, ipAddress, null);
     }
 
     /**
      * 生成访问令牌（可指定 AMR）
      */
-    public String generateAccessToken(UUID userId, String username,
-                                      Set<String> roles, Set<String> permissions,
-                                      String deviceId, String ipAddress,
-                                      List<String> amr) {
-        String jti = UUIDv7Util.generate().toString();
+    public String generateAccessToken(UUID userId, String username, Set<String> roles, Set<String> permissions,
+                                      String deviceId, String ipAddress, List<String> amr) {
+        String jti = UUIDv7Util.generateString();
         String tokenType = "access";
 
-        Map<String, Object> claims = buildClaims(
-                userId, username, roles, permissions,
-                tokenType, deviceId, ipAddress, jti
+        Map<String, Object> claims = buildClaims(userId, username, roles, permissions, tokenType, deviceId, ipAddress,
+                jti
         );
-        claims.put("amr", amr);
 
-        String token = createToken(claims, userId.toString(),
-                jwtProperties.getExpiration());
+        if (amr != null && !amr.isEmpty()) {
+            claims.put("amr", amr);
+        }
+
+        String token = createToken(claims, userId.toString(), jwtProperties.getExpiration());
 
         // 存储 Token元数据
-        storeTokenMetadata(userId, deviceId, token, jti, ipAddress,
-                jwtProperties.getExpiration());
+        storeTokenMetadata(userId, deviceId, token, jti, ipAddress, jwtProperties.getExpiration());
 
         return token;
     }
@@ -106,7 +117,7 @@ public class JwtUtils {
      * 生成刷新令牌
      */
     public String generateRefreshToken(UUID userId, String username, String deviceId) {
-        String jti = UUIDv7Util.generate().toString();
+        String jti = UUIDv7Util.generateString();
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
@@ -123,44 +134,37 @@ public class JwtUtils {
      * 验证Token - 拆分为多个小方法
      */
     public boolean validateToken(String token, String currentIp, String currentDeviceId) {
-        try {
-            // 1. 解析Token
-            Claims claims = parseToken(token);
-
-            // 2. 基础验证
-            if (!validateBasicClaims(claims)) {
-                return false;
-            }
-
-            // 3. 黑名单检查
-            if (isTokenBlacklisted(getJti(claims))) {
-                log.warn("Token is blacklisted");
-                return false;
-            }
-
-            // 4. 设备验证
-            if (!validateDevice(claims, currentDeviceId)) {
-                return false;
-            }
-
-            // 5. IP验证（可配置）
-            if (jwtProperties.isStrictIpCheck() &&
-                    !validateIpAddress(claims, currentIp)) {
-                return false;
-            }
-
-            // 6. 指纹验证
-            return validateFingerprint(claims);
-        } catch (ExpiredJwtException e) {
-            log.debug("Token expired: {}", e.getMessage());
-        } catch (UnsupportedJwtException e) {
-            log.error("Token unsupported: {}", e.getMessage());
-        } catch (MalformedJwtException e) {
-            log.error("Token malformed: {}", e.getMessage());
-        } catch (Exception e) {
-            log.error("Token validation failed: {}", e.getMessage());
+        // 1. 解析Token
+        Claims claims = parseToken(token);
+        if (claims == null) {
+            log.debug("Failed to parse token");
+            return false;
         }
-        return false;
+
+        // 2. 基础验证
+        if (!validateBasicClaims(claims)) {
+            return false;
+        }
+
+        // 3. 黑名单检查
+        if (isTokenBlacklisted(getJti(claims))) {
+            log.warn("Token is blacklisted");
+            return false;
+        }
+
+        // 4. 设备验证
+        if (!validateDevice(claims, currentDeviceId)) {
+            return false;
+        }
+
+        // 5. IP验证（可配置）
+        if (jwtProperties.isStrictIpCheck() &&
+                !validateIpAddress(claims, currentIp)) {
+            return false;
+        }
+
+        // 6. 指纹验证
+        return validateFingerprint(claims);
     }
 
     /**
@@ -170,22 +174,22 @@ public class JwtUtils {
      * @return true 如果令牌无效，false 如果令牌有效
      */
     public boolean isRefreshTokenInvalid(String token) {
-        try {
-            Claims claims = parseToken(token);
-            String tokenType = (String) claims.get("tokenType");
-            Date expiration = claims.getExpiration();
-            return !"refresh".equals(tokenType) || !expiration.after(new Date());
-        } catch (Exception e) {
+        Claims claims = parseToken(token);
+        if (claims == null) {
             return true;
         }
+
+        String tokenType = (String) claims.get("tokenType");
+        Date expiration = claims.getExpiration();
+
+        return !"refresh".equals(tokenType) || expiration == null || !expiration.after(new Date());
     }
 
     /**
      * 刷新Token - 添加并发控制
      */
-    public String refreshToken(String refreshToken, Set<String> roles,
-                               Set<String> permissions,
-                               String deviceId, String ipAddress) {
+    public String refreshToken(String refreshToken, Set<String> roles, Set<String> permissions, String deviceId,
+                               String ipAddress) {
         if (isRefreshTokenInvalid(refreshToken)) {
             throw new UnauthorizedException("Invalid refresh token");
         }
@@ -195,8 +199,7 @@ public class JwtUtils {
 
         try {
             // 分布式锁，防止并发刷新
-            Boolean acquired = redisTemplate.opsForValue()
-                    .setIfAbsent(lockKey, "1", Duration.ofSeconds(5));
+            Boolean acquired = redisTemplate.opsForValue().setIfAbsent(lockKey, "1", Duration.ofSeconds(5));
 
             if (Boolean.FALSE.equals(acquired)) {
                 throw new UnauthorizedException("Token refresh in progress");
@@ -208,8 +211,7 @@ public class JwtUtils {
             revokeUserAccessTokens(userId, deviceId);
 
             // 生成新的访问令牌
-            return generateAccessToken(userId, username, roles, permissions,
-                    deviceId, ipAddress);
+            return generateAccessToken(userId, username, roles, permissions, deviceId, ipAddress);
         } finally {
             redisTemplate.delete(lockKey);
         }
@@ -217,17 +219,19 @@ public class JwtUtils {
 
     /**
      * 撤销 Token
+     * @throws UnauthorizedException if token is invalid or revocation fails
      */
     public void revokeToken(String token, String reason) {
-        try {
-            Claims claims = parseToken(token);
-            String jti = getJti(claims);
-            Date expiration = claims.getExpiration();
-            UUID userId = UUID.fromString(claims.getSubject());
-            String deviceId = (String) claims.get("deviceId");
+        Claims claims = parseTokenOrThrow(token);
 
-            long ttl = expiration.getTime() - System.currentTimeMillis();
-            if (ttl > 0) {
+        String jti = getJti(claims);
+        Date expiration = claims.getExpiration();
+        UUID userId = UUID.fromString(claims.getSubject());
+        String deviceId = (String) claims.get("deviceId");
+
+        long ttl = expiration.getTime() - System.currentTimeMillis();
+        if (ttl > 0) {
+            try {
                 // 加入黑名单
                 addToBlacklist(jti, userId, reason, ttl);
 
@@ -238,9 +242,10 @@ public class JwtUtils {
                 deleteFingerprint(jti);
 
                 log.info("Token revoked: userId={}, reason={}", userId, reason);
+            } catch (Exception e) {
+                log.error("Failed to revoke token: userId={}, error={}", userId, e.getMessage());
+                throw new UnauthorizedException("Token revocation failed: " + e.getMessage());
             }
-        } catch (Exception e) {
-            log.error("Failed to revoke token: {}", e.getMessage());
         }
     }
 
@@ -288,6 +293,7 @@ public class JwtUtils {
         Claims claims = parseToken(token);
         if (claims == null) return Collections.emptySet();
         List<String> roleList = (List<String>) claims.get("roles");
+
         return roleList != null ? new HashSet<>(roleList) : Collections.emptySet();
     }
 
@@ -299,19 +305,30 @@ public class JwtUtils {
         Claims claims = parseToken(token);
         if (claims == null) return Collections.emptySet();
         List<String> permList = (List<String>) claims.get("permissions");
+
         return permList != null ? new HashSet<>(permList) : Collections.emptySet();
     }
 
 
     public UUID getUserIdFromToken(String token) {
         Claims claims = parseToken(token);
+        if (claims == null) {
+            throw new UnauthorizedException("Invalid token");
+        }
         Object userId = claims.get("userId");
-        return userId instanceof UUID ? (UUID) userId :
-                UUID.fromString(userId.toString());
+        if (userId == null) {
+            throw new UnauthorizedException("Token missing userId");
+        }
+
+        return userId instanceof UUID ? (UUID) userId : UUID.fromString(userId.toString());
     }
 
     public String getUsernameFromToken(String token) {
         Claims claims = parseToken(token);
+        if (claims == null) {
+            throw new UnauthorizedException("Invalid token");
+        }
+
         return (String) claims.get("username");
     }
 
@@ -319,26 +336,80 @@ public class JwtUtils {
      * 从Token中提取 AMR（认证方法引用）
      */
     @SuppressWarnings("unchecked")
-    public java.util.Set<String> getAmrFromToken(String token) {
+    public Set<String> getAmrFromToken(String token) {
         Claims claims = parseToken(token);
-        if (claims == null) return java.util.Collections.emptySet();
-        java.util.List<String> amr = (java.util.List<String>) claims.get("amr");
-        return amr != null ? new java.util.HashSet<>(amr) : java.util.Collections.emptySet();
+        if (claims == null) return Collections.emptySet();
+        List<String> amr = (List<String>) claims.get("amr");
+
+        return amr != null ? new HashSet<>(amr) : Collections.emptySet();
     }
 
     // ==================== 私有方法 ====================
 
+    /**
+     * 清理ThreadLocal缓存（应在请求结束时调用）
+     */
+    public static void clearTokenCache() {
+        TOKEN_CACHE.remove();
+    }
+
+    /**
+     * 解析Token（不抛出异常，带缓存）
+     * @return Claims or null if parsing fails
+     */
     private Claims parseToken(String token) {
-        return Jwts.parser()
-                .verifyWith(signingKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        if (token == null || token.isEmpty()) {
+            return null;
+        }
+
+        // Check cache first
+        Map<String, Claims> cache = TOKEN_CACHE.get();
+        Claims cached = cache.get(token);
+        if (cached != null) {
+            return cached;
+        }
+
+        // Parse and cache
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(signingKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            cache.put(token, claims);
+            return claims;
+        } catch (Exception e) {
+            log.debug("Failed to parse token: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * 解析Token（抛出异常）
+     * @throws UnauthorizedException if parsing fails
+     */
+    private Claims parseTokenOrThrow(String token) {
+        if (token == null || token.isEmpty()) {
+            throw new UnauthorizedException("Token is empty");
+        }
+        try {
+            return Jwts.parser()
+                    .verifyWith(signingKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            throw new UnauthorizedException("Token expired");
+        } catch (Exception e) {
+            throw new UnauthorizedException("Invalid token: " + e.getMessage());
+        }
     }
 
     private String createToken(Map<String, Object> claims, String subject, long expiration) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expiration);
+        long nowMillis = System.currentTimeMillis();
+        Date now = new Date(nowMillis);
+        Date expiryDate = new Date(nowMillis + expiration);
 
         return Jwts.builder()
                 .claims(claims)
@@ -350,10 +421,8 @@ public class JwtUtils {
                 .compact();
     }
 
-    private Map<String, Object> buildClaims(UUID userId, String username,
-                                            Set<String> roles, Set<String> permissions,
-                                            String tokenType, String deviceId,
-                                            String ipAddress, String jti) {
+    private Map<String, Object> buildClaims(UUID userId, String username, Set<String> roles, Set<String> permissions,
+                                            String tokenType, String deviceId, String ipAddress, String jti) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("username", username);
@@ -363,6 +432,7 @@ public class JwtUtils {
         claims.put("deviceId", deviceId);
         claims.put("ipAddress", ipAddress);
         claims.put("jti", jti);
+
         return claims;
     }
 
@@ -405,6 +475,7 @@ public class JwtUtils {
     private boolean validateFingerprint(Claims claims) {
         String jti = getJti(claims);
         String fingerprintKey = TOKEN_FINGERPRINT_PREFIX + jti;
+
         return redisTemplate.hasKey(fingerprintKey);
     }
 
@@ -414,35 +485,47 @@ public class JwtUtils {
      * - User tokens stored in Hash: jwt:user:tokens:{userId} -> {deviceId: token}
      * - Allows O(1) lookup and O(N) revocation where N = devices (typically < 10)
      * - Avoids O(N) KEYS scan where N = total tokens in Redis
+     * - Uses Lua script to ensure atomic execution of HSET + EXPIRE operations
      */
-    private void storeTokenMetadata(UUID userId, String deviceId, String token,
-                                    String jti, String ipAddress, long ttl) {
-        // Store token in user's Hash (deviceId -> token mapping)
+    private void storeTokenMetadata(UUID userId, String deviceId, String token, String jti, String ipAddress,
+                                    long ttl) {
         String userTokensHash = USER_TOKENS_HASH + userId;
-        redisTemplate.opsForHash().put(userTokensHash, deviceId, token);
-        redisTemplate.expire(userTokensHash, Duration.ofMillis(ttl));
-
-        // Store token fingerprint (for validation)
         String fingerprintKey = TOKEN_FINGERPRINT_PREFIX + jti;
-        Map<String, Object> fingerprint = new HashMap<>();
-        fingerprint.put("userId", userId.toString());
-        fingerprint.put("deviceId", deviceId);
-        fingerprint.put("ipAddress", ipAddress);
-        fingerprint.put("issueTime", System.currentTimeMillis());
+        long ttlSeconds = ttl / 1000;
 
-        redisTemplate.opsForHash().putAll(fingerprintKey, fingerprint);
-        redisTemplate.expire(fingerprintKey, Duration.ofMillis(ttl));
+        // Execute Lua script for atomic operations
+        redisTemplate.execute(
+                createRedisScript(STORE_TOKEN_METADATA_SCRIPT),
+                List.of(userTokensHash, fingerprintKey),
+                deviceId, token, String.valueOf(ttlSeconds),
+                userId.toString(), ipAddress, String.valueOf(System.currentTimeMillis())
+        );
     }
 
     private void addToBlacklist(String jti, UUID userId, String reason, long ttl) {
         String blacklistKey = TOKEN_BLACKLIST_PREFIX + jti;
-        Map<String, Object> info = new HashMap<>();
-        info.put("revokeTime", System.currentTimeMillis());
-        info.put("reason", reason);
-        info.put("userId", userId.toString());
+        long ttlSeconds = ttl / 1000;
 
-        redisTemplate.opsForHash().putAll(blacklistKey, info);
-        redisTemplate.expire(blacklistKey, Duration.ofMillis(ttl));
+        // Execute Lua script for atomic operations
+        redisTemplate.execute(
+                createRedisScript(ADD_TO_BLACKLIST_SCRIPT),
+                List.of(blacklistKey),
+                String.valueOf(System.currentTimeMillis()),
+                reason,
+                userId.toString(),
+                String.valueOf(ttlSeconds)
+        );
+    }
+
+    /**
+     * Helper method to create RedisScript for Lua execution
+     */
+    private RedisScript<Long> createRedisScript(String scriptText) {
+        DefaultRedisScript<Long> script = new DefaultRedisScript<>();
+        script.setScriptText(scriptText);
+        script.setResultType(Long.class);
+
+        return script;
     }
 
     /**
@@ -463,6 +546,7 @@ public class JwtUtils {
 
     private boolean isTokenBlacklisted(String jti) {
         String blacklistKey = TOKEN_BLACKLIST_PREFIX + jti;
+
         return Boolean.TRUE.equals(redisTemplate.hasKey(blacklistKey));
     }
 
@@ -481,10 +565,64 @@ public class JwtUtils {
 
     public String getDeviceIdFromToken(String token) {
         Claims claims = parseToken(token);
+        if (claims == null) {
+            throw new UnauthorizedException("Invalid token");
+        }
         return (String) claims.get("deviceId");
     }
 
     private String getJti(Claims claims) {
         return (String) claims.get("jti");
+    }
+
+    /**
+     * Token pair containing access token and refresh token
+     */
+    @Data
+    @AllArgsConstructor
+    public static class TokenPair {
+        private String accessToken;
+        private String refreshToken;
+    }
+
+    /**
+     * 刷新Token并轮换刷新令牌（推荐使用）
+     * 实现刷新令牌轮换机制，每次刷新时生成新的访问令牌和刷新令牌
+     *
+     * @return TokenPair containing new access token and new refresh token
+     */
+    public TokenPair refreshTokenWithRotation(String oldRefreshToken, Set<String> roles, Set<String> permissions,
+                                              String deviceId, String ipAddress) {
+        if (isRefreshTokenInvalid(oldRefreshToken)) {
+            throw new UnauthorizedException("Invalid refresh token");
+        }
+
+        UUID userId = getUserIdFromToken(oldRefreshToken);
+        String username = getUsernameFromToken(oldRefreshToken);
+        String lockKey = REFRESH_LOCK_PREFIX + userId;
+
+        try {
+            // 分布式锁，防止并发刷新
+            Boolean acquired = redisTemplate.opsForValue()
+                    .setIfAbsent(lockKey, "1", Duration.ofSeconds(5));
+
+            if (Boolean.FALSE.equals(acquired)) {
+                throw new UnauthorizedException("Token refresh in progress");
+            }
+
+            // 撤销旧的刷新令牌
+            revokeToken(oldRefreshToken, "Refresh token rotated");
+
+            // 撤销旧的访问令牌
+            revokeUserAccessTokens(userId, deviceId);
+
+            // 生成新的访问令牌和刷新令牌
+            String newAccessToken = generateAccessToken(userId, username, roles, permissions, deviceId, ipAddress);
+            String newRefreshToken = generateRefreshToken(userId, username, deviceId);
+
+            return new TokenPair(newAccessToken, newRefreshToken);
+        } finally {
+            redisTemplate.delete(lockKey);
+        }
     }
 }

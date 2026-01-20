@@ -42,9 +42,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final SecurityMetrics securityMetrics;
 
     @Override
-    protected void doFilterInternal(@Nonnull HttpServletRequest request,
-                                    @Nonnull HttpServletResponse response,
-                                    @Nonnull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response,
+                                    @Nonnull FilterChain filterChain) throws IOException {
         try {
             // 获取 Token
             String token = httpServletRequestUtils.getTokenFromRequest(request);
@@ -56,7 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 // 验证 Token
                 if (jwtUtils.validateToken(token, currentIp, currentDeviceId)) {
-                    // 提取用户信息
+                    // 提取用户信息（得益于ThreadLocal缓存，这4次调用只会解析Token一次）
                     UUID userId = jwtUtils.getUserIdFromToken(token);
                     String username = jwtUtils.getUsernameFromToken(token);
                     Set<String> permissions = jwtUtils.getPermissionsFromToken(token);
@@ -99,6 +98,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     return;
                 }
             }
+
+            // 继续过滤器链
+            filterChain.doFilter(request, response);
         } catch (Exception e) {
             securityMetrics.increment("security.jwt.errors");
             log.error("Cannot set user authentication traceId={}", request.getHeader("X-Request-ID"), e);
@@ -106,9 +108,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     HttpServletResponse.SC_UNAUTHORIZED,
                     "AUTH_ERROR",
                     "Authentication error");
-            return;
+        } finally {
+            // 清理ThreadLocal缓存，防止内存泄漏
+            JwtUtils.clearTokenCache();
         }
-
-        filterChain.doFilter(request, response);
     }
 }

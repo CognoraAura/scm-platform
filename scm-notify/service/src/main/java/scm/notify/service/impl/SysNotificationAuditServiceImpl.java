@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
  * @since 2025-12-26
  */
 @Service
-public class SysNotificationAuditServiceImpl extends ServiceImpl<SysNotificationAuditMapper, SysNotificationAudit> implements ISysNotificationAuditService {
+public class SysNotificationAuditServiceImpl extends ServiceImpl<SysNotificationAuditMapper, SysNotificationAudit>
+        implements ISysNotificationAuditService {
 
 }

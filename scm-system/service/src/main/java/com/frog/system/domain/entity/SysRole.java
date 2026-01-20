@@ -1,12 +1,10 @@
 package com.frog.system.domain.entity;
 
-import java.io.Serial;
 import java.math.BigDecimal;
 
 import com.baomidou.mybatisplus.annotation.*;
 
 import java.time.LocalDateTime;
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -34,9 +32,7 @@ import lombok.experimental.Accessors;
         name="SysRole 对象",
         description="角色表"
 )
-public class SysRole implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class SysRole {
 
     @Schema(description = "角色 ID")
     @TableId(value = "id", type = IdType.NONE)

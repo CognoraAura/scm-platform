@@ -1,12 +1,9 @@
-package scm.purchase.service.impl
+package scm.purchase.service.impl;
 
--purchase/service/src/main/java.service.impl;
-
-import scm-purchase/service/src/main/java.domain.entity.PurPriceComparison;
-import scm-purchase/service/src/main/java.mapper.PurPriceComparisonMapper;
-import scm-purchase/service/src/main/java.service.IPurPriceComparisonService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import scm.purchase.domain.entity.PurPriceComparison;
+import scm.purchase.mapper.PurPriceComparisonMapper;
 import scm.purchase.service.IPurPriceComparisonService;
 
 /**
@@ -18,6 +15,7 @@ import scm.purchase.service.IPurPriceComparisonService;
  * @since 2025-12-25
  */
 @Service
-public class PurPriceComparisonServiceImpl extends ServiceImpl<PurPriceComparisonMapper, PurPriceComparison> implements IPurPriceComparisonService {
+public class PurPriceComparisonServiceImpl extends ServiceImpl<PurPriceComparisonMapper, PurPriceComparison>
+        implements IPurPriceComparisonService {
 
 }

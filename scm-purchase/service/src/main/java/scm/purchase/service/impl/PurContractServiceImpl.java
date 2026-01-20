@@ -2,6 +2,8 @@ package scm.purchase.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import scm.purchase.domain.entity.PurContract;
+import scm.purchase.mapper.PurContractMapper;
 import scm.purchase.service.IPurContractService;
 
 /**

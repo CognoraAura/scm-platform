@@ -1,11 +1,14 @@
 package scm.supplier.domain.entity;
 
 import java.math.BigDecimal;
+
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+import java.util.UUID;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,15 +27,10 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("sup_purchase_order_item")
 @Schema(description = "采购单明细表")
-public class SupPurchaseOrderItem implements Serializable {
+public class SupPurchaseOrderItem {
 
-    private static final long serialVersionUID = 1L;
-
-    @TableField("id")
-    private String id;
-
-    @TableId(value = "id", type = IdType.UUID)
-    private String id;
+    @TableId(value = "id", type = IdType.NONE)
+    private UUID id;
 
     @TableField("purchase_id")
     private String purchaseId;
@@ -52,23 +50,14 @@ public class SupPurchaseOrderItem implements Serializable {
     @TableField("quantity")
     private Integer quantity;
 
-    @TableField("quantity")
-    private Integer quantity;
-
     @TableField("received_quantity")
     private Integer receivedQuantity;
 
     @TableField("unit_price")
     private BigDecimal unitPrice;
 
-    @TableField("unit_price")
-    private BigDecimal unitPrice;
-
     @TableField("tax_rate")
     private BigDecimal taxRate;
-
-    @TableField("subtotal")
-    private BigDecimal subtotal;
 
     @TableField("subtotal")
     private BigDecimal subtotal;
@@ -81,6 +70,4 @@ public class SupPurchaseOrderItem implements Serializable {
 
     @TableField("remark")
     private String remark;
-
-
 }

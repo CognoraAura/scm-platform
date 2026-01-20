@@ -8,7 +8,7 @@ import com.frog.auth.service.IWebauthnCredentialService;
 import com.frog.auth.webauthn.WebAuthnConfig;
 import com.frog.auth.webauthn.WebAuthnValidator;
 import com.frog.common.dto.auth.*;
-import com.frog.common.feign.client.SysUserServiceClient;
+import com.frog.common.rest.client.SysUserServiceClient;
 import com.frog.common.security.properties.JwtProperties;
 import com.frog.common.security.util.JwtUtils;
 import lombok.RequiredArgsConstructor;

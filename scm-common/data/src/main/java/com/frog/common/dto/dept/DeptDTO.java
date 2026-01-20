@@ -1,7 +1,12 @@
 package com.frog.common.dto.dept;
 
+import com.frog.common.security.annotation.Sensitive;
+import com.frog.common.security.enums.SensitiveType;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +19,9 @@ import java.util.UUID;
  * @version 1.0
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DeptDTO {
     private UUID id;
     private UUID parentId;
@@ -26,8 +34,11 @@ public class DeptDTO {
 
     private Integer deptType;
     private UUID leaderId;
+    @Sensitive(type = SensitiveType.NAME)
     private String leaderName;
+    @Sensitive(type = SensitiveType.MOBILE)
     private String phone;
+    @Sensitive(type = SensitiveType.EMAIL)
     private String email;
     private Integer isolationLevel;
     private Integer sortOrder;

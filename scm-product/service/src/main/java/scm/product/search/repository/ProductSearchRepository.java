@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import scm.product.search.document.ProductDocument;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * 商品搜索 Repository
@@ -81,7 +80,8 @@ public interface ProductSearchRepository extends ElasticsearchRepository<Product
      * @param pageable 分页参数
      * @return 商品列表
      */
-    @Query("{\"bool\": {\"must\": [{\"multi_match\": {\"query\": \"?0\", \"fields\": [\"spuName^3\", \"description^2\", \"seoKeywords\"], \"type\": \"best_fields\"}}], \"filter\": [{\"term\": {\"status\": \"?1\"}}]}}")
+    @Query("{\"bool\": {\"must\": [{\"multi_match\": {\"query\": \"?0\", \"fields\": [\"spuName^3\", \"description^2\", " +
+            "\"seoKeywords\"], \"type\": \"best_fields\"}}], \"filter\": [{\"term\": {\"status\": \"?1\"}}]}}")
     Page<ProductDocument> fullTextSearch(String keyword, Integer status, Pageable pageable);
 
     /**

@@ -15,7 +15,8 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- ======================================================================
 CREATE TABLE IF NOT EXISTS sys_role (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    role_code VARCHAR(64) NOT NULL UNIQUE,
+    tenant_id UUID,
+    role_code VARCHAR(64) NOT NULL,
     role_name VARCHAR(128) NOT NULL,
     role_desc TEXT,
     role_level SMALLINT NOT NULL DEFAULT 1,
@@ -23,6 +24,10 @@ CREATE TABLE IF NOT EXISTS sys_role (
         CONSTRAINT chk_data_scope CHECK (data_scope IN (1, 2, 3, 4, 5)),
     max_approval_amount DECIMAL(18, 2),
     business_scope JSONB,
+    role_type VARCHAR(20) NOT NULL DEFAULT 'TENANT_ROLE'
+        CONSTRAINT chk_role_type CHECK (role_type IN ('PLATFORM_ROLE', 'TENANT_ROLE')),
+    role_category VARCHAR(50) DEFAULT 'BUSINESS',
+    custom_dept_ids JSONB DEFAULT '[]',
     status SMALLINT NOT NULL DEFAULT 1
         CONSTRAINT chk_role_status CHECK (status IN (0, 1)),
     sort_order INTEGER NOT NULL DEFAULT 0,
@@ -30,16 +35,25 @@ CREATE TABLE IF NOT EXISTS sys_role (
     create_by UUID,
     update_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     update_by UUID,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
+
+    CONSTRAINT uk_tenant_role_code UNIQUE (tenant_id, role_code)
 );
 
+CREATE INDEX idx_role_tenant ON sys_role(tenant_id) WHERE NOT deleted;
 CREATE INDEX idx_role_code ON sys_role(role_code) WHERE NOT deleted;
+CREATE INDEX idx_role_type ON sys_role(role_type) WHERE NOT deleted;
 CREATE INDEX idx_role_status ON sys_role(status) WHERE NOT deleted;
 CREATE INDEX idx_role_business_scope ON sys_role USING GIN (business_scope) WHERE business_scope IS NOT NULL;
+CREATE INDEX idx_role_custom_depts ON sys_role USING GIN (custom_dept_ids) WHERE custom_dept_ids IS NOT NULL;
 
-COMMENT ON TABLE sys_role IS '角色表';
+COMMENT ON TABLE sys_role IS '角色表-支持多租户';
+COMMENT ON COLUMN sys_role.tenant_id IS '租户ID（NULL表示平台角色，跨所有租户）';
+COMMENT ON COLUMN sys_role.role_type IS '角色类型：PLATFORM_ROLE=平台角色（跨租户）, TENANT_ROLE=租户角色（租户内）';
+COMMENT ON COLUMN sys_role.role_category IS '角色分类：BUSINESS=业务角色, FUNCTIONAL=职能角色, CUSTOM=自定义角色';
 COMMENT ON COLUMN sys_role.data_scope IS '数据权限:1-全部,2-自定义,3-本部门,4-本部门及以下,5-仅本人';
 COMMENT ON COLUMN sys_role.business_scope IS '业务范围(JSONB格式)';
+COMMENT ON COLUMN sys_role.custom_dept_ids IS '自定义数据权限部门ID列表（当 data_scope=2 时使用）';
 
 -- ======================================================================
 -- 2. 权限表 (sys_permission)

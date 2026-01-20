@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.frog.common.data.rw.annotation.Slave;
 import com.frog.common.response.ResultCode;
+import com.frog.common.tenant.TenantValidationUtil;
 import com.frog.common.util.UUIDv7Util;
 
 import com.frog.common.exception.BusinessException;
@@ -17,8 +18,12 @@ import com.frog.common.web.util.SecurityUtils;
 import com.frog.system.domain.entity.SysUser;
 import com.frog.system.event.DataSyncEventPublisher;
 import com.frog.system.mapper.SysUserMapper;
-import com.frog.system.service.CrossDatabaseQueryService;
 import com.frog.system.service.ISysUserService;
+import com.frog.system.service.command.UserRoleCrossDatabaseCommandService;
+import com.frog.system.service.query.DeptCrossDatabaseQueryService;
+import com.frog.system.service.query.PermissionCrossDatabaseQueryService;
+import com.frog.system.service.query.RoleCrossDatabaseQueryService;
+import com.frog.system.service.query.UserCrossDatabaseQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -48,7 +53,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements ISysUserService {
     private final SysUserMapper userMapper;
-    private final CrossDatabaseQueryService crossDbService;
+    private final UserCrossDatabaseQueryService userQueryService;
+    private final RoleCrossDatabaseQueryService roleQueryService;
+    private final DeptCrossDatabaseQueryService deptQueryService;
+    private final PermissionCrossDatabaseQueryService permissionQueryService;
+    private final UserRoleCrossDatabaseCommandService userRoleCommandService;
     private final PasswordEncoder passwordEncoder;
     private final DataSyncEventPublisher dataSyncEventPublisher;
     private final com.frog.common.security.PermissionChecker permissionChecker;
@@ -65,7 +74,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public Page<UserDTO> listUsers(Integer pageNum, Integer pageSize,
                                    String username, Integer status) {
         // 1. 验证租户上下文
-        UUID tenantId = com.frog.common.tenant.TenantValidationUtil.getRequiredTenantId();
+        UUID tenantId = TenantValidationUtil.getRequiredTenantId();
 
         // 2. 获取当前用户的数据权限范围
         UUID operatorId = SecurityUtils.getCurrentUserUuid().orElse(null);
@@ -127,7 +136,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         UserDTO userDTO = convertToDTO(user);
 
         // 通过 CrossDatabaseQueryService 跨库查询 db_permission
-        List<Map<String, Object>> roles = crossDbService.findUserRolesWithNames(id);
+        List<Map<String, Object>> roles = userQueryService.findUserRolesWithNames(id);
 
         if (!roles.isEmpty()) {
             List<UUID> roleIds = roles.stream()
@@ -162,8 +171,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
 
         // 跨库查询角色和权限
-        Set<String> roles = crossDbService.findRoleCodesByUserId(user.getId());
-        Set<String> permissions = crossDbService.findPermissionCodesByUserId(user.getId());
+        Set<String> roles = userQueryService.findRoleCodesByUserId(user.getId());
+        Set<String> permissions = userQueryService.findPermissionCodesByUserId(user.getId());
 
         return SecurityUser.builder()
                 .userId(user.getId())
@@ -211,14 +220,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 .build();
 
         // 通过 CrossDatabaseQueryService 跨库查询 db_permission
-        Set<String> roles = crossDbService.findRoleCodesByUserId(userId);
-        Set<String> permissions = crossDbService.findPermissionCodesByUserId(userId);
+        Set<String> roles = userQueryService.findRoleCodesByUserId(userId);
+        Set<String> permissions = userQueryService.findPermissionCodesByUserId(userId);
 
         userInfo.setRoles(roles);
         userInfo.setPermissions(permissions);
 
         // 构建菜单树（只返回菜单类型的权限）
-        List<PermissionDTO> menuTree = crossDbService.findMenuTreeByUserId(userId);
+        List<PermissionDTO> menuTree = permissionQueryService.findMenuTreeByUserId(userId);
         userInfo.setMenuTree(new HashSet<>(menuTree));
 
         return userInfo;
@@ -234,7 +243,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     )
     public void addUser(UserDTO userDTO) {
         // 1. 验证租户上下文
-        UUID tenantId = com.frog.common.tenant.TenantValidationUtil.getRequiredTenantId();
+        UUID tenantId = TenantValidationUtil.getRequiredTenantId();
 
         // 2. 检查操作权限
         UUID operatorId = SecurityUtils.getCurrentUserUuid().orElse(null);
@@ -258,7 +267,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         BeanUtils.copyProperties(userDTO, user);
         user.setPassword(encodedPassword);
         user.setId(UUIDv7Util.generate());
-        user.setTenantId(tenantId); // 自动填充租户ID
+        user.setTenantId(tenantId); // 自动填充租户 ID
         user.setPasswordExpireTime(LocalDateTime.now().plusDays(90));
         user.setForceChangePassword(true);
 
@@ -267,8 +276,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         // 7. 跨库操作：插入用户角色关联（db_permission）
         if (userDTO.getRoleIds() != null && !userDTO.getRoleIds().isEmpty()) {
-            crossDbService.batchInsertUserRoles(user.getId(), userDTO.getRoleIds(),
+            int inserted = userRoleCommandService.batchInsertUserRoles(user.getId(), userDTO.getRoleIds(),
                     SecurityUtils.getCurrentUserUuid().orElse(null));
+            log.debug("创建用户时分配角色: user={}, roleCount={}", user.getUsername(), inserted);
         }
 
         // 8. 发布同步事件
@@ -277,7 +287,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 9. 记录租户操作日志
         com.frog.common.tenant.TenantValidationUtil.logTenantOperation("CREATE", "USER", user.getId());
 
-        log.info("用户创建成功: {}, 操作人: {}", user.getUsername(), SecurityUtils.getCurrentUsername());
+        log.info("用户创建成功: username={}, operator={}", user.getUsername(), SecurityUtils.getCurrentUsername());
     }
 
     /**
@@ -289,8 +299,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             key = "#userDTO.id"
     )
     public void updateUser(UserDTO userDTO) {
-        // 1. 验证租户上下文
-        UUID tenantId = com.frog.common.tenant.TenantValidationUtil.getRequiredTenantId();
+        // 1. 验证租户上下文（确保请求包含有效租户信息）
+        TenantValidationUtil.getRequiredTenantId();
 
         // 2. 检查操作权限
         UUID operatorId = SecurityUtils.getCurrentUserUuid().orElse(null);
@@ -303,13 +313,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
 
         // 4. 验证数据归属（tenant_id）
-        com.frog.common.tenant.TenantValidationUtil.validateDataOwnership(existUser.getTenantId());
+        TenantValidationUtil.validateDataOwnership(existUser.getTenantId());
 
         // 5. 检查数据权限（是否可操作该用户）
         String dataScope = permissionChecker.getUserDataScope(operatorId);
         if (!permissionChecker.canOperateResource(operatorId, existUser.getCreateBy(),
                 existUser.getDeptId(), dataScope)) {
-            throw new BusinessException("DATA_ACCESS_DENIED", "无权操作该用户数据");
+            throw new BusinessException(ResultCode.DATA_ACCESS_DENIED.getCode(), "无权操作该用户数据");
         }
 
         // 6. 执行业务逻辑
@@ -320,10 +330,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         // 7. 跨库操作：更新用户角色关联（db_permission）
         if (userDTO.getRoleIds() != null) {
-            crossDbService.deleteUserRoles(user.getId());
+            int deleted = userRoleCommandService.deleteUserRoles(user.getId());
+            log.debug("更新用户时清除旧角色: user={}, deletedCount={}", user.getUsername(), deleted);
+
             if (!userDTO.getRoleIds().isEmpty()) {
-                crossDbService.batchInsertUserRoles(user.getId(), userDTO.getRoleIds(),
+                int inserted = userRoleCommandService.batchInsertUserRoles(user.getId(), userDTO.getRoleIds(),
                         SecurityUtils.getCurrentUserUuid().orElse(null));
+                log.debug("更新用户时重新分配角色: user={}, newRoleCount={}", user.getUsername(), inserted);
             }
         }
 
@@ -332,9 +345,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         dataSyncEventPublisher.publishUserUpdated(updatedUser);
 
         // 9. 记录日志
-        com.frog.common.tenant.TenantValidationUtil.logTenantOperation("UPDATE", "USER", userDTO.getId());
+        TenantValidationUtil.logTenantOperation("UPDATE", "USER", userDTO.getId());
 
-        log.info("用户更新成功: {}, 操作人: {}", user.getUsername(), SecurityUtils.getCurrentUsername());
+        log.info("用户更新成功: username={}, operator={}", user.getUsername(), SecurityUtils.getCurrentUsername());
     }
 
     /**
@@ -346,8 +359,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             key = "#id"
     )
     public void deleteUser(UUID id) {
-        // 1. 验证租户上下文
-        UUID tenantId = com.frog.common.tenant.TenantValidationUtil.getRequiredTenantId();
+        // 1. 验证租户上下文（确保请求包含有效租户信息）
+        TenantValidationUtil.getRequiredTenantId();
 
         // 2. 检查操作权限
         UUID operatorId = SecurityUtils.getCurrentUserUuid().orElse(null);
@@ -360,13 +373,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
 
         // 4. 验证数据归属（tenant_id）
-        com.frog.common.tenant.TenantValidationUtil.validateDataOwnership(user.getTenantId());
+        TenantValidationUtil.validateDataOwnership(user.getTenantId());
 
         // 5. 检查数据权限
         String dataScope = permissionChecker.getUserDataScope(operatorId);
         if (!permissionChecker.canOperateResource(operatorId, user.getCreateBy(),
                 user.getDeptId(), dataScope)) {
-            throw new BusinessException("DATA_ACCESS_DENIED", "无权删除该用户数据");
+            throw new BusinessException(ResultCode.DATA_ACCESS_DENIED.getCode(), "无权删除该用户数据");
         }
 
         // 6. 业务校验
@@ -387,9 +400,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         dataSyncEventPublisher.publishUserDeleted(id);
 
         // 9. 记录日志
-        com.frog.common.tenant.TenantValidationUtil.logTenantOperation("DELETE", "USER", id);
+        TenantValidationUtil.logTenantOperation("DELETE", "USER", id);
 
-        log.info("用户删除成功: {}, 操作人: {}", user.getUsername(), SecurityUtils.getCurrentUsername());
+        log.info("用户删除成功: username={}, operator={}", user.getUsername(), SecurityUtils.getCurrentUsername());
     }
 
     /**
@@ -490,8 +503,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             key = "#userId"
     )
     public void grantRoles(UUID userId, List<UUID> roleIds) {
-        // 1. 验证租户上下文
-        UUID tenantId = com.frog.common.tenant.TenantValidationUtil.getRequiredTenantId();
+        // 1. 验证租户上下文（确保请求包含有效租户信息）
+        TenantValidationUtil.getRequiredTenantId();
 
         // 2. 检查操作权限
         UUID operatorId = SecurityUtils.getCurrentUserUuid().orElse(null);
@@ -504,32 +517,34 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
 
         // 4. 验证数据归属（tenant_id）
-        com.frog.common.tenant.TenantValidationUtil.validateDataOwnership(user.getTenantId());
+        TenantValidationUtil.validateDataOwnership(user.getTenantId());
 
         // 5. 检查角色等级（只能分配不高于自己的角色）
         if (roleIds != null && !roleIds.isEmpty()) {
-            Integer operatorMaxRoleLevel = crossDbService.getUserMaxRoleLevel(operatorId);
+            Integer operatorMaxRoleLevel = userQueryService.getUserMaxRoleLevel(operatorId);
             for (UUID roleId : roleIds) {
-                Integer roleLevel = crossDbService.getRoleLevel(roleId);
+                Integer roleLevel = roleQueryService.getRoleLevel(roleId);
                 permissionChecker.requireRoleAssignmentPermission(operatorId, operatorMaxRoleLevel, roleLevel);
 
                 // 验证角色归属（只能分配本租户或平台角色）
-                UUID roleTenantId = crossDbService.getRoleTenantId(roleId);
-                com.frog.common.tenant.TenantValidationUtil.validateRoleAccess(roleTenantId);
+                UUID roleTenantId = roleQueryService.getRoleTenantId(roleId);
+                TenantValidationUtil.validateRoleAccess(roleTenantId);
             }
         }
 
         // 6. 执行业务逻辑：更新用户角色关联（跨库操作 db_permission）
-        crossDbService.deleteUserRoles(userId);
+        int deleted = userRoleCommandService.deleteUserRoles(userId);
+        log.debug("授权操作清除原有角色: user={}, deletedCount={}", user.getUsername(), deleted);
 
         if (roleIds != null && !roleIds.isEmpty()) {
-            crossDbService.batchInsertUserRoles(userId, roleIds, SecurityUtils.getCurrentUserUuid().orElse(null));
+            int inserted = userRoleCommandService.batchInsertUserRoles(userId, roleIds, SecurityUtils.getCurrentUserUuid().orElse(null));
+            log.debug("授权操作分配新角色: user={}, grantedCount={}", user.getUsername(), inserted);
         }
 
         // 7. 记录日志
-        com.frog.common.tenant.TenantValidationUtil.logTenantOperation("GRANT_ROLES", "USER", userId);
+        TenantValidationUtil.logTenantOperation("GRANT_ROLES", "USER", userId);
 
-        log.info("角色授予成功: user={}, roles={}, 操作人: {}",
+        log.info("角色授予操作完成: user={}, roleIds={}, operator={}",
                 user.getUsername(), roleIds, SecurityUtils.getCurrentUsername());
     }
 
@@ -590,12 +605,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         // 通过 CrossDatabaseQueryService 跨库操作：插入临时用户角色关联（db_permission）
         if (roleIds != null && !roleIds.isEmpty()) {
-            crossDbService.batchInsertTemporaryUserRoles(
+            int inserted = userRoleCommandService.batchInsertTemporaryUserRoles(
                     userId, roleIds,
                     effectiveTime != null ? effectiveTime : LocalDateTime.now(),
                     expireTime,
                     SecurityUtils.getCurrentUserUuid().orElse(null)
             );
+            log.debug("为用户 {} 授予了 {} 个临时角色", user.getUsername(), inserted);
         }
 
         log.info("Temporary roles granted to user: {}, roles: {}, expireTime: {}, by: {}",
@@ -613,7 +629,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     )
     public void extendTemporaryRole(UUID userId, UUID roleId, LocalDateTime newExpireTime) {
         // 通过 CrossDatabaseQueryService 跨库查询 db_permission
-        if (!crossDbService.hasTemporaryRole(userId, roleId)) {
+        if (!userQueryService.hasTemporaryRole(userId, roleId)) {
             throw new BusinessException("用户不存在该临时角色或已过期");
         }
 
@@ -621,7 +637,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new BusinessException("新的过期时间不能早于当前时间");
         }
 
-        int updated = crossDbService.extendTemporaryRole(userId, roleId, newExpireTime);
+        int updated = userRoleCommandService.extendTemporaryRole(userId, roleId, newExpireTime);
         if (updated == 0) {
             throw new BusinessException("延长临时角色失败");
         }
@@ -641,7 +657,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     )
     public void terminateTemporaryRole(UUID userId, UUID roleId) {
         // 通过 CrossDatabaseQueryService 跨库操作 db_permission
-        int updated = crossDbService.terminateTemporaryRole(userId, roleId);
+        int updated = userRoleCommandService.terminateTemporaryRole(userId, roleId);
         if (updated == 0) {
             throw new BusinessException("终止临时角色失败，可能该角色不存在或已过期");
         }
@@ -661,7 +677,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     )
     public List<Map<String, Object>> getUserTemporaryRoles(UUID userId) {
         // 通过 CrossDatabaseQueryService 跨库查询 db_permission
-        return crossDbService.findTemporaryRolesByUserId(userId);
+        return userQueryService.findTemporaryRolesByUserId(userId);
     }
 
     /**
@@ -672,7 +688,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     @Slave
     public boolean canAccessDept(UUID userId, UUID deptId) {
-        return crossDbService.hasAccessToDept(userId, deptId);
+        return deptQueryService.hasAccessToDept(userId, deptId);
     }
 
     /**
@@ -686,7 +702,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     )
     public Integer getUserDataScope(UUID userId) {
         // 通过 CrossDatabaseQueryService 跨库查询 db_permission
-        return crossDbService.getUserDataScope(userId);
+        return userQueryService.getUserDataScope(userId);
     }
 
     /**
@@ -699,19 +715,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public Map<String, Object> getUserStatistics(UUID userId) {
         Map<String, Object> stats = new HashMap<>();
 
-        Integer roleCount = crossDbService.countUserRoles(userId);
+        Integer roleCount = userQueryService.countUserRoles(userId);
         stats.put("roleCount", roleCount);
 
-        Integer tempRoleCount = crossDbService.countTemporaryRoles(userId);
+        Integer tempRoleCount = userQueryService.countTemporaryRoles(userId);
         stats.put("temporaryRoleCount", tempRoleCount);
 
-        Integer expiringCount = crossDbService.countExpiringRoles(userId, 7);
+        Integer expiringCount = userQueryService.countExpiringRoles(userId, 7);
         stats.put("expiringRoleCount", expiringCount);
 
-        Integer dataScope = crossDbService.getUserDataScope(userId);
+        Integer dataScope = userQueryService.getUserDataScope(userId);
         stats.put("dataScope", dataScope);
 
-        BigDecimal maxApprovalAmount = crossDbService.getMaxApprovalAmount(userId);
+        BigDecimal maxApprovalAmount = userQueryService.getMaxApprovalAmount(userId);
         stats.put("maxApprovalAmount", maxApprovalAmount);
 
         return stats;

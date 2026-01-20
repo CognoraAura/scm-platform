@@ -1,9 +1,7 @@
-package scm.purchase.service
+package scm.purchase.service;
 
--purchase/service/src/main/java.service;
-
-import scm-purchase/service/src/main/java.domain.entity.PurRequestItem;
 import com.baomidou.mybatisplus.extension.service.IService;
+import scm.purchase.domain.entity.PurRequestItem;
 
 /**
  * <p>

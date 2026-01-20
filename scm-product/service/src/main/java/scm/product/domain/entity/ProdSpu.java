@@ -1,6 +1,5 @@
 package scm.product.domain.entity;
 
-import java.io.Serial;
 import java.math.BigDecimal;
 
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -8,7 +7,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -27,9 +25,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("prod_spu")
 @Schema(description = "SPU 标准产品单元表")
-public class ProdSpu implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class ProdSpu {
 
     @TableId(value = "id", type = IdType.NONE)
     @Schema(description = "SPU ID")

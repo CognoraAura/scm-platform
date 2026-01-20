@@ -1,6 +1,7 @@
 package com.frog.common.security;
 
 import com.frog.common.exception.BusinessException;
+import com.frog.common.response.ResultCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,6 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class PermissionChecker {
-
     private final PermissionQueryService permissionQueryService;
 
     /**
@@ -104,7 +104,7 @@ public class PermissionChecker {
     public void requirePermission(UUID userId, String permissionCode) {
         if (!hasPermission(userId, permissionCode)) {
             log.warn("权限检查失败: userId={}, permissionCode={}", userId, permissionCode);
-            throw new BusinessException("PERMISSION_DENIED", "权限不足：" + permissionCode);
+            throw new BusinessException(ResultCode.PERMISSION_DENIED.getCode(), "权限不足：" + permissionCode);
         }
     }
 
@@ -118,7 +118,7 @@ public class PermissionChecker {
     public void requireRole(UUID userId, String roleCode) {
         if (!hasRole(userId, roleCode)) {
             log.warn("角色检查失败: userId={}, roleCode={}", userId, roleCode);
-            throw new BusinessException("ROLE_REQUIRED", "需要角色：" + roleCode);
+            throw new BusinessException(ResultCode.ROLE_REQUIRED.getCode(), "需要角色：" + roleCode);
         }
     }
 
@@ -273,7 +273,7 @@ public class PermissionChecker {
         if (!canAssignRole(operatorUserId, operatorRoleLevel, targetRoleLevel)) {
             log.warn("角色分配权限不足: operatorUserId={}, operatorLevel={}, targetLevel={}",
                 operatorUserId, operatorRoleLevel, targetRoleLevel);
-            throw new BusinessException("ROLE_ASSIGNMENT_DENIED", "无权分配该角色（角色等级过高）");
+            throw new BusinessException(ResultCode.ROLE_ASSIGNMENT_DENIED.getCode(), ResultCode.ROLE_ASSIGNMENT_DENIED.getMessage());
         }
     }
 }

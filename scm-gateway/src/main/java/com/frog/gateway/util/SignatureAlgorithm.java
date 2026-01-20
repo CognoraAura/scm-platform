@@ -46,6 +46,6 @@ public interface SignatureAlgorithm {
      * @param secretKey 密钥
      * @return 签名验证结果，true表示验证通过，false表示验证失败
      */
-    Mono<Boolean> verify(ServerHttpRequest request, String signature, String appId, String timestamp,
-                         String nonce, String secretKey);
+    Mono<Boolean> verify(ServerHttpRequest request, String signature, String appId, String timestamp, String nonce,
+                         String secretKey);
 }

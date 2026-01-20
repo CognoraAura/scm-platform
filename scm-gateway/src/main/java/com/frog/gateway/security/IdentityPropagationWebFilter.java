@@ -56,8 +56,7 @@ public class IdentityPropagationWebFilter implements WebFilter, Ordered {
                 .flatMap(propagated -> propagated ? Mono.empty() : chain.filter(exchange));
     }
 
-    private Mono<Void> propagate(ServerWebExchange exchange,
-                                 WebFilterChain chain,
+    private Mono<Void> propagate(ServerWebExchange exchange, WebFilterChain chain,
                                  JwtAuthenticationToken authentication) {
         Jwt token = authentication.getToken();
         String userId = getClaim(token, properties.getUserIdClaim());

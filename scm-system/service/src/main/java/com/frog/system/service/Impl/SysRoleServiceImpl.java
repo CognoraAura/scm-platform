@@ -2,9 +2,12 @@ package com.frog.system.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.frog.common.constant.RoleConstants;
 import com.frog.common.exception.BusinessException;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.frog.common.dto.role.RoleDTO;
+import com.frog.common.response.ResultCode;
+import com.frog.common.tenant.TenantValidationUtil;
 import com.frog.common.web.util.SecurityUtils;
 import com.frog.system.domain.entity.SysRole;
 import com.frog.system.event.DataSyncEventPublisher;
@@ -56,9 +59,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         wrapper.like(roleName != null && !roleName.isEmpty(), SysRole::getRoleName, roleName);
 
         // 1. 租户过滤：平台角色 + 当前租户角色
-        if (!com.frog.common.tenant.TenantValidationUtil.isPlatformAdmin()) {
+        if (TenantValidationUtil.isTenantUser()) {
             // 租户用户：只能看到平台角色和本租户角色
-            UUID tenantId = com.frog.common.tenant.TenantValidationUtil.getRequiredTenantId();
+            UUID tenantId = TenantValidationUtil.getRequiredTenantId();
             wrapper.and(w -> w.isNull(SysRole::getTenantId) // 平台角色
                     .or()
                     .eq(SysRole::getTenantId, tenantId)); // 当前租户角色
@@ -89,16 +92,17 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
      */
     @Cacheable(
             value = "roles",
-            key = "'all:' + (#root.method.name) + ':' + T(com.frog.common.tenant.TenantContextHolder).getTenantId().orElse('platform')"
+            key = "'all:' + #root.method.name + ':' + (T(com.frog.common.tenant.TenantContextHolder).getTenantId() " +
+                    "!= null ? T(com.frog.common.tenant.TenantContextHolder).getTenantId().toString() : 'platform')"
     )
     public List<RoleDTO> listAllRoles() {
         LambdaQueryWrapper<SysRole> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SysRole::getStatus, 1);
 
         // 1. 租户过滤：平台角色 + 当前租户角色
-        if (!com.frog.common.tenant.TenantValidationUtil.isPlatformAdmin()) {
+        if (TenantValidationUtil.isTenantUser()) {
             // 租户用户：只能看到平台角色和本租户角色
-            UUID tenantId = com.frog.common.tenant.TenantValidationUtil.getRequiredTenantId();
+            UUID tenantId = TenantValidationUtil.getRequiredTenantId();
             wrapper.and(w -> w.isNull(SysRole::getTenantId) // 平台角色
                     .or()
                     .eq(SysRole::getTenantId, tenantId)); // 当前租户角色
@@ -124,6 +128,19 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         SysRole role = roleMapper.selectById(id);
         if (role == null) {
             throw new BusinessException("角色不存在");
+        }
+
+        // 验证数据归属（区分平台角色和租户角色）
+        if (RoleConstants.ROLE_TYPE_PLATFORM.equals(role.getRoleType())) {
+            // 查看平台角色 - 只有平台管理员可以查看
+            if (TenantValidationUtil.isTenantUser()) {
+                throw new BusinessException(ResultCode.PERMISSION_DENIED.getCode(), "只有平台管理员可以查看平台角色");
+            }
+        } else {
+            // 查看租户角色 - 验证租户上下文和数据归属
+            if (TenantValidationUtil.isTenantUser()) {
+                TenantValidationUtil.validateDataOwnership(role.getTenantId());
+            }
         }
 
         RoleDTO roleDTO = convertToRoleDTO(role);
@@ -153,24 +170,24 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         permissionChecker.requirePermission(operatorId, "role:add");
 
         // 2. 区分平台角色和租户角色的创建
-        UUID tenantId = null;
-        if ("PLATFORM_ROLE".equals(roleDTO.getRoleType())) {
+        UUID tenantId;
+        if (RoleConstants.ROLE_TYPE_PLATFORM.equals(roleDTO.getRoleType())) {
             // 创建平台角色 - 只有平台管理员可以创建
-            if (!com.frog.common.tenant.TenantValidationUtil.isPlatformAdmin()) {
-                throw new BusinessException("PERMISSION_DENIED", "只有平台管理员可以创建平台角色");
+            if (TenantValidationUtil.isTenantUser()) {
+                throw new BusinessException(ResultCode.PERMISSION_DENIED.getCode(), "只有平台管理员可以创建平台角色");
             }
             // 平台角色的 tenant_id 为 NULL
             tenantId = null;
         } else {
             // 创建租户角色 - 验证租户上下文
-            tenantId = com.frog.common.tenant.TenantValidationUtil.getRequiredTenantId();
+            tenantId = TenantValidationUtil.getRequiredTenantId();
             // 自动设置为租户角色
-            roleDTO.setRoleType("TENANT_ROLE");
+            roleDTO.setRoleType(RoleConstants.ROLE_TYPE_TENANT);
         }
 
-        // 3. 检查角色编码是否存在
-        if (roleMapper.existsByRoleCode(roleDTO.getRoleCode())) {
-            throw new BusinessException("角色编码已存在");
+        // 3. 检查角色编码在当前租户下是否存在（考虑多租户隔离）
+        if (roleMapper.existsByRoleCodeAndTenantId(roleDTO.getRoleCode(), tenantId)) {
+            throw new BusinessException("角色编码在当前租户下已存在");
         }
 
         // 4. 准备实体
@@ -192,7 +209,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
         // 8. 记录租户操作日志
         if (tenantId != null) {
-            com.frog.common.tenant.TenantValidationUtil.logTenantOperation("CREATE", "ROLE", role.getId());
+            TenantValidationUtil.logTenantOperation("CREATE", "ROLE", role.getId());
         }
 
         log.info("角色创建成功: {} ({}), 操作人: {}", role.getRoleCode(),
@@ -224,15 +241,14 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         }
 
         // 4. 验证数据归属（区分平台角色和租户角色）
-        if ("PLATFORM_ROLE".equals(existRole.getRoleType())) {
+        if (RoleConstants.ROLE_TYPE_PLATFORM.equals(existRole.getRoleType())) {
             // 修改平台角色 - 只有平台管理员可以修改
-            if (!com.frog.common.tenant.TenantValidationUtil.isPlatformAdmin()) {
-                throw new BusinessException("PERMISSION_DENIED", "只有平台管理员可以修改平台角色");
+            if (TenantValidationUtil.isTenantUser()) {
+                throw new BusinessException(ResultCode.PERMISSION_DENIED.getCode(), "只有平台管理员可以修改平台角色");
             }
         } else {
             // 修改租户角色 - 验证租户上下文和数据归属
-            UUID tenantId = com.frog.common.tenant.TenantValidationUtil.getRequiredTenantId();
-            com.frog.common.tenant.TenantValidationUtil.validateDataOwnership(existRole.getTenantId());
+            TenantValidationUtil.validateDataOwnership(existRole.getTenantId());
         }
 
         // 5. 执行业务逻辑
@@ -249,7 +265,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
         // 7. 记录日志
         if (existRole.getTenantId() != null) {
-            com.frog.common.tenant.TenantValidationUtil.logTenantOperation("UPDATE", "ROLE", roleDTO.getId());
+            TenantValidationUtil.logTenantOperation("UPDATE", "ROLE", roleDTO.getId());
         }
 
         log.info("角色更新成功: {} ({}), 操作人: {}", role.getRoleCode(),
@@ -288,15 +304,14 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         }
 
         // 4. 验证数据归属（区分平台角色和租户角色）
-        if ("PLATFORM_ROLE".equals(role.getRoleType())) {
+        if (RoleConstants.ROLE_TYPE_PLATFORM.equals(role.getRoleType())) {
             // 删除平台角色 - 只有平台管理员可以删除
-            if (!com.frog.common.tenant.TenantValidationUtil.isPlatformAdmin()) {
-                throw new BusinessException("PERMISSION_DENIED", "只有平台管理员可以删除平台角色");
+            if (TenantValidationUtil.isTenantUser()) {
+                throw new BusinessException(ResultCode.PERMISSION_DENIED.getCode(), "只有平台管理员可以删除平台角色");
             }
         } else {
             // 删除租户角色 - 验证租户上下文和数据归属
-            UUID tenantId = com.frog.common.tenant.TenantValidationUtil.getRequiredTenantId();
-            com.frog.common.tenant.TenantValidationUtil.validateDataOwnership(role.getTenantId());
+            TenantValidationUtil.validateDataOwnership(role.getTenantId());
         }
 
         // 5. 检查是否有用户使用该角色
@@ -322,7 +337,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
         // 11. 记录日志
         if (role.getTenantId() != null) {
-            com.frog.common.tenant.TenantValidationUtil.logTenantOperation("DELETE", "ROLE", id);
+            TenantValidationUtil.logTenantOperation("DELETE", "ROLE", id);
         }
 
         log.info("角色删除成功: {} ({}), 操作人: {}", role.getRoleCode(),
@@ -349,15 +364,14 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         }
 
         // 3. 验证数据归属（区分平台角色和租户角色）
-        if ("PLATFORM_ROLE".equals(role.getRoleType())) {
+        if (RoleConstants.ROLE_TYPE_PLATFORM.equals(role.getRoleType())) {
             // 为平台角色授权 - 只有平台管理员可以操作
-            if (!com.frog.common.tenant.TenantValidationUtil.isPlatformAdmin()) {
-                throw new BusinessException("PERMISSION_DENIED", "只有平台管理员可以为平台角色授权");
+            if (TenantValidationUtil.isTenantUser()) {
+                throw new BusinessException(ResultCode.PERMISSION_DENIED.getCode(), "只有平台管理员可以为平台角色授权");
             }
         } else {
             // 为租户角色授权 - 验证租户上下文和数据归属
-            UUID tenantId = com.frog.common.tenant.TenantValidationUtil.getRequiredTenantId();
-            com.frog.common.tenant.TenantValidationUtil.validateDataOwnership(role.getTenantId());
+            TenantValidationUtil.validateDataOwnership(role.getTenantId());
         }
 
         // 4. 删除原有权限
@@ -371,7 +385,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
         // 6. 记录日志
         if (role.getTenantId() != null) {
-            com.frog.common.tenant.TenantValidationUtil.logTenantOperation("GRANT_PERMISSIONS", "ROLE", roleId);
+            TenantValidationUtil.logTenantOperation("GRANT_PERMISSIONS", "ROLE", roleId);
         }
 
         log.info("权限授予成功: role={} ({}), 权限数: {}, 操作人: {}",

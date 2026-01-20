@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 
 /**
  * 采购审批超时提醒定时任务
- *
+
  * 执行时间：每日上午 10:00 和下午 15:00（cron: 0 0 10,15 * * ?）
- *
+
  * 功能：
  * 1. 扫描所有租户的待审批任务
  * 2. 超时标准：
@@ -47,7 +47,6 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class ApprovalTimeoutReminderJob {
-
     private final PurchaseApprovalService purchaseApprovalService;
     private final NotificationService notificationService;
 
@@ -85,7 +84,7 @@ public class ApprovalTimeoutReminderJob {
                     } else if (part.startsWith("autoApprove=")) {
                         autoApprove = Boolean.parseBoolean(part.substring(12));
                     } else {
-                        // 尝试解析为租户ID
+                        // 尝试解析为租户 ID
                         try {
                             tenantId = UUID.fromString(part);
                         } catch (IllegalArgumentException e) {

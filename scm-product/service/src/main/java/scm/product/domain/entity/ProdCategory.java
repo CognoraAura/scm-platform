@@ -4,10 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 
-import java.io.Serial;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,9 +24,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("prod_category")
 @Schema(description = "商品分类表")
-public class ProdCategory implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class ProdCategory {
 
     @TableId(value = "id", type = IdType.NONE)
     @Schema(description = "分类 ID")

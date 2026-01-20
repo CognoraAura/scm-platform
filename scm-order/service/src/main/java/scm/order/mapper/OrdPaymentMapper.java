@@ -1,9 +1,7 @@
 package scm.order.mapper;
 
--order/service.mapper;
-
-import scm-order/service.domain.entity.OrdPayment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import scm.order.domain.entity.OrdPayment;
 
 /**
  * <p>

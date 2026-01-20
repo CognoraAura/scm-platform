@@ -31,8 +31,7 @@ public interface ISysUserService extends IService<SysUser> {
      * @param status   用户状态（可选，如：0-禁用，1-启用）
      * @return 用户分页数据
      */
-    Page<UserDTO> listUsers(Integer pageNum, Integer pageSize,
-                            String username, Integer status);
+    Page<UserDTO> listUsers(Integer pageNum, Integer pageSize, String username, Integer status);
 
     /**
      * 根据用户名获取用户（用于 Spring Security 认证）。

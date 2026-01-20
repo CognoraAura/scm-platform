@@ -187,6 +187,7 @@ public class PermissionCheckUtil {
         }
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+
         return authorities.stream()
                 .map(GrantedAuthority::getAuthority)
                 .filter(auth -> auth != null && !auth.startsWith("ROLE_"))
@@ -203,6 +204,7 @@ public class PermissionCheckUtil {
         }
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+
         return authorities.stream()
                 .map(GrantedAuthority::getAuthority)
                 .filter(auth -> auth != null && auth.startsWith("ROLE_"))

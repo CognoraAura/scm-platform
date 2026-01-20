@@ -1,12 +1,15 @@
 package scm.supplier.domain.entity;
 
 import java.math.BigDecimal;
+
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+import java.util.UUID;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,24 +28,13 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("sup_settlement")
 @Schema(description = "对账单表")
-public class SupSettlement implements Serializable {
+public class SupSettlement {
 
-    private static final long serialVersionUID = 1L;
-
-    @TableId(value = "id", type = IdType.UUID)
-    private String id;
-
-    @TableField("id")
-    private String id;
+    @TableId(value = "id", type = IdType.NONE)
+    private UUID id;
 
     @TableField("settlement_no")
     private String settlementNo;
-
-    @TableField("settlement_no")
-    private String settlementNo;
-
-    @TableField("supplier_id")
-    private String supplierId;
 
     @TableField("supplier_id")
     private String supplierId;
@@ -68,14 +60,8 @@ public class SupSettlement implements Serializable {
     @TableField("total_amount")
     private BigDecimal totalAmount;
 
-    @TableField("total_amount")
-    private BigDecimal totalAmount;
-
     @TableField("discount_amount")
     private BigDecimal discountAmount;
-
-    @TableField("actual_amount")
-    private BigDecimal actualAmount;
 
     @TableField("actual_amount")
     private BigDecimal actualAmount;
@@ -85,10 +71,6 @@ public class SupSettlement implements Serializable {
 
     @TableField("payment_date")
     private LocalDate paymentDate;
-
-    @Schema(description = "状态:0-待确认,1-已确认,2-待付款,3-部分付款,4-已付款")
-    @TableField("status")
-    private Integer status;
 
     @Schema(description = "状态:0-待确认,1-已确认,2-待付款,3-部分付款,4-已付款")
     @TableField("status")

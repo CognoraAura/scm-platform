@@ -2,11 +2,13 @@ package com.frog.system.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 
-import java.io.Serial;
 import java.time.LocalDateTime;
-import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.frog.common.mybatisPlus.handler.StringArrayTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Builder;
@@ -31,9 +33,7 @@ import lombok.experimental.Accessors;
         name="SysPermissionApproval 对象",
         description="权限申请审批表"
 )
-public class SysPermissionApproval implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class SysPermissionApproval {
 
     @Schema(description = "审批 ID")
     @TableId(value = "id", type = IdType.NONE)
@@ -84,8 +84,8 @@ public class SysPermissionApproval implements Serializable {
     private UUID currentApproverId;
 
     @Schema(description = "审批链(JSONB)")
-    @TableField(value = "approval_chain", typeHandler = com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler.class)
-    private java.util.List<java.util.Map<String, Object>> approvalChain;
+    @TableField(value = "approval_chain", typeHandler = JacksonTypeHandler.class)
+    private List<Map<String, Object>> approvalChain;
 
     @Schema(description = "最终审批人")
     @TableField("approved_by")
@@ -126,10 +126,10 @@ public class SysPermissionApproval implements Serializable {
     private String approverName;
 
     @Schema(description = "角色名称数组（冗余字段）")
-    @TableField(value = "role_names", typeHandler = com.frog.common.mybatisPlus.handler.StringArrayTypeHandler.class)
+    @TableField(value = "role_names", typeHandler = StringArrayTypeHandler.class)
     private String[] roleNames;
 
     @Schema(description = "权限名称数组（冗余字段）")
-    @TableField(value = "permission_names", typeHandler = com.frog.common.mybatisPlus.handler.StringArrayTypeHandler.class)
+    @TableField(value = "permission_names", typeHandler = StringArrayTypeHandler.class)
     private String[] permissionNames;
 }

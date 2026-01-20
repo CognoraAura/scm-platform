@@ -1,6 +1,5 @@
 package scm.finance.domain.entity;
 
-import java.io.Serial;
 import java.math.BigDecimal;
 
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -9,7 +8,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,9 +26,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("platform_service_fee")
 @Schema(description = "平台服务费表（SaaS平台）")
-public class PlatformServiceFee implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class PlatformServiceFee {
 
     @TableId(value = "id", type = IdType.NONE)
     private String id;
@@ -114,6 +110,4 @@ public class PlatformServiceFee implements Serializable {
 
     @TableField("remark")
     private String remark;
-
-
 }

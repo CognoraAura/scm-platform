@@ -2,9 +2,7 @@ package com.frog.system.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 
-import java.io.Serial;
 import java.time.LocalDateTime;
-import java.io.Serializable;
 import java.util.UUID;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,15 +24,13 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("sys_dept")
 @Tag(name="SysDept 对象", description="部门表")
-public class SysDept implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class SysDept {
 
     @Schema(name = "部门 ID")
     @TableId(value = "id", type = IdType.NONE)
     private UUID id;
 
-    @Schema(description = "租户ID")
+    @Schema(description = "租户 ID")
     @TableField("tenant_id")
     private UUID tenantId;
 

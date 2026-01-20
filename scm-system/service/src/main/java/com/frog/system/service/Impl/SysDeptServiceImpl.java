@@ -2,14 +2,16 @@ package com.frog.system.service.Impl;
 
 import com.frog.common.dto.dept.DeptDTO;
 import com.frog.common.exception.BusinessException;
+import com.frog.common.tenant.TenantValidationUtil;
 import com.frog.common.util.UUIDv7Util;
 import com.frog.common.web.util.SecurityUtils;
 import com.frog.common.data.rw.annotation.Slave;
 import com.frog.system.domain.entity.SysDept;
 import com.frog.system.event.DataSyncEventPublisher;
 import com.frog.system.mapper.SysDeptMapper;
-import com.frog.system.service.CrossDatabaseQueryService;
 import com.frog.system.service.ISysDeptService;
+import com.frog.system.service.command.DeptRoleCrossDatabaseCommandService;
+import com.frog.system.service.query.DeptCrossDatabaseQueryService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +35,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> implements ISysDeptService {
     private final SysDeptMapper deptMapper;
-    private final CrossDatabaseQueryService crossDatabaseQueryService;
+    private final DeptCrossDatabaseQueryService deptQueryService;
+    private final DeptRoleCrossDatabaseCommandService deptRoleCommandService;
     private final DataSyncEventPublisher dataSyncEventPublisher;
     private final com.frog.common.security.PermissionChecker permissionChecker;
 
@@ -52,7 +55,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
     @Cacheable(value = "deptTree", key = "#root.target.getTenantCacheKey()")
     public List<DeptDTO> getDeptTree() {
         // 验证租户上下文（查询会自动应用 tenant_id 过滤）
-        UUID tenantId = com.frog.common.tenant.TenantValidationUtil.getRequiredTenantId();
+        TenantValidationUtil.getRequiredTenantId();
 
         // 1. 从 org 库查询当前租户的所有部门（使用冗余字段包含负责人信息）
         // MyBatis-Plus 拦截器会自动添加 WHERE tenant_id = #{tenantId} 条件
@@ -64,7 +67,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         // 3. 通过 CrossDatabaseQueryService 从 user 库批量统计每个部门的用户数（单次跨库查询，性能优化）
         Map<UUID, Integer> userCountMap = new HashMap<>();
         if (!deptIds.isEmpty()) {
-            userCountMap = crossDatabaseQueryService.countUsersByDeptIds(deptIds);
+            userCountMap = deptQueryService.countUsersByDeptIds(deptIds);
         }
 
         // 4. 批量统计每个部门的子部门数（避免 N+1 查询）
@@ -106,7 +109,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
     @Cacheable(value = "deptChildren", key = "#deptId + ':' + #root.target.getTenantCacheKey()")
     public List<UUID> getDeptAndChildren(UUID deptId) {
         // 验证租户上下文（查询会自动应用 tenant_id 过滤）
-        com.frog.common.tenant.TenantValidationUtil.getRequiredTenantId();
+        TenantValidationUtil.getRequiredTenantId();
 
         // MyBatis-Plus 拦截器会自动添加 WHERE tenant_id = #{tenantId} 条件
         return deptMapper.selectDeptAndChildren(deptId);
@@ -140,14 +143,14 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
                 throw new BusinessException("父部门不存在");
             }
             // 验证父部门归属
-            com.frog.common.tenant.TenantValidationUtil.validateDataOwnership(parent.getTenantId());
+            TenantValidationUtil.validateDataOwnership(parent.getTenantId());
         }
 
         // 4. 准备实体并设置租户ID
         SysDept dept = new SysDept();
         BeanUtils.copyProperties(deptDTO, dept);
         dept.setId(UUIDv7Util.generate());
-        dept.setTenantId(tenantId);  // 自动设置租户ID
+        dept.setTenantId(tenantId);  // 自动设置租户 ID
 
         // 5. 执行业务逻辑
         deptMapper.insert(dept);
@@ -156,7 +159,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         dataSyncEventPublisher.publishDeptCreated(dept);
 
         // 7. 记录租户操作日志
-        com.frog.common.tenant.TenantValidationUtil.logTenantOperation("CREATE", "DEPT", dept.getId());
+        TenantValidationUtil.logTenantOperation("CREATE", "DEPT", dept.getId());
 
         log.info("部门创建成功: {}, 租户: {}, 操作人: {}", dept.getDeptName(),
                 tenantId, SecurityUtils.getCurrentUsername());
@@ -170,7 +173,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
     @CacheEvict(value = {"deptTree", "deptChildren"}, allEntries = true)
     public void updateDept(DeptDTO deptDTO) {
         // 1. 验证租户上下文
-        UUID tenantId = com.frog.common.tenant.TenantValidationUtil.getRequiredTenantId();
+        UUID tenantId = TenantValidationUtil.getRequiredTenantId();
 
         // 2. 检查操作权限
         UUID operatorId = SecurityUtils.getCurrentUserUuid().orElse(null);
@@ -183,7 +186,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         }
 
         // 4. 验证数据归属（tenant_id）
-        com.frog.common.tenant.TenantValidationUtil.validateDataOwnership(existDept.getTenantId());
+        TenantValidationUtil.validateDataOwnership(existDept.getTenantId());
 
         // 5. 业务校验
         // 5.1 不能将父部门设置为自己或自己的子部门
@@ -204,7 +207,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
                 if (newParent == null) {
                     throw new BusinessException("父部门不存在");
                 }
-                com.frog.common.tenant.TenantValidationUtil.validateDataOwnership(newParent.getTenantId());
+                TenantValidationUtil.validateDataOwnership(newParent.getTenantId());
             }
         }
 
@@ -220,7 +223,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         dataSyncEventPublisher.publishDeptUpdated(updatedDept);
 
         // 8. 记录租户操作日志
-        com.frog.common.tenant.TenantValidationUtil.logTenantOperation("UPDATE", "DEPT", deptDTO.getId());
+        TenantValidationUtil.logTenantOperation("UPDATE", "DEPT", deptDTO.getId());
 
         log.info("部门修改成功: {}, 租户: {}, 操作人: {}", dept.getDeptName(),
                 tenantId, SecurityUtils.getCurrentUsername());
@@ -239,7 +242,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
     @CacheEvict(value = {"deptTree", "deptChildren"}, allEntries = true)
     public void deleteDept(UUID id) {
         // 1. 验证租户上下文
-        UUID tenantId = com.frog.common.tenant.TenantValidationUtil.getRequiredTenantId();
+        UUID tenantId = TenantValidationUtil.getRequiredTenantId();
 
         // 2. 检查操作权限
         UUID operatorId = SecurityUtils.getCurrentUserUuid().orElse(null);
@@ -252,7 +255,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         }
 
         // 4. 验证数据归属（tenant_id）
-        com.frog.common.tenant.TenantValidationUtil.validateDataOwnership(dept.getTenantId());
+        TenantValidationUtil.validateDataOwnership(dept.getTenantId());
 
         // 5. 业务校验
         // 5.1 检查是否有子部门
@@ -268,7 +271,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
 
         // 6. 执行业务逻辑
         // 6.1 清理角色部门关联数据 (sys_role_dept in db_permission) - 跨库操作
-        int deletedRoleDeptCount = crossDatabaseQueryService.deleteRoleDeptsByDeptId(id);
+        int deletedRoleDeptCount = deptRoleCommandService.deleteRoleDeptsByDeptId(id);
         if (deletedRoleDeptCount > 0) {
             log.debug("已清理部门 {} 的角色关联记录: {} 条", dept.getDeptName(), deletedRoleDeptCount);
         }
@@ -280,7 +283,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         dataSyncEventPublisher.publishDeptDeleted(id);
 
         // 8. 记录租户操作日志
-        com.frog.common.tenant.TenantValidationUtil.logTenantOperation("DELETE", "DEPT", id);
+        TenantValidationUtil.logTenantOperation("DELETE", "DEPT", id);
 
         log.info("部门删除成功: {}, 租户: {}, 操作人: {}", dept.getDeptName(),
                 tenantId, SecurityUtils.getCurrentUsername());
@@ -311,7 +314,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
      * 通过 CrossDatabaseQueryService 跨库查询 db_user
      */
     private int countUsersByDeptId(UUID deptId) {
-        return crossDatabaseQueryService.countUsersByDeptId(deptId);
+        return deptQueryService.countUsersByDeptId(deptId);
     }
 
     // ========== 私有方法 ==========
@@ -360,7 +363,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
      * @return 租户ID字符串，用于缓存key生成
      */
     public String getTenantCacheKey() {
-        UUID tenantId = com.frog.common.tenant.TenantValidationUtil.getCurrentTenantId();
-        return tenantId != null ? tenantId.toString() : "platform";
+        UUID tenantId = TenantValidationUtil.getRequiredTenantId();
+        return tenantId.toString();
     }
 }
