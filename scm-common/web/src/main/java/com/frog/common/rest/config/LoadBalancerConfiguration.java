@@ -59,7 +59,8 @@ public class LoadBalancerConfiguration {
         havingValue = "round-robin",
         matchIfMissing = true
     )
-    public ReactorLoadBalancer<ServiceInstance> roundRobinLoadBalancer(Environment environment,
+    public ReactorLoadBalancer<ServiceInstance> roundRobinLoadBalancer(
+            Environment environment,
             ObjectProvider<ServiceInstanceListSupplier> serviceInstanceListSupplierProvider) {
 
         String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME, "default");
@@ -77,7 +78,8 @@ public class LoadBalancerConfiguration {
         name = "spring.cloud.loadbalancer.strategy",
         havingValue = "random"
     )
-    public ReactorLoadBalancer<ServiceInstance> randomLoadBalancer(Environment environment,
+    public ReactorLoadBalancer<ServiceInstance> randomLoadBalancer(
+            Environment environment,
             ObjectProvider<ServiceInstanceListSupplier> serviceInstanceListSupplierProvider) {
 
         String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME, "default");
@@ -106,7 +108,8 @@ public class LoadBalancerConfiguration {
         name = "spring.cloud.loadbalancer.strategy",
         havingValue = "weighted-round-robin"
     )
-    public ReactorLoadBalancer<ServiceInstance> weightedRoundRobinLoadBalancer(Environment environment,
+    public ReactorLoadBalancer<ServiceInstance> weightedRoundRobinLoadBalancer(
+            Environment environment,
             ObjectProvider<ServiceInstanceListSupplier> serviceInstanceListSupplierProvider) {
 
         String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME, "default");

@@ -1,4 +1,4 @@
-package com.frog.common.web.serializer;
+package com.frog.common.security.serializer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanProperty;
@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
-import com.frog.common.web.annotation.Sensitive;
-import com.frog.common.web.enums.SensitiveType;
+import com.frog.common.security.annotation.Sensitive;
+import com.frog.common.security.enums.SensitiveType;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;

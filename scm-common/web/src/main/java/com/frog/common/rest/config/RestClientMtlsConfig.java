@@ -97,8 +97,12 @@ public class RestClientMtlsConfig {
      */
     private JksSslStoreDetails createStoreDetails(Resource resource, String password) throws Exception {
         JksSslStoreDetails details = JksSslStoreDetails.forLocation(resource.getURL().toString());
-
-        return new JksSslStoreDetails(details.type(), details.provider(), resource.getURL().toString(), password);
+        return new JksSslStoreDetails(
+            details.type(),
+            details.provider(),
+            resource.getURL().toString(),
+            password
+        );
     }
 
     /**

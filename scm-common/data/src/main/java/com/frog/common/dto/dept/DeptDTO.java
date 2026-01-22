@@ -1,7 +1,7 @@
 package com.frog.common.dto.dept;
 
-import com.frog.common.web.annotation.Sensitive;
-import com.frog.common.web.enums.SensitiveType;
+import com.frog.common.security.annotation.Sensitive;
+import com.frog.common.security.enums.SensitiveType;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
