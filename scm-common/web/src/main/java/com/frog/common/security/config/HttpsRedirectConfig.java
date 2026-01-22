@@ -5,8 +5,8 @@ import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
-import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
-import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 public class HttpsRedirectConfig {
-
     private final HttpsRedirectProperties properties;
 
     @Bean
@@ -40,8 +39,8 @@ public class HttpsRedirectConfig {
             }
         };
 
-        // 添加HTTP连接器（自动重定向到HTTPS）
-        tomcat.addAdditionalConnectors(createHttpConnector());
+        // 修改为正确的方法名
+        tomcat.addAdditionalTomcatConnectors(createHttpConnector());
 
         return tomcat;
     }

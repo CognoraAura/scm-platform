@@ -15,10 +15,7 @@ import java.util.UUID;
 @UtilityClass
 public class SecurityErrorResponseWriter {
 
-    public void write(HttpServletRequest request,
-                      HttpServletResponse response,
-                      int status,
-                      String error,
+    public void write(HttpServletRequest request, HttpServletResponse response, int status, String error,
                       String message) throws IOException {
         String traceId = resolveTraceId(request);
         String path = request.getRequestURI();

@@ -55,12 +55,9 @@ public class DataSyncAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DataSyncPublisher.class)
     @ConditionalOnBean(KafkaTemplate.class)
-    public DataSyncPublisher dataSyncPublisher(
-            KafkaTemplate<String, String> kafkaTemplate,
-            ObjectMapper objectMapper,
-            DataSyncProperties properties,
-            MeterRegistry meterRegistry,
-            Tracer tracer) {
+    public DataSyncPublisher dataSyncPublisher(KafkaTemplate<String, String> kafkaTemplate, ObjectMapper objectMapper,
+                                               DataSyncProperties properties, MeterRegistry meterRegistry,
+                                               Tracer tracer) {
 
         log.info("[DataSync] Initializing Kafka publisher with topic prefix: {}",
                 properties.getTopicPrefix());
@@ -71,9 +68,7 @@ public class DataSyncAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(IdempotentChecker.class)
     @ConditionalOnBean(StringRedisTemplate.class)
-    public IdempotentChecker idempotentChecker(
-            StringRedisTemplate redisTemplate,
-            DataSyncProperties properties) {
+    public IdempotentChecker idempotentChecker(StringRedisTemplate redisTemplate, DataSyncProperties properties) {
 
         log.info("[DataSync] Initializing idempotent checker");
         return new IdempotentChecker(redisTemplate, properties.getIdempotent());
@@ -81,15 +76,13 @@ public class DataSyncAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(RetryableEventProcessor.class)
-    public RetryableEventProcessor retryableEventProcessor(
-            IdempotentChecker idempotentChecker,
-            DataSyncPublisher publisher,
-            DataSyncProperties properties,
-            MeterRegistry meterRegistry,
-            ObjectProvider<List<DataSyncHandler>> handlersProvider) {
+    public RetryableEventProcessor retryableEventProcessor(IdempotentChecker idempotentChecker,
+                                                           DataSyncPublisher publisher, DataSyncProperties properties,
+                                                           MeterRegistry meterRegistry,
+                                                           ObjectProvider<List<DataSyncHandler>> handlersProvider) {
 
-        RetryableEventProcessor processor = new RetryableEventProcessor(
-                idempotentChecker, publisher, properties, meterRegistry);
+        RetryableEventProcessor processor = new RetryableEventProcessor(idempotentChecker, publisher, properties,
+                meterRegistry);
 
         // 自动注册所有 DataSyncHandler
         List<DataSyncHandler> handlers = handlersProvider.getIfAvailable();
@@ -104,10 +97,8 @@ public class DataSyncAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(KafkaDataSyncConsumer.class)
     @ConditionalOnClass(name = "org.springframework.kafka.annotation.KafkaListener")
-    public KafkaDataSyncConsumer kafkaDataSyncConsumer(
-            RetryableEventProcessor processor,
-            ObjectMapper objectMapper,
-            Tracer tracer) {
+    public KafkaDataSyncConsumer kafkaDataSyncConsumer(RetryableEventProcessor processor, ObjectMapper objectMapper,
+                                                       Tracer tracer) {
 
         log.info("[DataSync] Initializing Kafka consumer");
         return new KafkaDataSyncConsumer(processor, objectMapper, tracer);
@@ -116,8 +107,7 @@ public class DataSyncAutoConfiguration {
     @Bean("dataSyncKafkaListenerContainerFactory")
     @ConditionalOnBean(ConsumerFactory.class)
     public ConcurrentKafkaListenerContainerFactory<String, String> dataSyncKafkaListenerContainerFactory(
-            DataSyncProperties properties,
-            KafkaProperties kafkaProperties) {
+            DataSyncProperties properties, KafkaProperties kafkaProperties) {
 
         Map<String, Object> consumerProps = new HashMap<>(kafkaProperties.buildConsumerProperties());
         consumerProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
@@ -141,10 +131,9 @@ public class DataSyncAutoConfiguration {
 
     @Bean
     @ConditionalOnProperty(prefix = "datasync.reconciliation", name = "enabled", havingValue = "true")
-    public DataReconciliationTask dataReconciliationTask(
-            DataSyncProperties properties,
-            ObjectProvider<List<DataSyncHandler>> handlersProvider,
-            MeterRegistry meterRegistry) {
+    public DataReconciliationTask dataReconciliationTask(DataSyncProperties properties,
+                                                         ObjectProvider<List<DataSyncHandler>> handlersProvider,
+                                                         MeterRegistry meterRegistry) {
 
         log.info("[DataSync] Initializing reconciliation task with cron: {}",
                 properties.getReconciliation().getCron());

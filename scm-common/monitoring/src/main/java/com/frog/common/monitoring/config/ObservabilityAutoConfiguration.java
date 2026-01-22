@@ -61,10 +61,8 @@ public class ObservabilityAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public OpenTelemetry openTelemetry(SdkTracerProvider tracerProvider) {
-        TextMapPropagator compositePropagator = TextMapPropagator.composite(
-                        W3CTraceContextPropagator.getInstance(),
-                        B3Propagator.injectingMultiHeaders()
-        );
+        TextMapPropagator compositePropagator = TextMapPropagator.composite(W3CTraceContextPropagator.getInstance(),
+                B3Propagator.injectingMultiHeaders());
         ContextPropagators propagators = ContextPropagators.create(compositePropagator);
         return OpenTelemetrySdk.builder()
                 .setTracerProvider(tracerProvider)

@@ -1,4 +1,4 @@
-package com.frog.common.security.enums;
+package com.frog.common.web.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -23,7 +23,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ShardingContextInterceptor implements HandlerInterceptor {
 
-    @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
                              @NonNull Object handler) {
         UUID userId = SecurityUtils.getCurrentUserUuid().orElse(null);
@@ -36,7 +35,6 @@ public class ShardingContextInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    @Override
     public void afterCompletion(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
                                 @NonNull Object handler, Exception ex) {
         HintManager.clear();

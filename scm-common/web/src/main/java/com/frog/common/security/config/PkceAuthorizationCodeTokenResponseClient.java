@@ -25,7 +25,6 @@ import java.util.Base64;
 @RequiredArgsConstructor
 public class PkceAuthorizationCodeTokenResponseClient
         implements OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> {
-
     private final OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> delegate;
     private final PkceChallengeStore pkceChallengeStore; // 自定义接口，用于存储/读取 code_challenge
 

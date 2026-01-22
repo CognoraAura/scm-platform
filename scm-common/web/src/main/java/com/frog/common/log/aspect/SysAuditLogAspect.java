@@ -44,12 +44,10 @@ public class SysAuditLogAspect {
         AuditLog annotation = signature.getMethod().getAnnotation(AuditLog.class);
 
         // 获取请求信息
-        ServletRequestAttributes attributes =
-                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes != null ? attributes.getRequest() : null;
 
         SysAuditLog auditLog = SysAuditLog.builder()
-
                 .userId(SecurityUtils.getCurrentUserUuid().orElse(null))
                 .username(SecurityUtils.getCurrentUsername().orElse(null))
                 .operationType(annotation.businessType())

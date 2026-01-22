@@ -19,6 +19,29 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.frog</groupId>
+            <artifactId>scm-common-security-core</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.frog</groupId>
+            <artifactId>scm-common-security-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
+            <version>4.3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc-core</artifactId>
+            <version>5.4.1</version>
+        </dependency>
+
         <!-- spring start -->
         <!-- spring web -->
         <dependency>

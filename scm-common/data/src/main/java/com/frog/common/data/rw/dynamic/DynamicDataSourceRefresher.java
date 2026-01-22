@@ -115,8 +115,7 @@ public class DynamicDataSourceRefresher {
      * - 复制延迟容忍
      */
     private void refreshSlaveSettings() {
-        for (Map.Entry<String, ReadWriteProperties.DataSourceGroup> groupEntry :
-                properties.getGroups().entrySet()) {
+        for (Map.Entry<String, ReadWriteProperties.DataSourceGroup> groupEntry : properties.getGroups().entrySet()) {
 
             String groupName = groupEntry.getKey();
             ReadWriteProperties.DataSourceGroup group = groupEntry.getValue();

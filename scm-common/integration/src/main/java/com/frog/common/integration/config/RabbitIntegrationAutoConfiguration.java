@@ -40,8 +40,7 @@ public class RabbitIntegrationAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public RabbitTemplate rabbitTemplate(CachingConnectionFactory connectionFactory,
-                                         MessageConverter messageConverter) {
+    public RabbitTemplate rabbitTemplate(CachingConnectionFactory connectionFactory, MessageConverter messageConverter) {
         if (properties.isPublisherConfirms()) {
             connectionFactory.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.CORRELATED);
             connectionFactory.setPublisherReturns(true);
@@ -78,17 +77,14 @@ public class RabbitIntegrationAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ReliableMessagePublisher reliableMessagePublisher(RabbitTemplate rabbitTemplate,
-                                                             ObservationRegistry observationRegistry,
-                                                             Tracer tracer) {
+                                                             ObservationRegistry observationRegistry, Tracer tracer) {
         return new ReliableMessagePublisher(rabbitTemplate, observationRegistry, tracer, properties);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public InstrumentedMessageConsumer instrumentedMessageConsumer(
-            ObservationRegistry observationRegistry,
-            Tracer tracer,
-            IdempotencyChecker idempotencyChecker) {
+    public InstrumentedMessageConsumer instrumentedMessageConsumer(ObservationRegistry observationRegistry,
+                                                                   Tracer tracer, IdempotencyChecker idempotencyChecker) {
         return new InstrumentedMessageConsumer(observationRegistry, tracer, idempotencyChecker);
     }
 

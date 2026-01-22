@@ -64,16 +64,20 @@ public class StepUpPolicyLoader {
                     Map<String, Object> map = YAML.load(is);
                     StepUpPolicy policy = mapToPolicy(map);
                     if (policy != null) {
+
                         log.debug("Successfully loaded step-up policy from: {}", resource.getDescription());
                         return policy;
                     }
                 } catch (IOException e) {
+
                     log.warn("IO error reading step-up policy from {}: {}",
                             resource.getDescription(), e.getMessage());
                 } catch (YAMLException e) {
+
                     log.error("YAML parsing error in step-up policy from {}: {}",
                             resource.getDescription(), e.getMessage(), e);
                 } catch (Exception e) {
+
                     log.error("Unexpected error loading step-up policy from {}: {}",
                             resource.getDescription(), e.getMessage(), e);
                 }

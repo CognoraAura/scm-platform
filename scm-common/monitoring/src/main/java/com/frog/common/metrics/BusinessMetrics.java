@@ -97,29 +97,22 @@ public class BusinessMetrics {
      * 快捷方法 - 记录登录
      */
     public void recordLogin(boolean success, String source) {
-        recordCount("business.login.total",
-                "success", String.valueOf(success),
-                "source", source);
+        recordCount("business.login.total", "success", String.valueOf(success), "source", source);
     }
 
     /**
      * 快捷方法 - 记录API调用
      */
     public void recordApi(String api, long timeMs, boolean success) {
-        recordCount("business.api.calls",
-                "api", api,
-                "success", String.valueOf(success));
-        recordTime("business.api.duration", timeMs,
-                "api", api);
+        recordCount("business.api.calls", "api", api, "success", String.valueOf(success));
+        recordTime("business.api.duration", timeMs, "api", api);
     }
 
     /**
      * 快捷方法 - 记录缓存命中
      */
     public void recordCache(String cacheName, boolean hit) {
-        recordCount("business.cache.access",
-                "cache", cacheName,
-                "hit", String.valueOf(hit));
+        recordCount("business.cache.access", "cache", cacheName, "hit", String.valueOf(hit));
     }
 
     /**

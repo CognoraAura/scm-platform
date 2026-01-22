@@ -25,12 +25,10 @@ import java.util.UUID;
 @Slf4j
 public class SysAuditLogServiceImpl extends ServiceImpl<SysAuditLogMapper, SysAuditLog>
         implements ISysAuditLogService {
-
     private final SysAuditLogMapper sysAuditLogMapper;
 
     @Async
-    public void recordLogin(UUID userId, String username, String ipAddress,
-                            boolean success, String remark) {
+    public void recordLogin(UUID userId, String username, String ipAddress, boolean success, String remark) {
         SysAuditLog log = SysAuditLog.builder()
                 .userId(userId)
                 .username(username)
@@ -72,8 +70,7 @@ public class SysAuditLogServiceImpl extends ServiceImpl<SysAuditLogMapper, SysAu
      * 记录安全事件（异步）
      */
     @Async
-    public void recordSecurityEvent(String eventType, Integer riskLevel, UUID userId,
-                                    String username, String ipAddress,
+    public void recordSecurityEvent(String eventType, Integer riskLevel, UUID userId, String username, String ipAddress,
                                     String resource, boolean success, String details) {
         try {
             SysAuditLog log = SysAuditLog.builder()

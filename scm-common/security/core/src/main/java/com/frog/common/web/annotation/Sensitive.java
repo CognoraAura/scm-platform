@@ -1,9 +1,8 @@
-package com.frog.common.security.annotation;
+package com.frog.common.web.annotation;
 
 import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.frog.common.security.enums.SensitiveType;
-import com.frog.common.security.serializer.SensitiveJsonSerializer;
+import com.frog.common.web.enums.SensitiveType;
 
 import java.lang.annotation.*;
 /**
@@ -18,7 +17,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @JacksonAnnotationsInside
-@JsonSerialize(using = SensitiveJsonSerializer.class)
+@JsonSerialize(using = com.frog.common.web.serializer.SensitiveJsonSerializer.class)
 public @interface Sensitive {
 
     /**

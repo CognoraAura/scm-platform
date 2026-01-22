@@ -98,9 +98,8 @@ public class SlaveCircuitBreaker {
      * @param <T>       返回类型
      * @return 执行结果
      */
-    public <T> T executeWithCircuitBreaker(String groupName, String slaveName,
-                                            SlaveOperation<T> operation,
-                                            SlaveFallback<T> fallback) throws Exception {
+    public <T> T executeWithCircuitBreaker(String groupName, String slaveName, SlaveOperation<T> operation,
+                                           SlaveFallback<T> fallback) throws Exception {
         String resource = RESOURCE_PREFIX + groupName + "." + slaveName;
 
         // 尝试获取 Entry，BlockException 表示熔断触发

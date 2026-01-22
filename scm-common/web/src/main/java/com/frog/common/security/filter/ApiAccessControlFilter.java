@@ -114,9 +114,7 @@ public class ApiAccessControlFilter extends OncePerRequestFilter {
                     traceId, userId, username, requestUri, method, requiredPermissions);
 
             securityMetrics.increment("security.access.denied");
-            SecurityErrorResponseWriter.write(request, response,
-                    HttpServletResponse.SC_FORBIDDEN,
-                    "ACCESS_DENIED",
+            SecurityErrorResponseWriter.write(request, response, HttpServletResponse.SC_FORBIDDEN, "ACCESS_DENIED",
                     "您没有访问该资源的权限");
             return;
         }
@@ -133,11 +131,8 @@ public class ApiAccessControlFilter extends OncePerRequestFilter {
     }
 
     private boolean shouldBypass(String uri, SecurityUser principal) {
-        return FilterBypassHelper.shouldBypass(uri, principal,
-                properties.getBypassPaths(),
-                properties.getBypassUsers(),
-                properties.getBypassRoles(),
-                properties.getBypassPermissions());
+        return FilterBypassHelper.shouldBypass(uri, principal, properties.getBypassPaths(), properties.getBypassUsers(),
+                properties.getBypassRoles(), properties.getBypassPermissions());
     }
 
     private boolean isSensitiveOperation(String method, String uri) {

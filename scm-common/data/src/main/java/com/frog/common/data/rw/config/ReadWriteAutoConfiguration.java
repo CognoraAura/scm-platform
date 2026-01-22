@@ -23,8 +23,8 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -64,20 +64,17 @@ public class ReadWriteAutoConfiguration {
      * 所有创建的数据源，用于关闭时清理
      */
     private final List<HikariDataSource> allDataSources = new ArrayList<>();
-
     /**
      * 路由数据源映射
      */
     private final Map<String, ReadWriteRoutingDataSource> routingDataSources = new ConcurrentHashMap<>();
-
     /**
      * 从库数据源映射
      */
     private final Map<String, Map<String, DataSource>> slaveDataSourcesMap = new ConcurrentHashMap<>();
 
     public ReadWriteAutoConfiguration(ReadWriteProperties properties,
-                                       ObjectProvider<MeterRegistry> meterRegistryProvider,
-                                       Environment environment) {
+                                      ObjectProvider<MeterRegistry> meterRegistryProvider, Environment environment) {
         this.properties = properties;
         this.meterRegistry = meterRegistryProvider.getIfAvailable();
         this.environment = environment;
@@ -99,8 +96,7 @@ public class ReadWriteAutoConfiguration {
                     groupName, group.getSlaves().size());
 
             // 创建主库数据源
-            HikariDataSource masterDataSource = createDataSource(
-                    groupName + "-master", group.getMaster());
+            HikariDataSource masterDataSource = createDataSource(groupName + "-master", group.getMaster());
             allDataSources.add(masterDataSource);
 
             // 创建从库数据源
@@ -109,8 +105,7 @@ public class ReadWriteAutoConfiguration {
 
             for (ReadWriteProperties.SlaveDataSourceConfig slaveConfig : group.getSlaves()) {
                 String slaveName = slaveConfig.getName();
-                HikariDataSource slaveDataSource = createDataSource(
-                        groupName + "-" + slaveName, slaveConfig);
+                HikariDataSource slaveDataSource = createDataSource(groupName + "-" + slaveName, slaveConfig);
                 allDataSources.add(slaveDataSource);
                 slaveDataSources.put(slaveName, slaveDataSource);
 
@@ -149,8 +144,7 @@ public class ReadWriteAutoConfiguration {
         }
     }
 
-    private HikariDataSource createDataSource(String poolName,
-                                               ReadWriteProperties.DataSourceConfig config) {
+    private HikariDataSource createDataSource(String poolName, ReadWriteProperties.DataSourceConfig config) {
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setPoolName(poolName);
         hikariConfig.setJdbcUrl(config.getUrl());
@@ -270,6 +264,7 @@ public class ReadWriteAutoConfiguration {
     public SlaveHealthChecker slaveHealthChecker() {
         log.info("[RW-Config] Registering SlaveHealthChecker with interval: {}",
                 properties.getHealthCheckInterval());
+
         return new SlaveHealthChecker(
                 routingDataSources,
                 slaveDataSourcesMap,

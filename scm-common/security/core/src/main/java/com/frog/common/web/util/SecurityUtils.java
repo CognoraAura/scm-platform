@@ -44,8 +44,7 @@ public final class SecurityUtils {
     public static Collection<String> getAuthorities()      { return provider.getAuthorities(); }
 
     public static Optional<UUID> getCurrentUserUuid() {
-        return provider.getCurrentUserId()
-                .flatMap(SecurityUtils.SpringSecurityCurrentUserProvider::parseUuid);
+        return provider.getCurrentUserId().flatMap(SecurityUtils.SpringSecurityCurrentUserProvider::parseUuid);
     }
 
     public interface CurrentUserProvider {

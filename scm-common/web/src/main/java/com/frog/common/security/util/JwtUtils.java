@@ -126,8 +126,7 @@ public class JwtUtils {
         claims.put("deviceId", deviceId);
         claims.put("jti", jti);
 
-        return createToken(claims, userId.toString(),
-                jwtProperties.getRefreshExpiration());
+        return createToken(claims, userId.toString(), jwtProperties.getRefreshExpiration());
     }
 
     /**

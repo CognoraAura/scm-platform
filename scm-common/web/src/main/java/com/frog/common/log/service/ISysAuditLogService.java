@@ -24,8 +24,7 @@ public interface ISysAuditLogService extends IService<SysAuditLog> {
      * @param success 登录是否成功
      * @param remark 备注信息
      */
-    void recordLogin(UUID userId, String username, String ipAddress,
-                     boolean success, String remark);
+    void recordLogin(UUID userId, String username, String ipAddress, boolean success, String remark);
 
     /**
      * 记录用户登录失败操作日志
@@ -56,7 +55,6 @@ public interface ISysAuditLogService extends IService<SysAuditLog> {
      * @param success 操作是否成功
      * @param details 详细信息
      */
-    void recordSecurityEvent(String eventType, Integer riskLevel, UUID userId,
-                             String username, String ipAddress,
+    void recordSecurityEvent(String eventType, Integer riskLevel, UUID userId, String username, String ipAddress,
                              String resource, boolean success, String details);
 }

@@ -58,8 +58,7 @@ public class IdempotentChecker {
         }
 
         String key = config.getKeyPrefix() + eventId;
-        redisTemplate.opsForValue().set(key, "completed",
-                Duration.ofSeconds(config.getExpireSeconds()));
+        redisTemplate.opsForValue().set(key, "completed", Duration.ofSeconds(config.getExpireSeconds()));
         log.debug("[Idempotent] Marked as completed: eventId={}", eventId);
     }
 

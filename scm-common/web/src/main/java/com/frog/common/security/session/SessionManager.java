@@ -1,13 +1,16 @@
 package com.frog.common.security.session;
 
+import com.frog.common.util.UUIDv7Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 会话管理服务
@@ -25,10 +28,9 @@ public class SessionManager {
     /**
      * 创建会话
      */
-    public String createSession(UUID userId, String username,
-                                String deviceId, String ipAddress,
+    public String createSession(UUID userId, String username, String deviceId, String ipAddress,
                                 Duration sessionTimeout) {
-        String sessionId = UUID.randomUUID().toString();
+        String sessionId = UUIDv7Util.generateString();
 
         Map<String, Object> sessionData = new HashMap<>();
         sessionData.put("userId", userId.toString());
@@ -46,8 +48,7 @@ public class SessionManager {
         redisTemplate.opsForSet().add(userSessionsKey, sessionId);
         redisTemplate.expire(userSessionsKey, sessionTimeout);
 
-        redisTemplate.opsForZSet().add(ONLINE_USERS_KEY,
-                userId.toString(), System.currentTimeMillis());
+        redisTemplate.opsForZSet().add(ONLINE_USERS_KEY, userId.toString(), System.currentTimeMillis());
 
         log.info("Session created: sessionId={}, userId={}, deviceId={}",
                 sessionId, userId, deviceId);
@@ -62,8 +63,7 @@ public class SessionManager {
         String sessionKey = SESSION_PREFIX + sessionId;
 
         if (redisTemplate.hasKey(sessionKey)) {
-            redisTemplate.opsForHash().put(sessionKey, "lastActivityTime",
-                    LocalDateTime.now().toString());
+            redisTemplate.opsForHash().put(sessionKey, "lastActivityTime", LocalDateTime.now().toString());
 
             // 续长当前 TTL，如无 TTL 则回退 30 分钟
             Long ttlSeconds = redisTemplate.getExpire(sessionKey);
@@ -128,8 +128,7 @@ public class SessionManager {
         if (sessionIds != null) {
             for (Object sessionId : sessionIds) {
                 String sessionKey = SESSION_PREFIX + sessionId;
-                Map<Object, Object> sessionData = redisTemplate.opsForHash()
-                        .entries(sessionKey);
+                Map<Object, Object> sessionData = redisTemplate.opsForHash().entries(sessionKey);
 
                 if (!sessionData.isEmpty()) {
                     Map<String, Object> session = new HashMap<>();
@@ -147,12 +146,9 @@ public class SessionManager {
      * 获取在线用户列表
      */
     public List<String> getOnlineUsers() {
-        Set<Object> userIds = redisTemplate.opsForZSet()
-                .range(ONLINE_USERS_KEY, 0, -1);
+        Set<Object> userIds = redisTemplate.opsForZSet().range(ONLINE_USERS_KEY, 0, -1);
 
-        return userIds != null ?
-                userIds.stream().map(Object::toString).toList() :
-                Collections.emptyList();
+        return userIds != null ? userIds.stream().map(Object::toString).toList() : Collections.emptyList();
     }
 
     /**
@@ -166,8 +162,8 @@ public class SessionManager {
      * 检查用户是否在线
      */
     public boolean isUserOnline(UUID userId) {
-        Double score = redisTemplate.opsForZSet()
-                .score(ONLINE_USERS_KEY, userId.toString());
+        Double score = redisTemplate.opsForZSet().score(ONLINE_USERS_KEY, userId.toString());
+
         return score != null;
     }
 
@@ -178,10 +174,10 @@ public class SessionManager {
         log.info("Starting expired sessions cleanup");
 
         try {
-            java.util.concurrent.atomic.AtomicInteger cleaned = new java.util.concurrent.atomic.AtomicInteger();
+            AtomicInteger cleaned = new AtomicInteger();
             redisTemplate.execute(connection -> {
                 try (var cursor = connection.keyCommands().scan(
-                        org.springframework.data.redis.core.ScanOptions.scanOptions()
+                        ScanOptions.scanOptions()
                                 .match(SESSION_PREFIX + "*")
                                 .count(500)
                                 .build())) {
