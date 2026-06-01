@@ -10,8 +10,6 @@ import com.frog.common.dto.role.TemporaryRoleGrantDTO;
 import com.frog.common.dto.user.UserDTO;
 import com.frog.common.web.util.SecurityUtils;
 import com.frog.system.service.ISysUserService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,7 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 用户管理控制器
+ * 用户管理控制�?
  *
  * @author Deng
  * createData 2025/10/14 18:00
@@ -33,7 +31,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/system/users")
 @RequiredArgsConstructor
-@Tag(name = "用户模块")
 public class SysUserController {
     private final ISysUserService userService;
     private final SysAuthServiceClient authServiceClient;
@@ -43,7 +40,6 @@ public class SysUserController {
      */
     @GetMapping
     @PreAuthorize("hasAuthority('system:user:list')")
-    @Operation(summary = "查询用户列表")
     public ApiResponse<PageResult<UserDTO>> list(@RequestParam(defaultValue = "1") Integer page,
                                                  @RequestParam(defaultValue = "10") Integer size,
                                                  @RequestParam(required = false) String username,
@@ -196,7 +192,6 @@ public class SysUserController {
             businessType = "USER",
             riskLevel = 4
     )
-    @Operation(summary = "授予临时角色")
     public ApiResponse<String> grantTemporaryRoles(@PathVariable UUID id,
                                                    @RequestBody @Validated TemporaryRoleGrantDTO dto) {
         userService.grantTemporaryRoles(
@@ -210,7 +205,7 @@ public class SysUserController {
     }
 
     /**
-     * 延长临时角色有效期
+     * 延长临时角色有效�?
      */
     @PostMapping("/{userId}/extend-temporary-role/{roleId}")
     @PreAuthorize("hasAuthority('system:user:grant')")
@@ -219,7 +214,6 @@ public class SysUserController {
             businessType = "USER",
             riskLevel = 3
     )
-    @Operation(summary = "延长临时角色有效期")
     public ApiResponse<String> extendTemporaryRole(
             @PathVariable UUID userId,
             @PathVariable UUID roleId,
@@ -239,19 +233,17 @@ public class SysUserController {
             businessType = "USER",
             riskLevel = 3
     )
-    @Operation(summary = "终止临时角色")
     public ApiResponse<String> terminateTemporaryRole(@PathVariable UUID userId, @PathVariable UUID roleId) {
         userService.terminateTemporaryRole(userId, roleId);
 
-        return ApiResponse.success("临时角色已终止");
+        return ApiResponse.success("临时角色已终�?);
     }
 
     /**
-     * 查询用户的临时角色列表
+     * 查询用户的临时角色列�?
      */
     @GetMapping("/{id}/temporary-roles")
     @PreAuthorize("hasAuthority('system:user:list')")
-    @Operation(summary = "查询用户的临时角色")
     public ApiResponse<List<Map<String, Object>>> getUserTemporaryRoles(@PathVariable UUID id) {
         List<Map<String, Object>> roles = userService.getUserTemporaryRoles(id);
 
@@ -263,7 +255,6 @@ public class SysUserController {
      */
     @GetMapping("/{id}/statistics")
     @PreAuthorize("hasAuthority('system:user:list')")
-    @Operation(summary = "查询用户统计信息")
     public ApiResponse<Map<String, Object>> getUserStatistics(@PathVariable UUID id) {
         Map<String, Object> stats = userService.getUserStatistics(id);
 
@@ -271,10 +262,9 @@ public class SysUserController {
     }
 
     /**
-     * 更新最后登录信息
+     * 更新最后登录信�?
      */
     @GetMapping("/{userId}/update-login")
-    @Operation(summary = "更新最后登录信息")
     public ApiResponse<Void> updateLastLogin(@PathVariable UUID userId, @RequestParam("ipAddress") String ipAddress) {
         userService.updateLastLogin(userId, ipAddress);
 

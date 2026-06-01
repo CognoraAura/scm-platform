@@ -9,7 +9,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -26,7 +25,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("tms_carrier")
-@Schema(description = "物流商表")
 public class TmsCarrier implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -40,7 +38,6 @@ public class TmsCarrier implements Serializable {
     @TableField("carrier_name")
     private String carrierName;
 
-    @Schema(description = "类型:1-快递,2-物流,3-同城配送,4-自营配送")
     @TableField("carrier_type")
     private Integer carrierType;
 
@@ -97,6 +94,5 @@ public class TmsCarrier implements Serializable {
 
     @TableField("remark")
     private String remark;
-
 
 }

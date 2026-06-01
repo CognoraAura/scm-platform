@@ -87,8 +87,8 @@ public class ReliableMessagePublisher {
             return;
         }
         var confirm = correlationData.getFuture().get(timeout.toMillis(), TimeUnit.MILLISECONDS);
-        String cause = confirm.reason();
-        if (!confirm.ack()) {
+        String cause = confirm.getReason();
+        if (!confirm.isAck()) {
             throw new AmqpException("Message NACK: " + (cause == null || cause.isBlank() ? "unknown reason" : cause));
         }
     }

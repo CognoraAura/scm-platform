@@ -10,14 +10,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 运费规则表
+ * 运费规则�?
  * </p>
  *
  * @author deng
@@ -27,7 +26,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("freight_rule")
-@Schema(description = "运费规则表")
 public class FreightRule implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -56,7 +54,6 @@ public class FreightRule implements Serializable {
     @TableField("regions")
     private String regions;
 
-    @Schema(description = "计费类型:1-按重量,2-按件数,3-按体积,4-固定运费")
     @TableField("billing_type")
     private Integer billingType;
 
@@ -72,7 +69,6 @@ public class FreightRule implements Serializable {
     @TableField("additional_price")
     private BigDecimal additionalPrice;
 
-    @Schema(description = "满额免运费阈值")
     @TableField("free_threshold")
     private BigDecimal freeThreshold;
 
@@ -114,6 +110,5 @@ public class FreightRule implements Serializable {
 
     @TableField("remark")
     private String remark;
-
 
 }

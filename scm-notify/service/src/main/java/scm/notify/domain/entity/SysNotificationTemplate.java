@@ -6,14 +6,13 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 通知模板表
+ * 通知模板�?
  * </p>
  *
  * @author deng
@@ -23,7 +22,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("sys_notification_template")
-@Schema(description = "通知模板表")
 public class SysNotificationTemplate implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -37,7 +35,6 @@ public class SysNotificationTemplate implements Serializable {
     @TableField("template_name")
     private String templateName;
 
-    @Schema(description = "通知渠道:EMAIL,SMS,WECHAT,DINGTALK,FEISHU,PUSH")
     @TableField("channel")
     private String channel;
 
@@ -47,7 +44,7 @@ public class SysNotificationTemplate implements Serializable {
     @TableField("content_template")
     private String contentTemplate;
 
-    @Schema(description = "变量定义Schema(JSONB格式)")
+    ")
     @TableField("variables_schema")
     private String variablesSchema;
 
@@ -68,6 +65,5 @@ public class SysNotificationTemplate implements Serializable {
 
     @TableField("deleted")
     private Boolean deleted;
-
 
 }

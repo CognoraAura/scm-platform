@@ -1,4 +1,4 @@
-package scm.order.domain.entity;
+﻿package scm.order.domain.entity;
 
 import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -24,7 +23,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("ord_order_item")
-@Schema(description = "订单明细表")
 public class OrdOrderItem {
 
     @TableId(value = "id", type = IdType.NONE)
@@ -50,8 +48,6 @@ public class OrdOrderItem {
 
     @TableField("spu_name")
     private String spuName;
-
-    @Schema(description = "下单时 SKU属性快照")
     @TableField("attributes")
     private String attributes;
 

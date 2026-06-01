@@ -4,8 +4,6 @@ import com.frog.common.dto.dept.DeptDTO;
 import com.frog.common.log.annotation.AuditLog;
 import com.frog.common.response.ApiResponse;
 import com.frog.system.service.ISysDeptService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -16,7 +14,7 @@ import java.util.UUID;
 
 /**
  * <p>
- * 部门表 前端控制器
+ * 部门�?前端控制�?
  * </p>
  *
  * @author author
@@ -25,13 +23,11 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/system/depts")
 @RequiredArgsConstructor
-@Tag(name = "部门管理")
 public class SysDeptController {
     private final ISysDeptService deptService;
 
     @GetMapping("/tree")
     @PreAuthorize("hasAuthority('system:dept:list')")
-    @Operation(summary = "查询部门树")
     public ApiResponse<List<DeptDTO>> tree() {
         List<DeptDTO> tree = deptService.getDeptTree();
 

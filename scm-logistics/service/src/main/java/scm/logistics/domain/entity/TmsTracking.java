@@ -9,14 +9,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 物流轨迹表
+ * 物流轨迹�?
  * </p>
  *
  * @author deng
@@ -26,7 +25,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("tms_tracking")
-@Schema(description = "物流轨迹表")
 public class TmsTracking implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -61,7 +59,6 @@ public class TmsTracking implements Serializable {
     @TableField("operator")
     private String operator;
 
-    @Schema(description = "来源:API-接口推送,MANUAL-手动录入")
     @TableField("source")
     private String source;
 

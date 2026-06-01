@@ -7,14 +7,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 采购申请明细表
+ * 采购申请明细�?
  * </p>
  *
  * @author deng
@@ -24,7 +23,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("pur_request_item")
-@Schema(description = "采购申请明细表")
 public class PurRequestItem implements Serializable {
 
     private static final long serialVersionUID = 1L;

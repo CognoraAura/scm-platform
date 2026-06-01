@@ -19,8 +19,8 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
-import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.util.backoff.ExponentialBackOff;
 
 import java.util.HashMap;
@@ -46,8 +46,7 @@ public class KafkaIntegrationAutoConfiguration {
         config.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, properties.getMaxInFlight());
         config.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, properties.isIdempotence());
         
-        JacksonJsonSerializer<Object> jsonSerializer = new JacksonJsonSerializer<>();
-        jsonSerializer.setAddTypeInfo(false);
+        JsonSerializer<Object> jsonSerializer = new JsonSerializer<>();
         
         return new DefaultKafkaProducerFactory<>(config, new StringSerializer(), jsonSerializer);
     }
@@ -64,9 +63,8 @@ public class KafkaIntegrationAutoConfiguration {
         Map<String, Object> config = new HashMap<>();
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getBootstrapServers());
         
-        JacksonJsonDeserializer<Object> jsonDeserializer = new JacksonJsonDeserializer<>();
+        JsonDeserializer<Object> jsonDeserializer = new JsonDeserializer<>();
         jsonDeserializer.addTrustedPackages("*");
-        jsonDeserializer.setUseTypeHeaders(false);
         
         return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), jsonDeserializer);
     }

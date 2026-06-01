@@ -10,13 +10,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 库存快照表（每日快照）
+ * 库存快照表（每日快照�?
  * </p>
  *
  * @author deng
@@ -29,7 +28,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("inv_snapshot")
-@Schema(description = "库存快照表（每日快照）")
 public class InvSnapshot implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;

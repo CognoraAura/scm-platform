@@ -8,14 +8,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 采购入库明细表
+ * 采购入库明细�?
  * </p>
  *
  * @author deng
@@ -25,7 +24,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("pur_receipt_item")
-@Schema(description = "采购入库明细表")
 public class PurReceiptItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -60,8 +58,6 @@ public class PurReceiptItem implements Serializable {
     private LocalDate productionDate;
 
     private LocalDate expiryDate;
-
-    @Schema(description = "质检结果:1-合格,2-不合格,3-待定")
     private Integer qualityResult;
 
     private String locationCode;

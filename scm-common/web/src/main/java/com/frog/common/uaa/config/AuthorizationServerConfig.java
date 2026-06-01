@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.security.config.Customizer;
@@ -26,8 +27,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
-import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
-import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
@@ -48,14 +48,18 @@ import java.time.Duration;
 import java.util.UUID;
 
 /**
- *
+ * OAuth2 Authorization Server Configuration
+ * 
+ * Migrated to Spring Security 7.0 API:
+ * - Uses http.oauth2AuthorizationServer() instead of OAuth2AuthorizationServerConfigurer
+ * - Uses @Import(OAuth2AuthorizationServerConfiguration.class) for default configuration
  *
  * @author Deng
- * createData 2025/10/24 14:23
- * @version 1.0
+ * @version 2.0
  */
 @Configuration
 @RequiredArgsConstructor
+@Import(OAuth2AuthorizationServerConfiguration.class)
 public class AuthorizationServerConfig {
     @Value("${security.oauth2.authorizationserver.issuer:http://localhost:8090}")
     private String issuer;
@@ -72,26 +76,20 @@ public class AuthorizationServerConfig {
 
     /**
      * OAuth2授权服务器安全过滤链
+     * Uses the new Spring Security 7.0 API with http.oauth2AuthorizationServer()
      */
     @Bean
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
-
-        // 仅匹配授权服务器端点；精确忽略 CSRF
         http
-                .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())  // 现在方法签名声明了throws Exception
-                .csrf(csrf ->
-                        csrf.ignoringRequestMatchers(authorizationServerConfigurer.getEndpointsMatcher()))
+                .oauth2AuthorizationServer(authorizationServer ->
+                        authorizationServer
+                                .oidc(Customizer.withDefaults())
+                                .authorizationServerSettings(authorizationServerSettings())
+                )
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .exceptionHandling(exceptions ->
-                        exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
-                .oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt(Customizer.withDefaults()));
-
-        // 启用 OIDC 支持
-        authorizationServerConfigurer.oidc(Customizer.withDefaults());
-        http.with(authorizationServerConfigurer, Customizer.withDefaults());
+                        exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")));
 
         return http.build();
     }

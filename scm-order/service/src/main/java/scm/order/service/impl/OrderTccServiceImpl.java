@@ -2,10 +2,13 @@ package scm.order.service.impl;
 
 import com.frog.inventory.api.InventoryTccService;
 import com.frog.order.api.OrderDubboService;
+import scm.order.domain.entity.OrdOrder;
+import scm.order.mapper.OrdOrderMapper;
 
 import io.seata.core.context.RootContext;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,15 +68,13 @@ public class OrderTccServiceImpl {
 
         try {
             // 1. 创建订单记录（本地事务）
-            Order order = new Order();
+            OrdOrder order = new OrdOrder();
             order.setOrderNo(generateOrderNo());
-            order.setUserId(request.getUserId());
-            order.setSkuId(request.getSkuId());
-            order.setSkuName(request.getSkuName());
-            order.setQuantity(request.getQuantity());
-            order.setUnitPrice(request.getUnitPrice());
+            order.setUserId(String.valueOf(request.getUserId()));
+            order.setSkuId(String.valueOf(request.getSkuId()));
+            order.setQuantity(request.getQuantity() != null ? request.getQuantity().intValue() : null);
             order.setTotalAmount(request.getTotalAmount());
-            order.setStatus("PENDING_PAYMENT");
+            order.setStatus(0); // PENDING_PAYMENT
             order.setRemark("[TCC模式] " + request.getRemark());
             order.setCreateTime(LocalDateTime.now());
 

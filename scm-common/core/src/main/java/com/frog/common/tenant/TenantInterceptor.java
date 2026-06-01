@@ -113,7 +113,8 @@ public class TenantInterceptor implements Interceptor {
             } else if (statement instanceof Delete delete) {
                 handleDelete(delete, tenantId);
             } else if (statement instanceof Insert insert) {
-                handleInsert(insert, tenantId);
+                // INSERT 语句的 tenant_id 由应用层设置，不在拦截器中处理
+                log.debug("INSERT statement detected, tenant_id should be set by application layer");
             }
 
             // 重新设置SQL
@@ -194,40 +195,6 @@ public class TenantInterceptor implements Interceptor {
         } else {
             AndExpression andExpression = new AndExpression(where, tenantCondition);
             delete.setWhere(andExpression);
-        }
-    }
-
-    /**
-     * 处理 INSERT 语句 - 添加 tenant_id 列和值
-     */
-    private void handleInsert(Insert insert, UUID tenantId) {
-        Table table = insert.getTable();
-        if (table != null && isExcludeTable(table.toString())) {
-            log.debug("Table {} is excluded from tenant filter", table);
-            return;
-        }
-
-        // 检查是否已存在 tenant_id 列
-        if (insert.getColumns() != null) {
-            for (Column col : insert.getColumns()) {
-                if (TENANT_COLUMN.equalsIgnoreCase(col.getColumnName())) {
-                    log.debug("tenant_id column already exists in INSERT statement");
-                    return;
-                }
-            }
-        }
-
-        // 添加 tenant_id 列
-        insert.addColumn(new Column(TENANT_COLUMN));
-
-        // 添加对应的值
-        Expression tenantValue = new StringValue(tenantId.toString());
-        if (insert.getValues() != null) {
-            insert.getValues().addExpressions(tenantValue);
-        } else {
-            net.sf.jsqlparser.expression.operators.relational.ExpressionList values =
-                    new net.sf.jsqlparser.expression.operators.relational.ExpressionList(tenantValue);
-            insert.setValues(values);
         }
     }
 

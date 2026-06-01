@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -24,7 +23,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("wms_warehouse")
-@Schema(description = "仓库表")
 public class WmsWarehouse implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -38,7 +36,6 @@ public class WmsWarehouse implements Serializable {
     @TableField("warehouse_name")
     private String warehouseName;
 
-    @Schema(description = "仓库类型:1-中心仓,2-区域仓,3-前置仓,4-虚拟仓")
     @TableField("warehouse_type")
     private Integer warehouseType;
 

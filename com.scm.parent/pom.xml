@@ -42,7 +42,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.5</version>
+    <version>4.0.6</version>
     <relativePath/>
   </parent>
 
@@ -53,11 +53,9 @@
     <java.version>21</java.version>
 
     <!-- Spring Ecosystem -->
-    <spring-boot.version>3.5.5</spring-boot.version>
-    <spring-boot4.version>4.0.1</spring-boot4.version>
-    <spring-boot-aop.version>4.0.0-M2</spring-boot-aop.version>
-    <spring-cloud.version>2025.1.0</spring-cloud.version>
-    <spring-cloud-alibaba.version>2025.0.0.0</spring-cloud-alibaba.version>
+    <spring-boot.version>4.0.6</spring-boot.version>
+    <spring-cloud.version>2025.1.1</spring-cloud.version>
+    <spring-cloud-alibaba.version>2025.1.0.0</spring-cloud-alibaba.version>
     <spring-statemachine.version>4.0.0</spring-statemachine.version>
 
     <!-- Database & Persistence -->
@@ -77,10 +75,6 @@
     <!-- Security & Authentication -->
     <jjwt.version>0.13.0</jjwt.version>
 
-    <!-- API Documentation -->
-    <swagger.version>2.2.19</swagger.version>
-    <knife4j.version>4.4.0</knife4j.version>
-
     <!-- Utility Libraries -->
     <org.projectlombok.version>1.18.38</org.projectlombok.version>
     <uuid-creator.version>6.1.1</uuid-creator.version>
@@ -98,6 +92,28 @@
     <micrometer.version>1.13.0</micrometer.version>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>central</id>
+      <name>Maven Central</name>
+      <url>https://repo1.maven.org/maven2</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>spring-milestones</id>
+      <name>Spring Milestones</name>
+      <url>https://repo.spring.io/milestone</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
   <dependencyManagement>
     <dependencies>
       <!-- ==================== Spring Framework ==================== -->
@@ -110,8 +126,8 @@
       </dependency>
       <dependency>
         <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-aop</artifactId>
-        <version>${spring-boot-aop.version}</version>
+        <artifactId>spring-boot-starter-aspectj</artifactId>
+        <version>${spring-boot.version}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework.boot</groupId>
@@ -178,12 +194,7 @@
         <version>${spring-cloud-alibaba.version}</version>
       </dependency>
 
-      <!-- Spring Kafka -->
-      <dependency>
-        <groupId>org.springframework.kafka</groupId>
-        <artifactId>spring-kafka</artifactId>
-        <version>${spring-boot4.version}</version>
-      </dependency>
+      <!-- Spring Kafka - version managed by Spring Boot BOM -->
 
       <!-- Spring State Machine for Order Workflow -->
       <dependency>
@@ -224,13 +235,7 @@
         <artifactId>dubbo-registry-nacos</artifactId>
         <version>${dubbo.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.apache.dubbo</groupId>
-        <artifactId>dubbo-dependencies-bom</artifactId>
-        <version>${dubbo.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
+      <!-- dubbo-dependencies-bom removed: it overrides Spring Framework 6.x versions with 5.3.x -->
 
       <!-- ==================== Database & Persistence ==================== -->
 
@@ -266,7 +271,7 @@
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
-        <version>${spring-boot4.version}</version>
+        <version>${spring-boot.version}</version>
       </dependency>
       <dependency>
         <groupId>co.elastic.clients</groupId>
@@ -299,27 +304,6 @@
         <artifactId>jjwt-jackson</artifactId>
         <version>${jjwt.version}</version>
       </dependency>
-
-      <!-- ==================== API Documentation ==================== -->
-
-      <!-- Swagger -->
-      <dependency>
-        <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-core-jakarta</artifactId>
-        <version>${swagger.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-annotations-jakarta</artifactId>
-        <version>${swagger.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.github.xiaoymin</groupId>
-        <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-        <version>${knife4j.version}</version>
-      </dependency>
-
-      <!-- ==================== Utility Libraries ==================== -->
 
       <!-- UUID Generator -->
       <dependency>
@@ -413,6 +397,7 @@
               <artifactId>lombok</artifactId>
             </exclude>
           </excludes>
+          <skip>true</skip>
         </configuration>
       </plugin>
       <plugin>

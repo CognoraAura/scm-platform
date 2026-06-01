@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -27,7 +26,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("settlement_order")
-@Schema(description = "结算单表")
 public class SettlementOrder implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -41,11 +39,9 @@ public class SettlementOrder implements Serializable {
     @TableField("settlement_no")
     private String settlementNo;
 
-    @Schema(description = "结算类型:1-采购结算,2-销售结算,3-物流结算")
     @TableField("settlement_type")
     private Integer settlementType;
 
-    @Schema(description = "结算对象:SUPPLIER-供应商,CUSTOMER-客户,CARRIER-物流商")
     @TableField("partner_type")
     private String partnerType;
 
@@ -82,7 +78,6 @@ public class SettlementOrder implements Serializable {
     @TableField("unpaid_amount")
     private BigDecimal unpaidAmount;
 
-    @Schema(description = "状态:0-待确认,1-已确认,2-待付款,3-部分付款,4-已付款")
     @TableField("status")
     private Integer status;
 
@@ -115,6 +110,5 @@ public class SettlementOrder implements Serializable {
 
     @TableField("remark")
     private String remark;
-
 
 }

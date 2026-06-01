@@ -1,8 +1,8 @@
 package scm.supplier.job;
 
-import com.frog.supplier.service.PurchaseApprovalService;
-import com.frog.supplier.service.NotificationService;
-import com.frog.supplier.vo.OverdueApprovalTaskVO;
+import scm.supplier.service.PurchaseApprovalService;
+import scm.supplier.service.NotificationService;
+import scm.supplier.vo.OverdueApprovalTaskVO;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.RequiredArgsConstructor;

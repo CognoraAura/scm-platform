@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -25,7 +24,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("sup_supplier_evaluation")
-@Schema(description = "供应商评价表")
 public class SupSupplierEvaluation {
 
     @TableId(value = "id", type = IdType.NONE)
@@ -34,7 +32,6 @@ public class SupSupplierEvaluation {
     @TableField("supplier_id")
     private String supplierId;
 
-    @Schema(description = "评价周期：2025Q1（季度）或2025-01（月度）")
     @TableField("evaluation_period")
     private String evaluationPeriod;
 

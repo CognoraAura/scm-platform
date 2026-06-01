@@ -10,14 +10,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 对账记录表
+ * 对账记录�?
  * </p>
  *
  * @author deng
@@ -27,7 +26,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("reconciliation_record")
-@Schema(description = "对账记录表")
 public class ReconciliationRecord implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -86,7 +84,6 @@ public class ReconciliationRecord implements Serializable {
     @TableField("diff_reason")
     private String diffReason;
 
-    @Schema(description = "状态:0-待对账,1-已对账,2-已确认,3-有差异")
     @TableField("status")
     private Integer status;
 

@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -23,7 +22,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("pur_receipt")
-@Schema(description = "采购入库单表")
 public class PurReceipt implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -46,11 +44,7 @@ public class PurReceipt implements Serializable {
     private String warehouseId;
 
     private String warehouseName;
-
-    @Schema(description = "收货类型:1-正常收货,2-退货,3-换货")
     private Integer receiptType;
-
-    @Schema(description = "状态:0-待收货,1-已收货,2-已质检,3-已入库")
     private Integer status;
 
     private String receiverId;
@@ -64,8 +58,6 @@ public class PurReceipt implements Serializable {
     private String qualityInspectorName;
 
     private LocalDateTime qualityInspectedAt;
-
-    @Schema(description = "质检结果:1-合格,2-不合格,3-部分合格")
     private Integer qualityResult;
 
     private String qualityRemark;
