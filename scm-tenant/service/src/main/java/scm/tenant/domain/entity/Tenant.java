@@ -9,14 +9,13 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 租户表
+ * 租户�?
  * </p>
  *
  * @author deng
@@ -26,7 +25,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("tenant")
-@Schema(description = "租户表")
 public class Tenant implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -43,7 +41,6 @@ public class Tenant implements Serializable {
     @TableField("tenant_name_en")
     private String tenantNameEn;
 
-    @Schema(description = "租户类型:1-企业版,2-专业版,3-个人版")
     @TableField("tenant_type")
     private Integer tenantType;
 
@@ -62,7 +59,6 @@ public class Tenant implements Serializable {
     @TableField("industry")
     private String industry;
 
-    @Schema(description = "企业规模:1-<50人,2-50-200人,3-200-500人,4-500-2000人,5->2000人")
     @TableField("company_size")
     private Integer companySize;
 
@@ -87,7 +83,6 @@ public class Tenant implements Serializable {
     @TableField("admin_email")
     private String adminEmail;
 
-    @Schema(description = "状态:0-试用中,1-正式,2-已暂停,3-已过期")
     @TableField("status")
     private Integer status;
 
@@ -135,6 +130,5 @@ public class Tenant implements Serializable {
 
     @TableField("remark")
     private String remark;
-
 
 }

@@ -3,9 +3,6 @@ package scm.warehouse.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.frog.common.response.ApiResponse;
 import com.frog.common.util.UUIDv7Util;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,14 +15,12 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/wms-location")
-@Tag(name = "库位管理", description = "库位增删改查接口")
 public class WmsLocationController {
 
     @Autowired
     private IWmsLocationService locationService;
 
     @PostMapping
-    @Operation(summary = "创建库位")
     public ApiResponse<WmsLocation> create(@RequestBody WmsLocation location) {
         log.info("[API] 创建库位: warehouseId={}, code={}", location.getWarehouseId(), location.getLocationCode());
 
@@ -52,7 +47,6 @@ public class WmsLocationController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "更新库位")
     public ApiResponse<WmsLocation> update(@PathVariable String id, @RequestBody WmsLocation location) {
         log.info("[API] 更新库位: id={}", id);
 
@@ -68,7 +62,6 @@ public class WmsLocationController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "删除库位（逻辑删除）")
     public ApiResponse<Void> delete(@PathVariable String id) {
         log.info("[API] 删除库位: id={}", id);
 
@@ -84,7 +77,6 @@ public class WmsLocationController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "查询库位详情")
     public ApiResponse<WmsLocation> getById(@PathVariable String id) {
         WmsLocation location = locationService.getById(id);
         if (location == null || Boolean.TRUE.equals(location.getDeleted())) {
@@ -94,15 +86,12 @@ public class WmsLocationController {
     }
 
     @GetMapping("/list")
-    @Operation(summary = "查询仓库下的库位列表")
     public ApiResponse<List<WmsLocation>> listByWarehouseId(
-            @Parameter(description = "仓库ID", required = true)
             @RequestParam String warehouseId) {
         return ApiResponse.success(locationService.listByWarehouseId(warehouseId));
     }
 
     @GetMapping("/page")
-    @Operation(summary = "分页查询库位")
     public ApiResponse<Page<WmsLocation>> page(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,

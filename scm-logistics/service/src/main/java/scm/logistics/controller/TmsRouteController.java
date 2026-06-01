@@ -2,9 +2,6 @@ package scm.logistics.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.frog.common.response.ApiResponse;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,30 +17,26 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/tms-route")
-@Tag(name = "配送路线管理", description = "配送路线的增删改查")
 public class TmsRouteController {
 
     @Autowired
     private ITmsRouteService routeService;
 
     @GetMapping("/{id}")
-    @Operation(summary = "查询路线详情")
     public ApiResponse<TmsRoute> getById(
-            @Parameter(description = "路线ID", required = true) @PathVariable String id) {
+            @PathVariable String id) {
         TmsRoute route = routeService.getById(id);
         return ApiResponse.success(route);
     }
 
     @GetMapping("/no/{routeNo}")
-    @Operation(summary = "根据路线编号查询")
     public ApiResponse<TmsRoute> getByRouteNo(
-            @Parameter(description = "路线编号", required = true) @PathVariable String routeNo) {
+            @PathVariable String routeNo) {
         TmsRoute route = routeService.getByRouteNo(routeNo);
         return ApiResponse.success(route);
     }
 
     @GetMapping("/list")
-    @Operation(summary = "分页查询路线列表")
     public ApiResponse<Page<TmsRoute>> pageList(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -55,17 +48,15 @@ public class TmsRouteController {
     }
 
     @GetMapping("/courier/{courierId}")
-    @Operation(summary = "根据配送员查询路线")
     public ApiResponse<List<TmsRoute>> listByCourierId(
-            @Parameter(description = "配送员ID", required = true) @PathVariable String courierId) {
+            @PathVariable String courierId) {
         List<TmsRoute> list = routeService.listByCourierId(courierId);
         return ApiResponse.success(list);
     }
 
     @PostMapping
-    @Operation(summary = "新增配送路线")
     public ApiResponse<TmsRoute> create(@RequestBody TmsRoute route) {
-        log.info("新增配送路线: routeNo={}, courierId={}", route.getRouteNo(), route.getCourierId());
+        log.info("新增配送路�? routeNo={}, courierId={}", route.getRouteNo(), route.getCourierId());
         route.setId(UUID.randomUUID().toString());
         route.setCreateTime(LocalDateTime.now());
         route.setUpdateTime(LocalDateTime.now());
@@ -74,9 +65,8 @@ public class TmsRouteController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "修改配送路线")
     public ApiResponse<TmsRoute> update(@PathVariable String id, @RequestBody TmsRoute route) {
-        log.info("修改配送路线: id={}", id);
+        log.info("修改配送路�? id={}", id);
         route.setId(id);
         route.setUpdateTime(LocalDateTime.now());
         routeService.updateById(route);
@@ -84,9 +74,8 @@ public class TmsRouteController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "删除配送路线")
     public ApiResponse<Void> delete(@PathVariable String id) {
-        log.info("删除配送路线: id={}", id);
+        log.info("删除配送路�? id={}", id);
         routeService.removeById(id);
         return ApiResponse.success();
     }

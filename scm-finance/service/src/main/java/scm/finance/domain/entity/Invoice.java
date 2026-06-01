@@ -8,14 +8,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 发票表
+ * 发票�?
  * </p>
  *
  * @author deng
@@ -25,7 +24,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("invoice")
-@Schema(description = "发票表")
 public class Invoice {
 
     @TableId(value = "id", type = IdType.NONE)
@@ -37,11 +35,9 @@ public class Invoice {
     @TableField("invoice_no")
     private String invoiceNo;
 
-    @Schema(description = "发票类型:1-增值税普通发票,2-增值税专用发票,3-电子发票")
     @TableField("invoice_type")
     private Integer invoiceType;
 
-    @Schema(description = "发票方向:1-销项发票,2-进项发票")
     @TableField("invoice_kind")
     private Integer invoiceKind;
 
@@ -90,7 +86,6 @@ public class Invoice {
     @TableField("issue_date")
     private LocalDate issueDate;
 
-    @Schema(description = "状态:0-草稿,1-已开具,2-已邮寄,3-已作废,4-已红冲")
     @TableField("status")
     private Integer status;
 

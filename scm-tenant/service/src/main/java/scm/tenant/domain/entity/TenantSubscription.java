@@ -8,14 +8,13 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 租户订阅表
+ * 租户订阅�?
  * </p>
  *
  * @author deng
@@ -25,7 +24,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("tenant_subscription")
-@Schema(description = "租户订阅表")
 public class TenantSubscription implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -39,11 +37,9 @@ public class TenantSubscription implements Serializable {
     @TableField("package_id")
     private String packageId;
 
-    @Schema(description = "订阅类型:1-月付,2-年付,3-一次性")
     @TableField("subscription_type")
     private Integer subscriptionType;
 
-    @Schema(description = "状态:0-待支付,1-生效中,2-已过期,3-已取消")
     @TableField("status")
     private Integer status;
 
@@ -65,7 +61,6 @@ public class TenantSubscription implements Serializable {
     @TableField("discount_amount")
     private BigDecimal discountAmount;
 
-    @Schema(description = "支付状态:0-未支付,1-部分支付,2-已支付")
     @TableField("payment_status")
     private Integer paymentStatus;
 
@@ -89,6 +84,5 @@ public class TenantSubscription implements Serializable {
 
     @TableField("remark")
     private String remark;
-
 
 }

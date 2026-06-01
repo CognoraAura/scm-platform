@@ -10,14 +10,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 结算明细表
+ * 结算明细�?
  * </p>
  *
  * @author deng
@@ -27,7 +26,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("settlement_item")
-@Schema(description = "结算明细表")
 public class SettlementItem implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -44,7 +42,6 @@ public class SettlementItem implements Serializable {
     @TableField("settlement_no")
     private String settlementNo;
 
-    @Schema(description = "单据类型:ORDER-订单,PURCHASE-采购单,WAYBILL-运单")
     @TableField("document_type")
     private String documentType;
 

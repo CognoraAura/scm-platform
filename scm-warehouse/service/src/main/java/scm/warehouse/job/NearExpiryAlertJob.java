@@ -1,8 +1,8 @@
 package scm.warehouse.job;
 
-import com.frog.warehouse.service.InventoryBatchService;
-import com.frog.warehouse.service.NotificationService;
-import com.frog.warehouse.vo.NearExpiryProductVO;
+import scm.warehouse.service.InventoryBatchService;
+import scm.warehouse.service.NotificationService;
+import scm.warehouse.vo.NearExpiryProductVO;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.RequiredArgsConstructor;
@@ -126,7 +126,7 @@ public class NearExpiryAlertJob {
                     // 按告警级别统计
                     Map<AlertLevel, Long> levelCounts = products.stream()
                         .collect(Collectors.groupingBy(
-                            NearExpiryProductVO::getAlertLevel,
+                            p -> AlertLevel.valueOf(p.getAlertLevel()),
                             Collectors.counting()
                         ));
 

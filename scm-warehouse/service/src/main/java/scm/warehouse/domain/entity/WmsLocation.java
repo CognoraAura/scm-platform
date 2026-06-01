@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -23,7 +22,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("wms_location")
-@Schema(description = "库位表")
 public class WmsLocation implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -49,7 +47,6 @@ public class WmsLocation implements Serializable {
     @TableField("position")
     private String position;
 
-    @Schema(description = "库位类型:1-普通,2-冷藏,3-冷冻,4-危险品")
     @TableField("location_type")
     private Integer locationType;
 
@@ -59,7 +56,6 @@ public class WmsLocation implements Serializable {
     @TableField("current_capacity")
     private Integer currentCapacity;
 
-    @Schema(description = "状态:0-锁定,1-可用,2-维护中")
     @TableField("status")
     private Integer status;
 

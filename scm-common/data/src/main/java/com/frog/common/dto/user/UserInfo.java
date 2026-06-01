@@ -1,8 +1,8 @@
 package com.frog.common.dto.user;
 
 import com.frog.common.dto.permission.PermissionDTO;
-import com.frog.common.security.annotation.Sensitive;
-import com.frog.common.security.enums.SensitiveType;
+import com.frog.common.web.annotation.Sensitive;
+import com.frog.common.web.enums.SensitiveType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

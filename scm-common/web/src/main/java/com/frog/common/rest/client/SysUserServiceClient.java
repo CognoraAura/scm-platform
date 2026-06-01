@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -68,4 +69,10 @@ public interface SysUserServiceClient {
         // 降级返回成功：登录信息更新失败不应中断用户登录流程
         return ApiResponse.success();
     }
+
+    @GetExchange("/{userId}/roles")
+    ApiResponse<Set<String>> findRolesByUserId(@PathVariable UUID userId);
+
+    @GetExchange("/{userId}/permissions")
+    ApiResponse<Set<String>> findPermissionsByUserId(@PathVariable UUID userId);
 }

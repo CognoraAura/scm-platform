@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.util.UUID;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -27,7 +26,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("sup_settlement")
-@Schema(description = "对账单表")
 public class SupSettlement {
 
     @TableId(value = "id", type = IdType.NONE)
@@ -72,7 +70,6 @@ public class SupSettlement {
     @TableField("payment_date")
     private LocalDate paymentDate;
 
-    @Schema(description = "状态:0-待确认,1-已确认,2-待付款,3-部分付款,4-已付款")
     @TableField("status")
     private Integer status;
 

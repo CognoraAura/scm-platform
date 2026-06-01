@@ -8,14 +8,13 @@ import java.io.Serial;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 操作审计日志表(按月分区)
+ * 操作审计日志�?按月分区)
  * </p>
  *
  * @author deng
@@ -25,7 +24,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("sys_audit_log")
-@Schema(description = "操作审计日志表(按月分区)")
+")
 public class SysAuditLog implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -33,7 +32,7 @@ public class SysAuditLog implements Serializable {
     @TableId(value = "id", type = IdType.NONE)
     private String id;
 
-    @Schema(description = "用户ID(跨库关联db_user.sys_user)")
+    ")
     @TableField("user_id")
     private String userId;
 
@@ -43,11 +42,10 @@ public class SysAuditLog implements Serializable {
     @TableField("real_name")
     private String realName;
 
-    @Schema(description = "部门ID(跨库关联db_org.sys_dept)")
+    ")
     @TableField("dept_id")
     private String deptId;
 
-    @Schema(description = "操作类型:LOGIN,LOGOUT,ADD,UPDATE,DELETE,QUERY,EXPORT,APPROVE")
     @TableField("operation_type")
     private String operationType;
 
@@ -93,7 +91,6 @@ public class SysAuditLog implements Serializable {
     @TableField("new_value")
     private String newValue;
 
-    @Schema(description = "风险等级:1-低,2-中,3-高,4-极高")
     @TableField("risk_level")
     private Integer riskLevel;
 

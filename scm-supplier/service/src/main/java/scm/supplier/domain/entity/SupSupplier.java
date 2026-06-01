@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -25,7 +24,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("sup_supplier")
-@Schema(description = "供应商表")
 public class SupSupplier {
 
     @TableId(value = "id", type = IdType.NONE)
@@ -40,7 +38,6 @@ public class SupSupplier {
     @TableField("supplier_name_en")
     private String supplierNameEn;
 
-    @Schema(description = "类型:1-生产商,2-贸易商,3-代理商,4-其他")
     @TableField("supplier_type")
     private Integer supplierType;
 
@@ -83,7 +80,6 @@ public class SupSupplier {
     @TableField("bank_account_name")
     private String bankAccountName;
 
-    @Schema(description = "信用评级:A+,A,B+,B,C,D")
     @TableField("credit_rating")
     private String creditRating;
 
@@ -99,7 +95,6 @@ public class SupSupplier {
     @TableField("cooperation_start_date")
     private LocalDate cooperationStartDate;
 
-    @Schema(description = "合作状态:0-潜在,1-合作中,2-暂停,3-终止")
     @TableField("cooperation_status")
     private Integer cooperationStatus;
 

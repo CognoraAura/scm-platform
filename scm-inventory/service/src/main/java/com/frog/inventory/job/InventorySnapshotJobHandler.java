@@ -68,7 +68,7 @@ public class InventorySnapshotJobHandler {
                     snapshot.setWarehouseId(inventory.getWarehouseId());
                     snapshot.setAvailableStock(inventory.getAvailableStock());
                     snapshot.setLockedStock(inventory.getLockedStock());
-                    snapshot.setSnapshotTime(snapshotTime);
+                    snapshot.setSnapshotDate(snapshotTime.toLocalDate());
 
                     snapshotMapper.insert(snapshot);
                     successCount++;

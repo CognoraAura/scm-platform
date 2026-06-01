@@ -6,14 +6,13 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 租户配置表
+ * 租户配置�?
  * </p>
  *
  * @author deng
@@ -23,7 +22,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("tenant_config")
-@Schema(description = "租户配置表")
 public class TenantConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -34,7 +32,6 @@ public class TenantConfig implements Serializable {
     @TableField("tenant_id")
     private String tenantId;
 
-    @Schema(description = "配置分类:SYSTEM-系统,BUSINESS-业务,UI-界面,NOTIFICATION-通知")
     @TableField("config_category")
     private String configCategory;
 
@@ -53,7 +50,6 @@ public class TenantConfig implements Serializable {
     @TableField("default_value")
     private String defaultValue;
 
-    @Schema(description = "敏感配置是否加密（如API密钥）")
     @TableField("is_encrypted")
     private Boolean isEncrypted;
 
@@ -71,6 +67,5 @@ public class TenantConfig implements Serializable {
 
     @TableField("update_by")
     private String updateBy;
-
 
 }

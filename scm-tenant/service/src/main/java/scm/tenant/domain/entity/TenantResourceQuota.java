@@ -8,14 +8,13 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 租户资源配额表
+ * 租户资源配额�?
  * </p>
  *
  * @author deng
@@ -25,7 +24,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("tenant_resource_quota")
-@Schema(description = "租户资源配额表")
 public class TenantResourceQuota implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -60,7 +58,6 @@ public class TenantResourceQuota implements Serializable {
     @TableField("current_orders_today")
     private Integer currentOrdersToday;
 
-    @Schema(description = "订单配额重置日期（每日重置）")
     @TableField("last_order_reset_date")
     private LocalDate lastOrderResetDate;
 
@@ -76,7 +73,6 @@ public class TenantResourceQuota implements Serializable {
     @TableField("current_api_calls_today")
     private Integer currentApiCallsToday;
 
-    @Schema(description = "API配额重置日期（每日重置）")
     @TableField("last_api_reset_date")
     private LocalDate lastApiResetDate;
 
@@ -88,6 +84,5 @@ public class TenantResourceQuota implements Serializable {
 
     @TableField("update_time")
     private LocalDateTime updateTime;
-
 
 }

@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -24,7 +23,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("wms_wave_picking")
-@Schema(description = "波次拣货表")
 public class WmsWavePicking implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -53,11 +51,9 @@ public class WmsWavePicking implements Serializable {
     @TableField("total_distance")
     private Integer totalDistance;
 
-    @Schema(description = "路径优化率")
     @TableField("optimization_rate")
     private BigDecimal optimizationRate;
 
-    @Schema(description = "状态:0-待拣货,1-拣货中,2-已完成,3-已取消")
     @TableField("status")
     private Integer status;
 

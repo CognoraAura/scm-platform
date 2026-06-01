@@ -9,7 +9,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -26,7 +25,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("tms_delivery_area")
-@Schema(description = "配送区域表")
 public class TmsDeliveryArea implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -52,7 +50,6 @@ public class TmsDeliveryArea implements Serializable {
     @TableField("carrier_id")
     private String carrierId;
 
-    @Schema(description = "标准配送时长（小时）")
     @TableField("standard_duration")
     private Integer standardDuration;
 

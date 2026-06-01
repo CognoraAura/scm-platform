@@ -2,9 +2,6 @@ package scm.supplier.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.frog.common.response.ApiResponse;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,14 +16,12 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/supplier-evaluations")
-@Tag(name = "供应商评价管理", description = "供应商评价CRUD及查询接口")
 public class SupSupplierEvaluationController {
 
     @Autowired
     private ISupSupplierEvaluationService evaluationService;
 
     @GetMapping("/{id}")
-    @Operation(summary = "查询评价详情")
     public ApiResponse<SupSupplierEvaluation> getById(@PathVariable String id) {
         log.info("[API] 查询评价详情: id={}", id);
         SupSupplierEvaluation evaluation = evaluationService.getById(id);
@@ -37,7 +32,6 @@ public class SupSupplierEvaluationController {
     }
 
     @PostMapping
-    @Operation(summary = "创建评价")
     public ApiResponse<SupSupplierEvaluation> create(@RequestBody SupSupplierEvaluation evaluation) {
         log.info("[API] 创建供应商评价: supplierId={}", evaluation.getSupplierId());
         evaluation.setId(UUID.randomUUID().toString());
@@ -57,7 +51,6 @@ public class SupSupplierEvaluationController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "更新评价")
     public ApiResponse<SupSupplierEvaluation> update(@PathVariable String id,
                                                      @RequestBody SupSupplierEvaluation evaluation) {
         log.info("[API] 更新评价: id={}", id);
@@ -75,7 +68,6 @@ public class SupSupplierEvaluationController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "删除评价")
     public ApiResponse<Void> delete(@PathVariable String id) {
         log.info("[API] 删除评价: id={}", id);
         boolean success = evaluationService.removeById(id);
@@ -83,7 +75,6 @@ public class SupSupplierEvaluationController {
     }
 
     @GetMapping
-    @Operation(summary = "分页查询评价列表")
     public ApiResponse<Page<SupSupplierEvaluation>> pageList(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -95,14 +86,12 @@ public class SupSupplierEvaluationController {
     }
 
     @GetMapping("/supplier/{supplierId}")
-    @Operation(summary = "查询供应商的所有评价")
     public ApiResponse<List<SupSupplierEvaluation>> listBySupplierId(@PathVariable String supplierId) {
         log.info("[API] 查询供应商评价列表: supplierId={}", supplierId);
         return ApiResponse.success(evaluationService.listBySupplierId(supplierId));
     }
 
     @GetMapping("/supplier/{supplierId}/average-score")
-    @Operation(summary = "计算供应商平均评分")
     public ApiResponse<BigDecimal> getAverageScore(@PathVariable String supplierId) {
         log.info("[API] 计算供应商平均评分: supplierId={}", supplierId);
         return ApiResponse.success(evaluationService.calculateAverageScore(supplierId));

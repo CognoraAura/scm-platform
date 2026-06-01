@@ -2,9 +2,6 @@ package scm.supplier.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.frog.common.response.ApiResponse;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,14 +15,12 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/purchase-order-items")
-@Tag(name = "采购单明细管理", description = "采购单明细CRUD及查询接口")
 public class SupPurchaseOrderItemController {
 
     @Autowired
     private ISupPurchaseOrderItemService purchaseOrderItemService;
 
     @GetMapping("/{id}")
-    @Operation(summary = "查询采购单明细详情")
     public ApiResponse<SupPurchaseOrderItem> getById(@PathVariable UUID id) {
         log.info("[API] 查询采购单明细详情: id={}", id);
         SupPurchaseOrderItem item = purchaseOrderItemService.getById(id);
@@ -36,7 +31,6 @@ public class SupPurchaseOrderItemController {
     }
 
     @PostMapping
-    @Operation(summary = "创建采购单明细")
     public ApiResponse<SupPurchaseOrderItem> create(@RequestBody SupPurchaseOrderItem item) {
         log.info("[API] 创建采购单明细: purchaseId={}, skuId={}", item.getPurchaseId(), item.getSkuId());
         item.setId(UUID.randomUUID());
@@ -50,7 +44,6 @@ public class SupPurchaseOrderItemController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "更新采购单明细")
     public ApiResponse<SupPurchaseOrderItem> update(@PathVariable UUID id,
                                                     @RequestBody SupPurchaseOrderItem item) {
         log.info("[API] 更新采购单明细: id={}", id);
@@ -67,7 +60,6 @@ public class SupPurchaseOrderItemController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "删除采购单明细")
     public ApiResponse<Void> delete(@PathVariable UUID id) {
         log.info("[API] 删除采购单明细: id={}", id);
         boolean success = purchaseOrderItemService.removeById(id);
@@ -75,7 +67,6 @@ public class SupPurchaseOrderItemController {
     }
 
     @GetMapping
-    @Operation(summary = "分页查询采购单明细列表")
     public ApiResponse<Page<SupPurchaseOrderItem>> pageList(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -87,7 +78,6 @@ public class SupPurchaseOrderItemController {
     }
 
     @GetMapping("/purchase/{purchaseId}")
-    @Operation(summary = "查询采购单的所有明细")
     public ApiResponse<List<SupPurchaseOrderItem>> listByPurchaseId(@PathVariable String purchaseId) {
         log.info("[API] 查询采购单明细列表: purchaseId={}", purchaseId);
         return ApiResponse.success(purchaseOrderItemService.listByPurchaseId(purchaseId));

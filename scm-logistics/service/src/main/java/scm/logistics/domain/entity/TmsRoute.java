@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -27,7 +26,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("tms_route")
-@Schema(description = "配送路线表")
 public class TmsRoute implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -59,7 +57,6 @@ public class TmsRoute implements Serializable {
     @TableField("end_location")
     private String endLocation;
 
-    @Schema(description = "途经点（JSONB）- 路径优化后的顺序")
     @TableField("waypoints")
     private String waypoints;
 
@@ -78,14 +75,12 @@ public class TmsRoute implements Serializable {
     @TableField("actual_duration")
     private Integer actualDuration;
 
-    @Schema(description = "路径优化算法:TSP-旅行商,GA-遗传,ACO-蚁群")
     @TableField("optimization_algorithm")
     private String optimizationAlgorithm;
 
     @TableField("optimization_score")
     private BigDecimal optimizationScore;
 
-    @Schema(description = "状态:0-规划中,1-配送中,2-已完成,3-已取消")
     @TableField("status")
     private Integer status;
 

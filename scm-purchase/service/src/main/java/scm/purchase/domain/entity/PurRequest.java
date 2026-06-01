@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -24,7 +23,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("pur_request")
-@Schema(description = "采购申请单表")
 public class PurRequest implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -35,11 +33,7 @@ public class PurRequest implements Serializable {
     private String tenantId;
 
     private String requestNo;
-
-    @Schema(description = "申请类型:1-常规采购,2-紧急采购,3-补货采购,4-工程采购")
     private Integer requestType;
-
-    @Schema(description = "优先级:1-紧急,2-普通,3-低")
     private Integer priority;
 
     private String deptId;
@@ -57,8 +51,6 @@ public class PurRequest implements Serializable {
     private String purpose;
 
     private BigDecimal budgetAmount;
-
-    @Schema(description = "状态:0-草稿,1-待审批,2-已审批,3-已驳回,4-已转采购单,5-已关闭")
     private Integer status;
 
     private String approvalFlowId;

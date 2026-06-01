@@ -8,14 +8,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 运单表
+ * 运单�?
  * </p>
  *
  * @author deng
@@ -25,7 +24,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("tms_waybill")
-@Schema(description = "运单表")
 public class TmsWaybill implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -84,7 +82,6 @@ public class TmsWaybill implements Serializable {
     @TableField("insurance_amount")
     private BigDecimal insuranceAmount;
 
-    @Schema(description = "状态:0-待揽件,1-已揽件,2-运输中,3-派送中,4-已签收,5-异常,6-退回")
     @TableField("status")
     private Integer status;
 
@@ -103,7 +100,6 @@ public class TmsWaybill implements Serializable {
     @TableField("courier_phone")
     private String courierPhone;
 
-    @Schema(description = "签收类型:1-本人签收,2-代签,3-快递柜")
     @TableField("sign_type")
     private Integer signType;
 
@@ -139,6 +135,5 @@ public class TmsWaybill implements Serializable {
 
     @TableField("remark")
     private String remark;
-
 
 }

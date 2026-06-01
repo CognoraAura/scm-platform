@@ -8,14 +8,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 供应商报价单表
+ * 供应商报价单�?
  * </p>
  *
  * @author deng
@@ -25,7 +24,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("pur_quotation")
-@Schema(description = "供应商报价单表")
 public class PurQuotation implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -70,8 +68,6 @@ public class PurQuotation implements Serializable {
     private LocalDate validFrom;
 
     private LocalDate validUntil;
-
-    @Schema(description = "状态:0-草稿,1-已提交,2-已评审,3-已过期")
     private Integer status;
 
     private Boolean isSelected;

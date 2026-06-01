@@ -6,8 +6,6 @@ import com.frog.common.log.annotation.AuditLog;
 import com.frog.common.response.ApiResponse;
 import com.frog.common.dto.role.RoleDTO;
 import com.frog.system.service.ISysRoleService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -17,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 角色管理控制器
+ * 角色管理控制�?
  *
  * @author Deng
  * createData 2025/10/14 18:01
@@ -26,7 +24,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/system/roles")
 @RequiredArgsConstructor
-@Tag(name = "角色模块")
 public class SysRoleController {
     private final ISysRoleService roleService;
 
@@ -35,7 +32,6 @@ public class SysRoleController {
      */
     @GetMapping
     @PreAuthorize("hasAuthority('system:role:list')")
-    @Operation(summary = "查询角色列表")
     public ApiResponse<PageResult<RoleDTO>> list(@RequestParam(defaultValue = "1") Integer page,
                                                  @RequestParam(defaultValue = "10") Integer size,
                                                  @RequestParam(required = false) String roleName) {
@@ -45,11 +41,10 @@ public class SysRoleController {
     }
 
     /**
-     * 查询所有角色（用于下拉选择）
+     * 查询所有角色（用于下拉选择�?
      */
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('system:role:list')")
-    @Operation(summary = "查询所有角色")
     public ApiResponse<List<RoleDTO>> listAll() {
         List<RoleDTO> roles = roleService.listAllRoles();
 
@@ -61,7 +56,6 @@ public class SysRoleController {
      */
     @PostMapping
     @PreAuthorize("hasAuthority('system:role:add')")
-    @Operation(summary = "新增角色")
     @AuditLog(
             operation = "新增角色",
             businessType = "ROLE",
@@ -78,7 +72,6 @@ public class SysRoleController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('system:role:edit')")
-    @Operation(summary = "修改角色")
     @AuditLog(
             operation = "修改角色",
             businessType = "ROLE",
@@ -96,7 +89,6 @@ public class SysRoleController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('system:role:delete')")
-    @Operation(summary = "删除角色")
     @AuditLog(
             operation = "删除角色",
             businessType = "ROLE",
@@ -113,7 +105,6 @@ public class SysRoleController {
      */
     @PostMapping("/{id}/grant-permissions")
     @PreAuthorize("hasAuthority('system:role:edit')")
-    @Operation(summary = "角色授权")
     @AuditLog(
             operation = "角色授权",
             businessType = "ROLE",
@@ -130,7 +121,6 @@ public class SysRoleController {
      */
     @GetMapping("/{id}/permissions")
     @PreAuthorize("hasAuthority('system:role:list')")
-    @Operation(summary = "查询角色权限")
     public ApiResponse<List<UUID>> getRolePermissions(@PathVariable UUID id) {
         List<UUID> permissionIds = roleService.getRolePermissionIds(id);
 

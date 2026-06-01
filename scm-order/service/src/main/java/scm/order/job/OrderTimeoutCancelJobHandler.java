@@ -3,8 +3,8 @@ package scm.order.job;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.frog.inventory.api.InventoryDubboService;
-import com.frog.order.domain.entity.Order;
-import com.frog.order.mapper.OrdOrderMapper;
+import scm.order.domain.entity.OrdOrder;
+import scm.order.mapper.OrdOrderMapper;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import io.seata.spring.annotation.GlobalTransactional;
@@ -63,10 +63,10 @@ public class OrderTimeoutCancelJobHandler {
 
             // 2. 查询超时订单
             LocalDateTime timeoutThreshold = LocalDateTime.now().minusMinutes(timeoutMinutes);
-            List<Order> timeoutOrders = orderMapper.selectList(
-                    new LambdaQueryWrapper<Order>()
-                            .eq(Order::getStatus, "PENDING_PAYMENT")
-                            .lt(Order::getCreateTime, timeoutThreshold)
+            List<OrdOrder> timeoutOrders = orderMapper.selectList(
+                    new LambdaQueryWrapper<OrdOrder>()
+                            .eq(OrdOrder::getStatus, 0) // PENDING_PAYMENT
+                            .lt(OrdOrder::getCreateTime, timeoutThreshold)
                             .last("LIMIT 1000")  // 每次最多处理 1000 条
             );
 
@@ -82,7 +82,7 @@ public class OrderTimeoutCancelJobHandler {
             int successCount = 0;
             int failCount = 0;
 
-            for (Order order : timeoutOrders) {
+            for (OrdOrder order : timeoutOrders) {
                 try {
                     cancelOrder(order);
                     successCount++;
@@ -126,13 +126,13 @@ public class OrderTimeoutCancelJobHandler {
      * @param order 订单
      */
     @GlobalTransactional(name = "cancel-timeout-order", rollbackFor = Exception.class)
-    public void cancelOrder(Order order) {
+    public void cancelOrder(OrdOrder order) {
         // 1. 更新订单状态为已取消
         int updated = orderMapper.update(null,
-                new LambdaUpdateWrapper<Order>()
-                        .set(Order::getStatus, "CANCELLED_TIMEOUT")
-                        .eq(Order::getId, order.getId())
-                        .eq(Order::getStatus, "PENDING_PAYMENT")  // 乐观锁
+                new LambdaUpdateWrapper<OrdOrder>()
+                        .set(OrdOrder::getStatus, 7) // CANCELLED_TIMEOUT
+                        .eq(OrdOrder::getId, order.getId())
+                        .eq(OrdOrder::getStatus, 0)  // PENDING_PAYMENT - 乐观锁
         );
 
         if (updated == 0) {
@@ -141,7 +141,7 @@ public class OrderTimeoutCancelJobHandler {
 
         // 2. 释放库存（RPC 调用，参与分布式事务）
         inventoryService.releaseStock(
-                order.getSkuId(),
+                Long.parseLong(order.getSkuId()),
                 order.getQuantity(),
                 "TIMEOUT_CANCEL:" + order.getOrderNo()
         );

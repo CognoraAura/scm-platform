@@ -1,4 +1,4 @@
-package scm.order.domain.entity;
+﻿package scm.order.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -23,7 +22,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("ord_status_history")
-@Schema(description = "订单状态流转历史")
 public class OrdStatusHistory implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -42,8 +40,6 @@ public class OrdStatusHistory implements Serializable {
 
     @TableField("to_status")
     private Integer toStatus;
-
-    @Schema(description = "状态机事件：PAYMENT_SUCCESS, SHIP_OUT等")
     @TableField("event")
     private String event;
 

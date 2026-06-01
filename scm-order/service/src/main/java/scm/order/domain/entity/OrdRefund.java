@@ -1,4 +1,4 @@
-package scm.order.domain.entity;
+﻿package scm.order.domain.entity;
 
 import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -24,7 +23,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("ord_refund")
-@Schema(description = "退款/退货表")
 public class OrdRefund implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -43,8 +41,6 @@ public class OrdRefund implements Serializable {
 
     @TableField("user_id")
     private String userId;
-
-    @Schema(description = "退款类型:1-仅退款,2-退货退款")
     @TableField("refund_type")
     private Integer refundType;
 
@@ -62,8 +58,6 @@ public class OrdRefund implements Serializable {
 
     @TableField("refund_amount")
     private BigDecimal refundAmount;
-
-    @Schema(description = "状态:0-待审核,1-已同意,2-已拒绝,3-已完成")
     @TableField("status")
     private Integer status;
 

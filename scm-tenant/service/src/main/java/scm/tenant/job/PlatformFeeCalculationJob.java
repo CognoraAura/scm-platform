@@ -1,6 +1,6 @@
 package scm.tenant.job;
 
-import com.frog.tenant.service.PlatformFeeService;
+import scm.tenant.service.IPlatformFeeService;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +43,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PlatformFeeCalculationJob {
 
-    private final PlatformFeeService platformFeeService;
+    private final IPlatformFeeService platformFeeService;
 
     /**
      * 执行平台服务费计算

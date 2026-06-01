@@ -8,14 +8,13 @@ import java.io.Serial;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 库存告警表
+ * 库存告警�?
  * </p>
  *
  * @author deng
@@ -25,7 +24,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("inv_alert")
-@Schema(description = "库存告警表")
 public class InvAlert implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -39,7 +37,6 @@ public class InvAlert implements Serializable {
     @TableField("warehouse_id")
     private String warehouseId;
 
-    @Schema(description = "告警类型:1-库存不足,2-库存为0,3-即将过期,4-损坏")
     @TableField("alert_type")
     private Integer alertType;
 
@@ -78,6 +75,5 @@ public class InvAlert implements Serializable {
 
     @TableField("remark")
     private String remark;
-
 
 }

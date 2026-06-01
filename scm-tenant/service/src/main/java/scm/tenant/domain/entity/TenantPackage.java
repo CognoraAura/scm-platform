@@ -7,14 +7,13 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 租户套餐表
+ * 租户套餐�?
  * </p>
  *
  * @author deng
@@ -24,7 +23,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("tenant_package")
-@Schema(description = "租户套餐表")
 public class TenantPackage implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -38,7 +36,6 @@ public class TenantPackage implements Serializable {
     @TableField("package_name")
     private String packageName;
 
-    @Schema(description = "套餐级别:1-基础版,2-专业版,3-企业版,4-旗舰版")
     @TableField("package_level")
     private Integer packageLevel;
 
@@ -69,7 +66,6 @@ public class TenantPackage implements Serializable {
     @TableField("max_api_calls_per_day")
     private Integer maxApiCallsPerDay;
 
-    @Schema(description = "功能模块配置（JSONB）")
     @TableField("features")
     private String features;
 
@@ -108,6 +104,5 @@ public class TenantPackage implements Serializable {
 
     @TableField("remark")
     private String remark;
-
 
 }

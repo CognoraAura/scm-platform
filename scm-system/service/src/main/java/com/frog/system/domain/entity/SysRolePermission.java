@@ -1,8 +1,6 @@
 package com.frog.system.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -11,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * 角色权限关联表
+ * 角色权限关联�?
  *
  * @author Deng
  * @since 2025-12-17
@@ -20,33 +18,23 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("sys_role_permission")
-@Tag(
-        name = "SysRolePermission 对象",
-        description = "角色权限关联表"
-)
 public class SysRolePermission {
 
-    @Schema(description = "主键 ID")
     @TableId(value = "id", type = IdType.ASSIGN_UUID)
     private UUID id;
 
-    @Schema(description = "租户ID（冗余字段，来自角色表）")
     @TableField("tenant_id")
     private UUID tenantId;
 
-    @Schema(description = "角色 ID")
     @TableField("role_id")
     private UUID roleId;
 
-    @Schema(description = "权限 ID")
     @TableField("permission_id")
     private UUID permissionId;
 
-    @Schema(description = "创建时间")
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
-    @Schema(description = "创建人")
     @TableField(value = "create_by", fill = FieldFill.INSERT)
     private UUID createBy;
 }

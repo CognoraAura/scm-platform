@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -23,7 +22,6 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("tenant_feature")
-@Schema(description = "租户功能开关表")
 public class TenantFeature implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -34,7 +32,6 @@ public class TenantFeature implements Serializable {
     @TableField("tenant_id")
     private String tenantId;
 
-    @Schema(description = "功能代码:INVENTORY,WMS,OMS,TMS,APS,FINANCE等")
     @TableField("feature_code")
     private String featureCode;
 
@@ -44,7 +41,6 @@ public class TenantFeature implements Serializable {
     @TableField("enabled")
     private Boolean enabled;
 
-    @Schema(description = "Beta功能标识")
     @TableField("is_beta")
     private Boolean isBeta;
 
@@ -68,6 +64,5 @@ public class TenantFeature implements Serializable {
 
     @TableField("update_by")
     private String updateBy;
-
 
 }

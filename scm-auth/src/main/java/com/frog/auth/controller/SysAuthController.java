@@ -14,9 +14,6 @@ import com.frog.common.sentinel.annotation.RateLimit;
 import com.frog.common.util.UUIDv7Util;
 import com.frog.common.web.util.SecurityUtils;
 import com.frog.system.api.UserDubboService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -35,10 +32,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 系统认证控制器
- * 提供用户登录、登出、Token刷新等相关接口
+ * 系统认证控制�?
+ * 提供用户登录、登出、Token刷新等相关接�?
  * <p>
- * WebAuthn 相关接口请参考 {@link WebAuthnCredentialController}
+ * WebAuthn 相关接口请参�?{@link WebAuthnCredentialController}
  *
  * @author Deng
  * @version 1.0
@@ -49,10 +46,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@Tag(
-        name = "系统认证",
-        description = "用户登录、登出、Token 管理"
-)
 public class SysAuthController {
     private final ISysAuthService authService;
     private final HttpServletRequestUtils httpServletRequestUtils;
@@ -68,10 +61,6 @@ public class SysAuthController {
     @PostMapping("/login")
     @SentinelResource(value = "auth_login")
     @RateLimit()
-    @Operation(
-            summary = "用户登录",
-            description = "使用用户名密码进行登录认证"
-    )
     public ApiResponse<LoginResponse> login(
             @RequestBody @Valid LoginRequest request,
             HttpServletRequest httpRequest) {
@@ -93,10 +82,6 @@ public class SysAuthController {
      */
     @PostMapping("/logout")
     @PreAuthorize("isAuthenticated()")
-    @Operation(
-            summary = "用户登出",
-            description = "撤销当前用户的访问令牌"
-    )
     public ApiResponse<Void> logout(HttpServletRequest request) {
         String token = httpServletRequestUtils.getTokenFromRequest(request);
         if (!StringUtils.hasText(token)) {
@@ -120,10 +105,6 @@ public class SysAuthController {
      */
     @PostMapping("/refresh")
     @RateLimit()
-    @Operation(
-            summary = "刷新 Token",
-            description = "使用 Refresh Token 获取新的访问令牌"
-    )
     public ApiResponse<LoginResponse> refreshToken(
             @RequestBody @Valid RefreshTokenRequest request,
             HttpServletRequest httpRequest) {
@@ -153,17 +134,13 @@ public class SysAuthController {
      */
     @GetMapping("/userinfo")
     @PreAuthorize("isAuthenticated()")
-    @Operation(
-            summary = "获取用户信息",
-            description = "获取当前登录用户的详细信息"
-    )
     public ApiResponse<UserInfo> getUserInfo(HttpServletRequest request) {
         UUID userId = SecurityUtils.getCurrentUserUuid().orElse(null);
         if (userId == null) {
             return ApiResponse.fail(401, "Unauthorized");
         }
 
-        // 如果 Dubbo 不可用，说明系统异常，应该快速失败
+        // 如果 Dubbo 不可用，说明系统异常，应该快速失�?
         UserInfo userInfo;
         try {
             userInfo = userDubboService.getUserInfo(userId);
@@ -191,14 +168,8 @@ public class SysAuthController {
             businessType = "USER",
             riskLevel = 3
     )
-    @Operation(
-            summary = "强制登出",
-            description = "管理员强制指定用户下线"
-    )
     public ApiResponse<Void> forceLogout(
-            @Parameter(description = "用户 ID", required = true)
             @PathVariable UUID userId,
-            @Parameter(description = "登出原因", required = true)
             @RequestParam @NotBlank(message = "登出原因不能为空") String reason) {
 
         authService.forceLogout(userId, reason);
