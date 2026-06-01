@@ -42,6 +42,12 @@
             <version>5.4.1</version>
         </dependency>
 
+        <!-- Jakarta Validation -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+
         <!-- spring start -->
         <!-- spring web -->
         <dependency>
