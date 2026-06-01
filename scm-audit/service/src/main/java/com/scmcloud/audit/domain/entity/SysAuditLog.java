@@ -1,0 +1,106 @@
+package com.scmcloud.audit.domain.entity;
+
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.IdType;
+
+import java.io.Serial;
+import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.TableId;
+import java.io.Serializable;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+
+/**
+ * <p>
+ * 操作审计日志表按月分�?
+ * </p>
+ *
+ * @author deng
+ * @since 2025-12-26
+ */
+@Data
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+@TableName("sys_audit_log")
+public class SysAuditLog implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @TableId(value = "id", type = IdType.NONE)
+    private String id;
+
+    @TableField("user_id")
+    private String userId;
+
+    @TableField("username")
+    private String username;
+
+    @TableField("real_name")
+    private String realName;
+
+    @TableField("dept_id")
+    private String deptId;
+
+    @TableField("operation_type")
+    private String operationType;
+
+    @TableField("operation_module")
+    private String operationModule;
+
+    @TableField("operation_desc")
+    private String operationDesc;
+
+    @TableField("request_uri")
+    private String requestUri;
+
+    @TableField("request_method")
+    private String requestMethod;
+
+    @TableField("request_params")
+    private String requestParams;
+
+    @TableField("response_data")
+    private String responseData;
+
+    @TableField("response_status")
+    private Integer responseStatus;
+
+    @TableField("ip_address")
+    private String ipAddress;
+
+    @TableField("location")
+    private String location;
+
+    @TableField("user_agent")
+    private String userAgent;
+
+    @TableField("business_type")
+    private String businessType;
+
+    @TableField("business_id")
+    private String businessId;
+
+    @TableField("old_value")
+    private String oldValue;
+
+    @TableField("new_value")
+    private String newValue;
+
+    @TableField("risk_level")
+    private Integer riskLevel;
+
+    @TableField("status")
+    private Integer status;
+
+    @TableField("error_msg")
+    private String errorMsg;
+
+    @TableField("execute_time")
+    private Integer executeTime;
+
+    @TableField("create_time")
+    private LocalDateTime createTime;
+
+}
