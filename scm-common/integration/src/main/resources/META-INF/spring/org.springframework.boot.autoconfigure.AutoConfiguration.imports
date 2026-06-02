@@ -1,2 +1,2 @@
-com.frog.common.integration.config.RabbitIntegrationAutoConfiguration
-com.frog.common.integration.config.KafkaIntegrationAutoConfiguration
+com.scmcloud.common.integration.config.RabbitIntegrationAutoConfiguration
+com.scmcloud.common.integration.config.KafkaIntegrationAutoConfiguration

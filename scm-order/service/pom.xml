@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.frog</groupId>
+        <groupId>com.scmcloud</groupId>
         <artifactId>scm-order</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
@@ -19,24 +19,24 @@
     <dependencies>
         <!-- API Module -->
         <dependency>
-            <groupId>com.frog</groupId>
+            <groupId>com.scmcloud</groupId>
             <artifactId>scm-order-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.frog</groupId>
+            <groupId>com.scmcloud</groupId>
             <artifactId>scm-inventory-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <!-- Common Modules -->
         <dependency>
-            <groupId>com.frog</groupId>
+            <groupId>com.scmcloud</groupId>
             <artifactId>scm-common-web</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.frog</groupId>
+            <groupId>com.scmcloud</groupId>
             <artifactId>scm-common-integration</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>

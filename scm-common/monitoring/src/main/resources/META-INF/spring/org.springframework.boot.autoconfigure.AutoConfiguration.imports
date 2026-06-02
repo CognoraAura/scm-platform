@@ -1,2 +1,2 @@
-com.frog.common.monitoring.config.ObservabilityAutoConfiguration
-com.frog.common.sentinel.config.SentinelAutoConfiguration
+com.scmcloud.common.monitoring.config.ObservabilityAutoConfiguration
+com.scmcloud.common.sentinel.config.SentinelAutoConfiguration

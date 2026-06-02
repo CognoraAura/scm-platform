@@ -25,7 +25,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.frog.common.log" level="INFO" additivity="false">
+    <logger name="com.scmcloud.common.log" level="INFO" additivity="false">
         <appender-ref ref="AUDIT"/>
     </logger>
 

@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.frog</groupId>
+        <groupId>com.scmcloud</groupId>
         <artifactId>scm-common</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
@@ -20,12 +20,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.frog</groupId>
+            <groupId>com.scmcloud</groupId>
             <artifactId>scm-common-security-core</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.frog</groupId>
+            <groupId>com.scmcloud</groupId>
             <artifactId>scm-common-security-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
@@ -90,7 +90,7 @@
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
         </dependency>
-        <!-- 动态多数据源 -->
+        <!-- 动态多数据�?-->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-jsqlparser</artifactId>
@@ -136,7 +136,7 @@
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-annotation-aspectj</artifactId>
         </dependency>
-        <!-- Sentinel 规则数据源支持 -->
+        <!-- Sentinel 规则数据源支�?-->
         <dependency>
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-datasource-extension</artifactId>
