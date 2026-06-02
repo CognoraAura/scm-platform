@@ -2,7 +2,7 @@ package com.scmcloud.supplier.job;
 
 import com.scmcloud.supplier.service.PurchaseApprovalService;
 import com.scmcloud.supplier.service.NotificationService;
-import com.scmcloud.supplier.vo.OverdueApprovalTaskVO;
+import com.scmcloud.supplier.dto.OverdueApprovalTaskVO;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.RequiredArgsConstructor;

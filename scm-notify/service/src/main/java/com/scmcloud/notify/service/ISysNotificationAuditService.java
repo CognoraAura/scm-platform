@@ -1,7 +1,10 @@
 package com.scmcloud.notify.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.scmcloud.notify.domain.entity.SysNotificationAudit;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,18 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ISysNotificationAuditService extends IService<SysNotificationAudit> {
 
+    SysNotificationAudit createAudit(SysNotificationAudit entity);
+
+    SysNotificationAudit getById(String id);
+
+    boolean deleteById(String id);
+
+    List<SysNotificationAudit> listByUserId(String userId);
+
+    List<SysNotificationAudit> listByStatus(String status);
+
+    boolean sendNotification(String id);
+
+    Page<SysNotificationAudit> pageQuery(int page, int size, String userId,
+                                          String channel, String status);
 }
