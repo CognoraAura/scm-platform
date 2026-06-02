@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.scmcloud.common.log.service.ISysAuditLogService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.scmcloud.audit.domain.entity.SysAuditLog;
 import com.scmcloud.audit.mapper.SysAuditLogMapper;
-import com.scmcloud.audit.service.ISysAuditLogService;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -17,9 +19,10 @@ import java.util.UUID;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class SysAuditLogServiceImpl
         extends ServiceImpl<SysAuditLogMapper, SysAuditLog>
-        implements ISysAuditLogService {
+        implements ISysAuditLogService, com.scmcloud.audit.service.ISysAuditLogService {
 
     public SysAuditLog createLog(SysAuditLog entity) {
         log.info("创建审计日志: userId={}, operationType={}, module={}",
@@ -89,5 +92,72 @@ public class SysAuditLogServiceImpl
 
         Page<SysAuditLog> pageParam = new Page<>(page, size);
         return page(pageParam, wrapper);
+    }
+
+    // --- Common ISysAuditLogService methods ---
+
+    @Async
+    public void recordLogin(UUID userId, String username, String ipAddress, boolean success, String remark) {
+        SysAuditLog log = SysAuditLog.builder()
+                .userId(userId != null ? userId.toString() : null)
+                .username(username)
+                .operationType("LOGIN")
+                .ipAddress(ipAddress)
+                .status(success ? 1 : 0)
+                .operationDesc(remark)
+                .createTime(LocalDateTime.now())
+                .build();
+        save(log);
+    }
+
+    @Async
+    public void recordLoginFailure(String username, String ipAddress, String reason) {
+        SysAuditLog log = SysAuditLog.builder()
+                .username(username)
+                .operationType("LOGIN_FAILURE")
+                .ipAddress(ipAddress)
+                .status(0)
+                .errorMsg(reason)
+                .createTime(LocalDateTime.now())
+                .build();
+        save(log);
+    }
+
+    @Async
+    public void recordLogout(UUID userId, String remark) {
+        SysAuditLog log = SysAuditLog.builder()
+                .userId(userId != null ? userId.toString() : null)
+                .operationType("LOGOUT")
+                .status(1)
+                .operationDesc(remark)
+                .createTime(LocalDateTime.now())
+                .build();
+        save(log);
+    }
+
+    @Async
+    public void recordSecurityEvent(String eventType, Integer riskLevel, UUID userId, String username, String ipAddress,
+                                    String resource, boolean success, String details) {
+        try {
+            SysAuditLog log = SysAuditLog.builder()
+                    .userId(userId != null ? userId.toString() : null)
+                    .username(username)
+                    .operationType(eventType)
+                    .riskLevel(riskLevel)
+                    .ipAddress(ipAddress)
+                    .operationModule(resource)
+                    .operationDesc(details)
+                    .status(success ? 1 : 0)
+                    .createTime(LocalDateTime.now())
+                    .build();
+            save(log);
+
+            if (riskLevel != null && riskLevel >= 4) {
+                log.warn("Security Alert: {}, User: {}, IP: {}",
+                        log.getOperationType(), log.getUsername(), log.getIpAddress());
+            }
+        } catch (Exception e) {
+            log.error("Failed to record security event", e);
+        }
     }
 }

@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import com.scmcloud.audit.domain.entity.SysSensitiveOperationLog;
-import com.scmcloud.audit.service.impl.SysSensitiveOperationLogServiceImpl;
+import com.scmcloud.audit.service.ISysSensitiveOperationLogService;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/sys-sensitive-operation-log")
 public class SysSensitiveOperationLogController {
 
-    private final SysSensitiveOperationLogServiceImpl sensitiveOperationLogService;
+    private final ISysSensitiveOperationLogService sensitiveOperationLogService;
 
     @PostMapping
     public SysSensitiveOperationLog create(@RequestBody SysSensitiveOperationLog entity) {
