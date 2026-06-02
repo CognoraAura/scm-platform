@@ -66,9 +66,7 @@ public class RoleCrossDatabaseQueryService {
     }
 
     /**
-     * 根据角色编码查询第一个有效用�ID
-     * <p>
-     * 替代�SysPermissionApprovalMapper.findFirstUserByRoleCode
+     * 根据角色编码查询第一个有效用户的ID
      *
      * @param roleCode 角色编码
      * @return 第一个有效用户的 ID，如果没有则返回 null

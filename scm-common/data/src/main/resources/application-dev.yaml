@@ -11,6 +11,6 @@ mybatis-plus:
 # Logging configuration for development
 logging:
   level:
-    com.frog: DEBUG
+    com.scmcloud: DEBUG
     com.baomidou.mybatisplus: DEBUG
     org.springframework.jdbc: DEBUG

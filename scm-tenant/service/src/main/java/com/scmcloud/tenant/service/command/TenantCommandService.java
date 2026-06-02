@@ -1,0 +1,80 @@
+package com.scmcloud.tenant.service.command;
+
+import com.scmcloud.common.data.rw.annotation.Master;
+import com.scmcloud.tenant.domain.entity.Tenant;
+import com.scmcloud.tenant.mapper.TenantMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class TenantCommandService {
+
+    private final TenantMapper tenantMapper;
+
+    @Master(reason = "创建租户")
+    @Transactional(rollbackFor = Exception.class)
+    public Tenant createTenant(Tenant entity) {
+        log.info("创建租户: tenantCode={}, tenantName={}", entity.getTenantCode(), entity.getTenantName());
+        entity.setId(UUID.randomUUID().toString());
+        entity.setCreateTime(LocalDateTime.now());
+        entity.setUpdateTime(LocalDateTime.now());
+        entity.setDeleted(false);
+        if (entity.getStatus() == null) {
+            entity.setStatus(0);
+        }
+        tenantMapper.insert(entity);
+        log.info("租户创建成功: id={}", entity.getId());
+        return entity;
+    }
+
+    @Master(reason = "更新租户")
+    @Transactional(rollbackFor = Exception.class)
+    public Tenant updateTenant(Tenant entity) {
+        log.info("更新租户: id={}", entity.getId());
+        entity.setUpdateTime(LocalDateTime.now());
+        tenantMapper.updateById(entity);
+        return entity;
+    }
+
+    @Master(reason = "删除租户")
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteById(String id) {
+        log.info("删除租户: id={}", id);
+        Tenant tenant = new Tenant();
+        tenant.setId(id);
+        tenant.setDeleted(true);
+        tenant.setUpdateTime(LocalDateTime.now());
+        return tenantMapper.updateById(tenant) > 0;
+    }
+
+    @Master(reason = "启用租户")
+    @Transactional(rollbackFor = Exception.class)
+    public boolean enableTenant(String id) {
+        log.info("启用租户: id={}", id);
+        Tenant tenant = new Tenant();
+        tenant.setId(id);
+        tenant.setStatus(1);
+        tenant.setActivatedAt(LocalDateTime.now());
+        tenant.setUpdateTime(LocalDateTime.now());
+        return tenantMapper.updateById(tenant) > 0;
+    }
+
+    @Master(reason = "禁用租户")
+    @Transactional(rollbackFor = Exception.class)
+    public boolean disableTenant(String id) {
+        log.info("禁用租户: id={}", id);
+        Tenant tenant = new Tenant();
+        tenant.setId(id);
+        tenant.setStatus(2);
+        tenant.setSuspendedAt(LocalDateTime.now());
+        tenant.setUpdateTime(LocalDateTime.now());
+        return tenantMapper.updateById(tenant) > 0;
+    }
+}

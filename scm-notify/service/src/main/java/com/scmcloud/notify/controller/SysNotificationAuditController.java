@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import com.scmcloud.notify.domain.entity.SysNotificationAudit;
-import com.scmcloud.notify.service.impl.SysNotificationAuditServiceImpl;
+import com.scmcloud.notify.service.ISysNotificationAuditService;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/sys-notification-audit")
 public class SysNotificationAuditController {
 
-    private final SysNotificationAuditServiceImpl notificationAuditService;
+    private final ISysNotificationAuditService notificationAuditService;
 
     @PostMapping
     public SysNotificationAudit create(@RequestBody SysNotificationAudit entity) {

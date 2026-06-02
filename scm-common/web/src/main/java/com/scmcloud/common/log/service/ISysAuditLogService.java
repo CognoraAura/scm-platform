@@ -1,19 +1,15 @@
 package com.scmcloud.common.log.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.scmcloud.common.log.entity.SysAuditLog;
-
 import java.util.UUID;
 
 /**
  * <p>
- * 操作审计日志�服务�
- * </p>
+ * 操作审计日志�服务� * </p>
  *
  * @author author
  * @since 2025-10-14
  */
-public interface ISysAuditLogService extends IService<SysAuditLog> {
+public interface ISysAuditLogService {
 
     /**
      * 记录用户登录操作日志

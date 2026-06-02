@@ -28,13 +28,13 @@ public class OrdRefund implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.NONE)
-    private String id;
+    private Long id;
 
     @TableField("refund_no")
     private String refundNo;
 
     @TableField("order_id")
-    private String orderId;
+    private Long orderId;
 
     @TableField("order_no")
     private String orderNo;

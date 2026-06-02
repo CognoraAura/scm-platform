@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import com.scmcloud.tenant.domain.entity.TenantSubscription;
-import com.scmcloud.tenant.service.impl.TenantSubscriptionServiceImpl;
+import com.scmcloud.tenant.service.ITenantSubscriptionService;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/tenant-subscription")
 public class TenantSubscriptionController {
 
-    private final TenantSubscriptionServiceImpl tenantSubscriptionService;
+    private final ITenantSubscriptionService tenantSubscriptionService;
 
     @PostMapping
     public TenantSubscription create(@RequestBody TenantSubscription entity) {

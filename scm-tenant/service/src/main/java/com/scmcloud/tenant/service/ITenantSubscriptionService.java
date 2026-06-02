@@ -1,7 +1,10 @@
 package com.scmcloud.tenant.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.scmcloud.tenant.domain.entity.TenantSubscription;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,19 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ITenantSubscriptionService extends IService<TenantSubscription> {
 
+    TenantSubscription createSubscription(TenantSubscription entity);
+
+    TenantSubscription getById(String id);
+
+    TenantSubscription updateSubscription(TenantSubscription entity);
+
+    boolean deleteById(String id);
+
+    boolean subscribe(String tenantId, String packageId);
+
+    boolean unsubscribe(String id);
+
+    List<TenantSubscription> listByTenantId(String tenantId);
+
+    Page<TenantSubscription> pageQuery(int page, int size, String tenantId, Integer status);
 }

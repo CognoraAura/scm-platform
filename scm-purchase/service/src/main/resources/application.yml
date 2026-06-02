@@ -22,13 +22,13 @@ spring:
 # MyBatis-Plus Configuration
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
-  type-aliases-package: com.frog.purchase.domain.entity
+  type-aliases-package: com.scmcloud.purchase.domain.entity
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
     log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
 
-# Seata 分布式事务配置
+# Seata 分布式事务配�?
 seata:
   enabled: true
   application-id: ${spring.application.name}

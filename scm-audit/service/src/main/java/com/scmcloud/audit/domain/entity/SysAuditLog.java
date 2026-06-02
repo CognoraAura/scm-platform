@@ -8,8 +8,11 @@ import java.io.Serial;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
@@ -21,9 +24,12 @@ import lombok.experimental.Accessors;
  * @since 2025-12-26
  */
 @Data
+@Builder
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("sys_audit_log")
+@AllArgsConstructor
+@NoArgsConstructor
 public class SysAuditLog implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;

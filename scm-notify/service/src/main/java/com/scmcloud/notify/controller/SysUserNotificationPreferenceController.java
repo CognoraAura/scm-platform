@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import com.scmcloud.notify.domain.entity.SysUserNotificationPreference;
-import com.scmcloud.notify.service.impl.SysUserNotificationPreferenceServiceImpl;
+import com.scmcloud.notify.service.ISysUserNotificationPreferenceService;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/sys-user-notification-preference")
 public class SysUserNotificationPreferenceController {
 
-    private final SysUserNotificationPreferenceServiceImpl userNotificationPreferenceService;
+    private final ISysUserNotificationPreferenceService userNotificationPreferenceService;
 
     @PostMapping
     public SysUserNotificationPreference create(@RequestBody SysUserNotificationPreference entity) {

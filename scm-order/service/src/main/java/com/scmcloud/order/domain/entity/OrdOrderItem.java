@@ -26,10 +26,10 @@ import lombok.experimental.Accessors;
 public class OrdOrderItem {
 
     @TableId(value = "id", type = IdType.NONE)
-    private String id;
+    private Long id;
 
     @TableField("order_id")
-    private String orderId;
+    private Long orderId;
 
     @TableField("order_no")
     private String orderNo;

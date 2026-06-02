@@ -26,7 +26,7 @@ import lombok.experimental.Accessors;
 public class OrdOrder {
 
     @TableId(value = "id", type = IdType.ASSIGN_ID)
-    private String id;
+    private Long id;
     @TableField("order_no")
     private String orderNo;
     @TableField("user_id")

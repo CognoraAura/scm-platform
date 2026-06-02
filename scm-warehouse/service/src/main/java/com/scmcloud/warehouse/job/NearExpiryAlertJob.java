@@ -2,7 +2,7 @@ package com.scmcloud.warehouse.job;
 
 import com.scmcloud.warehouse.service.InventoryBatchService;
 import com.scmcloud.warehouse.service.NotificationService;
-import com.scmcloud.warehouse.vo.NearExpiryProductVO;
+import com.scmcloud.warehouse.dto.NearExpiryProductVO;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.RequiredArgsConstructor;

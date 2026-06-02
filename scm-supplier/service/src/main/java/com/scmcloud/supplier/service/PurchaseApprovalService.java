@@ -1,6 +1,6 @@
 package com.scmcloud.supplier.service;
 
-import com.scmcloud.supplier.vo.OverdueApprovalTaskVO;
+import com.scmcloud.supplier.dto.OverdueApprovalTaskVO;
 import java.util.List;
 import java.util.UUID;
 

@@ -21,7 +21,7 @@ spring:
 
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
-  type-aliases-package: com.frog.tenant.domain.entity
+  type-aliases-package: com.scmcloud.tenant.domain.entity
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
@@ -39,7 +39,7 @@ xxl:
       logretentiondays: 30
     accessToken: ${XXL_JOB_ACCESS_TOKEN:}
 
-# Seata 分布式事务配置
+# Seata 分布式事务配�?
 seata:
   enabled: true
   application-id: ${spring.application.name}

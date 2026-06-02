@@ -2,11 +2,11 @@ package com.scmcloud.inventory.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.scmcloud.inventory.domain.dto.InventoryAdjustRequest;
-import com.scmcloud.inventory.domain.dto.InventoryQueryRequest;
-import com.scmcloud.inventory.domain.dto.InventoryResponse;
-import com.scmcloud.inventory.domain.dto.InventoryStatsResponse;
-import com.scmcloud.inventory.domain.dto.InventoryTransferRequest;
+import com.scmcloud.inventory.dto.InventoryAdjustRequest;
+import com.scmcloud.inventory.dto.InventoryQueryRequest;
+import com.scmcloud.inventory.dto.InventoryResponse;
+import com.scmcloud.inventory.dto.InventoryStatsResponse;
+import com.scmcloud.inventory.dto.InventoryTransferRequest;
 import com.scmcloud.inventory.domain.entity.Inventory;
 
 import java.util.List;

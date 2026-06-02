@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import com.scmcloud.audit.domain.entity.SysAuditLog;
-import com.scmcloud.audit.service.impl.SysAuditLogServiceImpl;
+import com.scmcloud.audit.service.ISysAuditLogService;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/sys-audit-log")
 public class SysAuditLogController {
 
-    private final SysAuditLogServiceImpl auditLogService;
+    private final ISysAuditLogService auditLogService;
 
     @PostMapping
     public SysAuditLog create(@RequestBody SysAuditLog entity) {

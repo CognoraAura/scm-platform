@@ -1,6 +1,6 @@
 package com.scmcloud.inventory.controller;
 
-import com.scmcloud.inventory.domain.dto.InventoryReservationRequest;
+import com.scmcloud.inventory.dto.InventoryReservationRequest;
 import com.scmcloud.inventory.service.IInvReservationService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

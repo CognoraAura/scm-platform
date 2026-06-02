@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import com.scmcloud.notify.domain.entity.SysNotificationTemplate;
-import com.scmcloud.notify.service.impl.SysNotificationTemplateServiceImpl;
+import com.scmcloud.notify.service.ISysNotificationTemplateService;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/sys-notification-template")
 public class SysNotificationTemplateController {
 
-    private final SysNotificationTemplateServiceImpl notificationTemplateService;
+    private final ISysNotificationTemplateService notificationTemplateService;
 
     @PostMapping
     public SysNotificationTemplate create(@RequestBody SysNotificationTemplate entity) {
