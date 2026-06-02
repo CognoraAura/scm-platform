@@ -2,7 +2,7 @@ package com.scmcloud.inventory.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.scmcloud.inventory.domain.dto.InventoryReservationRequest;
+import com.scmcloud.inventory.dto.InventoryReservationRequest;
 import com.scmcloud.inventory.domain.entity.Inventory;
 import com.scmcloud.inventory.lock.DistributedLock;
 import com.scmcloud.inventory.mapper.InvInventoryMapper;

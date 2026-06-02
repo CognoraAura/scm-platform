@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import com.scmcloud.tenant.domain.entity.TenantConfig;
-import com.scmcloud.tenant.service.impl.TenantConfigServiceImpl;
+import com.scmcloud.tenant.service.ITenantConfigService;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -13,7 +13,7 @@ import com.scmcloud.tenant.service.impl.TenantConfigServiceImpl;
 @RequestMapping("/tenant-config")
 public class TenantConfigController {
 
-    private final TenantConfigServiceImpl tenantConfigService;
+    private final ITenantConfigService tenantConfigService;
 
     @PostMapping
     public TenantConfig create(@RequestBody TenantConfig entity) {

@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import com.scmcloud.tenant.domain.entity.TenantResourceQuota;
-import com.scmcloud.tenant.service.impl.TenantResourceQuotaServiceImpl;
+import com.scmcloud.tenant.service.ITenantResourceQuotaService;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/tenant-resource-quota")
 public class TenantResourceQuotaController {
-    private final TenantResourceQuotaServiceImpl tenantResourceQuotaService;
+    private final ITenantResourceQuotaService tenantResourceQuotaService;
     @PostMapping
     public TenantResourceQuota create(@RequestBody TenantResourceQuota entity) {
         log.info("[API] 创建租户资源配额: tenantId={}", entity.getTenantId());

@@ -1,7 +1,10 @@
 package com.scmcloud.tenant.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.scmcloud.tenant.domain.entity.TenantOperationLog;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,4 +15,16 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ITenantOperationLogService extends IService<TenantOperationLog> {
 
+    TenantOperationLog createLog(TenantOperationLog entity);
+
+    TenantOperationLog getById(String id);
+
+    boolean deleteById(String id);
+
+    List<TenantOperationLog> listByTenantId(String tenantId);
+
+    List<TenantOperationLog> listByOperationType(String operationType);
+
+    Page<TenantOperationLog> pageQuery(int page, int size, String tenantId, String operationType,
+                                       String operationModule);
 }

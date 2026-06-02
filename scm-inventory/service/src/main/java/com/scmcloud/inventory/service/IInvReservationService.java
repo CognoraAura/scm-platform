@@ -1,6 +1,6 @@
 package com.scmcloud.inventory.service;
 
-import com.scmcloud.inventory.domain.dto.InventoryReservationRequest;
+import com.scmcloud.inventory.dto.InventoryReservationRequest;
 
 /**
  * 库存预占服务接口
