@@ -33,14 +33,14 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Invoice issueInvoice(String id, String issuerName) {
-        log.info("开具发�? id={}, issuer={}", id, issuerName);
+        log.info("开具发� id={}, issuer={}", id, issuerName);
 
         Invoice invoice = getById(id);
         if (invoice == null || Boolean.TRUE.equals(invoice.getDeleted())) {
-            throw new IllegalArgumentException("发票不存�? " + id);
+            throw new IllegalArgumentException("发票不存� " + id);
         }
         if (invoice.getStatus() != 0) {
-            throw new IllegalStateException("只有草稿状态的发票才能开�? 当前状�? " + invoice.getStatus());
+            throw new IllegalStateException("只有草稿状态的发票才能开� 当前状� " + invoice.getStatus());
         }
 
         invoice.setStatus(1);
@@ -50,7 +50,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         invoice.setUpdateBy(issuerName);
 
         updateById(invoice);
-        log.info("发票开具成�? id={}, invoiceNo={}", id, invoice.getInvoiceNo());
+        log.info("发票开具成� id={}, invoiceNo={}", id, invoice.getInvoiceNo());
         return invoice;
     }
 
@@ -61,10 +61,10 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
 
         Invoice invoice = getById(id);
         if (invoice == null || Boolean.TRUE.equals(invoice.getDeleted())) {
-            throw new IllegalArgumentException("发票不存�? " + id);
+            throw new IllegalArgumentException("发票不存� " + id);
         }
         if (invoice.getStatus() == 3 || invoice.getStatus() == 4) {
-            throw new IllegalStateException("发票已作废或已红�? 不能再次作废");
+            throw new IllegalStateException("发票已作废或已红� 不能再次作废");
         }
 
         invoice.setStatus(3);
@@ -82,10 +82,10 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
 
         Invoice invoice = getById(id);
         if (invoice == null || Boolean.TRUE.equals(invoice.getDeleted())) {
-            throw new IllegalArgumentException("发票不存�? " + id);
+            throw new IllegalArgumentException("发票不存� " + id);
         }
         if (invoice.getStatus() != 1 && invoice.getStatus() != 2) {
-            throw new IllegalStateException("只有已开具或已邮寄的发票才能红冲, 当前状�? " + invoice.getStatus());
+            throw new IllegalStateException("只有已开具或已邮寄的发票才能红冲, 当前状� " + invoice.getStatus());
         }
 
         invoice.setStatus(4);

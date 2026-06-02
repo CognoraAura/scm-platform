@@ -75,14 +75,14 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
         // 检查凭证是否已存在
         WebauthnCredential existing = credentialMapper.findByUserIdAndCredId(userId, request.getCredentialId());
         if (existing != null) {
-            throw new IllegalStateException("凭证 ID已存�?);
+            throw new IllegalStateException("凭证 ID已存在");
         }
 
-        // 获取并验证挑�?
+        // 获取并验证挑�
         String challengeKey = WA_REG_CHALLENGE_PREFIX + userId + ":" + request.getDeviceId();
         Object expectedChallenge = redisTemplate.opsForValue().get(challengeKey);
         if (expectedChallenge == null) {
-            throw new IllegalStateException("注册挑战已过期或不存�?);
+            throw new IllegalStateException("注册挑战已过期或不存在");
         }
 
         // 使用 WebAuthn4J 验证注册响应
@@ -95,7 +95,7 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
         // 删除已使用的挑战
         redisTemplate.delete(challengeKey);
 
-        // 构建并保存凭�?
+        // 构建并保存凭�
         WebauthnCredential credential = WebauthnCredential.builder()
                 .id(UUID.randomUUID())
                 .credentialId(validationResult.getCredentialIdBase64())
@@ -119,7 +119,7 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
 
     /**
      * 获取 COSE 公钥算法名称
-     * COSE Algorithm 参�? https://www.iana.org/assignments/cose/cose.xhtml#algorithms
+     * COSE Algorithm 参� https://www.iana.org/assignments/cose/cose.xhtml#algorithms
      */
     private String getAlgorithmName(com.webauthn4j.data.attestation.authenticator.COSEKey coseKey) {
         if (coseKey == null || coseKey.getAlgorithm() == null) {
@@ -155,7 +155,7 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
         long challengeExpiry = webAuthnConfig.getChallengeExpirySeconds();
         redisTemplate.opsForValue().set(key, challenge, challengeExpiry, TimeUnit.SECONDS);
 
-        // 获取用户所有活跃凭�?
+        // 获取用户所有活跃凭�
         List<WebauthnCredential> creds = credentialMapper.findByUserId(userId);
         List<Map<String, Object>> allowCredentials = creds.stream()
                 .map(c -> {
@@ -189,16 +189,16 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
         String key = WA_CHALLENGE_PREFIX + userId + ":" + deviceId;
         Object expectedChallenge = redisTemplate.opsForValue().get(key);
         if (expectedChallenge == null) {
-            throw new IllegalStateException("WebAuthn 挑战已过期或不存�?);
+            throw new IllegalStateException("WebAuthn 挑战已过期或不存在");
         }
 
         // 获取凭证
         WebauthnCredential credential = credentialMapper.findByUserIdAndCredId(userId, request.getCredentialId());
         if (credential == null || !credential.isAvailable()) {
-            throw new IllegalStateException("凭证不存在或已停�?);
+            throw new IllegalStateException("凭证不存在或已停用");
         }
 
-        // 验证签名计数器（防克隆攻击）- 预检�?
+        // 验证签名计数器（防克隆攻击）- 预检�
         if (!credential.isCounterValid(request.getSignCount())) {
             log.warn("Invalid signature counter for user={}, credentialId={}, expected>{}, got={}",
                     userId, request.getCredentialId(), credential.getSignCount(), request.getSignCount());
@@ -217,7 +217,7 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
                 credential.getSignCount()
         );
 
-        // 更新凭证使用信息（使用验证后返回的新签名计数�?
+        // 更新凭证使用信息（使用验证后返回的新签名计数�
         credentialMapper.updateSignCount(userId, request.getCredentialId(), authResult.newSignCount());
 
         // 删除已使用的挑战
@@ -227,7 +227,7 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
         Set<String> roles = userServiceClient.findRolesByUserId(userId).data();
         Set<String> permissions = userServiceClient.findPermissionsByUserId(userId).data();
 
-        // 签发�?AMR的访问令�?
+        // 签发�AMR的访问令�
         List<String> amr = Arrays.asList("pwd", "webauthn");
         String accessToken = jwtUtils.generateAccessToken(
                 userId, username, roles, permissions, deviceId, ipAddress, amr);
@@ -313,9 +313,9 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
                 isUnhealthy = true;
             }
 
-            // TODO: 添加更多健康检�?
-            // - 签名计数器异常检�?
-            // - 异常认证模式检�?
+            // TODO: 添加更多健康检�
+            // - 签名计数器异常检�
+            // - 异常认证模式检�
 
             if (isUnhealthy) {
                 unhealthy.add(credential);

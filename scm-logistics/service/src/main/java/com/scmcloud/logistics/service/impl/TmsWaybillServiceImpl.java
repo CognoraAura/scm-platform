@@ -42,7 +42,7 @@ public class TmsWaybillServiceImpl extends ServiceImpl<TmsWaybillMapper, TmsWayb
 
     @Override
     public TmsWaybill getByWaybillNo(String waybillNo) {
-        log.debug("根据运单号查�? waybillNo={}", waybillNo);
+        log.debug("根据运单号查� waybillNo={}", waybillNo);
         return lambdaQuery()
                 .eq(TmsWaybill::getWaybillNo, waybillNo)
                 .eq(TmsWaybill::getDeleted, false)
@@ -61,7 +61,7 @@ public class TmsWaybillServiceImpl extends ServiceImpl<TmsWaybillMapper, TmsWayb
 
     @Override
     public List<TmsWaybill> listByOrderNo(String orderNo) {
-        log.debug("根据订单号查询运�? orderNo={}", orderNo);
+        log.debug("根据订单号查询运� orderNo={}", orderNo);
         return lambdaQuery()
                 .eq(TmsWaybill::getOrderNo, orderNo)
                 .eq(TmsWaybill::getDeleted, false)
@@ -97,11 +97,11 @@ public class TmsWaybillServiceImpl extends ServiceImpl<TmsWaybillMapper, TmsWayb
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean updateStatus(String waybillId, Integer status, String operator) {
-        log.info("更新运单状�? waybillId={}, status={}, operator={}", waybillId, status, operator);
+        log.info("更新运单状� waybillId={}, status={}, operator={}", waybillId, status, operator);
 
         TmsWaybill waybill = getById(waybillId);
         if (waybill == null) {
-            log.warn("运单不存�? waybillId={}", waybillId);
+            log.warn("运单不存� waybillId={}", waybillId);
             return false;
         }
 
@@ -115,7 +115,7 @@ public class TmsWaybillServiceImpl extends ServiceImpl<TmsWaybillMapper, TmsWayb
 
         boolean success = updateById(waybill);
         if (success) {
-            log.info("运单状态更新成�? waybillNo={}, status={}", waybill.getWaybillNo(), status);
+            log.info("运单状态更新成� waybillNo={}, status={}", waybill.getWaybillNo(), status);
         }
         return success;
     }
@@ -127,7 +127,7 @@ public class TmsWaybillServiceImpl extends ServiceImpl<TmsWaybillMapper, TmsWayb
 
         TmsWaybill waybill = getById(waybillId);
         if (waybill == null) {
-            log.warn("运单不存�? waybillId={}", waybillId);
+            log.warn("运单不存� waybillId={}", waybillId);
             return false;
         }
 

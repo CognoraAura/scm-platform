@@ -40,16 +40,16 @@ public class FreightRuleServiceImpl extends ServiceImpl<FreightRuleMapper, Freig
 
         FreightRule rule = getById(ruleId);
         if (rule == null || Boolean.TRUE.equals(rule.getDeleted())) {
-            throw new IllegalArgumentException("运费规则不存�? " + ruleId);
+            throw new IllegalArgumentException("运费规则不存� " + ruleId);
         }
 
         if (!Boolean.TRUE.equals(rule.getEnabled())) {
-            throw new IllegalArgumentException("运费规则已禁�? " + ruleId);
+            throw new IllegalArgumentException("运费规则已禁� " + ruleId);
         }
 
         if (rule.getFreeThreshold() != null && orderAmount != null
                 && orderAmount.compareTo(rule.getFreeThreshold()) >= 0) {
-            log.info("订单金额满足免运费阈�? 免运�? orderAmount={}, threshold={}",
+            log.info("订单金额满足免运费阈� 免运� orderAmount={}, threshold={}",
                     orderAmount, rule.getFreeThreshold());
             return BigDecimal.ZERO;
         }

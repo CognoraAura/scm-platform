@@ -75,7 +75,7 @@ public class PurContractServiceImpl extends ServiceImpl<PurContractMapper, PurCo
     public boolean sign(String id, String signedBy, String signedByName) {
         PurContract contract = getById(id);
         if (contract == null || contract.getDeleted()) {
-            throw new IllegalArgumentException("合同不存�? " + id);
+            throw new IllegalArgumentException("合同不存� " + id);
         }
         if (contract.getStatus() != 1) {
             throw new IllegalStateException("只有待签署的合同才能签署");
@@ -93,10 +93,10 @@ public class PurContractServiceImpl extends ServiceImpl<PurContractMapper, PurCo
     public boolean terminate(String id) {
         PurContract contract = getById(id);
         if (contract == null || contract.getDeleted()) {
-            throw new IllegalArgumentException("合同不存�? " + id);
+            throw new IllegalArgumentException("合同不存� " + id);
         }
         if (contract.getStatus() == 4) {
-            throw new IllegalStateException("合同已终�?);
+            throw new IllegalStateException("合同已终止");
         }
         if (contract.getStatus() == 0) {
             throw new IllegalStateException("草稿合同不能终止，请直接删除");

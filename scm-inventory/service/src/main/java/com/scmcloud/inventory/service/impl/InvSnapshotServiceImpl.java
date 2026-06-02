@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * <p>
- * 库存快照表（每日快照�?服务实现�?
+ * 库存快照表（每日快照）服务实现类
  * </p>
  *
  * @author deng

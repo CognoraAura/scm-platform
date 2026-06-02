@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Security 工具�?
+ * Security 工具�
  *
  * @author Deng
  * createData 2025/10/14 17:37
@@ -93,7 +93,7 @@ public final class SecurityUtils {
                     yield uid != null ? Optional.of(uid) : Optional.empty();
                 }
                 default -> {
-                    // 自定�?SecurityUser 可在此判断并�?userId
+                    // 自定�SecurityUser 可在此判断并�userId
                     try {
                         var method = p.getClass().getMethod("getUserId");
                         Object v = method.invoke(p);
@@ -121,7 +121,7 @@ public final class SecurityUtils {
             return getCurrentUserUuid().orElseThrow(() -> new IllegalStateException("Missing or invalid userId (UUID)"));
         }
 
-        // 兼容 36 位（带横线）�?32 位（�?hex）两种字符串
+        // 兼容 36 位（带横线）�32 位（�hex）两种字符串
         static Optional<UUID> parseUuid(String raw) {
             if (raw == null || raw.isBlank()) return Optional.empty();
             String s = raw.trim();

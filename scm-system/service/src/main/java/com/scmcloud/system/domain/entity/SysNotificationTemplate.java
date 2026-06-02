@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 通知模板�?
+ * 通知模板�
  *
  * @author Deng
  * @since 2025-12-17
@@ -75,7 +75,7 @@ public class SysNotificationTemplate {
         WECHAT("WECHAT", "微信"),
         DINGTALK("DINGTALK", "钉钉"),
         FEISHU("FEISHU", "飞书"),
-        PUSH("PUSH", "推�?);
+        PUSH("PUSH", "推送");
     
         private final String code;
         private final String desc;

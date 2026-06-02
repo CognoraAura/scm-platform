@@ -20,17 +20,17 @@ public @interface RateLimit {
     String value() default "";
 
     /**
-     * QPS 阈�?
+     * QPS 阈�
      */
     int qps() default 100;
 
     /**
-     * 限流类型�?-QPS 2-线程�?
+     * 限流类型�-QPS 2-线程�
      */
     int grade() default 1;
 
     /**
-     * 是否开启集群限�?
+     * 是否开启集群限�
      */
     boolean clusterMode() default false;
 }

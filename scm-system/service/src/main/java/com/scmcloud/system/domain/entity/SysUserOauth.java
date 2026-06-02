@@ -62,7 +62,7 @@ public class SysUserOauth {
     private Boolean deleted;
 
     /**
-     * OAuth 提供商枚�?
+     * OAuth 提供商枚�
      */
     @Getter
     public enum Provider {

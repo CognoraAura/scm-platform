@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 敏感操作日志�?
+ * 敏感操作日志�
  * </p>
  *
  * @author deng

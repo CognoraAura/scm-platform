@@ -32,7 +32,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         if (user == null) {
             log.warn("User not found: {}", username);
-            throw new UsernameNotFoundException("用户不存�? " + username);
+            throw new UsernameNotFoundException("用户不存� " + username);
         }
 
         log.debug("User loaded: {}, roles: {}, permissions: {}",

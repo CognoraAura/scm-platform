@@ -26,14 +26,14 @@ public class SupSupplierEvaluationController {
         log.info("[API] 查询评价详情: id={}", id);
         SupSupplierEvaluation evaluation = evaluationService.getById(id);
         if (evaluation == null) {
-            return ApiResponse.fail(404, "评价不存�?);
+            return ApiResponse.fail(404, "评价不存在");
         }
         return ApiResponse.success(evaluation);
     }
 
     @PostMapping
     public ApiResponse<SupSupplierEvaluation> create(@RequestBody SupSupplierEvaluation evaluation) {
-        log.info("[API] 创建供应商评�? supplierId={}", evaluation.getSupplierId());
+        log.info("[API] 创建供应商评价 supplierId={}", evaluation.getSupplierId());
         evaluation.setId(UUID.randomUUID().toString());
         if (evaluation.getEvaluatedAt() == null) {
             evaluation.setEvaluatedAt(LocalDateTime.now());
@@ -56,7 +56,7 @@ public class SupSupplierEvaluationController {
         log.info("[API] 更新评价: id={}", id);
         SupSupplierEvaluation existing = evaluationService.getById(id);
         if (existing == null) {
-            return ApiResponse.fail(404, "评价不存�?);
+            return ApiResponse.fail(404, "评价不存在");
         }
         evaluation.setId(id);
         evaluation.setUpdateTime(LocalDateTime.now());
@@ -87,13 +87,13 @@ public class SupSupplierEvaluationController {
 
     @GetMapping("/supplier/{supplierId}")
     public ApiResponse<List<SupSupplierEvaluation>> listBySupplierId(@PathVariable String supplierId) {
-        log.info("[API] 查询供应商评价列�? supplierId={}", supplierId);
+        log.info("[API] 查询供应商评价列表 supplierId={}", supplierId);
         return ApiResponse.success(evaluationService.listBySupplierId(supplierId));
     }
 
     @GetMapping("/supplier/{supplierId}/average-score")
     public ApiResponse<BigDecimal> getAverageScore(@PathVariable String supplierId) {
-        log.info("[API] 计算供应商平均评�? supplierId={}", supplierId);
+        log.info("[API] 计算供应商平均评价 supplierId={}", supplierId);
         return ApiResponse.success(evaluationService.calculateAverageScore(supplierId));
     }
 

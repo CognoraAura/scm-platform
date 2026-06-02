@@ -8,7 +8,7 @@ import org.apache.ibatis.type.MappedTypes;
 import java.sql.*;
 
 /**
- * PostgreSQL TEXT[] 数组类型处理�?
+ * PostgreSQL TEXT[] 数组类型处理�
  *
  * @author Deng
  * @since 2025-12-15

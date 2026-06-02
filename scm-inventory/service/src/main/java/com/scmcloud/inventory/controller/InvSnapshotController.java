@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <p>
- * 库存快照表（每日快照�?前端控制�?
+ * 库存快照表（每日快照）前端控制器
  * </p>
  *
  * @author deng

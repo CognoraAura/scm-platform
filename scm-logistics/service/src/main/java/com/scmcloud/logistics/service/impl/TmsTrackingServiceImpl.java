@@ -31,7 +31,7 @@ public class TmsTrackingServiceImpl extends ServiceImpl<TmsTrackingMapper, TmsTr
 
     @Override
     public List<TmsTracking> listByWaybillNo(String waybillNo) {
-        log.debug("根据运单号查询物流轨�? waybillNo={}", waybillNo);
+        log.debug("根据运单号查询物流轨� waybillNo={}", waybillNo);
         return lambdaQuery()
                 .eq(TmsTracking::getWaybillNo, waybillNo)
                 .orderByDesc(TmsTracking::getTrackTime)

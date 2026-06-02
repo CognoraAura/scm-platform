@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * <p>
- * 库存告警�?服务实现�?
+ * 库存告警服务实现类
  * </p>
  *
  * @author deng

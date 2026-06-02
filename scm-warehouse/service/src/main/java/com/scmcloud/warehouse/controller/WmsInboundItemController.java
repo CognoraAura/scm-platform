@@ -39,7 +39,7 @@ public class WmsInboundItemController {
 
         WmsInboundItem existing = inboundItemService.getById(id);
         if (existing == null || Boolean.TRUE.equals(existing.getDeleted())) {
-            return ApiResponse.fail(404, "入库明细不存�?);
+            return ApiResponse.fail(404, "入库明细不存在");
         }
 
         item.setId(id);
@@ -53,7 +53,7 @@ public class WmsInboundItemController {
 
         WmsInboundItem existing = inboundItemService.getById(id);
         if (existing == null || Boolean.TRUE.equals(existing.getDeleted())) {
-            return ApiResponse.fail(404, "入库明细不存�?);
+            return ApiResponse.fail(404, "入库明细不存在");
         }
 
         existing.setDeleted(true);
@@ -65,7 +65,7 @@ public class WmsInboundItemController {
     public ApiResponse<WmsInboundItem> getById(@PathVariable String id) {
         WmsInboundItem item = inboundItemService.getById(id);
         if (item == null || Boolean.TRUE.equals(item.getDeleted())) {
-            return ApiResponse.fail(404, "入库明细不存�?);
+            return ApiResponse.fail(404, "入库明细不存在");
         }
         return ApiResponse.success(item);
     }

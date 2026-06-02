@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
- * 操作审计日志�?Mapper 接口
+ * 操作审计日志�Mapper 接口
  * </p>
  *
  * @author author

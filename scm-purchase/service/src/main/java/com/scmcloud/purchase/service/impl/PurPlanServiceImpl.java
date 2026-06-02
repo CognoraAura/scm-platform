@@ -61,7 +61,7 @@ public class PurPlanServiceImpl extends ServiceImpl<PurPlanMapper, PurPlan> impl
     public boolean submit(String id) {
         PurPlan plan = getById(id);
         if (plan == null || plan.getDeleted()) {
-            throw new IllegalArgumentException("采购计划不存�? " + id);
+            throw new IllegalArgumentException("采购计划不存� " + id);
         }
         if (plan.getStatus() != 0) {
             throw new IllegalStateException("只有编制中的计划才能提交");
@@ -76,7 +76,7 @@ public class PurPlanServiceImpl extends ServiceImpl<PurPlanMapper, PurPlan> impl
     public boolean approve(String id, String approverId, String approverName) {
         PurPlan plan = getById(id);
         if (plan == null || plan.getDeleted()) {
-            throw new IllegalArgumentException("采购计划不存�? " + id);
+            throw new IllegalArgumentException("采购计划不存� " + id);
         }
         if (plan.getStatus() != 1) {
             throw new IllegalStateException("只有待审批的计划才能审批");
@@ -94,10 +94,10 @@ public class PurPlanServiceImpl extends ServiceImpl<PurPlanMapper, PurPlan> impl
     public boolean startExecution(String id) {
         PurPlan plan = getById(id);
         if (plan == null || plan.getDeleted()) {
-            throw new IllegalArgumentException("采购计划不存�? " + id);
+            throw new IllegalArgumentException("采购计划不存� " + id);
         }
         if (plan.getStatus() != 2) {
-            throw new IllegalStateException("只有已审批的计划才能开始执�?);
+            throw new IllegalStateException("只有已审批的计划才能开始执行");
         }
         plan.setUpdateTime(LocalDateTime.now());
         return updateById(plan);
@@ -108,7 +108,7 @@ public class PurPlanServiceImpl extends ServiceImpl<PurPlanMapper, PurPlan> impl
     public boolean complete(String id) {
         PurPlan plan = getById(id);
         if (plan == null || plan.getDeleted()) {
-            throw new IllegalArgumentException("采购计划不存�? " + id);
+            throw new IllegalArgumentException("采购计划不存� " + id);
         }
         if (plan.getStatus() != 2) {
             throw new IllegalStateException("只有执行中的计划才能完成");

@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 通知模板�?
+ * 通知模板�
  * </p>
  *
  * @author deng

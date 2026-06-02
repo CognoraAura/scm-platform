@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
- * 批量通知发送结�?
+ * 批量通知发送结�
  */
 @Data
 @Accessors(chain = true)

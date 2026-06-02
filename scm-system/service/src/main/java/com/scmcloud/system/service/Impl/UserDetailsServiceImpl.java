@@ -36,17 +36,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     )
     @NonNull
     public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
-        // 1. �?db_user 库查询用户基本信�?
+        // 1. �db_user 库查询用户基本信�
         var user = sysUserMapper.findByUsername(username);
         if (user == null || user.getDeleted()) {
             log.warn("User not found: {}", username);
-            throw new UsernameNotFoundException("用户不存在或已删�? " + username);
+            throw new UsernameNotFoundException("用户不存在或已删� " + username);
         }
 
-        // 2. �?db_permission 库查询用户角色（跨库查询�?
+        // 2. �db_permission 库查询用户角色（跨库查询�
         Set<String> roles = sysUserRoleMapper.findRoleCodesByUserId(user.getId());
 
-        // 3. �?db_permission 库查询用户权限（跨库查询�?
+        // 3. �db_permission 库查询用户权限（跨库查询�
         Set<String> permissions = sysUserRoleMapper.findPermissionCodesByUserId(user.getId());
 
         SecurityUser securityUser = SecurityUser.builder()

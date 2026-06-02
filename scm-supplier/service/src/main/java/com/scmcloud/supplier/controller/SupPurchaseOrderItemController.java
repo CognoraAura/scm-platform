@@ -22,7 +22,7 @@ public class SupPurchaseOrderItemController {
 
     @GetMapping("/{id}")
     public ApiResponse<SupPurchaseOrderItem> getById(@PathVariable UUID id) {
-        log.info("[API] 查询采购单明细详�? id={}", id);
+        log.info("[API] 查询采购单明细详情 id={}", id);
         SupPurchaseOrderItem item = purchaseOrderItemService.getById(id);
         if (item == null) {
             return ApiResponse.fail(404, "采购单明细不存在");
@@ -32,21 +32,21 @@ public class SupPurchaseOrderItemController {
 
     @PostMapping
     public ApiResponse<SupPurchaseOrderItem> create(@RequestBody SupPurchaseOrderItem item) {
-        log.info("[API] 创建采购单明�? purchaseId={}, skuId={}", item.getPurchaseId(), item.getSkuId());
+        log.info("[API] 创建采购单明细 purchaseId={}, skuId={}", item.getPurchaseId(), item.getSkuId());
         item.setId(UUID.randomUUID());
         item.setCreateTime(LocalDateTime.now());
         if (item.getSubtotal() == null && item.getUnitPrice() != null && item.getQuantity() != null) {
             item.setSubtotal(item.getUnitPrice().multiply(new java.math.BigDecimal(item.getQuantity())));
         }
         purchaseOrderItemService.save(item);
-        log.info("[API] 采购单明细创建成�? id={}", item.getId());
+        log.info("[API] 采购单明细创建成功 id={}", item.getId());
         return ApiResponse.success(item);
     }
 
     @PutMapping("/{id}")
     public ApiResponse<SupPurchaseOrderItem> update(@PathVariable UUID id,
                                                     @RequestBody SupPurchaseOrderItem item) {
-        log.info("[API] 更新采购单明�? id={}", id);
+        log.info("[API] 更新采购单明细 id={}", id);
         SupPurchaseOrderItem existing = purchaseOrderItemService.getById(id);
         if (existing == null) {
             return ApiResponse.fail(404, "采购单明细不存在");
@@ -61,7 +61,7 @@ public class SupPurchaseOrderItemController {
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(@PathVariable UUID id) {
-        log.info("[API] 删除采购单明�? id={}", id);
+        log.info("[API] 删除采购单明细 id={}", id);
         boolean success = purchaseOrderItemService.removeById(id);
         return success ? ApiResponse.success() : ApiResponse.fail(400, "删除失败");
     }
@@ -72,14 +72,14 @@ public class SupPurchaseOrderItemController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String purchaseId,
             @RequestParam(required = false) String skuId) {
-        log.info("[API] 分页查询采购单明�? page={}, size={}, purchaseId={}", page, size, purchaseId);
+        log.info("[API] 分页查询采购单明细 page={}, size={}, purchaseId={}", page, size, purchaseId);
         Page<SupPurchaseOrderItem> result = purchaseOrderItemService.pageList(page, size, purchaseId, skuId);
         return ApiResponse.success(result);
     }
 
     @GetMapping("/purchase/{purchaseId}")
     public ApiResponse<List<SupPurchaseOrderItem>> listByPurchaseId(@PathVariable String purchaseId) {
-        log.info("[API] 查询采购单明细列�? purchaseId={}", purchaseId);
+        log.info("[API] 查询采购单明细列表 purchaseId={}", purchaseId);
         return ApiResponse.success(purchaseOrderItemService.listByPurchaseId(purchaseId));
     }
 }

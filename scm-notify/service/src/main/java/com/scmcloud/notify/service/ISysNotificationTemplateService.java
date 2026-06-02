@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- * 通知模板�?服务�?
+ * 通知模板�服务�
  * </p>
  *
  * @author deng

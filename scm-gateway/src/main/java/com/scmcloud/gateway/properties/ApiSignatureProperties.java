@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * External configuration for {@link com.frog.gateway.filter.ApiSignatureFilter}.
+ * External configuration for {@link com.scmcloud.gateway.filter.ApiSignatureFilter}.
  */
 @Getter
 @Setter

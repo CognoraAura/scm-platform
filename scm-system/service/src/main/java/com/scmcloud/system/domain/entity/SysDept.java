@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 部门�?
+ * 部门�
  * </p>
  *
  * @author author
@@ -81,7 +81,7 @@ public class SysDept {
     @TableField("deleted")
     private Boolean deleted;
 
-    // ==================== 冗余字段（来自db_user.sys_user�?==================
+    // ==================== 冗余字段（来自db_user.sys_user�==================
 
     @TableField("leader_name")
     private String leaderName;

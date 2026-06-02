@@ -24,7 +24,7 @@ public class SupSettlementServiceImpl extends ServiceImpl<SupSettlementMapper, S
     @Override
     public Page<SupSettlement> pageList(int page, int size, String supplierId, Integer status,
                                         String settlementPeriod) {
-        log.debug("分页查询对账�? page={}, size={}, supplierId={}, status={}", page, size, supplierId, status);
+        log.debug("分页查询对账单 page={}, size={}, supplierId={}, status={}", page, size, supplierId, status);
 
         LambdaQueryWrapper<SupSettlement> wrapper = Wrappers.lambdaQuery();
 
@@ -60,7 +60,7 @@ public class SupSettlementServiceImpl extends ServiceImpl<SupSettlementMapper, S
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean confirm(String id, String approverId, String approverName) {
-        log.info("确认对账�? id={}, approverId={}", id, approverId);
+        log.info("确认对账单 id={}, approverId={}", id, approverId);
 
         SupSettlement settlement = getById(id);
         if (settlement == null) {
@@ -80,7 +80,7 @@ public class SupSettlementServiceImpl extends ServiceImpl<SupSettlementMapper, S
 
         boolean success = updateById(settlement);
         if (success) {
-            log.info("对账单确认成�? id={}", id);
+            log.info("对账单确认成功 id={}", id);
         }
         return success;
     }
@@ -107,7 +107,7 @@ public class SupSettlementServiceImpl extends ServiceImpl<SupSettlementMapper, S
 
         boolean success = updateById(settlement);
         if (success) {
-            log.info("对账单标记付款成�? id={}", id);
+            log.info("对账单标记付款成功 id={}", id);
         }
         return success;
     }

@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 敏感操作日志�?
+ * 敏感操作日志�
  *
  * @author Deng
  * @since 2025-12-15

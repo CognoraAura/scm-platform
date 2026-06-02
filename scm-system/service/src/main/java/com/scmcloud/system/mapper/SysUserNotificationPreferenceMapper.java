@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 用户通知偏好�?Mapper 接口
+ * 用户通知偏好�Mapper 接口
  *
  * @author Deng
  * @since 2025-12-17

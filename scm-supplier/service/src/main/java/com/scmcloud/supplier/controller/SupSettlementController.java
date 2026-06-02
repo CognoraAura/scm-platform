@@ -22,7 +22,7 @@ public class SupSettlementController {
 
     @GetMapping("/{id}")
     public ApiResponse<SupSettlement> getById(@PathVariable String id) {
-        log.info("[API] 查询对账单详�? id={}", id);
+        log.info("[API] 查询对账单详情 id={}", id);
         SupSettlement settlement = settlementService.getById(id);
         if (settlement == null || Boolean.TRUE.equals(settlement.getDeleted())) {
             return ApiResponse.fail(404, "对账单不存在");
@@ -32,26 +32,26 @@ public class SupSettlementController {
 
     @PostMapping
     public ApiResponse<SupSettlement> create(@RequestBody SupSettlement settlement) {
-        log.info("[API] 创建对账�? supplierId={}", settlement.getSupplierId());
+        log.info("[API] 创建对账单 supplierId={}", settlement.getSupplierId());
         settlement.setId(UUID.randomUUID());
         settlement.setStatus(0);
         settlement.setDeleted(false);
         settlement.setCreateTime(LocalDateTime.now());
         settlement.setUpdateTime(LocalDateTime.now());
         settlementService.save(settlement);
-        log.info("[API] 对账单创建成�? id={}", settlement.getId());
+        log.info("[API] 对账单创建成功 id={}", settlement.getId());
         return ApiResponse.success(settlement);
     }
 
     @PutMapping("/{id}")
     public ApiResponse<SupSettlement> update(@PathVariable String id, @RequestBody SupSettlement settlement) {
-        log.info("[API] 更新对账�? id={}", id);
+        log.info("[API] 更新对账单 id={}", id);
         SupSettlement existing = settlementService.getById(id);
         if (existing == null || Boolean.TRUE.equals(existing.getDeleted())) {
             return ApiResponse.fail(404, "对账单不存在");
         }
         if (existing.getStatus() != 0) {
-            return ApiResponse.fail(400, "只有待确认状态的对账单才能修�?);
+            return ApiResponse.fail(400, "只有待确认状态的对账单才能修改");
         }
         settlement.setId(UUID.fromString(id));
         settlement.setUpdateTime(LocalDateTime.now());
@@ -61,7 +61,7 @@ public class SupSettlementController {
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(@PathVariable String id) {
-        log.info("[API] 删除对账�? id={}", id);
+        log.info("[API] 删除对账单 id={}", id);
         SupSettlement existing = settlementService.getById(id);
         if (existing == null || Boolean.TRUE.equals(existing.getDeleted())) {
             return ApiResponse.fail(404, "对账单不存在");
@@ -79,7 +79,7 @@ public class SupSettlementController {
             @RequestParam(required = false) String supplierId,
             @RequestParam(required = false) Integer status,
             @RequestParam(required = false) String settlementPeriod) {
-        log.info("[API] 分页查询对账�? page={}, size={}, supplierId={}, status={}", page, size, supplierId, status);
+        log.info("[API] 分页查询对账单 page={}, size={}, supplierId={}, status={}", page, size, supplierId, status);
         Page<SupSettlement> result = settlementService.pageList(page, size, supplierId, status, settlementPeriod);
         return ApiResponse.success(result);
     }
@@ -94,7 +94,7 @@ public class SupSettlementController {
     public ApiResponse<Void> confirm(@PathVariable String id,
                                      @RequestParam String approverId,
                                      @RequestParam String approverName) {
-        log.info("[API] 确认对账�? id={}, approverId={}", id, approverId);
+        log.info("[API] 确认对账单 id={}, approverId={}", id, approverId);
         boolean success = settlementService.confirm(id, approverId, approverName);
         return success ? ApiResponse.success() : ApiResponse.fail(400, "确认失败，对账单状态不正确");
     }

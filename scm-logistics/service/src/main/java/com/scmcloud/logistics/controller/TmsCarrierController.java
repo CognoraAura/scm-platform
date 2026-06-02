@@ -53,7 +53,7 @@ public class TmsCarrierController {
 
     @PostMapping
     public ApiResponse<TmsCarrier> create(@RequestBody TmsCarrier carrier) {
-        log.info("新增物流�? carrierCode={}, carrierName={}", carrier.getCarrierCode(), carrier.getCarrierName());
+        log.info("新增物流� carrierCode={}, carrierName={}", carrier.getCarrierCode(), carrier.getCarrierName());
         carrier.setId(UUID.randomUUID().toString());
         carrier.setDeleted(false);
         carrier.setCreateTime(LocalDateTime.now());
@@ -64,7 +64,7 @@ public class TmsCarrierController {
 
     @PutMapping("/{id}")
     public ApiResponse<TmsCarrier> update(@PathVariable String id, @RequestBody TmsCarrier carrier) {
-        log.info("修改物流�? id={}", id);
+        log.info("修改物流� id={}", id);
         carrier.setId(id);
         carrier.setUpdateTime(LocalDateTime.now());
         carrierService.updateById(carrier);
@@ -73,7 +73,7 @@ public class TmsCarrierController {
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(@PathVariable String id) {
-        log.info("删除物流�? id={}", id);
+        log.info("删除物流� id={}", id);
         TmsCarrier carrier = new TmsCarrier();
         carrier.setId(id);
         carrier.setDeleted(true);
@@ -84,7 +84,7 @@ public class TmsCarrierController {
 
     @PutMapping("/{id}/enable")
     public ApiResponse<Void> toggleEnabled(@PathVariable String id, @RequestParam boolean enabled) {
-        log.info("设置物流商状�? id={}, enabled={}", id, enabled);
+        log.info("设置物流商状� id={}, enabled={}", id, enabled);
         TmsCarrier carrier = new TmsCarrier();
         carrier.setId(id);
         carrier.setEnabled(enabled);

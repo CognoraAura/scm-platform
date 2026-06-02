@@ -43,7 +43,7 @@ public class TenantResourceQuotaController {
     public boolean checkQuota(
             @RequestParam String tenantId,
             @RequestParam String resourceType) {
-        log.info("[API] 检查租户配�? tenantId={}, resourceType={}", tenantId, resourceType);
+        log.info("[API] 检查租户配� tenantId={}, resourceType={}", tenantId, resourceType);
         return tenantResourceQuotaService.checkQuota(tenantId, resourceType);
     }
 

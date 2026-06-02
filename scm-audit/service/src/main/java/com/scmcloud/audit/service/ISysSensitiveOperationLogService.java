@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- * 敏感操作日志�?服务�?
+ * 敏感操作日志�服务�
  * </p>
  *
  * @author deng

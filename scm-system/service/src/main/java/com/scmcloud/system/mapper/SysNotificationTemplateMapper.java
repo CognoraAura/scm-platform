@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 /**
- * 通知模板�?Mapper 接口
+ * 通知模板�Mapper 接口
  *
  * @author Deng
  * @since 2025-12-17
@@ -30,7 +30,7 @@ public interface SysNotificationTemplateMapper extends BaseMapper<SysNotificatio
     SysNotificationTemplate findByTemplateCode(@Param("templateCode") String templateCode);
 
     /**
-     * 根据模板编码和渠道查�?
+     * 根据模板编码和渠道查�
      */
     @Select("""
             SELECT * FROM sys_notification_template
@@ -42,7 +42,7 @@ public interface SysNotificationTemplateMapper extends BaseMapper<SysNotificatio
                                                          @Param("channel") String channel);
 
     /**
-     * 查询指定渠道的所有启用模�?
+     * 查询指定渠道的所有启用模�
      */
     @Select("""
             SELECT * FROM sys_notification_template
@@ -54,7 +54,7 @@ public interface SysNotificationTemplateMapper extends BaseMapper<SysNotificatio
     List<SysNotificationTemplate> findActiveByChannel(@Param("channel") String channel);
 
     /**
-     * 检查模板编码是否存�?
+     * 检查模板编码是否存�
      */
     @Select("""
             SELECT COUNT(*) > 0 FROM sys_notification_template

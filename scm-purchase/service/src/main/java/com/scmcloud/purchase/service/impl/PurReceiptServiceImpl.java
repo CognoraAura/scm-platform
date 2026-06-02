@@ -69,7 +69,7 @@ public class PurReceiptServiceImpl extends ServiceImpl<PurReceiptMapper, PurRece
             throw new IllegalArgumentException("入库单不存在: " + id);
         }
         if (receipt.getStatus() != 0) {
-            throw new IllegalStateException("只有待收货的入库单才能收�?);
+            throw new IllegalStateException("只有待收货的入库单才能收货");
         }
         receipt.setStatus(1);
         receipt.setReceiverId(receiverId);

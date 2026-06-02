@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 物流轨迹�?
+ * 物流轨迹�
  * </p>
  *
  * @author deng

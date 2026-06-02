@@ -24,7 +24,7 @@ public class SupSupplierServiceImpl extends ServiceImpl<SupSupplierMapper, SupSu
     @Override
     public Page<SupSupplier> pageList(int page, int size, String keyword, Integer supplierType,
                                       Integer cooperationStatus, Boolean enabled) {
-        log.debug("分页查询供应�? page={}, size={}, keyword={}", page, size, keyword);
+        log.debug("分页查询供应商 page={}, size={}, keyword={}", page, size, keyword);
 
         LambdaQueryWrapper<SupSupplier> wrapper = Wrappers.lambdaQuery();
 
@@ -54,7 +54,7 @@ public class SupSupplierServiceImpl extends ServiceImpl<SupSupplierMapper, SupSu
 
     @Override
     public List<SupSupplier> listActive() {
-        log.debug("查询所有启用且合作中的供应�?);
+        log.debug("查询所有启用且合作中的供应商");
         return lambdaQuery()
                 .eq(SupSupplier::getEnabled, true)
                 .eq(SupSupplier::getCooperationStatus, 1)
@@ -79,7 +79,7 @@ public class SupSupplierServiceImpl extends ServiceImpl<SupSupplierMapper, SupSu
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean enableSupplier(String id) {
-        log.info("启用供应�? id={}", id);
+        log.info("启用供应商 id={}", id);
         SupSupplier supplier = getById(id);
         if (supplier == null) {
             log.warn("供应商不存在: id={}", id);
@@ -93,7 +93,7 @@ public class SupSupplierServiceImpl extends ServiceImpl<SupSupplierMapper, SupSu
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean disableSupplier(String id) {
-        log.info("停用供应�? id={}", id);
+        log.info("停用供应商 id={}", id);
         SupSupplier supplier = getById(id);
         if (supplier == null) {
             log.warn("供应商不存在: id={}", id);

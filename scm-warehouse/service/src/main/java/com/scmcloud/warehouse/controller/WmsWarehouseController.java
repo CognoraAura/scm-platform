@@ -29,7 +29,7 @@ public class WmsWarehouseController {
                 .eq(WmsWarehouse::getDeleted, false)
                 .exists();
         if (exists) {
-            return ApiResponse.fail(400, "仓库编码已存�? " + warehouse.getWarehouseCode());
+            return ApiResponse.fail(400, "仓库编码已存在 " + warehouse.getWarehouseCode());
         }
 
         warehouse.setId(UUIDv7Util.generateString());
@@ -50,7 +50,7 @@ public class WmsWarehouseController {
 
         WmsWarehouse existing = warehouseService.getById(id);
         if (existing == null || Boolean.TRUE.equals(existing.getDeleted())) {
-            return ApiResponse.fail(404, "仓库不存�?);
+            return ApiResponse.fail(404, "仓库不存在");
         }
 
         warehouse.setId(id);
@@ -65,7 +65,7 @@ public class WmsWarehouseController {
 
         WmsWarehouse existing = warehouseService.getById(id);
         if (existing == null || Boolean.TRUE.equals(existing.getDeleted())) {
-            return ApiResponse.fail(404, "仓库不存�?);
+            return ApiResponse.fail(404, "仓库不存在");
         }
 
         existing.setDeleted(true);
@@ -78,7 +78,7 @@ public class WmsWarehouseController {
     public ApiResponse<WmsWarehouse> getById(@PathVariable String id) {
         WmsWarehouse warehouse = warehouseService.getById(id);
         if (warehouse == null || Boolean.TRUE.equals(warehouse.getDeleted())) {
-            return ApiResponse.fail(404, "仓库不存�?);
+            return ApiResponse.fail(404, "仓库不存在");
         }
         return ApiResponse.success(warehouse);
     }

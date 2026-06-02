@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.UUID;
 
 /**
- * MybatisPlus 配置�?
+ * MybatisPlus 配置�
  *
  * @author Deng
  * createData 2025/10/15 13:35
@@ -33,14 +33,14 @@ public class MybatisPlusConfig {
 
         // 分页插件
         PaginationInnerInterceptor paginationInterceptor = new PaginationInnerInterceptor(DbType.MYSQL);
-        paginationInterceptor.setMaxLimit(properties.getPaginationMaxLimit()); // 最大单页限制数�?
+        paginationInterceptor.setMaxLimit(properties.getPaginationMaxLimit()); // 最大单页限制数�
         paginationInterceptor.setOverflow(false); // 溢出总页数后是否进行处理
         interceptor.addInnerInterceptor(paginationInterceptor);
 
-        // 乐观锁插�?
+        // 乐观锁插�
         interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
 
-        // 防止全表更新与删除插�?
+        // 防止全表更新与删除插�
         interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
 
         return interceptor;
@@ -53,7 +53,7 @@ public class MybatisPlusConfig {
     public ConfigurationCustomizer configurationCustomizer() {
         return configuration -> {
             TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
-            // 注册 UUID类型处理�?
+            // 注册 UUID类型处理�
             typeHandlerRegistry.register(UUID.class, UUIDTypeHandler.class);
         };
     }

@@ -42,7 +42,7 @@ public class PkceAuthorizationCodeTokenResponseClient
             );
         }
 
-        // 2️⃣ 校验 PKCE 挑战�?
+        // 2️⃣ 校验 PKCE 挑战�
         String storedChallenge = pkceChallengeStore.load(authRequest.getAuthorizationRequestUri());
         if (storedChallenge == null) {
             throw new OAuth2AuthorizationException(
@@ -63,7 +63,7 @@ public class PkceAuthorizationCodeTokenResponseClient
     }
 
     /**
-     * 计算 PKCE �?SHA-256 challenge 值（Base64Url 编码�?
+     * 计算 PKCE �SHA-256 challenge 值（Base64Url 编码�
      */
     private String calculateCodeChallenge(String verifier) {
         try {

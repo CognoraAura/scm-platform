@@ -65,7 +65,7 @@ public class SessionManager {
         if (redisTemplate.hasKey(sessionKey)) {
             redisTemplate.opsForHash().put(sessionKey, "lastActivityTime", LocalDateTime.now().toString());
 
-            // 续长当前 TTL，如�?TTL 则回退 30 分钟
+            // 续长当前 TTL，如�TTL 则回退 30 分钟
             Long ttlSeconds = redisTemplate.getExpire(sessionKey);
             if (ttlSeconds != null && ttlSeconds > 0) {
                 redisTemplate.expire(sessionKey, Duration.ofSeconds(ttlSeconds));
@@ -100,7 +100,7 @@ public class SessionManager {
     }
 
     /**
-     * 关闭用户的所有会�?
+     * 关闭用户的所有会�
      */
     public void destroyAllUserSessions(UUID userId) {
         String userSessionsKey = USER_SESSIONS_PREFIX + userId;
@@ -118,7 +118,7 @@ public class SessionManager {
     }
 
     /**
-     * 获取用户的所有会�?
+     * 获取用户的所有会�
      */
     public List<Map<String, Object>> getUserSessions(UUID userId) {
         String userSessionsKey = USER_SESSIONS_PREFIX + userId;
@@ -159,7 +159,7 @@ public class SessionManager {
     }
 
     /**
-     * 检查用户是否在�?
+     * 检查用户是否在�
      */
     public boolean isUserOnline(UUID userId) {
         Double score = redisTemplate.opsForZSet().score(ONLINE_USERS_KEY, userId.toString());
@@ -203,7 +203,7 @@ public class SessionManager {
     }
 
     /**
-     * 获取用户的会话统计信�?
+     * 获取用户的会话统计信�
      */
     public Map<String, Object> getUserSessionStats(UUID userId) {
         Map<String, Object> stats = new HashMap<>();

@@ -71,7 +71,7 @@ public class TmsWaybillController {
             @RequestParam(required = false) String operator) {
         log.info("更新运单状�? id={}, status={}", id, status);
         boolean success = waybillService.updateStatus(id, status, operator);
-        return success ? ApiResponse.success() : ApiResponse.fail(500, "更新运单状态失�?);
+        return success ? ApiResponse.success() : ApiResponse.fail(500, "更新运单状态失败");
     }
 
     @PostMapping("/{id}/cancel")

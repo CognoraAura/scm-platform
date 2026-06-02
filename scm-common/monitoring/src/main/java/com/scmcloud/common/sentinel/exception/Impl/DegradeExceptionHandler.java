@@ -23,6 +23,6 @@ public class DegradeExceptionHandler implements SentinelExceptionHandlerStrategy
 
     @Override
     public ApiResponse<Void> handle(BlockException e) {
-        return ApiResponse.fail(503, "服务暂时不可用，请稍后再�?);
+        return ApiResponse.fail(503, "服务暂时不可用，请稍后再试");
     }
 }

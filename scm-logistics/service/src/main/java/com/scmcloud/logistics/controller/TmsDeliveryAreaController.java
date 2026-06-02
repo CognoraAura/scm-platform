@@ -57,7 +57,7 @@ public class TmsDeliveryAreaController {
 
     @PostMapping
     public ApiResponse<TmsDeliveryArea> create(@RequestBody TmsDeliveryArea area) {
-        log.info("新增配送区�? areaCode={}, areaName={}", area.getAreaCode(), area.getAreaName());
+        log.info("新增配送区� areaCode={}, areaName={}", area.getAreaCode(), area.getAreaName());
         area.setId(UUID.randomUUID().toString());
         area.setDeleted(false);
         area.setCreateTime(LocalDateTime.now());
@@ -68,7 +68,7 @@ public class TmsDeliveryAreaController {
 
     @PutMapping("/{id}")
     public ApiResponse<TmsDeliveryArea> update(@PathVariable String id, @RequestBody TmsDeliveryArea area) {
-        log.info("修改配送区�? id={}", id);
+        log.info("修改配送区� id={}", id);
         area.setId(id);
         area.setUpdateTime(LocalDateTime.now());
         deliveryAreaService.updateById(area);
@@ -77,7 +77,7 @@ public class TmsDeliveryAreaController {
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(@PathVariable String id) {
-        log.info("删除配送区�? id={}", id);
+        log.info("删除配送区� id={}", id);
         TmsDeliveryArea area = new TmsDeliveryArea();
         area.setId(id);
         area.setDeleted(true);

@@ -18,31 +18,31 @@ public class OrdRefundController {
 
     @GetMapping("/{id}")
     public OrdRefund getById(@PathVariable String id) {
-        log.info("[API] 查询退款记�? id={}", id);
+        log.info("[API] 查询退款记录 id={}", id);
         return refundService.getById(id);
     }
 
     @GetMapping("/order/{orderId}")
     public List<OrdRefund> listByOrderId(@PathVariable Long orderId) {
-        log.info("[API] 查询订单退款记�? orderId={}", orderId);
+        log.info("[API] 查询订单退款记录 orderId={}", orderId);
         return refundService.listByOrderId(orderId);
     }
 
     @PostMapping
     public OrdRefund createRefund(@RequestBody OrdRefund refund) {
-        log.info("[API] 创建退款记�? orderNo={}, refundAmount={}", refund.getOrderNo(), refund.getRefundAmount());
+        log.info("[API] 创建退款记录 orderNo={}, refundAmount={}", refund.getOrderNo(), refund.getRefundAmount());
         return refundService.createRefund(refund);
     }
 
     @PutMapping
     public boolean update(@RequestBody OrdRefund refund) {
-        log.info("[API] 更新退款记�? id={}", refund.getId());
+        log.info("[API] 更新退款记录 id={}", refund.getId());
         return refundService.updateById(refund);
     }
 
     @DeleteMapping("/{id}")
     public boolean delete(@PathVariable String id) {
-        log.info("[API] 删除退款记�? id={}", id);
+        log.info("[API] 删除退款记录 id={}", id);
         return refundService.removeById(id);
     }
 }

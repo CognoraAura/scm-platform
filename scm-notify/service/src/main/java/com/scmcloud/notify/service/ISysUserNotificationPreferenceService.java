@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- * 用户通知偏好�?服务�?
+ * 用户通知偏好�服务�
  * </p>
  *
  * @author deng

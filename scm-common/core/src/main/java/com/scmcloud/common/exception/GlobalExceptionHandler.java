@@ -99,7 +99,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 未授权异�?
+     * 未授权异�
      */
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -167,7 +167,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 空指针异�?
+     * 空指针异�
      */
     @ExceptionHandler(NullPointerException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

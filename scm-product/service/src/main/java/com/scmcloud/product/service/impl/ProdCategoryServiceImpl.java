@@ -23,7 +23,7 @@ public class ProdCategoryServiceImpl extends ServiceImpl<ProdCategoryMapper, Pro
 
     @Override
     public List<ProdCategory> listByParentId(String parentId) {
-        log.debug("查询子分�? parentId={}", parentId);
+        log.debug("查询子分类 parentId={}", parentId);
         return lambdaQuery()
                 .eq(ProdCategory::getParentId, parentId)
                 .eq(ProdCategory::getDeleted, false)
@@ -34,7 +34,7 @@ public class ProdCategoryServiceImpl extends ServiceImpl<ProdCategoryMapper, Pro
 
     @Override
     public List<ProdCategory> getCategoryTree() {
-        log.debug("获取分类�?);
+        log.debug("获取分类树");
         List<ProdCategory> allCategories = lambdaQuery()
                 .eq(ProdCategory::getDeleted, false)
                 .eq(ProdCategory::getEnabled, true)

@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * SPU 标准产品单元�?
+ * SPU 标准产品单元�
  * </p>
  *
  * @author author

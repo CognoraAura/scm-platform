@@ -55,7 +55,7 @@ public class XxlJobConfig {
         xxlJobSpringExecutor.setLogPath(logPath);
         xxlJobSpringExecutor.setLogRetentionDays(logRetentionDays);
 
-        log.info("�?[XXL-Job] 执行器初始化完成");
+        log.info("�[XXL-Job] 执行器初始化完成");
         return xxlJobSpringExecutor;
     }
 }

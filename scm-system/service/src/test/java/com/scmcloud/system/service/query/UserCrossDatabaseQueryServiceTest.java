@@ -373,7 +373,7 @@ class UserCrossDatabaseQueryServiceTest {
         Integer result = service.getUserDataScope(null);
 
         // Assert
-        assertEquals(5, result); // Default: 仅本�?
+        assertEquals(5, result); // Default: 仅本�
         verify(userRoleMapper, never()).getUserDataScope(any());
     }
 
@@ -386,7 +386,7 @@ class UserCrossDatabaseQueryServiceTest {
         Integer result = service.getUserDataScope(testUserId);
 
         // Assert
-        assertEquals(5, result); // Default: 仅本�?
+        assertEquals(5, result); // Default: 仅本�
         verify(userRoleMapper).getUserDataScope(testUserId);
     }
 

@@ -70,7 +70,7 @@ public class PurQuotationServiceImpl extends ServiceImpl<PurQuotationMapper, Pur
             throw new IllegalArgumentException("报价单不存在: " + id);
         }
         if (quotation.getStatus() != 0) {
-            throw new IllegalStateException("只有草稿状态的报价单才能提�?);
+            throw new IllegalStateException("只有草稿状态的报价单才能提交");
         }
         quotation.setStatus(1);
         quotation.setUpdateTime(LocalDateTime.now());

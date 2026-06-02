@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Data
 public class MybatisPlusProperties {
     /**
-     * 最大单页限制数量，默认 1000�?
+     * 最大单页限制数量，默认 1000�
      */
     private Long paginationMaxLimit = 1000L;
 }

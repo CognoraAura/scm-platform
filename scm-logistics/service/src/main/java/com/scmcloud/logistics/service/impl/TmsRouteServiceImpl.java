@@ -20,7 +20,7 @@ public class TmsRouteServiceImpl extends ServiceImpl<TmsRouteMapper, TmsRoute> i
 
     @Override
     public Page<TmsRoute> pageList(int page, int size, String courierId, Integer status, LocalDate deliveryDate) {
-        log.debug("查询配送路线列�? page={}, size={}, courierId={}, status={}, deliveryDate={}", page, size, courierId, status, deliveryDate);
+        log.debug("查询配送路线列� page={}, size={}, courierId={}, status={}, deliveryDate={}", page, size, courierId, status, deliveryDate);
 
         LambdaQueryWrapper<TmsRoute> wrapper = Wrappers.lambdaQuery();
         if (StringUtils.hasText(courierId)) {

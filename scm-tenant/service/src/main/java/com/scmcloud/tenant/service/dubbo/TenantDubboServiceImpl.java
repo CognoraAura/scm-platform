@@ -102,23 +102,23 @@ public class TenantDubboServiceImpl implements TenantDubboService {
 
     @Override
     public QuotaCheckResultDTO checkQuota(String tenantId, QuotaType quotaType, int required) {
-        log.debug("Dubbo检查配�? tenantId={}, quotaType={}, required={}", tenantId, quotaType, required);
+        log.debug("Dubbo检查配� tenantId={}, quotaType={}, required={}", tenantId, quotaType, required);
 
         TenantResourceQuota quota = quotaService.lambdaQuery()
                 .eq(TenantResourceQuota::getTenantId, tenantId)
                 .one();
 
         if (quota == null) {
-            return new QuotaCheckResultDTO(false, 0, 0, "配额信息不存�?);
+            return new QuotaCheckResultDTO(false, 0, 0, "配额信息不存在");
         }
 
         return switch (quotaType) {
-            case USER -> buildResult(quota.getCurrentUsers(), quota.getMaxUsers(), required, "用户�?);
-            case WAREHOUSE -> buildResult(quota.getCurrentWarehouses(), quota.getMaxWarehouses(), required, "仓库�?);
-            case SKU -> buildResult(quota.getCurrentSkus(), quota.getMaxSkus(), required, "SKU�?);
-            case ORDER_PER_DAY -> buildResult(quota.getCurrentOrdersToday(), quota.getMaxOrdersPerDay(), required, "每日订单�?);
+            case USER -> buildResult(quota.getCurrentUsers(), quota.getMaxUsers(), required, "用户数");
+            case WAREHOUSE -> buildResult(quota.getCurrentWarehouses(), quota.getMaxWarehouses(), required, "仓库数");
+            case SKU -> buildResult(quota.getCurrentSkus(), quota.getMaxSkus(), required, "SKU数");
+            case ORDER_PER_DAY -> buildResult(quota.getCurrentOrdersToday(), quota.getMaxOrdersPerDay(), required, "每日订单数");
             case STORAGE_GB -> buildResult(quota.getCurrentStorageGb() != null ? quota.getCurrentStorageGb().intValue() : 0, quota.getMaxStorageGb(), required, "存储空间");
-            case API_CALLS_PER_DAY -> buildResult(quota.getCurrentApiCallsToday(), quota.getMaxApiCallsPerDay(), required, "每日API调用�?);
+            case API_CALLS_PER_DAY -> buildResult(quota.getCurrentApiCallsToday(), quota.getMaxApiCallsPerDay(), required, "每日API调用数");
         };
     }
 
@@ -183,7 +183,7 @@ public class TenantDubboServiceImpl implements TenantDubboService {
 
     @Override
     public void activateTenant(String tenantId) {
-        log.info("Dubbo激活租�? tenantId={}", tenantId);
+        log.info("Dubbo激活租� tenantId={}", tenantId);
         Tenant tenant = new Tenant();
         tenant.setId(tenantId);
         tenant.setStatus(1);

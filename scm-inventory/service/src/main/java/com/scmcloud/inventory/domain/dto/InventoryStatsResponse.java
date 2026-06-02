@@ -26,7 +26,7 @@ public class InventoryStatsResponse {
   private Long totalWarehouseCount;
 
   /**
-   * 总库存数�?
+   * 总库存数量
    */
   private Long totalStockQuantity;
 
@@ -46,7 +46,7 @@ public class InventoryStatsResponse {
   private Long damagedStockQuantity;
 
   /**
-   * 库存总价�?
+   * 库存总价值
    */
   private BigDecimal totalStockValue;
 
@@ -56,7 +56,7 @@ public class InventoryStatsResponse {
   private Long outOfStockCount;
 
   /**
-   * 低库�?SKU 数量
+   * 低库存SKU 数量
    */
   private Long lowStockCount;
 

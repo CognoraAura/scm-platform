@@ -67,14 +67,14 @@ public class SysNotificationAuditServiceImpl extends ServiceImpl<SysNotification
         log.info("发送通知: id={}", id);
         SysNotificationAudit audit = getById(id);
         if (audit == null) {
-            log.warn("通知审计不存�? id={}", id);
+            log.warn("通知审计不存� id={}", id);
             return false;
         }
         audit.setStatus("SENT");
         audit.setSentAt(LocalDateTime.now());
         boolean success = updateById(audit);
         if (success) {
-            log.info("通知发送成�? id={}", id);
+            log.info("通知发送成� id={}", id);
         }
         return success;
     }

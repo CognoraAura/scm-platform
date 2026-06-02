@@ -17,27 +17,27 @@ import java.util.stream.Collectors;
 /**
  * 临期库存告警定时任务
  *
- * 执行时间：每日上�?09:00（cron: 0 0 9 * * ?�?
+ * 执行时间：每日上午09:00（cron: 0 0 9 * * ?）
  *
- * 功能�?
- * 1. 扫描所有租户的临期库存（基�?v_near_expiry_inventory 视图�?
- * 2. 临期标准�?
- *    - 距离过期 <= 30天：一级告警（严重�?
+ * 功能：
+ * 1. 扫描所有租户的临期库存（基于 v_near_expiry_inventory 视图）
+ * 2. 临期标准：
+ *    - 距离过期 <= 30天：一级告警（严重）
  *    - 距离过期 31-60天：二级告警（警告）
  *    - 距离过期 61-90天：三级告警（提示）
- * 3. 发送告警通知�?
+ * 3. 发送告警通知：
  *    - 站内消息通知
  *    - 邮件通知（可选）
  *    - 企业微信/钉钉通知（可选）
- * 4. 记录告警历史，避免重复发�?
+ * 4. 记录告警历史，避免重复发送
  *
- * XXL-Job 配置示例�?
+ * XXL-Job 配置示例：
  * - 执行器：scm-warehouse-executor
  * - JobHandler：nearExpiryAlertJob
- * - Cron�? 0 9 * * ?
+ * - Cron：0 9 * * ?
  * - 运行模式：BEAN
- * - 阻塞处理策略：单机串�?
- * - 路由策略：轮�?
+ * - 阻塞处理策略：单机串行
+ * - 路由策略：轮询
  *
  * @author Claude Code
  * @since 2025-01-24
@@ -53,13 +53,13 @@ public class NearExpiryAlertJob {
     /**
      * 执行临期库存告警
      *
-     * 任务参数（可选）�?
-     * - tenantId: 指定租户ID（UUID格式），不传则扫描所有租�?
-     * - alertLevel: 告警级别（CRITICAL, WARNING, INFO），不传则发送所有级�?
+     * 任务参数（可选）：
+     * - tenantId: 指定租户ID（UUID格式），不传则扫描所有租户
+     * - alertLevel: 告警级别（CRITICAL, WARNING, INFO），不传则发送所有级别
      *
-     * 示例�?
+     * 示例：
      * - 扫描所有租户：不传参数
-     * - 扫描单个租户：传�?"123e4567-e89b-12d3-a456-426614174000"
+     * - 扫描单个租户：传入"123e4567-e89b-12d3-a456-426614174000"
      * - 只发送严重告警：传参 "alertLevel=CRITICAL"
      */
     @XxlJob("nearExpiryAlertJob")
@@ -80,7 +80,7 @@ public class NearExpiryAlertJob {
                         try {
                             alertLevel = AlertLevel.valueOf(part.substring(11).toUpperCase());
                         } catch (IllegalArgumentException e) {
-                            log.warn("无效的告警级别参�? {}", part);
+                            log.warn("无效的告警级别参数 {}", part);
                         }
                     } else {
                         // 尝试解析为租户ID
@@ -93,7 +93,7 @@ public class NearExpiryAlertJob {
                 }
             }
 
-            String scope = tenantId == null ? "所有租�? : "租户 " + tenantId;
+            String scope = tenantId == null ? "所有租户" : "租户 " + tenantId;
             log.info("开始扫描临期库存，范围: {}, 告警级别: {}", scope, alertLevel == null ? "ALL" : alertLevel);
 
             // 查询临期库存
@@ -109,7 +109,7 @@ public class NearExpiryAlertJob {
                 return;
             }
 
-            // 按租户分�?
+            // 按租户分组
             Map<UUID, List<NearExpiryProductVO>> groupedByTenant = nearExpiryProducts.stream()
                 .collect(Collectors.groupingBy(NearExpiryProductVO::getTenantId));
 
@@ -117,13 +117,13 @@ public class NearExpiryAlertJob {
             int successCount = 0;
             int failCount = 0;
 
-            // 按租户发送告�?
+            // 按租户发送告警
             for (Map.Entry<UUID, List<NearExpiryProductVO>> entry : groupedByTenant.entrySet()) {
                 UUID currentTenantId = entry.getKey();
                 List<NearExpiryProductVO> products = entry.getValue();
 
                 try {
-                    // 按告警级别统�?
+                    // 按告警级别统计
                     Map<AlertLevel, Long> levelCounts = products.stream()
                         .collect(Collectors.groupingBy(
                             p -> AlertLevel.valueOf(p.getAlertLevel()),
@@ -133,7 +133,7 @@ public class NearExpiryAlertJob {
                     // 发送告警通知
                     notificationService.sendNearExpiryAlert(currentTenantId, products, levelCounts);
 
-                    log.info("租户 {} 临期告警已发送，�?{} 条（严重: {}, 警告: {}, 提示: {}�?,
+                    log.info("租户 {} 临期告警已发送，共{} 条（严重: {}, 警告: {}, 提示: {}）",
                         currentTenantId,
                         products.size(),
                         levelCounts.getOrDefault(AlertLevel.CRITICAL, 0L),
@@ -145,14 +145,14 @@ public class NearExpiryAlertJob {
                     successCount++;
 
                 } catch (Exception e) {
-                    log.error("租户 {} 临期告警发送失�?, currentTenantId, e);
+                    log.error("租户 {} 临期告警发送失败", currentTenantId, e);
                     failCount++;
                 }
             }
 
             long duration = System.currentTimeMillis() - startTime;
             String successMsg = String.format(
-                "临期库存告警完成，范�? %s, 总告警数: %d, 成功租户: %d, 失败租户: %d, 耗时: %d ms",
+                "临期库存告警完成，范围 %s, 总告警数: %d, 成功租户: %d, 失败租户: %d, 耗时: %d ms",
                 scope,
                 totalAlerts,
                 successCount,
@@ -181,17 +181,17 @@ public class NearExpiryAlertJob {
      */
     public enum AlertLevel {
         /**
-         * 严重告警�?= 30天）
+         * 严重告警（<= 30天）
          */
         CRITICAL,
 
         /**
-         * 警告�?1-60天）
+         * 警告（31-60天）
          */
         WARNING,
 
         /**
-         * 提示�?1-90天）
+         * 提示（61-90天）
          */
         INFO
     }

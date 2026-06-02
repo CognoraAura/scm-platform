@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <p>
- * 库存告警�?前端控制�?
+ * 库存告警前端控制器
  * </p>
  *
  * @author deng

@@ -44,7 +44,7 @@ public class TenantFeatureController {
     public boolean isFeatureEnabled(
             @RequestParam String tenantId,
             @RequestParam String featureCode) {
-        log.info("[API] 检查功能是否启�? tenantId={}, featureCode={}", tenantId, featureCode);
+        log.info("[API] 检查功能是否启� tenantId={}, featureCode={}", tenantId, featureCode);
         return tenantFeatureService.isFeatureEnabled(tenantId, featureCode);
     }
 

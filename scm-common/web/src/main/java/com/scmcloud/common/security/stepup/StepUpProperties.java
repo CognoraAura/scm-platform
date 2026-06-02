@@ -12,14 +12,14 @@ import java.util.List;
 @Data
 public class StepUpProperties {
     private boolean enabled = true;
-    // 工作时间窗口（含�?
+    // 工作时间窗口（含�
     private int businessStartHour = 9;   // 09:00
     private int businessEndHour = 18;    // 18:00
-    // 是否启用新设备触�?
+    // 是否启用新设备触�
     private boolean newDeviceTrigger = true;
     // 策略文件路径（可选）：优先该路径，其次classpath:security/stepup-policy.yaml，最后docs/security/stepup-policy.yaml
     private String policyPath;
-    // 策略缓存刷新秒数（TTL�?
+    // 策略缓存刷新秒数（TTL�
     private int refreshSeconds = 60;
     // Step-up 白名单与旁路配置
     private List<String> whitelistPaths = new ArrayList<>();

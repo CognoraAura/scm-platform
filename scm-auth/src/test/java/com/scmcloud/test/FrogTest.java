@@ -12,7 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * 基础测试类示�?
+ * 基础测试类示�
  *
  * @author Deng
  * createData 2025/11/3 10:07
@@ -35,7 +35,7 @@ public class FrogTest {
         System.out.println("Raw password: " + rawPassword);
         System.out.println("Encoded password: " + encodedPassword);
         
-        // 验证加密后的密码是否能正确匹配原始密�?
+        // 验证加密后的密码是否能正确匹配原始密�
         boolean isMatch = passwordEncoder.matches(rawPassword, encodedPassword);
         System.out.println("Password match result: " + isMatch);
     }
@@ -43,7 +43,7 @@ public class FrogTest {
     @Test
     public void testAnotherExample() {
         String str = "Frog";
-        assertEquals("Frog", str, "字符串应该相�?);
+        assertEquals("Frog", str, "字符串应该相�);
         System.out.println("str = " + str);
     }
 

@@ -18,25 +18,25 @@ public class OrdStatusHistoryController {
 
     @GetMapping("/{id}")
     public OrdStatusHistory getById(@PathVariable String id) {
-        log.info("[API] 查询状态历�? id={}", id);
+        log.info("[API] 查询状态历� id={}", id);
         return statusHistoryService.getById(id);
     }
 
     @GetMapping("/order/{orderId}")
     public List<OrdStatusHistory> listByOrderId(@PathVariable Long orderId) {
-        log.info("[API] 查询订单状态历�? orderId={}", orderId);
+        log.info("[API] 查询订单状态历� orderId={}", orderId);
         return statusHistoryService.listByOrderId(orderId);
     }
 
     @PostMapping
     public boolean save(@RequestBody OrdStatusHistory history) {
-        log.info("[API] 创建状态历�? orderId={}, event={}", history.getOrderId(), history.getEvent());
+        log.info("[API] 创建状态历� orderId={}, event={}", history.getOrderId(), history.getEvent());
         return statusHistoryService.save(history);
     }
 
     @DeleteMapping("/{id}")
     public boolean delete(@PathVariable String id) {
-        log.info("[API] 删除状态历�? id={}", id);
+        log.info("[API] 删除状态历� id={}", id);
         return statusHistoryService.removeById(id);
     }
 }

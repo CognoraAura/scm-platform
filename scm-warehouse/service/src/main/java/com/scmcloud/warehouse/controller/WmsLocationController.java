@@ -52,7 +52,7 @@ public class WmsLocationController {
 
         WmsLocation existing = locationService.getById(id);
         if (existing == null || Boolean.TRUE.equals(existing.getDeleted())) {
-            return ApiResponse.fail(404, "库位不存�?);
+            return ApiResponse.fail(404, "库位不存在");
         }
 
         location.setId(id);
@@ -67,7 +67,7 @@ public class WmsLocationController {
 
         WmsLocation existing = locationService.getById(id);
         if (existing == null || Boolean.TRUE.equals(existing.getDeleted())) {
-            return ApiResponse.fail(404, "库位不存�?);
+            return ApiResponse.fail(404, "库位不存在");
         }
 
         existing.setDeleted(true);
@@ -80,7 +80,7 @@ public class WmsLocationController {
     public ApiResponse<WmsLocation> getById(@PathVariable String id) {
         WmsLocation location = locationService.getById(id);
         if (location == null || Boolean.TRUE.equals(location.getDeleted())) {
-            return ApiResponse.fail(404, "库位不存�?);
+            return ApiResponse.fail(404, "库位不存在");
         }
         return ApiResponse.success(location);
     }

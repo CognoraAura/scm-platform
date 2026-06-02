@@ -15,9 +15,9 @@ import java.lang.reflect.Method;
 import java.util.UUID;
 
 /**
- * 配额检�?AOP 拦截�?
+ * 配额检�AOP 拦截�
 
- * 使用方式�?
+ * 使用方式�
  * <pre>
  * @RequireQuotaCheck(quotaType = QuotaType.ORDERS, increment = 1)
  * public Order createOrder(OrderCreateDTO dto) {
@@ -36,9 +36,9 @@ public class QuotaChecker {
     private final QuotaService quotaService;
 
     /**
-     * 在方法执行前检查配�?
+     * 在方法执行前检查配�
      */
-    @Before("@annotation(com.frog.common.tenant.quota.RequireQuotaCheck)")
+    @Before("@annotation(com.scmcloud.common.tenant.quota.RequireQuotaCheck)")
     public void checkQuota(JoinPoint joinPoint) {
         // 获取租户 ID
         UUID tenantId = TenantContextHolder.getTenantId();
@@ -62,13 +62,13 @@ public class QuotaChecker {
         log.debug("Checking quota for tenant={}, type={}, increment={}",
                 tenantId, quotaType, increment);
 
-        // 检查配�?
+        // 检查配�
         boolean hasQuota = quotaService.checkAndConsumeQuota(tenantId, quotaType, increment);
 
         if (!hasQuota) {
             log.warn("Quota exceeded for tenant={}, type={}", tenantId, quotaType);
             throw new QuotaExceededException(
-                    String.format("租户配额已用尽：%s，请升级套餐或联系客�?, quotaType.getDescription())
+                    String.format("租户配额已用尽：%s，请升级套餐或联系客服", quotaType.getDescription())
             );
         }
 

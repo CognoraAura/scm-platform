@@ -28,7 +28,7 @@ public interface SysDataPermissionRuleMapper extends BaseMapper<SysDataPermissio
     SysDataPermissionRule findByRuleCode(@Param("ruleCode") String ruleCode);
 
     /**
-     * 根据资源类型查询启用的规�?
+     * 根据资源类型查询启用的规�
      */
     @Select("""
             SELECT * FROM sys_data_permission_rule
@@ -38,7 +38,7 @@ public interface SysDataPermissionRuleMapper extends BaseMapper<SysDataPermissio
     List<SysDataPermissionRule> findByResourceType(@Param("resourceType") String resourceType);
 
     /**
-     * 根据角色 ID查询关联的规�?
+     * 根据角色 ID查询关联的规�
      */
     @Select("""
             SELECT r.* FROM sys_data_permission_rule r
@@ -49,7 +49,7 @@ public interface SysDataPermissionRuleMapper extends BaseMapper<SysDataPermissio
     List<SysDataPermissionRule> findByRoleId(@Param("roleId") UUID roleId);
 
     /**
-     * 根据用户ID查询关联的规则（通过用户角色�?
+     * 根据用户ID查询关联的规则（通过用户角色�
      */
     @Select("""
             SELECT DISTINCT r.* FROM sys_data_permission_rule r
@@ -65,7 +65,7 @@ public interface SysDataPermissionRuleMapper extends BaseMapper<SysDataPermissio
     List<SysDataPermissionRule> findByUserId(@Param("userId") UUID userId);
 
     /**
-     * 检查规则编码是否存�?
+     * 检查规则编码是否存�
      */
     @Select("""
             SELECT COUNT(*) > 0 FROM sys_data_permission_rule

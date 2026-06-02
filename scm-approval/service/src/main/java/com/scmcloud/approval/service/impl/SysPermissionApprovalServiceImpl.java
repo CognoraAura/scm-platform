@@ -51,7 +51,7 @@ public class SysPermissionApprovalServiceImpl extends ServiceImpl<SysPermissionA
 
         SysPermissionApproval approval = getById(approvalId);
         if (approval == null) {
-            throw new IllegalArgumentException("审批记录不存�? " + approvalId);
+            throw new IllegalArgumentException("审批记录不存� " + approvalId);
         }
 
         if (approval.getApprovalStatus() != STATUS_PENDING
@@ -81,7 +81,7 @@ public class SysPermissionApprovalServiceImpl extends ServiceImpl<SysPermissionA
 
         SysPermissionApproval approval = getById(approvalId);
         if (approval == null) {
-            throw new IllegalArgumentException("审批记录不存�? " + approvalId);
+            throw new IllegalArgumentException("审批记录不存� " + approvalId);
         }
 
         if (approval.getApprovalStatus() != STATUS_PENDING
@@ -107,7 +107,7 @@ public class SysPermissionApprovalServiceImpl extends ServiceImpl<SysPermissionA
 
     @Override
     public List<SysPermissionApproval> listByApplicant(String applicantId) {
-        log.debug("查询申请人审批列�? applicantId={}", applicantId);
+        log.debug("查询申请人审批列� applicantId={}", applicantId);
 
         LambdaQueryWrapper<SysPermissionApproval> wrapper = Wrappers.lambdaQuery();
         wrapper.eq(SysPermissionApproval::getApplicantId, applicantId)
@@ -118,7 +118,7 @@ public class SysPermissionApprovalServiceImpl extends ServiceImpl<SysPermissionA
 
     @Override
     public List<SysPermissionApproval> listPending(String approverId) {
-        log.debug("查询待审批列�? approverId={}", approverId);
+        log.debug("查询待审批列� approverId={}", approverId);
 
         LambdaQueryWrapper<SysPermissionApproval> wrapper = Wrappers.lambdaQuery();
         wrapper.and(w -> w.eq(SysPermissionApproval::getApprovalStatus, STATUS_PENDING)

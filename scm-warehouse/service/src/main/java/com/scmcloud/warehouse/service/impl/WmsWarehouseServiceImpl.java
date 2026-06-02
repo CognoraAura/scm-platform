@@ -53,14 +53,14 @@ public class WmsWarehouseServiceImpl extends ServiceImpl<WmsWarehouseMapper, Wms
     public boolean enable(String id) {
         WmsWarehouse warehouse = getById(id);
         if (warehouse == null) {
-            log.warn("仓库不存�? id={}", id);
+            log.warn("仓库不存在 id={}", id);
             return false;
         }
         warehouse.setEnabled(true);
         warehouse.setUpdateTime(LocalDateTime.now());
         boolean success = updateById(warehouse);
         if (success) {
-            log.info("仓库已启�? id={}, name={}", id, warehouse.getWarehouseName());
+            log.info("仓库已启用 id={}, name={}", id, warehouse.getWarehouseName());
         }
         return success;
     }
@@ -70,14 +70,14 @@ public class WmsWarehouseServiceImpl extends ServiceImpl<WmsWarehouseMapper, Wms
     public boolean disable(String id) {
         WmsWarehouse warehouse = getById(id);
         if (warehouse == null) {
-            log.warn("仓库不存�? id={}", id);
+            log.warn("仓库不存在 id={}", id);
             return false;
         }
         warehouse.setEnabled(false);
         warehouse.setUpdateTime(LocalDateTime.now());
         boolean success = updateById(warehouse);
         if (success) {
-            log.info("仓库已停�? id={}, name={}", id, warehouse.getWarehouseName());
+            log.info("仓库已停用 id={}, name={}", id, warehouse.getWarehouseName());
         }
         return success;
     }

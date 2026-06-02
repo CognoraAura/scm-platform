@@ -4,7 +4,7 @@ import java.security.SecureRandom;
 import java.util.regex.Pattern;
 
 /**
- * 密码工具�?
+ * 密码工具�
  *
  * @author Deng
  * createData 2025/10/15 14:41
@@ -32,7 +32,7 @@ public class PasswordUtils {
         StringBuilder password = new StringBuilder(length);
         String allChars = UPPER_CASE + LOWER_CASE + DIGITS + SPECIAL_CHARS;
 
-        // 确保至少包含每种类型的字�?
+        // 确保至少包含每种类型的字�
         password.append(UPPER_CASE.charAt(RANDOM.nextInt(UPPER_CASE.length())));
         password.append(LOWER_CASE.charAt(RANDOM.nextInt(LOWER_CASE.length())));
         password.append(DIGITS.charAt(RANDOM.nextInt(DIGITS.length())));
@@ -60,9 +60,9 @@ public class PasswordUtils {
     /**
      * 获取密码强度等级 (0-4)
      * 0: 很弱
-     * 1: �?
+     * 1: �
      * 2: 中等
-     * 3: �?
+     * 3: �
      * 4: 很强
      */
     public static int getPasswordStrength(String password) {
@@ -72,7 +72,7 @@ public class PasswordUtils {
 
         int strength = 0;
 
-        // 长度检�?
+        // 长度检�
         if (password.length() >= 8) strength++;
         if (password.length() >= 12) strength++;
 

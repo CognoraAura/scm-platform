@@ -5,7 +5,7 @@ import com.scmcloud.inventory.domain.entity.Inventory;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 库存�?Mapper
+ * 库存Mapper
  *
  * @author SCM Platform Team
  * @since 2025-12-26

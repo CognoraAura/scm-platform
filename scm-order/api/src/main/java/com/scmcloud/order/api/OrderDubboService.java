@@ -22,7 +22,7 @@ public interface OrderDubboService {
     /**
      * 查询订单
      *
-     * @param orderNo 订单�?
+     * @param orderNo 订单�
      * @return 订单 VO
      */
     OrderVO queryOrder(String orderNo);
@@ -30,7 +30,7 @@ public interface OrderDubboService {
     /**
      * 取消订单
      *
-     * @param orderNo 订单�?
+     * @param orderNo 订单�
      */
     void cancelOrder(String orderNo);
 }

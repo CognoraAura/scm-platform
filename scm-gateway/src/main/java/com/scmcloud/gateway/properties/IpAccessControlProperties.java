@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * External configuration for {@link com.frog.gateway.filter.IpAccessControlFilter}.
+ * External configuration for {@link com.scmcloud.gateway.filter.IpAccessControlFilter}.
  */
 @Getter
 @Setter

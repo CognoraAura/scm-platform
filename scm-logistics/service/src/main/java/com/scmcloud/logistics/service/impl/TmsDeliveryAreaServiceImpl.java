@@ -20,7 +20,7 @@ public class TmsDeliveryAreaServiceImpl extends ServiceImpl<TmsDeliveryAreaMappe
 
     @Override
     public Page<TmsDeliveryArea> pageList(int page, int size, String carrierId, String province, String city) {
-        log.debug("查询配送区域列�? page={}, size={}, carrierId={}, province={}, city={}", page, size, carrierId, province, city);
+        log.debug("查询配送区域列� page={}, size={}, carrierId={}, province={}, city={}", page, size, carrierId, province, city);
 
         LambdaQueryWrapper<TmsDeliveryArea> wrapper = Wrappers.lambdaQuery();
         if (StringUtils.hasText(carrierId)) {
@@ -40,7 +40,7 @@ public class TmsDeliveryAreaServiceImpl extends ServiceImpl<TmsDeliveryAreaMappe
 
     @Override
     public List<TmsDeliveryArea> listByCarrier(String carrierId) {
-        log.debug("根据物流商查询配送区�? carrierId={}", carrierId);
+        log.debug("根据物流商查询配送区� carrierId={}", carrierId);
         return lambdaQuery()
                 .eq(TmsDeliveryArea::getCarrierId, carrierId)
                 .eq(TmsDeliveryArea::getDeleted, false)
@@ -49,7 +49,7 @@ public class TmsDeliveryAreaServiceImpl extends ServiceImpl<TmsDeliveryAreaMappe
 
     @Override
     public boolean checkCoverage(String carrierId, String province, String city, String district) {
-        log.debug("检查区域覆�? carrierId={}, province={}, city={}, district={}", carrierId, province, city, district);
+        log.debug("检查区域覆� carrierId={}, province={}, city={}, district={}", carrierId, province, city, district);
 
         LambdaQueryWrapper<TmsDeliveryArea> wrapper = Wrappers.lambdaQuery();
         wrapper.eq(TmsDeliveryArea::getCarrierId, carrierId);

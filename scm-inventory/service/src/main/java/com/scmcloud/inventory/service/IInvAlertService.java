@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- * 库存告警�?服务�?
+ * 库存告警服务类
  * </p>
  *
  * @author deng

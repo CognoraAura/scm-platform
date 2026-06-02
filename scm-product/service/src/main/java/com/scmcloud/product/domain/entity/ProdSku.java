@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * SKU 库存单位�?
+ * SKU 库存单位�
  * </p>
  *
  * @author author

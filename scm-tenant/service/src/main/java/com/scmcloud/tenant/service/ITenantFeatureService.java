@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- * 租户功能开关表 服务�?
+ * 租户功能开关表 服务�
  * </p>
  *
  * @author deng
@@ -14,7 +14,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface ITenantFeatureService extends IService<TenantFeature> {
 
     /**
-     * 判断租户的某个功能是否启用�?
+     * 判断租户的某个功能是否启用�
      *
      * @param tenantId   租户ID
      * @param featureCode 功能编码

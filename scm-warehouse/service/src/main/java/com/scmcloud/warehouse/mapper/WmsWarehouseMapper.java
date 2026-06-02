@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * <p>
- * 仓库�?Mapper 接口
+ * 仓库的Mapper 接口
  * </p>
  *
  * @author deng

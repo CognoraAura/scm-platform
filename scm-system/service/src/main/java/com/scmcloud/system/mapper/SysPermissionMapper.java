@@ -14,7 +14,7 @@ import java.util.UUID;
 
 /**
  * <p>
- * 权限�?Mapper 接口
+ * 权限�Mapper 接口
  * </p>
  *
  * @author author
@@ -52,7 +52,7 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
     Set<String> findRolesByUserId(@Param("userId") UUID userId);
 
     /**
-     * 查询角色权限�?
+     * 查询角色权限�
      */
     @Select("""
             SELECT * FROM sys_permission WHERE status = 1 AND NOT deleted
@@ -71,7 +71,7 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
     List<Permission> findPermissionsByRoleId(@Param("roleId") UUID roleId);
 
     /**
-     * 检查资源权�?
+     * 检查资源权�
      */
     @Select("""
             <script>
@@ -89,7 +89,7 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
                                     @Param("permission") String permission);
 
     /**
-     * 查询用户菜单�?
+     * 查询用户菜单�
      */
     @Select("""
             SELECT DISTINCT p.* FROM sys_permission p
@@ -111,7 +111,7 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
     List<PermissionDTO> findMenuTreeByUserId(@Param("userId") UUID userId);
 
     /**
-     * 查询子权�?
+     * 查询子权�
      */
     @Select("""
             SELECT * FROM sys_permission
@@ -135,7 +135,7 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
                                       @Param("method") String method);
 
     /**
-     * 检查权限编码是否存�?
+     * 检查权限编码是否存�
      */
     @Select("""
             SELECT COUNT(*) > 0 FROM sys_permission

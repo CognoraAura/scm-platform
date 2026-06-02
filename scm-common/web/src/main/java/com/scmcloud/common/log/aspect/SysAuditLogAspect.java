@@ -35,7 +35,7 @@ public class SysAuditLogAspect {
     private final SysAuditLogMapper sysAuditLogMapper;
     private final ObjectMapper objectMapper;
 
-    @Around("@annotation(com.frog.common.log.annotation.AuditLog)")
+    @Around("@annotation(com.scmcloud.common.log.annotation.AuditLog)")
     public Object around(ProceedingJoinPoint point) throws Throwable {
         long startTime = System.currentTimeMillis();
 

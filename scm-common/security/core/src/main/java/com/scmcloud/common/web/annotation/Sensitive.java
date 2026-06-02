@@ -17,7 +17,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @JacksonAnnotationsInside
-@JsonSerialize(using = com.frog.common.web.serializer.SensitiveJsonSerializer.class)
+@JsonSerialize(using = com.scmcloud.common.web.serializer.SensitiveJsonSerializer.class)
 public @interface Sensitive {
 
     /**

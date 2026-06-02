@@ -47,14 +47,14 @@ public class TenantResourceQuotaServiceImpl extends ServiceImpl<TenantResourceQu
     }
 
     public boolean checkQuota(String tenantId, String resourceType) {
-        log.debug("检查租户配�? tenantId={}, resourceType={}", tenantId, resourceType);
+        log.debug("检查租户配� tenantId={}, resourceType={}", tenantId, resourceType);
 
         TenantResourceQuota quota = lambdaQuery()
                 .eq(TenantResourceQuota::getTenantId, tenantId)
                 .one();
 
         if (quota == null) {
-            log.warn("租户配额不存�? tenantId={}", tenantId);
+            log.warn("租户配额不存� tenantId={}", tenantId);
             return false;
         }
 

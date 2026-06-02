@@ -26,7 +26,7 @@ public class OrdOrderController {
 
     @GetMapping
     public List<OrdOrder> list() {
-        log.info("[API] 查询所有订�?);
+        log.info("[API] 查询所有订单");
         return orderService.list();
     }
 
@@ -54,7 +54,7 @@ public class OrdOrderController {
     public boolean updateStatus(
             @PathVariable Long id,
             @RequestParam Integer status) {
-        log.info("[API] 更新订单状�? id={}, status={}", id, status);
+        log.info("[API] 更新订单状态 id={}, status={}", id, status);
         return orderService.updateOrderStatus(id, status);
     }
 

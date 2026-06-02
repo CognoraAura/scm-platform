@@ -31,15 +31,15 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * MyBatis 租户拦截�?
- * 自动�?SQL 中注�?tenant_id 过滤条件
+ * MyBatis 租户拦截�
+ * 自动�SQL 中注�tenant_id 过滤条件
  *
- * 功能�?
+ * 功能�
  * 1. SELECT 查询自动添加 WHERE tenant_id = ?
  * 2. UPDATE/DELETE 自动添加 WHERE tenant_id = ?
  * 3. INSERT 自动添加 tenant_id 字段
  *
- * 排除表：不需要租户隔离的系统表（如租户表本身�?
+ * 排除表：不需要租户隔离的系统表（如租户表本身�
  *
  * @author Claude Code
  * @since 2025-01-24
@@ -55,7 +55,7 @@ import java.util.UUID;
 public class TenantInterceptor implements Interceptor {
 
     /**
-     * 租户字段�?
+     * 租户字段�
      */
     private static final String TENANT_COLUMN = "tenant_id";
 
@@ -81,7 +81,7 @@ public class TenantInterceptor implements Interceptor {
         MappedStatement mappedStatement = (MappedStatement) metaObject.getValue("delegate.mappedStatement");
         SqlCommandType sqlCommandType = mappedStatement.getSqlCommandType();
 
-        // 只处�?SELECT, UPDATE, DELETE, INSERT
+        // 只处�SELECT, UPDATE, DELETE, INSERT
         if (!SqlCommandType.SELECT.equals(sqlCommandType) &&
             !SqlCommandType.UPDATE.equals(sqlCommandType) &&
             !SqlCommandType.DELETE.equals(sqlCommandType) &&
@@ -113,7 +113,7 @@ public class TenantInterceptor implements Interceptor {
             } else if (statement instanceof Delete delete) {
                 handleDelete(delete, tenantId);
             } else if (statement instanceof Insert insert) {
-                // INSERT 语句�?tenant_id 由应用层设置，不在拦截器中处�?
+                // INSERT 语句�tenant_id 由应用层设置，不在拦截器中处�
                 log.debug("INSERT statement detected, tenant_id should be set by application layer");
             }
 
@@ -124,7 +124,7 @@ public class TenantInterceptor implements Interceptor {
             log.debug("Injected tenant_id={} into SQL: {}", tenantId, newSql);
         } catch (Exception e) {
             log.error("Failed to inject tenant_id into SQL: {}", originalSql, e);
-            // 如果解析失败，继续执行原SQL（安全起见，建议配置为抛异常�?
+            // 如果解析失败，继续执行原SQL（安全起见，建议配置为抛异常�
         }
 
         return invocation.proceed();
@@ -157,7 +157,7 @@ public class TenantInterceptor implements Interceptor {
     }
 
     /**
-     * 处理 UPDATE 语句 - 添加 tenant_id �?WHERE 条件
+     * 处理 UPDATE 语句 - 添加 tenant_id �WHERE 条件
      */
     private void handleUpdate(Update update, UUID tenantId) {
         Table table = update.getTable();
@@ -178,7 +178,7 @@ public class TenantInterceptor implements Interceptor {
     }
 
     /**
-     * 处理 DELETE 语句 - 添加 tenant_id �?WHERE 条件
+     * 处理 DELETE 语句 - 添加 tenant_id �WHERE 条件
      */
     private void handleDelete(Delete delete, UUID tenantId) {
         Table table = delete.getTable();
@@ -199,7 +199,7 @@ public class TenantInterceptor implements Interceptor {
     }
 
     /**
-     * 构建 tenant_id = 'xxx' 条件表达�?
+     * 构建 tenant_id = 'xxx' 条件表达�
      */
     private EqualsTo buildTenantCondition(UUID tenantId) {
         EqualsTo condition = new EqualsTo();
@@ -212,12 +212,12 @@ public class TenantInterceptor implements Interceptor {
      * 判断是否是排除表
      */
     private boolean isExcludeTable(String tableName) {
-        // 去除表别�?
+        // 去除表别�
         String actualTableName = tableName.contains(" ")
             ? tableName.substring(0, tableName.indexOf(" ")).trim()
             : tableName.trim();
 
-        // 去除数据库名前缀（如 db_product.prod_category -> prod_category�?
+        // 去除数据库名前缀（如 db_product.prod_category -> prod_category�
         if (actualTableName.contains(".")) {
             actualTableName = actualTableName.substring(actualTableName.indexOf(".") + 1);
         }

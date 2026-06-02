@@ -54,7 +54,7 @@ public class WmsInboundServiceImpl extends ServiceImpl<WmsInboundMapper, WmsInbo
             return false;
         }
         if (inbound.getStatus() != 0 && inbound.getStatus() != 1) {
-            throw new IllegalStateException("入库单状态不允许收货，当前状�? " + inbound.getStatus());
+            throw new IllegalStateException("入库单状态不允许收货，当前状态 " + inbound.getStatus());
         }
 
         List<WmsInboundItem> items = inboundItemService.lambdaQuery()
@@ -67,7 +67,7 @@ public class WmsInboundServiceImpl extends ServiceImpl<WmsInboundMapper, WmsInbo
                 .sum();
 
         if (totalReceived == 0) {
-            throw new IllegalStateException("入库明细实际收货数量不能全部�?");
+            throw new IllegalStateException("入库明细实际收货数量不能全部为0");
         }
 
         boolean allReceived = items.stream()
@@ -75,7 +75,7 @@ public class WmsInboundServiceImpl extends ServiceImpl<WmsInboundMapper, WmsInbo
                         && item.getActualQuantity().equals(item.getPlanQuantity()));
 
         inbound.setReceivedQuantity(totalReceived);
-        inbound.setStatus(allReceived ? 3 : 2); // 3-已完�? 2-部分入库
+        inbound.setStatus(allReceived ? 3 : 2); // 3-已完成 2-部分入库
         inbound.setOperatorId(operatorId);
         inbound.setOperatorName(operatorName);
         inbound.setUpdateTime(LocalDateTime.now());
@@ -87,7 +87,7 @@ public class WmsInboundServiceImpl extends ServiceImpl<WmsInboundMapper, WmsInbo
 
         boolean success = updateById(inbound);
         if (success) {
-            log.info("入库单收货完�? id={}, inboundNo={}, status={}, receivedQty={}",
+            log.info("入库单收货完成 id={}, inboundNo={}, status={}, receivedQty={}",
                     inboundId, inbound.getInboundNo(), inbound.getStatus(), totalReceived);
         }
         return success;
@@ -102,10 +102,10 @@ public class WmsInboundServiceImpl extends ServiceImpl<WmsInboundMapper, WmsInbo
             return false;
         }
         if (inbound.getStatus() == 3) {
-            throw new IllegalStateException("已完成的入库单不能取�?);
+            throw new IllegalStateException("已完成的入库单不能取消");
         }
 
-        inbound.setStatus(4); // 4-已取�?
+        inbound.setStatus(4); // 4-已取消
         inbound.setOperatorId(operatorId);
         inbound.setOperatorName(operatorName);
         inbound.setUpdateTime(LocalDateTime.now());

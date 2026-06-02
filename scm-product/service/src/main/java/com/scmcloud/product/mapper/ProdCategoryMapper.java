@@ -6,7 +6,7 @@ import com.scmcloud.product.domain.entity.ProdCategory;
 
 /**
  * <p>
- * 商品分类�?Mapper 接口
+ * 商品分类�Mapper 接口
  * </p>
  *
  * @author author

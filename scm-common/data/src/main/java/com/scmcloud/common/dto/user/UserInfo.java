@@ -37,5 +37,5 @@ public class UserInfo {
     private Integer userLevel;
     private Set<String> roles;
     private Set<String> permissions;
-    private Set<PermissionDTO> menuTree; // 菜单�?
+    private Set<PermissionDTO> menuTree; // 菜单�
 }

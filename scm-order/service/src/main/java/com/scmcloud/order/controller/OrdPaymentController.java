@@ -24,7 +24,7 @@ public class OrdPaymentController {
 
     @GetMapping
     public List<OrdPayment> list() {
-        log.info("[API] 查询所有支付记�?);
+        log.info("[API] 查询所有支付记录");
         return paymentService.list();
     }
 
@@ -38,7 +38,7 @@ public class OrdPaymentController {
     public boolean updateStatus(
             @PathVariable Long id,
 @RequestParam Integer status) {
-        log.info("[API] 更新支付状�? id={}, status={}", id, status);
+        log.info("[API] 更新支付状态 id={}, status={}", id, status);
         return paymentService.updatePaymentStatus(id, status);
     }
 

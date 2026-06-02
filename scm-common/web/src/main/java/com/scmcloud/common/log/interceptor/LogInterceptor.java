@@ -30,7 +30,7 @@ public class LogInterceptor implements HandlerInterceptor {
         LogUtils.setRequestId(requestId);
         response.setHeader("X-Request-Id", requestId);
 
-        // 设置用户上下�?
+        // 设置用户上下�
         Long userId = null;
         String username = SecurityUtils.getCurrentUsername().orElse(null);
         if (SecurityUtils.getCurrentUserUuid().isPresent()) {
@@ -40,7 +40,7 @@ public class LogInterceptor implements HandlerInterceptor {
         }
         LogUtils.setUserContext(userId, username);
 
-        // 记录请求开�?
+        // 记录请求开�
         request.setAttribute("startTime", System.currentTimeMillis());
 
         return true;

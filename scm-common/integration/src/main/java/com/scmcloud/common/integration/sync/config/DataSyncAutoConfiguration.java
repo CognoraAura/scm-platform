@@ -84,7 +84,7 @@ public class DataSyncAutoConfiguration {
         RetryableEventProcessor processor = new RetryableEventProcessor(idempotentChecker, publisher, properties,
                 meterRegistry);
 
-        // 自动注册所�?DataSyncHandler
+        // 自动注册所�DataSyncHandler
         List<DataSyncHandler> handlers = handlersProvider.getIfAvailable();
         if (handlers != null) {
             handlers.forEach(processor::registerHandler);

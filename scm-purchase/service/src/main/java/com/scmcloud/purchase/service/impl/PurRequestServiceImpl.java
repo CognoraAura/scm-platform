@@ -63,7 +63,7 @@ public class PurRequestServiceImpl extends ServiceImpl<PurRequestMapper, PurRequ
     public boolean submit(String id) {
         PurRequest request = getById(id);
         if (request == null || request.getDeleted()) {
-            throw new IllegalArgumentException("采购申请不存�? " + id);
+            throw new IllegalArgumentException("采购申请不存� " + id);
         }
         if (request.getStatus() != 0) {
             throw new IllegalStateException("只有草稿状态的申请才能提交");
@@ -79,7 +79,7 @@ public class PurRequestServiceImpl extends ServiceImpl<PurRequestMapper, PurRequ
     public boolean approve(String id, String approverId, String approverName) {
         PurRequest request = getById(id);
         if (request == null || request.getDeleted()) {
-            throw new IllegalArgumentException("采购申请不存�? " + id);
+            throw new IllegalArgumentException("采购申请不存� " + id);
         }
         if (request.getStatus() != 1) {
             throw new IllegalStateException("只有待审批状态的申请才能审批");
@@ -97,7 +97,7 @@ public class PurRequestServiceImpl extends ServiceImpl<PurRequestMapper, PurRequ
     public boolean reject(String id, String approverId, String approverName, String reason) {
         PurRequest request = getById(id);
         if (request == null || request.getDeleted()) {
-            throw new IllegalArgumentException("采购申请不存�? " + id);
+            throw new IllegalArgumentException("采购申请不存� " + id);
         }
         if (request.getStatus() != 1) {
             throw new IllegalStateException("只有待审批状态的申请才能驳回");
@@ -116,7 +116,7 @@ public class PurRequestServiceImpl extends ServiceImpl<PurRequestMapper, PurRequ
     public boolean close(String id) {
         PurRequest request = getById(id);
         if (request == null || request.getDeleted()) {
-            throw new IllegalArgumentException("采购申请不存�? " + id);
+            throw new IllegalArgumentException("采购申请不存� " + id);
         }
         if (request.getStatus() == 4) {
             throw new IllegalStateException("已转采购单的申请不能关闭");
@@ -131,7 +131,7 @@ public class PurRequestServiceImpl extends ServiceImpl<PurRequestMapper, PurRequ
     public boolean convertToOrder(String id, String orderId, String orderNo) {
         PurRequest request = getById(id);
         if (request == null || request.getDeleted()) {
-            throw new IllegalArgumentException("采购申请不存�? " + id);
+            throw new IllegalArgumentException("采购申请不存� " + id);
         }
         if (request.getStatus() != 2) {
             throw new IllegalStateException("只有已审批的申请才能转采购单");

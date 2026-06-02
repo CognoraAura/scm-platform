@@ -23,7 +23,7 @@ public class SettlementOrderServiceImpl extends ServiceImpl<SettlementOrderMappe
     @Override
     @Transactional(rollbackFor = Exception.class)
     public SettlementOrder createSettlement(SettlementOrder order) {
-        log.info("创建结算�? partnerName={}, settlementType={}", order.getPartnerName(), order.getSettlementType());
+        log.info("创建结算� partnerName={}, settlementType={}", order.getPartnerName(), order.getSettlementType());
 
         order.setId(UUIDv7Util.generateString());
         order.setSettlementNo(generateSettlementNo());
@@ -36,24 +36,24 @@ public class SettlementOrderServiceImpl extends ServiceImpl<SettlementOrderMappe
 
         boolean success = save(order);
         if (!success) {
-            throw new RuntimeException("创建结算单失�?);
+            throw new RuntimeException("创建结算单失败");
         }
 
-        log.info("结算单创建成�? id={}, settlementNo={}", order.getId(), order.getSettlementNo());
+        log.info("结算单创建成功 id={}, settlementNo={}", order.getId(), order.getSettlementNo());
         return order;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public SettlementOrder confirmSettlement(String id, String approverId, String approverName) {
-        log.info("确认结算�? id={}, approver={}", id, approverName);
+        log.info("确认结算� id={}, approver={}", id, approverName);
 
         SettlementOrder order = getById(id);
         if (order == null || Boolean.TRUE.equals(order.getDeleted())) {
             throw new IllegalArgumentException("结算单不存在: " + id);
         }
         if (order.getStatus() != 0) {
-            throw new IllegalStateException("只有待确认状态的结算单才能确�? 当前状�? " + order.getStatus());
+            throw new IllegalStateException("只有待确认状态的结算单才能确� 当前状� " + order.getStatus());
         }
 
         order.setStatus(1);
@@ -63,14 +63,14 @@ public class SettlementOrderServiceImpl extends ServiceImpl<SettlementOrderMappe
         order.setUpdateTime(LocalDateTime.now());
 
         updateById(order);
-        log.info("结算单确认成�? id={}", id);
+        log.info("结算单确认成� id={}", id);
         return order;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public SettlementOrder recordPayment(String id, BigDecimal amount) {
-        log.info("记录结算单付�? id={}, amount={}", id, amount);
+        log.info("记录结算单付� id={}, amount={}", id, amount);
 
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("付款金额必须大于0");
@@ -100,7 +100,7 @@ public class SettlementOrderServiceImpl extends ServiceImpl<SettlementOrderMappe
             log.info("结算单已全额付款: id={}", id);
         } else {
             order.setStatus(3);
-            log.info("结算单部分付�? id={}, paid={}, unpaid={}", id, newPaidAmount, order.getUnpaidAmount());
+            log.info("结算单部分付� id={}, paid={}, unpaid={}", id, newPaidAmount, order.getUnpaidAmount());
         }
 
         updateById(order);

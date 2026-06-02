@@ -36,14 +36,14 @@ public class ReplicationLagMonitor {
             if (rs.next()) {
                 long lag = rs.getLong("Seconds_Behind_Master");
                 if (lag > 10) {
-                    log.warn("[ReplicationLag] slave0 延迟 {} �?, lag);
+                    log.warn("[ReplicationLag] slave0 延迟 {} 秒", lag);
                     // TODO: 集成告警系统，如 Prometheus Alert / Feishu Webhook
                 } else {
-                    log.debug("[ReplicationLag] slave0 延迟 {} �?, lag);
+                    log.debug("[ReplicationLag] slave0 延迟 {} 秒", lag);
                 }
             }
         } catch (SQLException e) {
-            log.error("[ReplicationLag] 检查复制延迟失�?, e);
+            log.error("[ReplicationLag] 检查复制延迟失败", e);
         }
     }
 }

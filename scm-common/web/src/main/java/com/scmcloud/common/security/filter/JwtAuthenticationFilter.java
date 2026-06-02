@@ -26,7 +26,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Jwt 过滤�?
+ * Jwt 过滤�
  *
  * @author Deng
  * createData 2025/10/11 13:49
@@ -82,7 +82,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                    // 设置�?Security上下�?
+                    // 设置�Security上下�
                     SecurityContextHolder.getContext().setAuthentication(authentication);
 
                     log.debug("User authenticated: traceId={}, userId={}, username={}",
@@ -103,7 +103,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityErrorResponseWriter.write(request, response, HttpServletResponse.SC_UNAUTHORIZED, "AUTH_ERROR",
                     "Authentication error");
         } finally {
-            // 清理ThreadLocal缓存，防止内存泄�?
+            // 清理ThreadLocal缓存，防止内存泄�
             JwtUtils.clearTokenCache();
         }
     }

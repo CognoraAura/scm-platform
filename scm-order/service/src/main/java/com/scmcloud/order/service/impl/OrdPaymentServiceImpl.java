@@ -38,11 +38,11 @@ public class OrdPaymentServiceImpl extends ServiceImpl<OrdPaymentMapper, OrdPaym
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean updatePaymentStatus(Long paymentId, Integer status) {
-        log.info("更新支付状�? paymentId={}, status={}", paymentId, status);
+        log.info("更新支付状态 paymentId={}, status={}", paymentId, status);
 
         OrdPayment payment = getById(paymentId);
         if (payment == null) {
-            log.warn("支付记录不存�? paymentId={}", paymentId);
+            log.warn("支付记录不存在 paymentId={}", paymentId);
             return false;
         }
 

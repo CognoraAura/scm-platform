@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 角色�?
+ * 角色�
  * </p>
  *
  * @author author

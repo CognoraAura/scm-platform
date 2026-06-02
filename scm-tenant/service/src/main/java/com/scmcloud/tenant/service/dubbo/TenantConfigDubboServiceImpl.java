@@ -36,7 +36,7 @@ public class TenantConfigDubboServiceImpl implements TenantConfigDubboService {
 
     @Override
     public String getConfigValue(String tenantId, String configKey) {
-        log.debug("Dubbo查询配置�? tenantId={}, configKey={}", tenantId, configKey);
+        log.debug("Dubbo查询配置� tenantId={}, configKey={}", tenantId, configKey);
         TenantConfig config = configService.lambdaQuery()
                 .eq(TenantConfig::getTenantId, tenantId)
                 .eq(TenantConfig::getConfigKey, configKey)
@@ -71,7 +71,7 @@ public class TenantConfigDubboServiceImpl implements TenantConfigDubboService {
 
     @Override
     public Map<String, String> getFeatureFlags(String tenantId) {
-        log.debug("Dubbo查询功能开�? tenantId={}", tenantId);
+        log.debug("Dubbo查询功能开� tenantId={}", tenantId);
         List<TenantConfig> configs = configService.lambdaQuery()
                 .eq(TenantConfig::getTenantId, tenantId)
                 .eq(TenantConfig::getConfigCategory, "FEATURE")

@@ -21,12 +21,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableAsync
-@MapperScan({"com.frog.common.log.mapper", "com.frog.auth.mapper"})
+@MapperScan({"com.scmcloud.common.log.mapper", "com.scmcloud.auth.mapper"})
 @EnableTransactionManagement
 @EnableCaching
 @EnableScheduling
-@ComponentScan(basePackages = {"com.frog", "com.frog.common", "com.frog.auth"})
-@EnableDubbo(scanBasePackages = "com.frog")
+@ComponentScan(basePackages = {"com.scmcloud", "com.scmcloud.common", "com.scmcloud.auth"})
+@EnableDubbo(scanBasePackages = "com.scmcloud")
 public class AuthApplication {
     
     public static void main(String[] args) {

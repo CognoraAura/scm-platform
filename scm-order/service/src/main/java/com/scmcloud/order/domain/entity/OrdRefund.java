@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 退�?退货表
+ * 退�退货表
  * </p>
  *
  * @author deng

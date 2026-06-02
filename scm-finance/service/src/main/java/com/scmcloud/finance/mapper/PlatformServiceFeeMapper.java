@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * <p>
- * 平台服务费表（SaaS平台�?Mapper 接口
+ * 平台服务费表（SaaS平台�Mapper 接口
  * </p>
  *
  * @author deng

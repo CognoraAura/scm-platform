@@ -23,12 +23,12 @@ public class QuotaUsage {
     private QuotaType quotaType;
 
     /**
-     * 当前使用�?
+     * 当前使用�
      */
     private int currentUsage;
 
     /**
-     * 最大限�?
+     * 最大限�
      */
     private int maxQuota;
 
@@ -43,7 +43,7 @@ public class QuotaUsage {
     private double usagePercent;
 
     /**
-     * 是否已超�?
+     * 是否已超�
      */
     private boolean exceeded;
 

@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
- * 供应商信�?
+ * 供应商信息
  */
 @Data
 @Accessors(chain = true)

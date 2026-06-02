@@ -43,7 +43,7 @@ public class SignatureAlgorithmRegistry {
             );
         }
 
-        log.info("�?Default signature algorithm 'HMAC-SHA256-V1' validated successfully");
+        log.info("�Default signature algorithm 'HMAC-SHA256-V1' validated successfully");
     }
 
     public SignatureAlgorithm getAlgorithm(String version) {
@@ -52,7 +52,7 @@ public class SignatureAlgorithmRegistry {
             return algorithm;
         }
 
-        // 回退到默认版�?
+        // 回退到默认版�
         SignatureAlgorithm defaultAlgorithm = algorithms.get("HMAC-SHA256-V1");
         if (defaultAlgorithm == null) {
             throw new IllegalStateException("Default signature algorithm 'HMAC-SHA256-V1' not registered");

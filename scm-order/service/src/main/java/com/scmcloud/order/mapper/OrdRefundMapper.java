@@ -5,7 +5,7 @@ import com.scmcloud.order.domain.entity.OrdRefund;
 
 /**
  * <p>
- * 退�?退货表 Mapper 接口
+ * 退�退货表 Mapper 接口
  * </p>
  *
  * @author deng

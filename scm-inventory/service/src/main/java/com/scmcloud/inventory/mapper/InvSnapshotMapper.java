@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * <p>
- * 库存快照表（每日快照�?Mapper 接口
+ * 库存快照表（每日快照）Mapper 接口
  * </p>
  *
  * @author deng

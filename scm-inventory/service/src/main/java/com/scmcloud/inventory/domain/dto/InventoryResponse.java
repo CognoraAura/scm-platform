@@ -30,7 +30,7 @@ public class InventoryResponse {
   private String warehouseId;
 
   /**
-   * 总库�?
+   * 总库�
    */
   private Integer totalStock;
 
@@ -40,7 +40,7 @@ public class InventoryResponse {
   private Integer availableStock;
 
   /**
-   * 锁定库存（已预占�?
+   * 锁定库存（已预占�
    */
   private Integer lockedStock;
 
@@ -55,7 +55,7 @@ public class InventoryResponse {
   private Integer safetyStock;
 
   /**
-   * 最大库�?
+   * 最大库�
    */
   private Integer maxStock;
 
@@ -70,7 +70,7 @@ public class InventoryResponse {
   private BigDecimal averageCost;
 
   /**
-   * 库存状态（NORMAL-正常, LOW_STOCK-低库�? OUT_OF_STOCK-缺货�?
+   * 库存状态（NORMAL-正常, LOW_STOCK-低库� OUT_OF_STOCK-缺货�
    */
   private String stockStatus;
 
@@ -80,12 +80,12 @@ public class InventoryResponse {
   private Integer version;
 
   /**
-   * 最近入库时�?
+   * 最近入库时�
    */
   private LocalDateTime lastInboundAt;
 
   /**
-   * 最近出库时�?
+   * 最近出库时�
    */
   private LocalDateTime lastOutboundAt;
 

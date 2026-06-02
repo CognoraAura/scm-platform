@@ -25,7 +25,7 @@ public @interface BusinessTrace {
     boolean recordArgs() default true;
 
     /**
-     * 是否记录返回�?
+     * 是否记录返回�
      */
     boolean recordResult() default false;
 }

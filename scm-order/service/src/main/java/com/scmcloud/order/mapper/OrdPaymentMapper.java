@@ -5,7 +5,7 @@ import com.scmcloud.order.domain.entity.OrdPayment;
 
 /**
  * <p>
- * 支付记录�?Mapper 接口
+ * 支付记录�Mapper 接口
  * </p>
  *
  * @author deng

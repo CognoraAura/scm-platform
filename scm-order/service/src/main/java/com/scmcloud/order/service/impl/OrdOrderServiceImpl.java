@@ -91,11 +91,11 @@ public class OrdOrderServiceImpl extends ServiceImpl<OrdOrderMapper, OrdOrder> i
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean updateOrderStatus(Long orderId, Integer status) {
-        log.info("更新订单状�? orderId={}, status={}", orderId, status);
+        log.info("更新订单状态 orderId={}, status={}", orderId, status);
 
         OrdOrder order = getById(orderId);
         if (order == null) {
-            log.warn("订单不存�? orderId={}", orderId);
+            log.warn("订单不存在 orderId={}", orderId);
             return false;
         }
 

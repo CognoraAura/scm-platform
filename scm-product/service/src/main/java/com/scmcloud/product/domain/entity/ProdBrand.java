@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 商品品牌�?
+ * 商品品牌�
  * </p>
  *
  * @author author

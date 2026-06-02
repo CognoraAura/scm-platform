@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 日志工具�?
+ * 日志工具�
  *
  * @author Deng
  * createData 2025/10/24 14:03
@@ -23,7 +23,7 @@ public class LogUtils {
     private static final String KEY_REQUEST_ID = "requestId";
 
     /**
-     * 设置用户上下�?
+     * 设置用户上下�
      */
     public static void setUserContext(Long userId, String username) {
         if (userId != null) {
@@ -60,7 +60,7 @@ public class LogUtils {
     }
 
     /**
-     * 结构化日�?- 业务日志
+     * 结构化日�- 业务日志
      */
     public static void business(String action, String result, Object data) {
         Map<String, Object> logMap = new HashMap<>();
@@ -74,7 +74,7 @@ public class LogUtils {
     }
 
     /**
-     * 结构化日�?- 接口调用
+     * 结构化日�- 接口调用
      */
     public static void api(String method, String uri, long duration, int status) {
         Map<String, Object> logMap = new HashMap<>();
@@ -89,7 +89,7 @@ public class LogUtils {
     }
 
     /**
-     * 结构化日�?- RPC调用
+     * 结构化日�- RPC调用
      */
     public static void rpc(String service, String method, long duration, boolean success, String error) {
         Map<String, Object> logMap = new HashMap<>();

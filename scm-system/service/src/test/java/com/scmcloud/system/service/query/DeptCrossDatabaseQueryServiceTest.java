@@ -71,7 +71,7 @@ class DeptCrossDatabaseQueryServiceTest {
     }
 
     // ========================================
-    // 部门树查询测�?
+    // 部门树查询测�
     // ========================================
 
     @Test
@@ -307,7 +307,7 @@ class DeptCrossDatabaseQueryServiceTest {
     @Test
     void hasAccessToDept_WithDataScopeSameDept_AndSameDept_ReturnsTrue() {
         // Arrange
-        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(3); // 本部�?
+        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(3); // 本部�
         when(userMapper.getUserDeptId(testUserId)).thenReturn(testDeptId);
 
         // Act
@@ -323,7 +323,7 @@ class DeptCrossDatabaseQueryServiceTest {
     void hasAccessToDept_WithDataScopeSameDept_AndDifferentDept_ReturnsFalse() {
         // Arrange
         UUID otherDeptId = UUID.randomUUID();
-        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(3); // 本部�?
+        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(3); // 本部�
         when(userMapper.getUserDeptId(testUserId)).thenReturn(testDeptId);
 
         // Act
@@ -340,7 +340,7 @@ class DeptCrossDatabaseQueryServiceTest {
         UUID childDeptId = UUID.randomUUID();
         List<UUID> accessibleDepts = Arrays.asList(testDeptId, childDeptId);
 
-        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(4); // 本部门及子部�?
+        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(4); // 本部门及子部�
         when(userMapper.getUserDeptId(testUserId)).thenReturn(testDeptId);
         when(deptMapper.selectDeptAndChildren(testDeptId)).thenReturn(accessibleDepts);
 
@@ -358,7 +358,7 @@ class DeptCrossDatabaseQueryServiceTest {
         UUID otherDeptId = UUID.randomUUID();
         List<UUID> accessibleDepts = Collections.singletonList(testDeptId);
 
-        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(4); // 本部门及子部�?
+        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(4); // 本部门及子部�
         when(userMapper.getUserDeptId(testUserId)).thenReturn(testDeptId);
         when(deptMapper.selectDeptAndChildren(testDeptId)).thenReturn(accessibleDepts);
 
@@ -373,7 +373,7 @@ class DeptCrossDatabaseQueryServiceTest {
     @Test
     void hasAccessToDept_WithDataScopeSelfOnly_ReturnsFalse() {
         // Arrange
-        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(5); // 仅本�?
+        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(5); // 仅本�
 
         // Act
         boolean result = service.hasAccessToDept(testUserId, testDeptId);

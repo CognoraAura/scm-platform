@@ -21,31 +21,31 @@ public class WmsOutboundController {
 
     @PostMapping
     public ApiResponse<WmsOutbound> create(@RequestBody WmsOutbound outbound) {
-        log.info("[API] 创建出库�? warehouseId={}, type={}", outbound.getWarehouseId(), outbound.getOutboundType());
+        log.info("[API] 创建出库单 warehouseId={}, type={}", outbound.getWarehouseId(), outbound.getOutboundType());
 
         outbound.setId(UUIDv7Util.generateString());
         outbound.setOutboundNo("OUT" + System.currentTimeMillis());
-        outbound.setStatus(0); // 0-待拣�?
+        outbound.setStatus(0); // 0-待拣货
         outbound.setPickedQuantity(0);
         outbound.setDeleted(false);
         outbound.setCreateTime(LocalDateTime.now());
         outbound.setUpdateTime(LocalDateTime.now());
 
         outboundService.save(outbound);
-        log.info("[API] 出库单创建成�? id={}, outboundNo={}", outbound.getId(), outbound.getOutboundNo());
+        log.info("[API] 出库单创建成功 id={}, outboundNo={}", outbound.getId(), outbound.getOutboundNo());
         return ApiResponse.success(outbound);
     }
 
     @PutMapping("/{id}")
     public ApiResponse<WmsOutbound> update(@PathVariable String id, @RequestBody WmsOutbound outbound) {
-        log.info("[API] 更新出库�? id={}", id);
+        log.info("[API] 更新出库单 id={}", id);
 
         WmsOutbound existing = outboundService.getById(id);
         if (existing == null || Boolean.TRUE.equals(existing.getDeleted())) {
             return ApiResponse.fail(404, "出库单不存在");
         }
         if (existing.getStatus() != 0) {
-            return ApiResponse.fail(400, "只有待拣货状态的出库单才能修�?);
+            return ApiResponse.fail(400, "只有待拣货状态的出库单才能修改");
         }
 
         outbound.setId(id);
@@ -56,7 +56,7 @@ public class WmsOutboundController {
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(@PathVariable String id) {
-        log.info("[API] 删除出库�? id={}", id);
+        log.info("[API] 删除出库单 id={}", id);
 
         WmsOutbound existing = outboundService.getById(id);
         if (existing == null || Boolean.TRUE.equals(existing.getDeleted())) {
@@ -108,7 +108,7 @@ public class WmsOutboundController {
             @PathVariable String id,
             @RequestParam String operatorId,
             @RequestParam String operatorName) {
-        log.info("[API] 取消出库�? id={}, operator={}", id, operatorName);
+        log.info("[API] 取消出库单 id={}, operator={}", id, operatorName);
 
         try {
             boolean success = outboundService.cancel(id, operatorId, operatorName);

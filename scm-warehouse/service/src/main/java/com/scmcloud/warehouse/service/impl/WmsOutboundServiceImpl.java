@@ -54,7 +54,7 @@ public class WmsOutboundServiceImpl extends ServiceImpl<WmsOutboundMapper, WmsOu
             return false;
         }
         if (outbound.getStatus() != 0 && outbound.getStatus() != 1 && outbound.getStatus() != 2) {
-            throw new IllegalStateException("出库单状态不允许出库，当前状�? " + outbound.getStatus());
+            throw new IllegalStateException("出库单状态不允许出库，当前状态 " + outbound.getStatus());
         }
 
         List<WmsOutboundItem> items = outboundItemService.lambdaQuery()
@@ -67,11 +67,11 @@ public class WmsOutboundServiceImpl extends ServiceImpl<WmsOutboundMapper, WmsOu
                 .sum();
 
         if (totalPicked == 0) {
-            throw new IllegalStateException("出库明细实际拣货数量不能全部�?");
+            throw new IllegalStateException("出库明细实际拣货数量不能全部为0");
         }
 
         outbound.setPickedQuantity(totalPicked);
-        outbound.setStatus(3); // 3-已出�?
+        outbound.setStatus(3); // 3-已出库
         outbound.setPickerId(operatorId);
         outbound.setPickerName(operatorName);
         outbound.setCompletedAt(LocalDateTime.now());
@@ -95,10 +95,10 @@ public class WmsOutboundServiceImpl extends ServiceImpl<WmsOutboundMapper, WmsOu
             return false;
         }
         if (outbound.getStatus() == 3) {
-            throw new IllegalStateException("已出库的出库单不能取�?);
+            throw new IllegalStateException("已出库的出库单不能取消");
         }
 
-        outbound.setStatus(4); // 4-已取�?
+        outbound.setStatus(4); // 4-已取消
         outbound.setUpdateTime(LocalDateTime.now());
         outbound.setUpdateBy(operatorId);
 

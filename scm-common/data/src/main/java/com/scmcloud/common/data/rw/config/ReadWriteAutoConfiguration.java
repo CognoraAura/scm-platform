@@ -61,15 +61,15 @@ public class ReadWriteAutoConfiguration {
     private final Environment environment;
 
     /**
-     * 所有创建的数据源，用于关闭时清�?
+     * 所有创建的数据源，用于关闭时清理
      */
     private final List<HikariDataSource> allDataSources = new ArrayList<>();
     /**
-     * 路由数据源映�?
+     * 路由数据源映射
      */
     private final Map<String, ReadWriteRoutingDataSource> routingDataSources = new ConcurrentHashMap<>();
     /**
-     * 从库数据源映�?
+     * 从库数据源映射
      */
     private final Map<String, Map<String, DataSource>> slaveDataSourcesMap = new ConcurrentHashMap<>();
 
@@ -79,7 +79,7 @@ public class ReadWriteAutoConfiguration {
         this.meterRegistry = meterRegistryProvider.getIfAvailable();
         this.environment = environment;
 
-        log.info("[RW-Config] Initializing read-write separation with {} group(s)",
+        log.debug("[RW-Config] Initializing read-write separation with {} group(s)",
                 properties.getGroups().size());
 
         initializeDataSources();
@@ -92,14 +92,14 @@ public class ReadWriteAutoConfiguration {
             String groupName = entry.getKey();
             ReadWriteProperties.DataSourceGroup group = entry.getValue();
 
-            log.info("[RW-Config] Configuring group [{}] with {} slave(s)",
+            log.debug("[RW-Config] Configuring group [{}] with {} slave(s)",
                     groupName, group.getSlaves().size());
 
-            // 创建主库数据�?
+            // 创建主库数据
             HikariDataSource masterDataSource = createDataSource(groupName + "-master", group.getMaster());
             allDataSources.add(masterDataSource);
 
-            // 创建从库数据�?
+            // 创建从库数据
             Map<String, DataSource> slaveDataSources = new HashMap<>();
             List<SlaveLoadBalancer.SlaveInfo> slaveInfos = new ArrayList<>();
 
@@ -119,11 +119,11 @@ public class ReadWriteAutoConfiguration {
 
             slaveDataSourcesMap.put(groupName, slaveDataSources);
 
-            // 创建负载均衡�?
+            // 创建负载均衡
             SlaveLoadBalancer loadBalancer = createLoadBalancer(
                     group.getLoadBalance() != null ? group.getLoadBalance() : properties.getLoadBalance());
 
-            // 创建路由数据�?
+            // 创建路由数据
             ReadWriteRoutingDataSource routingDataSource = new ReadWriteRoutingDataSource(
                     groupName,
                     masterDataSource,
@@ -137,7 +137,7 @@ public class ReadWriteAutoConfiguration {
 
             routingDataSources.put(groupName, routingDataSource);
 
-            log.info("[RW-Config] Group [{}] configured successfully. Master: {}, Slaves: {}",
+            log.debug("[RW-Config] Group [{}] configured successfully. Master: {}, Slaves: {}",
                     groupName,
                     maskUrl(group.getMaster().getUrl()),
                     slaveDataSources.keySet());
@@ -185,7 +185,7 @@ public class ReadWriteAutoConfiguration {
     // ==================== Bean Definitions ====================
 
     /**
-     * 默认数据源（第一个组的路由数据源�?
+     * 默认数据源（第一个组的路由数据源
      */
     @Bean
     @ConditionalOnMissingBean(DataSource.class)
@@ -201,9 +201,9 @@ public class ReadWriteAutoConfiguration {
                             "Please configure spring.datasource.rw.groups");
         }
 
-        // 返回第一个组作为默认数据�?
+        // 返回第一个组作为默认数据
         String defaultGroup = routingDataSources.keySet().iterator().next();
-        log.info("[RW-Config] Using group [{}] as default DataSource", defaultGroup);
+        log.debug("[RW-Config] Using group [{}] as default DataSource", defaultGroup);
         return routingDataSources.get(defaultGroup);
     }
 
@@ -226,14 +226,14 @@ public class ReadWriteAutoConfiguration {
     public DynamicDataSourceProvider readWriteDynamicDataSourceProvider() {
         return () -> {
             Map<String, DataSource> dataSources = new HashMap<>(routingDataSources);
-            log.info("[RW-Config] Exposed {} rw datasource group(s) to DynamicDatasource: {}",
+            log.debug("[RW-Config] Exposed {} rw datasource group(s) to DynamicDatasource: {}",
                     dataSources.size(), dataSources.keySet());
             return dataSources;
         };
     }
 
     /**
-     * 获取指定组的路由数据�?
+     * 获取指定组的路由数据
      */
     @Bean
     public ReadWriteDataSourceProvider readWriteDataSourceProvider() {
@@ -246,7 +246,7 @@ public class ReadWriteAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public ReadWriteRoutingAspect readWriteRoutingAspect() {
-        log.info("[RW-Config] Registering ReadWriteRoutingAspect");
+        log.debug("[RW-Config] Registering ReadWriteRoutingAspect");
         return new ReadWriteRoutingAspect();
     }
 
@@ -262,7 +262,7 @@ public class ReadWriteAutoConfiguration {
             matchIfMissing = true
     )
     public SlaveHealthChecker slaveHealthChecker() {
-        log.info("[RW-Config] Registering SlaveHealthChecker with interval: {}",
+        log.debug("[RW-Config] Registering SlaveHealthChecker with interval: {}",
                 properties.getHealthCheckInterval());
 
         return new SlaveHealthChecker(
@@ -274,13 +274,13 @@ public class ReadWriteAutoConfiguration {
     }
 
     /**
-     * SQL 路由拦截器（MyBatis 插件�?
+     * SQL 路由拦截器（MyBatis 插件
      */
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnClass(name = "org.apache.ibatis.plugin.Interceptor")
     public SqlRoutingInterceptor sqlRoutingInterceptor() {
-        log.info("[RW-Config] Registering SqlRoutingInterceptor for SQL-based routing");
+        log.debug("[RW-Config] Registering SqlRoutingInterceptor for SQL-based routing");
         return new SqlRoutingInterceptor();
     }
 
@@ -290,18 +290,18 @@ public class ReadWriteAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public DynamicDataSourceRefresher dynamicDataSourceRefresher() {
-        log.info("[RW-Config] Registering DynamicDataSourceRefresher for config refresh");
+        log.debug("[RW-Config] Registering DynamicDataSourceRefresher for config refresh");
         return new DynamicDataSourceRefresher(properties, routingDataSources, environment);
     }
 
     /**
-     * 从库熔断�?
+     * 从库熔断
      */
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnClass(name = "com.alibaba.csp.sentinel.SphU")
     public SlaveCircuitBreaker slaveCircuitBreaker() {
-        log.info("[RW-Config] Registering SlaveCircuitBreaker with Sentinel integration");
+        log.debug("[RW-Config] Registering SlaveCircuitBreaker with Sentinel integration");
         return new SlaveCircuitBreaker(routingDataSources);
     }
 
@@ -313,7 +313,7 @@ public class ReadWriteAutoConfiguration {
     public ConnectionPoolMetrics connectionPoolMetrics() {
         ConnectionPoolMetrics metrics = new ConnectionPoolMetrics(meterRegistry);
 
-        // 注册所有数据源的指�?
+        // 注册所有数据源的指
         for (HikariDataSource ds : allDataSources) {
             String poolName = ds.getPoolName();
             String[] parts = poolName.split("-", 2);
@@ -322,19 +322,19 @@ public class ReadWriteAutoConfiguration {
             }
         }
 
-        log.info("[RW-Config] Registered ConnectionPoolMetrics for {} datasources",
+        log.debug("[RW-Config] Registered ConnectionPoolMetrics for {} datasources",
                 allDataSources.size());
         return metrics;
     }
 
     /**
-     * Actuator 健康指示�?
+     * Actuator 健康指示
      */
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnClass(name = "org.springframework.boot.actuate.health.HealthIndicator")
     public ReadWriteHealthIndicator readWriteHealthIndicator(SlaveHealthChecker healthChecker) {
-        log.info("[RW-Config] Registering ReadWriteHealthIndicator for Actuator");
+        log.debug("[RW-Config] Registering ReadWriteHealthIndicator for Actuator");
         return new ReadWriteHealthIndicator(healthChecker, readWriteDataSourceProvider());
     }
 
@@ -345,13 +345,13 @@ public class ReadWriteAutoConfiguration {
     @ConditionalOnMissingBean
     @ConditionalOnClass(name = "org.springframework.boot.actuate.endpoint.annotation.Endpoint")
     public ReadWriteEndpoint readWriteEndpoint(SlaveHealthChecker healthChecker) {
-        log.info("[RW-Config] Registering ReadWriteEndpoint for Actuator");
+        log.debug("[RW-Config] Registering ReadWriteEndpoint for Actuator");
         return new ReadWriteEndpoint(readWriteDataSourceProvider(), healthChecker);
     }
 
     @PreDestroy
     public void destroy() {
-        log.info("[RW-Config] Shutting down all datasources...");
+        log.debug("[RW-Config] Shutting down all datasources...");
         for (HikariDataSource dataSource : allDataSources) {
             try {
                 if (!dataSource.isClosed()) {
@@ -368,13 +368,13 @@ public class ReadWriteAutoConfiguration {
     /**
      * 数据源提供器
      * <p>
-     * 用于获取指定组的路由数据�?
+     * 用于获取指定组的路由数据
      */
     public record ReadWriteDataSourceProvider(
             Map<String, ReadWriteRoutingDataSource> routingDataSources
     ) {
         /**
-         * 获取指定组的路由数据�?
+         * 获取指定组的路由数据
          */
         public ReadWriteRoutingDataSource getDataSource(String groupName) {
             ReadWriteRoutingDataSource ds = routingDataSources.get(groupName);
@@ -387,7 +387,7 @@ public class ReadWriteAutoConfiguration {
         }
 
         /**
-         * 获取所有组�?
+         * 获取所有组
          */
         public java.util.Set<String> getGroupNames() {
             return routingDataSources.keySet();

@@ -14,12 +14,12 @@ import com.scmcloud.product.search.service.ProductSearchService;
  *
  * <p>提供商品搜索相关 API
  *
- * <p>功能列表�?
+ * <p>功能列表：
  * - 综合搜索（支持关键词、分类、品牌、价格区间、排序）
  * - 热门商品列表
- * - 最新商品列�?
- * - 按分类查询商�?
- * - 按品牌查询商�?
+ * - 最新商品列表
+ * - 按分类查询商品
+ * - 按品牌查询商品
  *
  * @author SCM Platform Team
  * @since 2025-12-26
@@ -35,9 +35,9 @@ public class ProductSearchController {
      * 综合搜索
      *
      * <p>支持多条件组合搜索：
-     * - 关键词搜索（spuName, description, seoKeywords�?
-     * - 分类筛�?
-     * - 品牌筛�?
+     * - 关键词搜索（spuName, description, seoKeywords
+     * - 分类筛选
+     * - 品牌筛选
      * - 价格区间
      * - 多种排序（销量、价格、时间）
      */
@@ -45,11 +45,11 @@ public class ProductSearchController {
     public ApiResponse<Page<ProductSearchResponse>> search(
             @RequestBody ProductSearchRequest request) {
 
-        log.info("📥 [API] 收到商品搜索请求: {}", request);
+        log.debug("📥 [API] 收到商品搜索请求: {}", request);
 
         Page<ProductSearchResponse> result = productSearchService.search(request);
 
-        log.info("📤 [API] 返回商品搜索结果: 总数={}, 页码={}/{}",
+        log.debug("📤 [API] 返回商品搜索结果: 总数={}, 页码={}/{}",
                 result.getTotalElements(), result.getNumber() + 1, result.getTotalPages());
 
         return ApiResponse.success(result);
@@ -58,45 +58,45 @@ public class ProductSearchController {
     /**
      * 热门商品
      *
-     * <p>按销量排序的热门商品列表（缓�?5 分钟�?
+     * <p>按销量排序的热门商品列表（缓5 分钟
      */
     @GetMapping("/hot")
     public ApiResponse<Page<ProductSearchResponse>> getHotProducts(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "20") Integer size) {
 
-        log.info("📥 [API] 查询热门商品: page={}, size={}", page, size);
+        log.debug("📥 [API] 查询热门商品: page={}, size={}", page, size);
 
         Page<ProductSearchResponse> result = productSearchService.getHotProducts(page, size);
 
-        log.info("📤 [API] 返回热门商品: 总数={}", result.getTotalElements());
+        log.debug("📤 [API] 返回热门商品: 总数={}", result.getTotalElements());
 
         return ApiResponse.success(result);
     }
 
     /**
-     * 最新商�?
+     * 最新商品
      *
-     * <p>按发布时间排序的最新商品列表（缓存 5 分钟�?
+     * <p>按发布时间排序的最新商品列表（缓存 5 分钟
      */
     @GetMapping("/latest")
     public ApiResponse<Page<ProductSearchResponse>> getLatestProducts(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "20") Integer size) {
 
-        log.info("📥 [API] 查询最新商�? page={}, size={}", page, size);
+        log.debug("📥 [API] 查询最新商品 page={}, size={}", page, size);
 
         Page<ProductSearchResponse> result = productSearchService.getLatestProducts(page, size);
 
-        log.info("📤 [API] 返回最新商�? 总数={}", result.getTotalElements());
+        log.debug("📤 [API] 返回最新商品 总数={}", result.getTotalElements());
 
         return ApiResponse.success(result);
     }
 
     /**
-     * 按分类查询商�?
+     * 按分类查询商品
      *
-     * <p>查询指定分类下的所有商品，按销量排�?
+     * <p>查询指定分类下的所有商品，按销量排
      */
     @GetMapping("/category/{categoryId}")
     public ApiResponse<Page<ProductSearchResponse>> findByCategory(
@@ -104,19 +104,19 @@ public class ProductSearchController {
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "20") Integer size) {
 
-        log.info("📥 [API] 按分类查询商�? categoryId={}, page={}, size={}", categoryId, page, size);
+        log.debug("📥 [API] 按分类查询商品 categoryId={}, page={}, size={}", categoryId, page, size);
 
         Page<ProductSearchResponse> result = productSearchService.findByCategory(categoryId, page, size);
 
-        log.info("📤 [API] 返回分类商品: 总数={}", result.getTotalElements());
+        log.debug("📤 [API] 返回分类商品: 总数={}", result.getTotalElements());
 
         return ApiResponse.success(result);
     }
 
     /**
-     * 按品牌查询商�?
+     * 按品牌查询商品
      *
-     * <p>查询指定品牌下的所有商品，按销量排�?
+     * <p>查询指定品牌下的所有商品，按销量排
      */
     @GetMapping("/brand/{brandId}")
     public ApiResponse<Page<ProductSearchResponse>> findByBrand(
@@ -124,11 +124,11 @@ public class ProductSearchController {
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "20") Integer size) {
 
-        log.info("📥 [API] 按品牌查询商�? brandId={}, page={}, size={}", brandId, page, size);
+        log.debug("📥 [API] 按品牌查询商品 brandId={}, page={}, size={}", brandId, page, size);
 
         Page<ProductSearchResponse> result = productSearchService.findByBrand(brandId, page, size);
 
-        log.info("📤 [API] 返回品牌商品: 总数={}", result.getTotalElements());
+        log.debug("📤 [API] 返回品牌商品: 总数={}", result.getTotalElements());
 
         return ApiResponse.success(result);
     }
@@ -136,7 +136,7 @@ public class ProductSearchController {
     /**
      * 快速搜索（GET 方式，用于简单场景）
      *
-     * <p>适用于简单的关键词搜索，不需要复杂筛�?
+     * <p>适用于简单的关键词搜索，不需要复杂筛
      */
     @GetMapping
     public ApiResponse<Page<ProductSearchResponse>> quickSearch(
@@ -146,7 +146,7 @@ public class ProductSearchController {
             @RequestParam(defaultValue = "sales") String sortBy,
             @RequestParam(defaultValue = "desc") String sortOrder) {
 
-        log.info("📥 [API] 快速搜�? keyword={}, page={}, size={}, sortBy={}, sortOrder={}",
+        log.debug("📥 [API] 快速搜索 keyword={}, page={}, size={}, sortBy={}, sortOrder={}",
                 keyword, page, size, sortBy, sortOrder);
 
         ProductSearchRequest request = new ProductSearchRequest();
@@ -158,7 +158,7 @@ public class ProductSearchController {
 
         Page<ProductSearchResponse> result = productSearchService.search(request);
 
-        log.info("📤 [API] 返回快速搜索结�? 总数={}", result.getTotalElements());
+        log.debug("📤 [API] 返回快速搜索结果 总数={}", result.getTotalElements());
 
         return ApiResponse.success(result);
     }

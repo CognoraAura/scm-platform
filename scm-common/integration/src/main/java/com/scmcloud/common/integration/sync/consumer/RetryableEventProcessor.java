@@ -15,10 +15,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
 /**
- * 可重试的事件处理�?
+ * 可重试的事件处理
  * <p>
  * 特性：
- * - 指数退避重�?
+ * - 指数退避重试
  * - 幂等消费
  * - 死信队列
  * - 指标监控
@@ -61,26 +61,26 @@ public class RetryableEventProcessor {
     }
 
     /**
-     * 注册处理�?
+     * 注册处理器
      */
     public void registerHandler(DataSyncHandler handler) {
         handlers.put(handler.getAggregateType(), handler);
-        log.info("[DataSync] Registered handler for: {}", handler.getAggregateType());
+        log.debug("[DataSync] Registered handler for: {}", handler.getAggregateType());
     }
 
     /**
-     * 处理事件（带重试�?
+     * 处理事件（带重试
      */
     public void process(DataSyncEvent event) {
         String eventId = event.getEventId();
 
-        // 1. 幂等检�?
+        // 1. 幂等检查
         if (!idempotentChecker.tryAcquire(eventId)) {
             log.debug("[DataSync] Skipping duplicate event: {}", eventId);
             return;
         }
 
-        // 2. 查找处理�?
+        // 2. 查找处理器
         DataSyncHandler handler = handlers.get(event.getAggregateType());
         if (handler == null) {
             log.warn("[DataSync] No handler for aggregate type: {}", event.getAggregateType());
@@ -88,7 +88,7 @@ public class RetryableEventProcessor {
             return;
         }
 
-        // 3. 执行处理（带重试�?
+        // 3. 执行处理（带重试）
         processTimer.record(() -> processWithRetry(event, handler));
     }
 
@@ -102,7 +102,7 @@ public class RetryableEventProcessor {
                 if (attempt > 0) {
                     // 计算退避时间并等待
                     long backoffMs = calculateBackoff(attempt, retryConfig);
-                    log.info("[DataSync] Retry attempt {} for event {}, waiting {}ms",
+                    log.debug("[DataSync] Retry attempt {} for event {}, waiting {}ms",
                             attempt, eventId, backoffMs);
                     backoffWait(backoffMs);
                     retryCounter.increment();
@@ -133,7 +133,7 @@ public class RetryableEventProcessor {
                         eventId, e.getMessage());
             }
 
-            // 检查线程中�?
+            // 检查线程中
             if (Thread.currentThread().isInterrupted()) {
                 log.warn("[DataSync] Thread interrupted, stopping retry for event: {}", eventId);
                 break;
@@ -145,7 +145,7 @@ public class RetryableEventProcessor {
     }
 
     /**
-     * 退避等待（使用 LockSupport 避免 InterruptedException�?
+     * 退避等待（使用 LockSupport 避免 InterruptedException
      */
     private void backoffWait(long milliseconds) {
         LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(milliseconds));

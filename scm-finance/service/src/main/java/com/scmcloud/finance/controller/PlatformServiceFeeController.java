@@ -33,7 +33,7 @@ public class PlatformServiceFeeController {
         fee.setCreateTime(LocalDateTime.now());
         fee.setUpdateTime(LocalDateTime.now());
         platformServiceFeeService.save(fee);
-        log.info("平台服务费创建成�? id={}, feeType={}", fee.getId(), fee.getFeeType());
+        log.info("平台服务费创建成� id={}, feeType={}", fee.getId(), fee.getFeeType());
         return ApiResponse.success(fee);
     }
 
@@ -42,14 +42,14 @@ public class PlatformServiceFeeController {
         fee.setId(id);
         fee.setUpdateTime(LocalDateTime.now());
         platformServiceFeeService.updateById(fee);
-        log.info("平台服务费更新成�? id={}", id);
+        log.info("平台服务费更新成� id={}", id);
         return ApiResponse.success(fee);
     }
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(@PathVariable String id) {
         platformServiceFeeService.removeById(id);
-        log.info("平台服务费删除成�? id={}", id);
+        log.info("平台服务费删除成� id={}", id);
         return ApiResponse.success();
     }
 

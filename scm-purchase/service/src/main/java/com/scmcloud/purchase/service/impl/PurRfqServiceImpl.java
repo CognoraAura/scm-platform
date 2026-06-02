@@ -64,7 +64,7 @@ public class PurRfqServiceImpl extends ServiceImpl<PurRfqMapper, PurRfq> impleme
             throw new IllegalArgumentException("询价单不存在: " + id);
         }
         if (rfq.getStatus() != 0) {
-            throw new IllegalStateException("只有草稿状态的询价单才能发�?);
+            throw new IllegalStateException("只有草稿状态的询价单才能发布");
         }
         rfq.setStatus(1);
         rfq.setUpdateTime(LocalDateTime.now());

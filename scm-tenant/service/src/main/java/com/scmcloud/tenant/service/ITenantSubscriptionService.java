@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- * 租户订阅�?服务�?
+ * 租户订阅�服务�
  * </p>
  *
  * @author deng

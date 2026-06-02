@@ -17,7 +17,7 @@ public class OrdStatusHistoryServiceImpl extends ServiceImpl<OrdStatusHistoryMap
 
     @Override
     public List<OrdStatusHistory> listByOrderId(Long orderId) {
-        log.debug("查询订单状态历�? orderId={}", orderId);
+        log.debug("查询订单状态历� orderId={}", orderId);
         LambdaQueryWrapper<OrdStatusHistory> wrapper = Wrappers.lambdaQuery();
         wrapper.eq(OrdStatusHistory::getOrderId, orderId)
                 .orderByDesc(OrdStatusHistory::getTransitionedAt);

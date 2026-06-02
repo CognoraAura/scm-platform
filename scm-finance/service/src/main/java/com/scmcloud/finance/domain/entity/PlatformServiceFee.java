@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 平台服务费表（SaaS平台�?
+ * 平台服务费表（SaaS平台�
  * </p>
  *
  * @author deng

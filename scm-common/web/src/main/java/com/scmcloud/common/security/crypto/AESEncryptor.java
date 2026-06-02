@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.nio.charset.StandardCharsets;
 
 /**
- * AES 加密工具�?
+ * AES 加密工具�
  *
  * @author Deng
  * createData 2025/10/24 15:06

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.UUID;
 
 /**
- * 租户上下文持有�?
+ * 租户上下文持有�
  * 使用 ThreadLocal 存储当前线程的租户ID
  *
  * @author Claude Code
@@ -58,7 +58,7 @@ public class TenantContextHolder {
     }
 
     /**
-     * 在指定租户上下文中执行操�?
+     * 在指定租户上下文中执行操�
      */
     public static <T> T executeInTenantContext(UUID tenantId, TenantContextCallback<T> callback) {
         UUID originalTenantId = getTenantId();
@@ -75,7 +75,7 @@ public class TenantContextHolder {
     }
 
     /**
-     * 租户上下文回调接�?
+     * 租户上下文回调接�
      */
     @FunctionalInterface
     public interface TenantContextCallback<T> {
@@ -83,7 +83,7 @@ public class TenantContextHolder {
     }
 
     /**
-     * 租户未找到异�?
+     * 租户未找到异�
      */
     public static class TenantNotFoundException extends RuntimeException {
         public TenantNotFoundException(String message) {

@@ -21,7 +21,7 @@ public class SupPurchaseOrderItemServiceImpl
 
     @Override
     public Page<SupPurchaseOrderItem> pageList(int page, int size, String purchaseId, String skuId) {
-        log.debug("分页查询采购单明�? page={}, size={}, purchaseId={}, skuId={}", page, size, purchaseId, skuId);
+        log.debug("分页查询采购单明细 page={}, size={}, purchaseId={}, skuId={}", page, size, purchaseId, skuId);
 
         LambdaQueryWrapper<SupPurchaseOrderItem> wrapper = Wrappers.lambdaQuery();
 
@@ -42,7 +42,7 @@ public class SupPurchaseOrderItemServiceImpl
         if (!StringUtils.hasText(purchaseId)) {
             return List.of();
         }
-        log.debug("查询采购单的所有明�? purchaseId={}", purchaseId);
+        log.debug("查询采购单的所有明细 purchaseId={}", purchaseId);
         return lambdaQuery()
                 .eq(SupPurchaseOrderItem::getPurchaseId, purchaseId)
                 .orderByAsc(SupPurchaseOrderItem::getCreateTime)

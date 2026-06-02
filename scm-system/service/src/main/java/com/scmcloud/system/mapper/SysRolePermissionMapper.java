@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 角色权限关联�?Mapper 接口
+ * 角色权限关联�Mapper 接口
  *
  * @author Deng
  * @since 2025-12-17
@@ -37,7 +37,7 @@ public interface SysRolePermissionMapper extends BaseMapper<SysRolePermission> {
     List<UUID> findRoleIdsByPermissionId(@Param("permissionId") UUID permissionId);
 
     /**
-     * 删除角色的所有权限关�?
+     * 删除角色的所有权限关�
      */
     @Delete("""
             DELETE FROM sys_role_permission
@@ -46,7 +46,7 @@ public interface SysRolePermissionMapper extends BaseMapper<SysRolePermission> {
     int deleteByRoleId(@Param("roleId") UUID roleId);
 
     /**
-     * 删除权限的所有角色关�?
+     * 删除权限的所有角色关�
      */
     @Delete("""
             DELETE FROM sys_role_permission
@@ -55,7 +55,7 @@ public interface SysRolePermissionMapper extends BaseMapper<SysRolePermission> {
     int deleteByPermissionId(@Param("permissionId") UUID permissionId);
 
     /**
-     * 检查角色是否拥有指定权�?
+     * 检查角色是否拥有指定权�
      */
     @Select("""
             SELECT COUNT(*) > 0 FROM sys_role_permission
@@ -89,7 +89,7 @@ public interface SysRolePermissionMapper extends BaseMapper<SysRolePermission> {
                                     @Param("createBy") UUID createBy);
 
     /**
-     * 统计使用该权限的角色�?
+     * 统计使用该权限的角色�
      */
     @Select("""
             SELECT COUNT(*) FROM sys_role_permission WHERE permission_id = #{permissionId}

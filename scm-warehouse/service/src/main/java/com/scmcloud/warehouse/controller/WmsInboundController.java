@@ -21,31 +21,31 @@ public class WmsInboundController {
 
     @PostMapping
     public ApiResponse<WmsInbound> create(@RequestBody WmsInbound inbound) {
-        log.info("[API] 创建入库�? warehouseId={}, type={}", inbound.getWarehouseId(), inbound.getInboundType());
+        log.info("[API] 创建入库单 warehouseId={}, type={}", inbound.getWarehouseId(), inbound.getInboundType());
 
         inbound.setId(UUIDv7Util.generateString());
         inbound.setInboundNo("IN" + System.currentTimeMillis());
-        inbound.setStatus(0); // 0-待入�?
+        inbound.setStatus(0); // 0-待入库
         inbound.setReceivedQuantity(0);
         inbound.setDeleted(false);
         inbound.setCreateTime(LocalDateTime.now());
         inbound.setUpdateTime(LocalDateTime.now());
 
         inboundService.save(inbound);
-        log.info("[API] 入库单创建成�? id={}, inboundNo={}", inbound.getId(), inbound.getInboundNo());
+        log.info("[API] 入库单创建成功 id={}, inboundNo={}", inbound.getId(), inbound.getInboundNo());
         return ApiResponse.success(inbound);
     }
 
     @PutMapping("/{id}")
     public ApiResponse<WmsInbound> update(@PathVariable String id, @RequestBody WmsInbound inbound) {
-        log.info("[API] 更新入库�? id={}", id);
+        log.info("[API] 更新入库单 id={}", id);
 
         WmsInbound existing = inboundService.getById(id);
         if (existing == null || Boolean.TRUE.equals(existing.getDeleted())) {
             return ApiResponse.fail(404, "入库单不存在");
         }
         if (existing.getStatus() != 0) {
-            return ApiResponse.fail(400, "只有待入库状态的入库单才能修�?);
+            return ApiResponse.fail(400, "只有待入库状态的入库单才能修改");
         }
 
         inbound.setId(id);
@@ -56,7 +56,7 @@ public class WmsInboundController {
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(@PathVariable String id) {
-        log.info("[API] 删除入库�? id={}", id);
+        log.info("[API] 删除入库单 id={}", id);
 
         WmsInbound existing = inboundService.getById(id);
         if (existing == null || Boolean.TRUE.equals(existing.getDeleted())) {
@@ -108,7 +108,7 @@ public class WmsInboundController {
             @PathVariable String id,
             @RequestParam String operatorId,
             @RequestParam String operatorName) {
-        log.info("[API] 取消入库�? id={}, operator={}", id, operatorName);
+        log.info("[API] 取消入库单 id={}, operator={}", id, operatorName);
 
         try {
             boolean success = inboundService.cancel(id, operatorId, operatorName);

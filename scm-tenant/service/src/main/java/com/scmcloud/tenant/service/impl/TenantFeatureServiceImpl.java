@@ -50,7 +50,7 @@ public class TenantFeatureServiceImpl extends ServiceImpl<TenantFeatureMapper, T
     }
 
     public boolean isFeatureEnabled(String tenantId, String featureCode) {
-        log.debug("检查功能是否启�? tenantId={}, featureCode={}", tenantId, featureCode);
+        log.debug("检查功能是否启� tenantId={}, featureCode={}", tenantId, featureCode);
 
         TenantFeature feature = lambdaQuery()
                 .eq(TenantFeature::getTenantId, tenantId)
@@ -58,12 +58,12 @@ public class TenantFeatureServiceImpl extends ServiceImpl<TenantFeatureMapper, T
                 .one();
 
         if (feature == null) {
-            log.debug("功能不存�? tenantId={}, featureCode={}", tenantId, featureCode);
+            log.debug("功能不存� tenantId={}, featureCode={}", tenantId, featureCode);
             return false;
         }
 
         boolean enabled = Boolean.TRUE.equals(feature.getEnabled());
-        log.debug("功能检查结�? tenantId={}, featureCode={}, enabled={}", tenantId, featureCode, enabled);
+        log.debug("功能检查结� tenantId={}, featureCode={}, enabled={}", tenantId, featureCode, enabled);
         return enabled;
     }
 

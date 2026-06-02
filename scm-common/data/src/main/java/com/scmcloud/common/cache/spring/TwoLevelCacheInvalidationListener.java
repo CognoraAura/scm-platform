@@ -22,7 +22,7 @@ public class TwoLevelCacheInvalidationListener implements MessageListener {
             if (body.length() >= 2 && body.startsWith("\"") && body.endsWith("\"")) {
                 body = body.substring(1, body.length() - 1);
             }
-            // 格式: cacheName|key �?cacheName|*
+            // 格式: cacheName|key �cacheName|*
             int idx = body.indexOf('|');
             if (idx > 0) {
                 String cacheName = body.substring(0, idx);

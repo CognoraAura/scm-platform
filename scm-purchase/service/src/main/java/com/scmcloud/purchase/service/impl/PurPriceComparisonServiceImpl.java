@@ -55,7 +55,7 @@ public class PurPriceComparisonServiceImpl extends ServiceImpl<PurPriceCompariso
     public boolean approve(String id, String approverId, String approverName) {
         PurPriceComparison comparison = getById(id);
         if (comparison == null || comparison.getDeleted()) {
-            throw new IllegalArgumentException("比价分析不存�? " + id);
+            throw new IllegalArgumentException("比价分析不存� " + id);
         }
         if (comparison.getStatus() != 1) {
             throw new IllegalStateException("只有已完成的比价才能审批");
