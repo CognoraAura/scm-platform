@@ -1,6 +1,7 @@
 package com.scmcloud.finance.service.command;
 
 import com.scmcloud.common.data.rw.annotation.Master;
+import com.scmcloud.common.status.StatusValidator;
 import com.scmcloud.finance.domain.entity.Invoice;
 import com.scmcloud.finance.mapper.InvoiceMapper;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class InvoiceCommandService {
+    private final StatusValidator statusValidator;
     private final InvoiceMapper invoiceMapper;
 
     @Master(reason = "写操作必须走主库")
@@ -25,9 +27,7 @@ public class InvoiceCommandService {
         if (invoice == null || Boolean.TRUE.equals(invoice.getDeleted())) {
             throw new IllegalArgumentException("发票不存在: " + id);
         }
-        if (invoice.getStatus() != 0) {
-            throw new IllegalStateException("只有草稿状态的发票才能开票, 当前状态 " + invoice.getStatus());
-        }
+        statusValidator.validateTransition("INVOICE", "DRAFT", "ISSUED");
         invoice.setStatus(1);
         invoice.setIssuerName(issuerName);
         invoice.setIssueDate(LocalDate.now());
@@ -46,9 +46,7 @@ public class InvoiceCommandService {
         if (invoice == null || Boolean.TRUE.equals(invoice.getDeleted())) {
             throw new IllegalArgumentException("发票不存在: " + id);
         }
-        if (invoice.getStatus() == 3 || invoice.getStatus() == 4) {
-            throw new IllegalStateException("发票已作废或已红冲, 不能再次作废");
-        }
+        statusValidator.validateTransition("INVOICE", resolveInvoiceStatusName(invoice.getStatus()), "REJECTED");
         invoice.setStatus(3);
         invoice.setUpdateTime(LocalDateTime.now());
         invoiceMapper.updateById(invoice);
@@ -64,13 +62,22 @@ public class InvoiceCommandService {
         if (invoice == null || Boolean.TRUE.equals(invoice.getDeleted())) {
             throw new IllegalArgumentException("发票不存在: " + id);
         }
-        if (invoice.getStatus() != 1 && invoice.getStatus() != 2) {
-            throw new IllegalStateException("只有已开具或已邮寄的发票才能红冲, 当前状态 " + invoice.getStatus());
-        }
+        statusValidator.validateTransition("INVOICE", resolveInvoiceStatusName(invoice.getStatus()), "VOIDED");
         invoice.setStatus(4);
         invoice.setUpdateTime(LocalDateTime.now());
         invoiceMapper.updateById(invoice);
         log.info("发票红冲成功: id={}", id);
         return invoice;
+    }
+
+    private String resolveInvoiceStatusName(int status) {
+        return switch (status) {
+            case 0 -> "DRAFT";
+            case 1 -> "ISSUED";
+            case 2 -> "VERIFIED";
+            case 3 -> "REJECTED";
+            case 4 -> "VOIDED";
+            default -> throw new IllegalStateException("未知的发票状态: " + status);
+        };
     }
 }

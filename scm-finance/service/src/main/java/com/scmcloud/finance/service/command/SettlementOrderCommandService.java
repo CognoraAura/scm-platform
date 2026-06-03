@@ -1,6 +1,7 @@
 package com.scmcloud.finance.service.command;
 
 import com.scmcloud.common.data.rw.annotation.Master;
+import com.scmcloud.common.status.StatusValidator;
 import com.scmcloud.common.util.UUIDv7Util;
 import com.scmcloud.finance.domain.entity.SettlementOrder;
 import com.scmcloud.finance.mapper.SettlementOrderMapper;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class SettlementOrderCommandService {
+    private final StatusValidator statusValidator;
     private final SettlementOrderMapper settlementOrderMapper;
 
     @Master(reason = "写操作必须走主库")
@@ -46,9 +48,7 @@ public class SettlementOrderCommandService {
         if (order == null || Boolean.TRUE.equals(order.getDeleted())) {
             throw new IllegalArgumentException("结算单不存在: " + id);
         }
-        if (order.getStatus() != 0) {
-            throw new IllegalStateException("只有待确认状态的结算单才能确认, 当前状态 " + order.getStatus());
-        }
+        statusValidator.validateTransition("SETTLEMENT", "DRAFT", "CONFIRMED");
         order.setStatus(1);
         order.setApproverId(approverId);
         order.setApproverName(approverName);
@@ -70,9 +70,6 @@ public class SettlementOrderCommandService {
         if (order == null || Boolean.TRUE.equals(order.getDeleted())) {
             throw new IllegalArgumentException("结算单不存在: " + id);
         }
-        if (order.getStatus() != 1 && order.getStatus() != 2 && order.getStatus() != 3) {
-            throw new IllegalStateException("当前状态不允许付款: " + order.getStatus());
-        }
         BigDecimal newPaidAmount = order.getPaidAmount().add(amount);
         if (newPaidAmount.compareTo(order.getActualAmount()) > 0) {
             throw new IllegalArgumentException(
@@ -82,6 +79,8 @@ public class SettlementOrderCommandService {
         order.setPaidAmount(newPaidAmount);
         order.setUnpaidAmount(order.getActualAmount().subtract(newPaidAmount));
         order.setUpdateTime(LocalDateTime.now());
+        String targetStatus = order.getUnpaidAmount().compareTo(BigDecimal.ZERO) == 0 ? "FULLY_PAID" : "PARTIAL_PAID";
+        statusValidator.validateTransition("SETTLEMENT", resolveSettlementStatusName(order.getStatus()), targetStatus);
         if (order.getUnpaidAmount().compareTo(BigDecimal.ZERO) == 0) {
             order.setStatus(4);
         } else {
@@ -93,5 +92,16 @@ public class SettlementOrderCommandService {
 
     private String generateSettlementNo() {
         return "STL" + System.currentTimeMillis();
+    }
+
+    private String resolveSettlementStatusName(int status) {
+        return switch (status) {
+            case 0 -> "DRAFT";
+            case 1 -> "CONFIRMED";
+            case 2 -> "PARTIAL_PAID";
+            case 3 -> "FULLY_PAID";
+            case 4 -> "CLOSED";
+            default -> throw new IllegalStateException("未知的结算单状态: " + status);
+        };
     }
 }

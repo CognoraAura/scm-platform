@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.scmcloud.common.status.StatusValidator;
 import com.scmcloud.supplier.domain.entity.SupSettlement;
 import com.scmcloud.supplier.mapper.SupSettlementMapper;
 import com.scmcloud.supplier.service.ISupSettlementService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +20,11 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class SupSettlementServiceImpl extends ServiceImpl<SupSettlementMapper, SupSettlement>
         implements ISupSettlementService {
+
+    private final StatusValidator statusValidator;
 
     @Override
     public Page<SupSettlement> pageList(int page, int size, String supplierId, Integer status,
@@ -67,10 +72,7 @@ public class SupSettlementServiceImpl extends ServiceImpl<SupSettlementMapper, S
             log.warn("对账单不存在: id={}", id);
             return false;
         }
-        if (settlement.getStatus() != 0) {
-            log.warn("对账单状态不允许确认: id={}, status={}", id, settlement.getStatus());
-            return false;
-        }
+        statusValidator.validateTransition("SUPPLIER_SETTLEMENT", "DRAFT", "CONFIRMED");
 
         settlement.setStatus(1);
         settlement.setApproverId(approverId);
@@ -95,10 +97,15 @@ public class SupSettlementServiceImpl extends ServiceImpl<SupSettlementMapper, S
             log.warn("对账单不存在: id={}", id);
             return false;
         }
-        if (settlement.getStatus() != 1 && settlement.getStatus() != 2 && settlement.getStatus() != 3) {
-            log.warn("对账单状态不允许标记付款: id={}, status={}", id, settlement.getStatus());
-            return false;
+        String implPayFromStatus;
+        if (settlement.getStatus() == 1) {
+            implPayFromStatus = "CONFIRMED";
+        } else if (settlement.getStatus() == 2) {
+            implPayFromStatus = "PARTIAL_PAID";
+        } else {
+            implPayFromStatus = "FULLY_PAID";
         }
+        statusValidator.validateTransition("SUPPLIER_SETTLEMENT", implPayFromStatus, "CLOSED");
 
         settlement.setStatus(4);
         settlement.setPaymentAmount(settlement.getActualAmount());

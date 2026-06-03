@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.scmcloud.common.status.StatusValidator;
+
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 public class PurPlanCommandService {
 
     private final PurPlanMapper purPlanMapper;
+    private final StatusValidator statusValidator;
 
     @Master(reason = "保存采购计划")
     @Transactional(rollbackFor = Exception.class)
@@ -42,10 +45,8 @@ public class PurPlanCommandService {
         if (plan == null || plan.getDeleted()) {
             throw new IllegalArgumentException("采购计划不存在: " + id);
         }
-        if (plan.getStatus() != 0) {
-            throw new IllegalStateException("只有编制中的计划才能提交");
-        }
-        plan.setStatus(1);
+        statusValidator.validateTransition("PURCHASE", "DRAFT", "PENDING_APPROVAL");
+        plan.setStatus(1); // PENDING_APPROVAL
         plan.setUpdateTime(LocalDateTime.now());
         return purPlanMapper.updateById(plan) > 0;
     }
@@ -57,10 +58,8 @@ public class PurPlanCommandService {
         if (plan == null || plan.getDeleted()) {
             throw new IllegalArgumentException("采购计划不存在: " + id);
         }
-        if (plan.getStatus() != 1) {
-            throw new IllegalStateException("只有待审批的计划才能审批");
-        }
-        plan.setStatus(2);
+        statusValidator.validateTransition("PURCHASE", "PENDING_APPROVAL", "APPROVED");
+        plan.setStatus(2); // APPROVED
         plan.setApprovedBy(approverId);
         plan.setApprovedByName(approverName);
         plan.setApprovedAt(LocalDateTime.now());
@@ -75,9 +74,7 @@ public class PurPlanCommandService {
         if (plan == null || plan.getDeleted()) {
             throw new IllegalArgumentException("采购计划不存在: " + id);
         }
-        if (plan.getStatus() != 2) {
-            throw new IllegalStateException("只有已审批的计划才能开始执行");
-        }
+        statusValidator.validateTransition("PURCHASE", "APPROVED", "APPROVED");
         plan.setUpdateTime(LocalDateTime.now());
         return purPlanMapper.updateById(plan) > 0;
     }
@@ -89,10 +86,8 @@ public class PurPlanCommandService {
         if (plan == null || plan.getDeleted()) {
             throw new IllegalArgumentException("采购计划不存在: " + id);
         }
-        if (plan.getStatus() != 2) {
-            throw new IllegalStateException("只有执行中的计划才能完成");
-        }
-        plan.setStatus(3);
+        statusValidator.validateTransition("PURCHASE", "APPROVED", "REJECTED");
+        plan.setStatus(3); // REJECTED
         plan.setExecutionRate(java.math.BigDecimal.valueOf(100));
         plan.setUpdateTime(LocalDateTime.now());
         return purPlanMapper.updateById(plan) > 0;

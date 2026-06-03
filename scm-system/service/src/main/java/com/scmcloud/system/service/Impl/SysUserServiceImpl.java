@@ -9,6 +9,7 @@ import com.scmcloud.common.tenant.TenantValidationUtil;
 import com.scmcloud.common.util.UUIDv7Util;
 
 import com.scmcloud.common.exception.BusinessException;
+import com.scmcloud.common.status.StatusValidator;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.scmcloud.common.dto.permission.PermissionDTO;
 import com.scmcloud.common.dto.user.UserDTO;
@@ -61,6 +62,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private final PasswordEncoder passwordEncoder;
     private final DataSyncEventPublisher dataSyncEventPublisher;
     private final com.scmcloud.common.security.PermissionChecker permissionChecker;
+    private final StatusValidator statusValidator;
 
     @Value("${spring.security.default-password}")
     private String defaultPassword;
@@ -563,10 +565,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
 
         if (lock) {
+            statusValidator.validateTransition("USER", userStatusName(user.getStatus()), "LOCKED");
             user.setStatus(2);
             LocalDateTime lockedUntil = LocalDateTime.now().plusHours(24);
             user.setLockedUntil(lockedUntil);
         } else {
+            statusValidator.validateTransition("USER", userStatusName(user.getStatus()), "ACTIVE");
             user.setStatus(1);
             user.setLockedUntil(null);
             user.setLoginAttempts(0);
@@ -747,5 +751,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         BeanUtils.copyProperties(user, userDTO);
 
         return userDTO;
+    }
+
+    private String userStatusName(Integer status) {
+        if (status == null) return String.valueOf(status);
+        return switch (status) {
+            case 0 -> "INACTIVE";
+            case 1 -> "ACTIVE";
+            case 2 -> "LOCKED";
+            default -> String.valueOf(status);
+        };
     }
 }

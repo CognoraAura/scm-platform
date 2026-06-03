@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.scmcloud.common.status.StatusValidator;
+
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 public class PurContractCommandService {
 
     private final PurContractMapper purContractMapper;
+    private final StatusValidator statusValidator;
 
     @Master(reason = "保存合同")
     @Transactional(rollbackFor = Exception.class)
@@ -42,10 +45,8 @@ public class PurContractCommandService {
         if (contract == null || contract.getDeleted()) {
             throw new IllegalArgumentException("合同不存在: " + id);
         }
-        if (contract.getStatus() != 1) {
-            throw new IllegalStateException("只有待签署的合同才能签署");
-        }
-        contract.setStatus(2);
+        statusValidator.validateTransition("PURCHASE", "PENDING_APPROVAL", "APPROVED");
+        contract.setStatus(2); // APPROVED
         contract.setSignedBy(signedBy);
         contract.setSignedByName(signedByName);
         contract.setSignedAt(LocalDateTime.now());
@@ -60,13 +61,17 @@ public class PurContractCommandService {
         if (contract == null || contract.getDeleted()) {
             throw new IllegalArgumentException("合同不存在: " + id);
         }
-        if (contract.getStatus() == 4) {
-            throw new IllegalStateException("合同已终止");
+        String fromStatus;
+        switch (contract.getStatus()) {
+            case 0: fromStatus = "DRAFT"; break;
+            case 1: fromStatus = "PENDING_APPROVAL"; break;
+            case 2: fromStatus = "APPROVED"; break;
+            case 3: fromStatus = "REJECTED"; break;
+            case 4: fromStatus = "CANCELLED"; break;
+            default: throw new IllegalStateException("未知状态: " + contract.getStatus());
         }
-        if (contract.getStatus() == 0) {
-            throw new IllegalStateException("草稿合同不能终止，请直接删除");
-        }
-        contract.setStatus(4);
+        statusValidator.validateTransition("PURCHASE", fromStatus, "CANCELLED");
+        contract.setStatus(4); // CANCELLED
         contract.setUpdateTime(LocalDateTime.now());
         return purContractMapper.updateById(contract) > 0;
     }

@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.scmcloud.common.status.StatusValidator;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +20,10 @@ import java.util.UUID;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class TmsWaybillServiceImpl extends ServiceImpl<TmsWaybillMapper, TmsWaybill> implements ITmsWaybillService {
+
+    private final StatusValidator statusValidator;
 
     @Override
     public Page<TmsWaybill> pageList(int page, int size, String waybillNo, Integer status, String carrierId) {
@@ -127,14 +132,21 @@ public class TmsWaybillServiceImpl extends ServiceImpl<TmsWaybillMapper, TmsWayb
 
         TmsWaybill waybill = getById(waybillId);
         if (waybill == null) {
-            log.warn("运单不存� waybillId={}", waybillId);
+            log.warn("运单不存\u200b waybillId={}", waybillId);
             return false;
         }
 
-        if (waybill.getStatus() >= 4) {
-            log.warn("运单已完成或已签收，无法取消: waybillNo={}, status={}", waybill.getWaybillNo(), waybill.getStatus());
-            return false;
+        String implCancelFromStatus;
+        if (waybill.getStatus() == 0) {
+            implCancelFromStatus = "CREATED";
+        } else if (waybill.getStatus() == 1) {
+            implCancelFromStatus = "PENDING";
+        } else if (waybill.getStatus() == 2) {
+            implCancelFromStatus = "IN_TRANSIT";
+        } else {
+            implCancelFromStatus = "DELIVERED";
         }
+        statusValidator.validateTransition("LOGISTICS", implCancelFromStatus, "CANCELLED");
 
         waybill.setStatus(6);
         waybill.setExceptionType("CANCEL");

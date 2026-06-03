@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.scmcloud.common.status.StatusValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -18,6 +20,9 @@ import java.util.List;
 @Slf4j
 @Service
 public class PurPlanServiceImpl extends ServiceImpl<PurPlanMapper, PurPlan> implements IPurPlanService {
+
+    @Autowired
+    private StatusValidator statusValidator;
 
     @Override
     public PurPlan getByPlanNo(String planNo) {
@@ -63,10 +68,8 @@ public class PurPlanServiceImpl extends ServiceImpl<PurPlanMapper, PurPlan> impl
         if (plan == null || plan.getDeleted()) {
             throw new IllegalArgumentException("采购计划不存� " + id);
         }
-        if (plan.getStatus() != 0) {
-            throw new IllegalStateException("只有编制中的计划才能提交");
-        }
-        plan.setStatus(1);
+        statusValidator.validateTransition("PURCHASE", "DRAFT", "PENDING_APPROVAL");
+        plan.setStatus(1); // PENDING_APPROVAL
         plan.setUpdateTime(LocalDateTime.now());
         return updateById(plan);
     }
@@ -78,10 +81,8 @@ public class PurPlanServiceImpl extends ServiceImpl<PurPlanMapper, PurPlan> impl
         if (plan == null || plan.getDeleted()) {
             throw new IllegalArgumentException("采购计划不存� " + id);
         }
-        if (plan.getStatus() != 1) {
-            throw new IllegalStateException("只有待审批的计划才能审批");
-        }
-        plan.setStatus(2);
+        statusValidator.validateTransition("PURCHASE", "PENDING_APPROVAL", "APPROVED");
+        plan.setStatus(2); // APPROVED
         plan.setApprovedBy(approverId);
         plan.setApprovedByName(approverName);
         plan.setApprovedAt(LocalDateTime.now());
@@ -96,9 +97,7 @@ public class PurPlanServiceImpl extends ServiceImpl<PurPlanMapper, PurPlan> impl
         if (plan == null || plan.getDeleted()) {
             throw new IllegalArgumentException("采购计划不存� " + id);
         }
-        if (plan.getStatus() != 2) {
-            throw new IllegalStateException("只有已审批的计划才能开始执行");
-        }
+        statusValidator.validateTransition("PURCHASE", "APPROVED", "APPROVED");
         plan.setUpdateTime(LocalDateTime.now());
         return updateById(plan);
     }
@@ -110,10 +109,8 @@ public class PurPlanServiceImpl extends ServiceImpl<PurPlanMapper, PurPlan> impl
         if (plan == null || plan.getDeleted()) {
             throw new IllegalArgumentException("采购计划不存� " + id);
         }
-        if (plan.getStatus() != 2) {
-            throw new IllegalStateException("只有执行中的计划才能完成");
-        }
-        plan.setStatus(3);
+        statusValidator.validateTransition("PURCHASE", "APPROVED", "REJECTED");
+        plan.setStatus(3); // REJECTED
         plan.setExecutionRate(java.math.BigDecimal.valueOf(100));
         plan.setUpdateTime(LocalDateTime.now());
         return updateById(plan);

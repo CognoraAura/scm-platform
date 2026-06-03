@@ -1,6 +1,7 @@
 package com.scmcloud.tenant.service.command;
 
 import com.scmcloud.common.data.rw.annotation.Master;
+import com.scmcloud.common.status.StatusValidator;
 import com.scmcloud.tenant.domain.entity.TenantSubscription;
 import com.scmcloud.tenant.mapper.TenantSubscriptionMapper;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class TenantSubscriptionCommandService {
 
     private final TenantSubscriptionMapper tenantSubscriptionMapper;
+    private final StatusValidator statusValidator;
 
     @Master(reason = "创建租户订阅")
     @Transactional(rollbackFor = Exception.class)
@@ -53,6 +55,8 @@ public class TenantSubscriptionCommandService {
     @Transactional(rollbackFor = Exception.class)
     public boolean subscribe(String tenantId, String packageId) {
         log.info("租户订阅: tenantId={}, packageId={}", tenantId, packageId);
+        statusValidator.validateTransition("SUBSCRIPTION", "PENDING", "ACTIVE");
+
         TenantSubscription subscription = new TenantSubscription();
         subscription.setId(UUID.randomUUID().toString());
         subscription.setTenantId(tenantId);
@@ -71,6 +75,10 @@ public class TenantSubscriptionCommandService {
     @Transactional(rollbackFor = Exception.class)
     public boolean unsubscribe(String id) {
         log.info("取消租户订阅: id={}", id);
+        TenantSubscription current = tenantSubscriptionMapper.selectById(id);
+        String fromStatus = subscriptionStatusName(current.getStatus());
+        statusValidator.validateTransition("SUBSCRIPTION", fromStatus, "CANCELLED");
+
         TenantSubscription subscription = new TenantSubscription();
         subscription.setId(id);
         subscription.setStatus(3);
@@ -80,5 +88,15 @@ public class TenantSubscriptionCommandService {
             log.info("取消租户订阅成功: id={}", id);
         }
         return success;
+    }
+
+    private String subscriptionStatusName(Integer status) {
+        return switch (status) {
+            case 0 -> "PENDING";
+            case 1 -> "ACTIVE";
+            case 2 -> "EXPIRED";
+            case 3 -> "CANCELLED";
+            default -> String.valueOf(status);
+        };
     }
 }

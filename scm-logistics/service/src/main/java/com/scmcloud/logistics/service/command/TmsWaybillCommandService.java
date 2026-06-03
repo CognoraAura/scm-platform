@@ -3,6 +3,7 @@ package com.scmcloud.logistics.service.command;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.scmcloud.common.data.rw.annotation.Master;
+import com.scmcloud.common.status.StatusValidator;
 import com.scmcloud.logistics.domain.entity.TmsWaybill;
 import com.scmcloud.logistics.mapper.TmsWaybillMapper;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 public class TmsWaybillCommandService {
 
     private final TmsWaybillMapper tmsWaybillMapper;
+    private final StatusValidator statusValidator;
 
     @Master(reason = "保存运单")
     @Transactional(rollbackFor = Exception.class)
@@ -90,10 +92,17 @@ public class TmsWaybillCommandService {
             log.warn("运单不存在: waybillId={}", waybillId);
             return false;
         }
-        if (waybill.getStatus() >= 4) {
-            log.warn("运单已完成或已签收，无法取消: waybillNo={}, status={}", waybill.getWaybillNo(), waybill.getStatus());
-            return false;
+        String cancelFromStatus;
+        if (waybill.getStatus() == 0) {
+            cancelFromStatus = "CREATED";
+        } else if (waybill.getStatus() == 1) {
+            cancelFromStatus = "PENDING";
+        } else if (waybill.getStatus() == 2) {
+            cancelFromStatus = "IN_TRANSIT";
+        } else {
+            cancelFromStatus = "DELIVERED";
         }
+        statusValidator.validateTransition("LOGISTICS", cancelFromStatus, "CANCELLED");
         waybill.setStatus(6);
         waybill.setExceptionType("CANCEL");
         waybill.setExceptionReason(reason);

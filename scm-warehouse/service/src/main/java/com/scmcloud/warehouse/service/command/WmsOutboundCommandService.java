@@ -3,6 +3,7 @@ package com.scmcloud.warehouse.service.command;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.scmcloud.common.data.rw.annotation.Master;
+import com.scmcloud.common.status.StatusValidator;
 import com.scmcloud.warehouse.domain.entity.WmsOutbound;
 import com.scmcloud.warehouse.domain.entity.WmsOutboundItem;
 import com.scmcloud.warehouse.mapper.WmsOutboundItemMapper;
@@ -22,6 +23,7 @@ public class WmsOutboundCommandService {
 
     private final WmsOutboundMapper outboundMapper;
     private final WmsOutboundItemMapper outboundItemMapper;
+    private final StatusValidator statusValidator;
 
     @Master(reason = "写操作必须走主库")
     @Transactional(rollbackFor = Exception.class)
@@ -55,9 +57,17 @@ public class WmsOutboundCommandService {
             log.warn("出库单不存在: id={}", outboundId);
             return false;
         }
-        if (outbound.getStatus() != 0 && outbound.getStatus() != 1 && outbound.getStatus() != 2) {
-            throw new IllegalStateException("出库单状态不允许出库，当前状态: " + outbound.getStatus());
+        String shipFromStatus;
+        if (outbound.getStatus() == 0) {
+            shipFromStatus = "WAITING";
+        } else if (outbound.getStatus() == 1) {
+            shipFromStatus = "PICKING";
+        } else if (outbound.getStatus() == 2) {
+            shipFromStatus = "PACKED";
+        } else {
+            shipFromStatus = "SHIPPED";
         }
+        statusValidator.validateTransition("OUTBOUND", shipFromStatus, "SHIPPED");
         LambdaQueryWrapper<WmsOutboundItem> itemWrapper = Wrappers.lambdaQuery();
         itemWrapper.eq(WmsOutboundItem::getOutboundId, outboundId);
         itemWrapper.eq(WmsOutboundItem::getDeleted, false);
@@ -91,9 +101,17 @@ public class WmsOutboundCommandService {
             log.warn("出库单不存在: id={}", outboundId);
             return false;
         }
-        if (outbound.getStatus() == 3) {
-            throw new IllegalStateException("已出库的出库单不能取消");
+        String cancelFromStatus;
+        if (outbound.getStatus() == 0) {
+            cancelFromStatus = "WAITING";
+        } else if (outbound.getStatus() == 1) {
+            cancelFromStatus = "PICKING";
+        } else if (outbound.getStatus() == 2) {
+            cancelFromStatus = "PACKED";
+        } else {
+            cancelFromStatus = "SHIPPED";
         }
+        statusValidator.validateTransition("OUTBOUND", cancelFromStatus, "CANCELLED");
         outbound.setStatus(4);
         outbound.setUpdateTime(LocalDateTime.now());
         outbound.setUpdateBy(operatorId);

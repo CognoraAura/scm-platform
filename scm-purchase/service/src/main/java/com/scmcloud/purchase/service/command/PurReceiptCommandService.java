@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.scmcloud.common.status.StatusValidator;
+
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 public class PurReceiptCommandService {
 
     private final PurReceiptMapper purReceiptMapper;
+    private final StatusValidator statusValidator;
 
     @Master(reason = "保存入库单")
     @Transactional(rollbackFor = Exception.class)
@@ -42,10 +45,8 @@ public class PurReceiptCommandService {
         if (receipt == null || receipt.getDeleted()) {
             throw new IllegalArgumentException("入库单不存在: " + id);
         }
-        if (receipt.getStatus() != 0) {
-            throw new IllegalStateException("只有待收货的入库单才能收货");
-        }
-        receipt.setStatus(1);
+        statusValidator.validateTransition("RECEIPT", "WAITING", "RECEIVING");
+        receipt.setStatus(1); // RECEIVING
         receipt.setReceiverId(receiverId);
         receipt.setReceiverName(receiverName);
         receipt.setReceivedAt(LocalDateTime.now());
@@ -60,10 +61,8 @@ public class PurReceiptCommandService {
         if (receipt == null || receipt.getDeleted()) {
             throw new IllegalArgumentException("入库单不存在: " + id);
         }
-        if (receipt.getStatus() != 1) {
-            throw new IllegalStateException("只有已收货的入库单才能质检");
-        }
-        receipt.setStatus(2);
+        statusValidator.validateTransition("RECEIPT", "RECEIVING", "INSPECTING");
+        receipt.setStatus(2); // INSPECTING
         receipt.setQualityInspectorId(inspectorId);
         receipt.setQualityInspectorName(inspectorName);
         receipt.setQualityInspectedAt(LocalDateTime.now());
@@ -80,10 +79,8 @@ public class PurReceiptCommandService {
         if (receipt == null || receipt.getDeleted()) {
             throw new IllegalArgumentException("入库单不存在: " + id);
         }
-        if (receipt.getStatus() != 2) {
-            throw new IllegalStateException("只有已质检的入库单才能上架");
-        }
-        receipt.setStatus(3);
+        statusValidator.validateTransition("RECEIPT", "INSPECTING", "COMPLETED");
+        receipt.setStatus(3); // COMPLETED
         receipt.setShelved(true);
         receipt.setShelvedBy(shelvedBy);
         receipt.setShelvedByName(shelvedByName);

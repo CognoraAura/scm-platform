@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.scmcloud.common.status.StatusValidator;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +18,11 @@ import java.time.LocalDateTime;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class WmsWavePickingServiceImpl extends ServiceImpl<WmsWavePickingMapper, WmsWavePicking>
         implements IWmsWavePickingService {
+
+    private final StatusValidator statusValidator;
 
     @Override
     public Page<WmsWavePicking> pageList(int page, int size, String warehouseId, Integer status) {
@@ -42,9 +47,7 @@ public class WmsWavePickingServiceImpl extends ServiceImpl<WmsWavePickingMapper,
             log.warn("波次拣货单不存在: id={}", waveId);
             return false;
         }
-        if (wave.getStatus() != 0) {
-            throw new IllegalStateException("波次拣货单状态不允许开始拣货，当前状态 " + wave.getStatus());
-        }
+        statusValidator.validateTransition("WAVE_PICKING", "WAITING", "PICKING");
 
         wave.setStatus(1); // 1-拣货中        wave.setPickerId(pickerId);
         wave.setPickerName(pickerName);
@@ -67,9 +70,7 @@ public class WmsWavePickingServiceImpl extends ServiceImpl<WmsWavePickingMapper,
             log.warn("波次拣货单不存在: id={}", waveId);
             return false;
         }
-        if (wave.getStatus() != 1) {
-            throw new IllegalStateException("波次拣货单状态不允许完成，当前状态 " + wave.getStatus());
-        }
+        statusValidator.validateTransition("WAVE_PICKING", "PICKING", "COMPLETED");
 
         wave.setStatus(2); // 2-已完成        wave.setCompletedAt(LocalDateTime.now());
         wave.setUpdateTime(LocalDateTime.now());
@@ -90,9 +91,15 @@ public class WmsWavePickingServiceImpl extends ServiceImpl<WmsWavePickingMapper,
             log.warn("波次拣货单不存在: id={}", waveId);
             return false;
         }
-        if (wave.getStatus() == 2) {
-            throw new IllegalStateException("已完成的波次拣货单不能取消");
+        String waveFromStatus;
+        if (wave.getStatus() == 0) {
+            waveFromStatus = "WAITING";
+        } else if (wave.getStatus() == 1) {
+            waveFromStatus = "PICKING";
+        } else {
+            waveFromStatus = "COMPLETED";
         }
+        statusValidator.validateTransition("WAVE_PICKING", waveFromStatus, "CANCELLED");
 
         wave.setStatus(3); // 3-已取消        wave.setUpdateTime(LocalDateTime.now());
         wave.setUpdateBy(operatorId);

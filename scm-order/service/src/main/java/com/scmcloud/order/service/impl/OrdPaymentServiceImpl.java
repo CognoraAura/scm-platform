@@ -2,11 +2,13 @@ package com.scmcloud.order.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.scmcloud.order.domain.entity.OrdPayment;
 import com.scmcloud.order.mapper.OrdPaymentMapper;
 import com.scmcloud.order.service.IOrdPaymentService;
+import com.scmcloud.common.status.StatusValidator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -14,6 +16,9 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class OrdPaymentServiceImpl extends ServiceImpl<OrdPaymentMapper, OrdPayment> implements IOrdPaymentService {
+
+    @Autowired
+    private StatusValidator statusValidator;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -46,6 +51,10 @@ public class OrdPaymentServiceImpl extends ServiceImpl<OrdPaymentMapper, OrdPaym
             return false;
         }
 
+        String fromStatus = paymentStatusName(payment.getStatus());
+        String toStatus = paymentStatusName(status);
+        statusValidator.validateTransition("PAYMENT", fromStatus, toStatus);
+
         payment.setStatus(status);
         payment.setUpdateTime(LocalDateTime.now());
 
@@ -58,5 +67,18 @@ public class OrdPaymentServiceImpl extends ServiceImpl<OrdPaymentMapper, OrdPaym
         }
 
         return updateById(payment);
+    }
+
+    private String paymentStatusName(Integer status) {
+        return switch (status) {
+            case 0 -> "PENDING";
+            case 1 -> "PROCESSING";
+            case 2 -> "SUCCESS";
+            case 3 -> "FAILED";
+            case 4 -> "REFUNDING";
+            case 5 -> "REFUNDED";
+            case 6 -> "CANCELLED";
+            default -> String.valueOf(status);
+        };
     }
 }

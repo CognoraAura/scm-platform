@@ -1,6 +1,7 @@
 package com.scmcloud.finance.service.command;
 
 import com.scmcloud.common.data.rw.annotation.Master;
+import com.scmcloud.common.status.StatusValidator;
 import com.scmcloud.common.util.UUIDv7Util;
 import com.scmcloud.finance.domain.entity.ReconciliationRecord;
 import com.scmcloud.finance.mapper.ReconciliationRecordMapper;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class ReconciliationRecordCommandService {
+    private final StatusValidator statusValidator;
     private final ReconciliationRecordMapper reconciliationRecordMapper;
 
     @Master(reason = "写操作必须走主库")
@@ -57,9 +59,7 @@ public class ReconciliationRecordCommandService {
         if (record == null || Boolean.TRUE.equals(record.getDeleted())) {
             throw new IllegalArgumentException("对账记录不存在: " + id);
         }
-        if (record.getStatus() != 0) {
-            throw new IllegalStateException("只有待对账状态的记录才能对账, 当前状态 " + record.getStatus());
-        }
+        statusValidator.validateTransition("RECONCILIATION", "DRAFT", "COMPARING");
 
         record.setStatus(1);
         record.setReconcilerId(reconcilerId);
@@ -68,6 +68,7 @@ public class ReconciliationRecordCommandService {
         record.setUpdateTime(LocalDateTime.now());
 
         if (Boolean.TRUE.equals(record.getHasDiff())) {
+            statusValidator.validateTransition("RECONCILIATION", resolveReconciliationStatusName(record.getStatus()), "MISMATCHED");
             record.setStatus(3);
             log.warn("对账存在差异: id={}, diffAmount={}", id, record.getDiffAmount());
         }
@@ -86,9 +87,7 @@ public class ReconciliationRecordCommandService {
         if (record == null || Boolean.TRUE.equals(record.getDeleted())) {
             throw new IllegalArgumentException("对账记录不存在: " + id);
         }
-        if (record.getStatus() != 1 && record.getStatus() != 3) {
-            throw new IllegalStateException("只有已对账或有差异状态的记录才能确认, 当前状态 " + record.getStatus());
-        }
+        statusValidator.validateTransition("RECONCILIATION", resolveReconciliationStatusName(record.getStatus()), "MATCHED");
 
         record.setStatus(2);
         record.setConfirmerId(confirmerId);
@@ -111,6 +110,8 @@ public class ReconciliationRecordCommandService {
             throw new IllegalArgumentException("对账记录不存在: " + id);
         }
 
+        statusValidator.validateTransition("RECONCILIATION", resolveReconciliationStatusName(record.getStatus()), "MISMATCHED");
+
         record.setStatus(3);
         record.setHasDiff(true);
         record.setDiffReason(diffReason);
@@ -123,5 +124,16 @@ public class ReconciliationRecordCommandService {
 
     private String generateReconciliationNo() {
         return "RCN" + System.currentTimeMillis();
+    }
+
+    private String resolveReconciliationStatusName(int status) {
+        return switch (status) {
+            case 0 -> "DRAFT";
+            case 1 -> "COMPARING";
+            case 2 -> "MATCHED";
+            case 3 -> "MISMATCHED";
+            case 4 -> "RESOLVED";
+            default -> throw new IllegalStateException("未知的对账状态: " + status);
+        };
     }
 }

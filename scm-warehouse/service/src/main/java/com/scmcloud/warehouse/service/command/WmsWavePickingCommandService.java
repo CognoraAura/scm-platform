@@ -1,6 +1,7 @@
 package com.scmcloud.warehouse.service.command;
 
 import com.scmcloud.common.data.rw.annotation.Master;
+import com.scmcloud.common.status.StatusValidator;
 import com.scmcloud.warehouse.domain.entity.WmsWavePicking;
 import com.scmcloud.warehouse.mapper.WmsWavePickingMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 public class WmsWavePickingCommandService {
 
     private final WmsWavePickingMapper wavePickingMapper;
+    private final StatusValidator statusValidator;
 
     @Master(reason = "写操作必须走主库")
     @Transactional(rollbackFor = Exception.class)
@@ -43,9 +45,7 @@ public class WmsWavePickingCommandService {
             log.warn("波次拣货单不存在: id={}", waveId);
             return false;
         }
-        if (wave.getStatus() != 0) {
-            throw new IllegalStateException("波次拣货单状态不允许开始拣货，当前状态: " + wave.getStatus());
-        }
+        statusValidator.validateTransition("WAVE_PICKING", "WAITING", "PICKING");
         wave.setStatus(1);
         wave.setPickerId(pickerId);
         wave.setPickerName(pickerName);
@@ -67,9 +67,7 @@ public class WmsWavePickingCommandService {
             log.warn("波次拣货单不存在: id={}", waveId);
             return false;
         }
-        if (wave.getStatus() != 1) {
-            throw new IllegalStateException("波次拣货单状态不允许完成，当前状态: " + wave.getStatus());
-        }
+        statusValidator.validateTransition("WAVE_PICKING", "PICKING", "COMPLETED");
         wave.setStatus(2);
         wave.setCompletedAt(LocalDateTime.now());
         wave.setUpdateTime(LocalDateTime.now());
@@ -89,9 +87,15 @@ public class WmsWavePickingCommandService {
             log.warn("波次拣货单不存在: id={}", waveId);
             return false;
         }
-        if (wave.getStatus() == 2) {
-            throw new IllegalStateException("已完成的波次拣货单不能取消");
+        String waveFromStatus;
+        if (wave.getStatus() == 0) {
+            waveFromStatus = "WAITING";
+        } else if (wave.getStatus() == 1) {
+            waveFromStatus = "PICKING";
+        } else {
+            waveFromStatus = "COMPLETED";
         }
+        statusValidator.validateTransition("WAVE_PICKING", waveFromStatus, "CANCELLED");
         wave.setStatus(3);
         wave.setUpdateTime(LocalDateTime.now());
         wave.setUpdateBy(operatorId);

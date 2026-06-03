@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.scmcloud.order.domain.entity.OrdRefund;
 import com.scmcloud.order.mapper.OrdRefundMapper;
 import com.scmcloud.order.service.IOrdRefundService;
+import com.scmcloud.common.status.StatusValidator;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +19,9 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class OrdRefundServiceImpl extends ServiceImpl<OrdRefundMapper, OrdRefund> implements IOrdRefundService {
+
+    @Autowired
+    private StatusValidator statusValidator;
 
     @Override
     @Transactional(rollbackFor = Exception.class)

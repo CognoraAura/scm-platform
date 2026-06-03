@@ -7,6 +7,7 @@ import com.scmcloud.order.api.request.CreateOrderRequest;
 import com.scmcloud.order.domain.entity.OrdOrder;
 import com.scmcloud.order.mapper.OrdOrderMapper;
 
+import com.scmcloud.common.status.StatusValidator;
 import io.seata.core.context.RootContext;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ import java.util.Random;
 public class OrderTccServiceImpl {
 
     private final OrdOrderMapper orderMapper;
+    private final StatusValidator statusValidator;
 
     @DubboReference(version = "1.0.0", group = "scm", check = false)
     private InventoryTccService inventoryTccService;

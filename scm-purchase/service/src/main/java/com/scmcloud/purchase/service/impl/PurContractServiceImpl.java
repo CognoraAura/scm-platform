@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.scmcloud.common.status.StatusValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -18,6 +20,9 @@ import java.util.List;
 @Slf4j
 @Service
 public class PurContractServiceImpl extends ServiceImpl<PurContractMapper, PurContract> implements IPurContractService {
+
+    @Autowired
+    private StatusValidator statusValidator;
 
     @Override
     public PurContract getByContractNo(String contractNo) {
@@ -77,10 +82,8 @@ public class PurContractServiceImpl extends ServiceImpl<PurContractMapper, PurCo
         if (contract == null || contract.getDeleted()) {
             throw new IllegalArgumentException("合同不存� " + id);
         }
-        if (contract.getStatus() != 1) {
-            throw new IllegalStateException("只有待签署的合同才能签署");
-        }
-        contract.setStatus(2);
+        statusValidator.validateTransition("PURCHASE", "PENDING_APPROVAL", "APPROVED");
+        contract.setStatus(2); // APPROVED
         contract.setSignedBy(signedBy);
         contract.setSignedByName(signedByName);
         contract.setSignedAt(LocalDateTime.now());
@@ -95,13 +98,17 @@ public class PurContractServiceImpl extends ServiceImpl<PurContractMapper, PurCo
         if (contract == null || contract.getDeleted()) {
             throw new IllegalArgumentException("合同不存� " + id);
         }
-        if (contract.getStatus() == 4) {
-            throw new IllegalStateException("合同已终止");
+        String fromStatus;
+        switch (contract.getStatus()) {
+            case 0: fromStatus = "DRAFT"; break;
+            case 1: fromStatus = "PENDING_APPROVAL"; break;
+            case 2: fromStatus = "APPROVED"; break;
+            case 3: fromStatus = "REJECTED"; break;
+            case 4: fromStatus = "CANCELLED"; break;
+            default: throw new IllegalStateException("未知状态: " + contract.getStatus());
         }
-        if (contract.getStatus() == 0) {
-            throw new IllegalStateException("草稿合同不能终止，请直接删除");
-        }
-        contract.setStatus(4);
+        statusValidator.validateTransition("PURCHASE", fromStatus, "CANCELLED");
+        contract.setStatus(4); // CANCELLED
         contract.setUpdateTime(LocalDateTime.now());
         return updateById(contract);
     }

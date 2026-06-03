@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scmcloud.audit.domain.entity.SysAuditLog;
 import com.scmcloud.audit.mapper.SysAuditLogMapper;
 import com.scmcloud.common.log.annotation.AuditLog;
+import com.scmcloud.common.status.StatusValidator;
 import com.scmcloud.common.security.util.DesensitizeUtils;
 import com.scmcloud.common.security.util.IpUtils;
 import com.scmcloud.common.web.util.SecurityUtils;
@@ -28,6 +29,7 @@ import java.util.UUID;
 public class SysAuditLogAspect {
     private final SysAuditLogMapper sysAuditLogMapper;
     private final ObjectMapper objectMapper;
+    private final StatusValidator statusValidator;
 
     @Around("@annotation(com.scmcloud.common.log.annotation.AuditLog)")
     public Object around(ProceedingJoinPoint point) throws Throwable {

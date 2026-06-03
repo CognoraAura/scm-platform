@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.scmcloud.common.status.StatusValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -18,6 +20,9 @@ import java.util.List;
 @Slf4j
 @Service
 public class PurPriceComparisonServiceImpl extends ServiceImpl<PurPriceComparisonMapper, PurPriceComparison> implements IPurPriceComparisonService {
+
+    @Autowired
+    private StatusValidator statusValidator;
 
     @Override
     public PurPriceComparison getByComparisonNo(String comparisonNo) {
@@ -57,10 +62,8 @@ public class PurPriceComparisonServiceImpl extends ServiceImpl<PurPriceCompariso
         if (comparison == null || comparison.getDeleted()) {
             throw new IllegalArgumentException("比价分析不存� " + id);
         }
-        if (comparison.getStatus() != 1) {
-            throw new IllegalStateException("只有已完成的比价才能审批");
-        }
-        comparison.setStatus(2);
+        statusValidator.validateTransition("PURCHASE", "PENDING_APPROVAL", "APPROVED");
+        comparison.setStatus(2); // APPROVED
         comparison.setApprovedBy(approverId);
         comparison.setApprovedByName(approverName);
         comparison.setApprovedAt(LocalDateTime.now());

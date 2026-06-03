@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.scmcloud.common.status.StatusValidator;
+
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 public class PurPriceComparisonCommandService {
 
     private final PurPriceComparisonMapper purPriceComparisonMapper;
+    private final StatusValidator statusValidator;
 
     @Master(reason = "保存比价分析")
     @Transactional(rollbackFor = Exception.class)
@@ -42,10 +45,8 @@ public class PurPriceComparisonCommandService {
         if (comparison == null || comparison.getDeleted()) {
             throw new IllegalArgumentException("比价分析不存在: " + id);
         }
-        if (comparison.getStatus() != 1) {
-            throw new IllegalStateException("只有已完成的比价才能审批");
-        }
-        comparison.setStatus(2);
+        statusValidator.validateTransition("PURCHASE", "PENDING_APPROVAL", "APPROVED");
+        comparison.setStatus(2); // APPROVED
         comparison.setApprovedBy(approverId);
         comparison.setApprovedByName(approverName);
         comparison.setApprovedAt(LocalDateTime.now());
