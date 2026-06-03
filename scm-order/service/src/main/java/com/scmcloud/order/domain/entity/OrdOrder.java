@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
-import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.Version;
 import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -43,6 +43,9 @@ public class OrdOrder {
     private String orderSource;
     @TableField("status")
     private Integer status;
+    @Version
+    @TableField("version")
+    private Integer version;
     @TableField("total_amount")
     private BigDecimal totalAmount;
     @TableField("discount_amount")
