@@ -6,6 +6,10 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.scmcloud.common.domain.Money;
+import com.scmcloud.common.domain.Quantity;
+import com.scmcloud.common.mybatisPlus.handler.MoneyTypeHandler;
+import com.scmcloud.common.mybatisPlus.handler.QuantityTypeHandler;
 import com.scmcloud.common.mybatisPlus.handler.UUIDTypeHandler;
 import com.scmcloud.common.mybatisPlus.properties.MybatisPlusProperties;
 import org.apache.ibatis.type.TypeHandlerRegistry;
@@ -55,6 +59,9 @@ public class MybatisPlusConfig {
             TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
             // 注册 UUID类型处理�
             typeHandlerRegistry.register(UUID.class, UUIDTypeHandler.class);
+            // 注册值对象类型处理器
+            typeHandlerRegistry.register(Money.class, MoneyTypeHandler.class);
+            typeHandlerRegistry.register(Quantity.class, QuantityTypeHandler.class);
         };
     }
 
