@@ -29,7 +29,7 @@ public class OrdOrderItem {
     @TableField(value = "tenant_id", fill = FieldFill.INSERT)
     private String tenantId;
 
-    @TableId(value = "id", type = IdType.NONE)
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
     @TableField("order_id")
