@@ -1,5 +1,7 @@
 package com.scmcloud.common.domain.event;
 
+import lombok.Getter;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
@@ -11,6 +13,7 @@ import java.util.UUID;
  * <p>Usage: extend this class for each domain event type.
  * Publish via {@link DomainEventPublisher} or Spring's ApplicationEventPublisher.</p>
  */
+@Getter
 public abstract class DomainEvent {
 
     private final String eventId;
@@ -31,22 +34,6 @@ public abstract class DomainEvent {
         this.occurredAt = OffsetDateTime.now(ZoneOffset.UTC);
         this.tenantId = tenantId;
         this.correlationId = correlationId;
-    }
-
-    public String getEventId() {
-        return eventId;
-    }
-
-    public OffsetDateTime getOccurredAt() {
-        return occurredAt;
-    }
-
-    public UUID getTenantId() {
-        return tenantId;
-    }
-
-    public String getCorrelationId() {
-        return correlationId;
     }
 
     /**

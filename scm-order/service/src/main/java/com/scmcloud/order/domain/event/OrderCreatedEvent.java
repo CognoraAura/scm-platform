@@ -1,6 +1,7 @@
 package com.scmcloud.order.domain.event;
 
 import com.scmcloud.common.domain.event.DomainEvent;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -9,6 +10,7 @@ import java.util.UUID;
  * Published when a new order is created.
  * Carries the essential order data for downstream consumers (finance, logistics, notify, audit).
  */
+@Getter
 public class OrderCreatedEvent extends DomainEvent {
 
     private final Long orderId;
@@ -33,15 +35,6 @@ public class OrderCreatedEvent extends DomainEvent {
         this.warehouseId = warehouseId;
         this.skuId = skuId;
     }
-
-    public Long getOrderId() { return orderId; }
-    public String getOrderNo() { return orderNo; }
-    public UUID getUserId() { return userId; }
-    public BigDecimal getTotalAmount() { return totalAmount; }
-    public BigDecimal getPayableAmount() { return payableAmount; }
-    public Integer getQuantity() { return quantity; }
-    public String getWarehouseId() { return warehouseId; }
-    public String getSkuId() { return skuId; }
 
     @Override
     public String getEventType() {

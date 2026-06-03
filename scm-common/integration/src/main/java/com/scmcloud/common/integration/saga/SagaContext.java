@@ -1,5 +1,7 @@
 package com.scmcloud.common.integration.saga;
 
+import lombok.Getter;
+
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Context passed between saga steps. Carries data (e.g., reservation ID, order ID)
  * and metadata (tenant ID, correlation ID).
  */
+@Getter
 public class SagaContext {
 
     private final String sagaId;
@@ -20,10 +23,6 @@ public class SagaContext {
         this.tenantId = tenantId;
         this.correlationId = correlationId;
     }
-
-    public String getSagaId() { return sagaId; }
-    public UUID getTenantId() { return tenantId; }
-    public String getCorrelationId() { return correlationId; }
 
     public void put(String key, Object value) {
         data.put(key, value);

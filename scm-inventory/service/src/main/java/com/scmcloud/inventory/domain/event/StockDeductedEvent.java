@@ -1,6 +1,7 @@
 package com.scmcloud.inventory.domain.event;
 
 import com.scmcloud.common.domain.event.DomainEvent;
+import lombok.Getter;
 
 import java.util.UUID;
 
@@ -8,6 +9,7 @@ import java.util.UUID;
  * Published when stock is deducted (reserved) for an order.
  * Used for order confirmation, audit logging, and inventory monitoring.
  */
+@Getter
 public class StockDeductedEvent extends DomainEvent {
 
     private final String skuId;
@@ -25,12 +27,6 @@ public class StockDeductedEvent extends DomainEvent {
         this.orderNo = orderNo;
         this.reservationId = reservationId;
     }
-
-    public String getSkuId() { return skuId; }
-    public String getWarehouseId() { return warehouseId; }
-    public int getQuantity() { return quantity; }
-    public String getOrderNo() { return orderNo; }
-    public String getReservationId() { return reservationId; }
 
     @Override
     public String getEventType() {

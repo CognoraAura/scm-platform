@@ -1,10 +1,13 @@
 package com.scmcloud.common.integration.saga;
 
+import lombok.Getter;
+
 import java.time.OffsetDateTime;
 
 /**
  * Result of a saga execution. Indicates success or failure with details.
  */
+@Getter
 public class SagaResult {
 
     public enum Status { SUCCESS, FAILED, COMPENSATION_FAILED }
@@ -37,13 +40,6 @@ public class SagaResult {
 
     public boolean isSuccess() { return status == Status.SUCCESS; }
     public boolean isFailed() { return status == Status.FAILED; }
-
-    public String getSagaType() { return sagaType; }
-    public String getSagaId() { return sagaId; }
-    public Status getStatus() { return status; }
-    public String getFailedStep() { return failedStep; }
-    public String getErrorMessage() { return errorMessage; }
-    public OffsetDateTime getCompletedAt() { return completedAt; }
 
     @Override
     public String toString() {
