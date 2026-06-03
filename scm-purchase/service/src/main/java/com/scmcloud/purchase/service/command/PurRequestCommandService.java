@@ -1,6 +1,7 @@
 package com.scmcloud.purchase.service.command;
 
 import com.scmcloud.common.data.rw.annotation.Master;
+import com.scmcloud.common.status.StatusValidator;
 import com.scmcloud.purchase.domain.entity.PurRequest;
 import com.scmcloud.purchase.mapper.PurRequestMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 public class PurRequestCommandService {
 
     private final PurRequestMapper purRequestMapper;
+    private final StatusValidator statusValidator;
 
     @Master(reason = "保存采购申请")
     @Transactional(rollbackFor = Exception.class)
@@ -42,9 +44,7 @@ public class PurRequestCommandService {
         if (request == null || request.getDeleted()) {
             throw new IllegalArgumentException("采购申请不存在: " + id);
         }
-        if (request.getStatus() != 0) {
-            throw new IllegalStateException("只有草稿状态的申请才能提交");
-        }
+        statusValidator.validateTransition("PURCHASE_REQUEST", "DRAFT", "PENDING_APPROVAL");
         request.setStatus(1);
         request.setSubmittedAt(LocalDateTime.now());
         request.setUpdateTime(LocalDateTime.now());
@@ -58,9 +58,7 @@ public class PurRequestCommandService {
         if (request == null || request.getDeleted()) {
             throw new IllegalArgumentException("采购申请不存在: " + id);
         }
-        if (request.getStatus() != 1) {
-            throw new IllegalStateException("只有待审批状态的申请才能审批");
-        }
+        statusValidator.validateTransition("PURCHASE_REQUEST", "PENDING_APPROVAL", "APPROVED");
         request.setStatus(2);
         request.setCurrentApproverId(approverId);
         request.setCurrentApproverName(approverName);
@@ -76,9 +74,7 @@ public class PurRequestCommandService {
         if (request == null || request.getDeleted()) {
             throw new IllegalArgumentException("采购申请不存在: " + id);
         }
-        if (request.getStatus() != 1) {
-            throw new IllegalStateException("只有待审批状态的申请才能驳回");
-        }
+        statusValidator.validateTransition("PURCHASE_REQUEST", "PENDING_APPROVAL", "REJECTED");
         request.setStatus(3);
         request.setCurrentApproverId(approverId);
         request.setCurrentApproverName(approverName);
@@ -95,9 +91,8 @@ public class PurRequestCommandService {
         if (request == null || request.getDeleted()) {
             throw new IllegalArgumentException("采购申请不存在: " + id);
         }
-        if (request.getStatus() == 4) {
-            throw new IllegalStateException("已转采购单的申请不能关闭");
-        }
+        String currentStatus = statusCodeToName(request.getStatus());
+        statusValidator.validateTransition("PURCHASE_REQUEST", currentStatus, "CLOSED");
         request.setStatus(5);
         request.setUpdateTime(LocalDateTime.now());
         return purRequestMapper.updateById(request) > 0;
@@ -110,17 +105,27 @@ public class PurRequestCommandService {
         if (request == null || request.getDeleted()) {
             throw new IllegalArgumentException("采购申请不存在: " + id);
         }
-        if (request.getStatus() != 2) {
-            throw new IllegalStateException("只有已审批的申请才能转采购单");
-        }
         if (Boolean.TRUE.equals(request.getConverted())) {
             throw new IllegalStateException("该申请已转采购单");
         }
+        statusValidator.validateTransition("PURCHASE_REQUEST", "APPROVED", "CONVERTED");
         request.setStatus(4);
         request.setConverted(true);
         request.setPurchaseOrderId(orderId);
         request.setPurchaseOrderNo(orderNo);
         request.setUpdateTime(LocalDateTime.now());
         return purRequestMapper.updateById(request) > 0;
+    }
+
+    private String statusCodeToName(int code) {
+        return switch (code) {
+            case 0 -> "DRAFT";
+            case 1 -> "PENDING_APPROVAL";
+            case 2 -> "APPROVED";
+            case 3 -> "REJECTED";
+            case 4 -> "CONVERTED";
+            case 5 -> "CLOSED";
+            default -> "UNKNOWN";
+        };
     }
 }

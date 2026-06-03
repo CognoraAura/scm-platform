@@ -62,6 +62,25 @@ INSERT INTO sys_status_transition (id, tenant_id, biz_type, from_status, to_stat
 ('st-purchase-08', NULL, 'PURCHASE', 'RECEIVING', 'COMPLETED', 'COMPLETE', '完成', 'Complete', false, true, 0);
 
 -- ============================================================
+-- 采购申请状态 (PURCHASE_REQUEST)
+-- ============================================================
+INSERT INTO sys_status_dict (id, tenant_id, biz_type, status_code, status_name, status_name_en, color, icon, sort_order, is_initial, is_terminal, is_cancellable, enabled) VALUES
+('sd-preq-00', NULL, 'PURCHASE_REQUEST', 'DRAFT', '草稿', 'Draft', '#d9d9d9', 'file', 0, true, false, true, true),
+('sd-preq-01', NULL, 'PURCHASE_REQUEST', 'PENDING_APPROVAL', '待审批', 'Pending Approval', '#faad14', 'clock-circle', 1, false, false, true, true),
+('sd-preq-02', NULL, 'PURCHASE_REQUEST', 'APPROVED', '已审批', 'Approved', '#52c41a', 'check-circle', 2, false, false, false, true),
+('sd-preq-03', NULL, 'PURCHASE_REQUEST', 'REJECTED', '已驳回', 'Rejected', '#ff4d4f', 'close-circle', 3, false, true, false, true),
+('sd-preq-04', NULL, 'PURCHASE_REQUEST', 'CONVERTED', '已转采购单', 'Converted', '#1890ff', 'shopping-cart', 4, false, true, false, true),
+('sd-preq-05', NULL, 'PURCHASE_REQUEST', 'CLOSED', '已关闭', 'Closed', '#d9d9d9', 'lock', 5, false, true, false, true);
+
+INSERT INTO sys_status_transition (id, tenant_id, biz_type, from_status, to_status, action_code, action_name, action_name_en, need_approval, enabled, sort_order) VALUES
+('st-preq-01', NULL, 'PURCHASE_REQUEST', 'DRAFT', 'PENDING_APPROVAL', 'SUBMIT', '提交', 'Submit', false, true, 0),
+('st-preq-02', NULL, 'PURCHASE_REQUEST', 'DRAFT', 'CLOSED', 'CLOSE', '关闭', 'Close', false, true, 1),
+('st-preq-03', NULL, 'PURCHASE_REQUEST', 'PENDING_APPROVAL', 'APPROVED', 'APPROVE', '审批通过', 'Approve', false, true, 0),
+('st-preq-04', NULL, 'PURCHASE_REQUEST', 'PENDING_APPROVAL', 'REJECTED', 'REJECT', '驳回', 'Reject', false, true, 1),
+('st-preq-05', NULL, 'PURCHASE_REQUEST', 'APPROVED', 'CONVERTED', 'CONVERT', '转采购单', 'Convert to Order', false, true, 0),
+('st-preq-06', NULL, 'PURCHASE_REQUEST', 'APPROVED', 'CLOSED', 'CLOSE', '关闭', 'Close', false, true, 1);
+
+-- ============================================================
 -- 入库状态 (INBOUND)
 -- ============================================================
 INSERT INTO sys_status_dict (id, tenant_id, biz_type, status_code, status_name, status_name_en, color, icon, sort_order, is_initial, is_terminal, is_cancellable, enabled) VALUES

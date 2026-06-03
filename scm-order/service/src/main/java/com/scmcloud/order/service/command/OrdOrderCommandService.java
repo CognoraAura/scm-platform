@@ -1,12 +1,15 @@
 package com.scmcloud.order.service.command;
 
 import com.scmcloud.common.data.rw.annotation.Master;
+import com.scmcloud.order.domain.entity.OrderStatus;
 import com.scmcloud.order.domain.entity.OrdOrder;
 import com.scmcloud.order.domain.entity.OrdOrderItem;
 import com.scmcloud.order.domain.entity.OrdStatusHistory;
 import com.scmcloud.order.mapper.OrdOrderMapper;
+import com.scmcloud.system.api.StatusMachineDubboService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -23,6 +26,9 @@ public class OrdOrderCommandService {
     private final OrdOrderMapper ordOrderMapper;
     private final OrdOrderItemCommandService ordOrderItemCommandService;
     private final OrdStatusHistoryCommandService ordStatusHistoryCommandService;
+
+    @DubboReference
+    private StatusMachineDubboService statusMachine;
 
     @Master(reason = "创建订单")
     @Transactional(rollbackFor = Exception.class)
@@ -105,14 +111,19 @@ public class OrdOrderCommandService {
         }
 
         Integer fromStatus = order.getStatus();
-        order.setStatus(status);
-        order.setUpdateTime(LocalDateTime.now());
+        OrderStatus targetStatus = OrderStatus.fromCode(status);
 
-        if (status == 6) {
-            order.setCompletedAt(LocalDateTime.now());
-        } else if (status == 7) {
-            order.setCancelledAt(LocalDateTime.now());
+        // 通过状态机验证流转合法性
+        String fromName = OrderStatus.fromCode(fromStatus).name();
+        String toName = targetStatus.name();
+        StatusMachineDubboService.TransitionCheckDTO check =
+                statusMachine.canTransition("ORDER", fromName, toName);
+        if (!check.allowed()) {
+            log.warn("非法状态流转: orderId={}, {} -> {}, reason={}", orderId, fromName, toName, check.reason());
+            throw new IllegalStateException("非法状态流转: " + fromName + " -> " + toName + ": " + check.reason());
         }
+
+        order.transitionTo(targetStatus);
 
         int updated = ordOrderMapper.updateById(order);
         if (updated > 0) {

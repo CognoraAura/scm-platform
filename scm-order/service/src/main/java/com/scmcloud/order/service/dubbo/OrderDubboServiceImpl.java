@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.scmcloud.order.api.OrderDubboService;
 import com.scmcloud.order.api.dto.OrderVO;
 import com.scmcloud.order.api.request.CreateOrderRequest;
+import com.scmcloud.system.api.StatusMachineDubboService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,9 @@ import java.util.UUID;
 public class OrderDubboServiceImpl implements OrderDubboService {
 
     private final IOrdOrderService orderService;
+
+    @DubboReference
+    private StatusMachineDubboService statusMachine;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -109,15 +114,16 @@ public class OrderDubboServiceImpl implements OrderDubboService {
             throw new RuntimeException("订单不存在 " + orderNo);
         }
 
-        // 只有待支付状态可以取
-        if (order.getStatus() != 0) {
-            throw new RuntimeException("订单状态不允许取消: orderNo=" + orderNo + ", status=" + order.getStatus());
+        // 通过状态机验证流转合法性
+        String currentStatus = order.getStatusEnum().name();
+        StatusMachineDubboService.TransitionResultDTO result =
+                statusMachine.transition("ORDER", currentStatus, "CANCEL");
+        if (!result.success()) {
+            throw new RuntimeException("订单状态不允许取消: orderNo=" + orderNo
+                    + ", status=" + currentStatus + ", reason=" + result.errorMessage());
         }
 
-        order.setStatus(7); // 已取消
-        order.setCancelledAt(LocalDateTime.now());
-        order.setCancelReason("Dubbo接口取消");
-        order.setUpdateTime(LocalDateTime.now());
+        order.cancel("Dubbo接口取消");
 
         boolean success = orderService.updateById(order);
         if (!success) {
