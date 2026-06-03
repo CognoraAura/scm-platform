@@ -1,6 +1,8 @@
 package com.scmcloud.system.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.scmcloud.system.cache.StatusDictCacheManager;
+import com.scmcloud.system.cache.StatusDictEventPublisher;
 import com.scmcloud.system.domain.entity.SysStatusDict;
 import com.scmcloud.system.domain.entity.SysStatusTransition;
 import com.scmcloud.system.mapper.SysStatusDictMapper;
@@ -17,93 +19,96 @@ public class SysStatusDictServiceImpl implements ISysStatusDictService {
 
     private final SysStatusDictMapper statusDictMapper;
     private final SysStatusTransitionMapper transitionMapper;
+    private final StatusDictCacheManager cacheManager;
+    private final StatusDictEventPublisher eventPublisher;
+
+    // ─── 状态字典查询 (走缓存) ─────────────────────────────────
 
     @Override
     public List<SysStatusDict> listStatusDict(String bizType) {
-        LambdaQueryWrapper<SysStatusDict> wrapper = new LambdaQueryWrapper<SysStatusDict>()
-                .eq(SysStatusDict::getBizType, bizType)
-                .eq(SysStatusDict::getDeleted, false)
-                .orderByAsc(SysStatusDict::getSortOrder);
-        return statusDictMapper.selectList(wrapper);
+        return cacheManager.getStatusDict(bizType);
     }
 
     @Override
     public SysStatusDict getStatusByCode(String bizType, String statusCode) {
-        LambdaQueryWrapper<SysStatusDict> wrapper = new LambdaQueryWrapper<SysStatusDict>()
-                .eq(SysStatusDict::getBizType, bizType)
-                .eq(SysStatusDict::getStatusCode, statusCode)
-                .eq(SysStatusDict::getDeleted, false);
-        return statusDictMapper.selectOne(wrapper);
+        return cacheManager.getStatusByCode(bizType, statusCode);
     }
+
+    // ─── 状态字典变更 (写 DB + 发事件刷新缓存) ─────────────────
 
     @Override
     public void createStatusDict(SysStatusDict entity) {
         statusDictMapper.insert(entity);
+        eventPublisher.publishChange(resolveTenantId(entity.getTenantId()), entity.getBizType());
     }
 
     @Override
     public void updateStatusDict(SysStatusDict entity) {
         statusDictMapper.updateById(entity);
+        eventPublisher.publishChange(resolveTenantId(entity.getTenantId()), entity.getBizType());
     }
 
     @Override
     public void deleteStatusDict(String id) {
+        SysStatusDict existing = statusDictMapper.selectById(id);
         statusDictMapper.deleteById(id);
+        if (existing != null) {
+            eventPublisher.publishChange(resolveTenantId(existing.getTenantId()), existing.getBizType());
+        }
     }
+
+    // ─── 流转规则查询 (走缓存) ─────────────────────────────────
 
     @Override
     public List<SysStatusTransition> listTransitions(String bizType) {
-        LambdaQueryWrapper<SysStatusTransition> wrapper = new LambdaQueryWrapper<SysStatusTransition>()
-                .eq(SysStatusTransition::getBizType, bizType)
-                .eq(SysStatusTransition::getDeleted, false)
-                .orderByAsc(SysStatusTransition::getSortOrder);
-        return transitionMapper.selectList(wrapper);
+        return cacheManager.getTransitions(bizType);
     }
 
     @Override
     public List<SysStatusTransition> listTransitionsFrom(String bizType, String fromStatus) {
-        LambdaQueryWrapper<SysStatusTransition> wrapper = new LambdaQueryWrapper<SysStatusTransition>()
-                .eq(SysStatusTransition::getBizType, bizType)
-                .eq(SysStatusTransition::getFromStatus, fromStatus)
-                .eq(SysStatusTransition::getDeleted, false)
-                .orderByAsc(SysStatusTransition::getSortOrder);
-        return transitionMapper.selectList(wrapper);
+        return cacheManager.getTransitionsFrom(bizType, fromStatus);
     }
 
     @Override
     public boolean canTransition(String bizType, String fromStatus, String toStatus) {
-        LambdaQueryWrapper<SysStatusTransition> wrapper = new LambdaQueryWrapper<SysStatusTransition>()
-                .eq(SysStatusTransition::getBizType, bizType)
-                .eq(SysStatusTransition::getFromStatus, fromStatus)
-                .eq(SysStatusTransition::getToStatus, toStatus)
-                .eq(SysStatusTransition::getEnabled, true)
-                .eq(SysStatusTransition::getDeleted, false);
-        return transitionMapper.selectCount(wrapper) > 0;
+        return cacheManager.getTransitionsFrom(bizType, fromStatus).stream()
+                .anyMatch(t -> t.getToStatus().equals(toStatus) && t.getEnabled());
     }
 
     @Override
     public SysStatusTransition findTransition(String bizType, String fromStatus, String toStatus, String actionCode) {
-        LambdaQueryWrapper<SysStatusTransition> wrapper = new LambdaQueryWrapper<SysStatusTransition>()
-                .eq(SysStatusTransition::getBizType, bizType)
-                .eq(SysStatusTransition::getFromStatus, fromStatus)
-                .eq(SysStatusTransition::getToStatus, toStatus)
-                .eq(SysStatusTransition::getActionCode, actionCode)
-                .eq(SysStatusTransition::getDeleted, false);
-        return transitionMapper.selectOne(wrapper);
+        return cacheManager.getTransitionsFrom(bizType, fromStatus).stream()
+                .filter(t -> t.getToStatus().equals(toStatus)
+                        && t.getActionCode().equals(actionCode)
+                        && t.getEnabled())
+                .findFirst()
+                .orElse(null);
     }
+
+    // ─── 流转规则变更 (写 DB + 发事件刷新缓存) ─────────────────
 
     @Override
     public void createTransition(SysStatusTransition entity) {
         transitionMapper.insert(entity);
+        eventPublisher.publishChange(resolveTenantId(entity.getTenantId()), entity.getBizType());
     }
 
     @Override
     public void updateTransition(SysStatusTransition entity) {
         transitionMapper.updateById(entity);
+        eventPublisher.publishChange(resolveTenantId(entity.getTenantId()), entity.getBizType());
     }
 
     @Override
     public void deleteTransition(String id) {
+        SysStatusTransition existing = transitionMapper.selectById(id);
         transitionMapper.deleteById(id);
+        if (existing != null) {
+            eventPublisher.publishChange(resolveTenantId(existing.getTenantId()), existing.getBizType());
+        }
+    }
+
+    private String resolveTenantId(String tenantId) {
+        return tenantId != null ? tenantId : "global";
     }
 }
