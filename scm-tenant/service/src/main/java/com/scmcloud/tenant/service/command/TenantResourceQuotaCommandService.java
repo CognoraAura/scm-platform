@@ -8,6 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.scmcloud.tenant.domain.entity.TenantPackage;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -44,5 +47,32 @@ public class TenantResourceQuotaCommandService {
     public boolean deleteById(String id) {
         log.info("删除租户资源配额: id={}", id);
         return tenantResourceQuotaMapper.deleteById(id) > 0;
+    }
+
+    @Master(reason = "创建租户默认资源配额")
+    @Transactional(rollbackFor = Exception.class)
+    public void createDefaults(String tenantId, TenantPackage pkg) {
+        log.info("Creating default resource quotas: tenantId={}, package={}", tenantId, pkg.getPackageCode());
+
+        TenantResourceQuota quota = new TenantResourceQuota();
+        quota.setId(UUID.randomUUID().toString());
+        quota.setTenantId(tenantId);
+        quota.setMaxUsers(pkg.getMaxUsers());
+        quota.setCurrentUsers(0);
+        quota.setMaxWarehouses(pkg.getMaxWarehouses());
+        quota.setCurrentWarehouses(0);
+        quota.setMaxSkus(pkg.getMaxSkus());
+        quota.setCurrentSkus(0);
+        quota.setMaxOrdersPerDay(pkg.getMaxOrdersPerDay());
+        quota.setCurrentOrdersToday(0);
+        quota.setMaxStorageGb(pkg.getMaxStorageGb() != null ? pkg.getMaxStorageGb().intValue() : 10);
+        quota.setCurrentStorageGb(BigDecimal.ZERO);
+        quota.setMaxApiCallsPerDay(pkg.getMaxApiCallsPerDay() != null ? pkg.getMaxApiCallsPerDay() : 100000);
+        quota.setCurrentApiCallsToday(0);
+        quota.setCreateTime(LocalDateTime.now());
+        quota.setUpdateTime(LocalDateTime.now());
+
+        tenantResourceQuotaMapper.insert(quota);
+        log.info("Default resource quotas created: id={}", quota.getId());
     }
 }
