@@ -113,4 +113,152 @@ public class OrdOrder {
     private Boolean deleted;
     @TableField("remark")
     private String remark;
+
+    // ─── Domain Behavior ─────────────────────────────────────────
+
+    /**
+     * Returns the current status as an OrderStatus enum.
+     */
+    public OrderStatus getStatusEnum() {
+        return OrderStatus.fromCode(this.status);
+    }
+
+    /**
+     * Sets the status from an OrderStatus enum.
+     */
+    public void setStatusEnum(OrderStatus orderStatus) {
+        this.status = orderStatus.getCode();
+    }
+
+    /**
+     * Checks if a transition to the target status is valid.
+     */
+    public boolean canTransitionTo(OrderStatus target) {
+        return getStatusEnum().canTransitionTo(target);
+    }
+
+    /**
+     * Transition to a new status with validation. Throws if the transition is invalid.
+     */
+    public OrdOrder transitionTo(OrderStatus target) {
+        OrderStatus current = getStatusEnum();
+        if (!current.canTransitionTo(target)) {
+            throw new IllegalStateException(
+                    "Invalid order status transition: " + current + " -> " + target
+                            + " for order " + orderNo);
+        }
+        this.status = target.getCode();
+        return this;
+    }
+
+    /**
+     * Cancel the order. Only PENDING_PAYMENT or PAID orders can be cancelled.
+     */
+    public OrdOrder cancel(String reason) {
+        OrderStatus current = getStatusEnum();
+        if (!current.isCancellable()) {
+            throw new IllegalStateException(
+                    "Cannot cancel order " + orderNo + " in status " + current);
+        }
+        transitionTo(OrderStatus.CANCELLED);
+        this.cancelledAt = LocalDateTime.now();
+        this.cancelReason = reason;
+        return this;
+    }
+
+    /**
+     * Mark the order as paid. Only PENDING_PAYMENT orders can be paid.
+     */
+    public OrdOrder pay(BigDecimal amount, String paymentNo) {
+        transitionTo(OrderStatus.PAID);
+        this.paidAmount = amount;
+        this.paidAt = LocalDateTime.now();
+        this.paymentNo = paymentNo;
+        return this;
+    }
+
+    /**
+     * Confirm payment (alias for pay, used by payment callback).
+     */
+    public OrdOrder confirmPayment(BigDecimal amount, String paymentNo) {
+        return pay(amount, paymentNo);
+    }
+
+    /**
+     * Ship the order. Transitions from PENDING_SHIP to SHIPPED.
+     */
+    public OrdOrder ship(String waybillNo, String carrier) {
+        transitionTo(OrderStatus.SHIPPED);
+        this.waybillNo = waybillNo;
+        this.carrier = carrier;
+        this.shippedAt = LocalDateTime.now();
+        return this;
+    }
+
+    /**
+     * Mark the order as in transit. Transitions from SHIPPED to IN_TRANSIT.
+     */
+    public OrdOrder inTransit() {
+        transitionTo(OrderStatus.IN_TRANSIT);
+        return this;
+    }
+
+    /**
+     * Mark the order as delivered. Transitions from IN_TRANSIT to DELIVERED.
+     */
+    public OrdOrder deliver() {
+        transitionTo(OrderStatus.DELIVERED);
+        return this;
+    }
+
+    /**
+     * Complete the order. Transitions from DELIVERED to COMPLETED.
+     */
+    public OrdOrder complete() {
+        transitionTo(OrderStatus.COMPLETED);
+        this.completedAt = LocalDateTime.now();
+        return this;
+    }
+
+    /**
+     * Start a refund. Transitions from PAID..DELIVERED to REFUNDING.
+     */
+    public OrdOrder startRefund() {
+        OrderStatus current = getStatusEnum();
+        if (!current.isPaid() || current == OrderStatus.COMPLETED) {
+            throw new IllegalStateException(
+                    "Cannot refund order " + orderNo + " in status " + current);
+        }
+        transitionTo(OrderStatus.REFUNDING);
+        return this;
+    }
+
+    /**
+     * Confirm refund. Transitions from REFUNDING to REFUNDED.
+     */
+    public OrdOrder confirmRefund() {
+        transitionTo(OrderStatus.REFUNDED);
+        return this;
+    }
+
+    /**
+     * Returns true if the order is in a terminal state.
+     */
+    public boolean isTerminal() {
+        return getStatusEnum().isTerminal();
+    }
+
+    /**
+     * Returns true if the order is pending payment.
+     */
+    public boolean isPendingPayment() {
+        return getStatusEnum() == OrderStatus.PENDING_PAYMENT;
+    }
+
+    /**
+     * Returns true if the order has been paid.
+     */
+    public boolean isPaid() {
+        return getStatusEnum().isPaid();
+    }
 }
