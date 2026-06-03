@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.scmcloud.common.status.StatusValidator;
+
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 public class PurQuotationCommandService {
 
     private final PurQuotationMapper purQuotationMapper;
+    private final StatusValidator statusValidator;
 
     @Master(reason = "保存报价单")
     @Transactional(rollbackFor = Exception.class)
@@ -42,10 +45,8 @@ public class PurQuotationCommandService {
         if (quotation == null || quotation.getDeleted()) {
             throw new IllegalArgumentException("报价单不存在: " + id);
         }
-        if (quotation.getStatus() != 0) {
-            throw new IllegalStateException("只有草稿状态的报价单才能提交");
-        }
-        quotation.setStatus(1);
+        statusValidator.validateTransition("QUOTATION", "DRAFT", "SUBMITTED");
+        quotation.setStatus(1); // SUBMITTED
         quotation.setUpdateTime(LocalDateTime.now());
         return purQuotationMapper.updateById(quotation) > 0;
     }

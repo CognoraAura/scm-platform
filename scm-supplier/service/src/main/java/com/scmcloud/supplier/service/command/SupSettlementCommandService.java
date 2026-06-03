@@ -1,6 +1,7 @@
 package com.scmcloud.supplier.service.command;
 
 import com.scmcloud.common.data.rw.annotation.Master;
+import com.scmcloud.common.status.StatusValidator;
 import com.scmcloud.supplier.domain.entity.SupSettlement;
 import com.scmcloud.supplier.mapper.SupSettlementMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 public class SupSettlementCommandService {
 
     private final SupSettlementMapper supSettlementMapper;
+    private final StatusValidator statusValidator;
 
     @Master(reason = "保存对账单")
     @Transactional(rollbackFor = Exception.class)
@@ -44,10 +46,7 @@ public class SupSettlementCommandService {
             log.warn("对账单不存在: id={}", id);
             return false;
         }
-        if (settlement.getStatus() != 0) {
-            log.warn("对账单状态不允许确认: id={}, status={}", id, settlement.getStatus());
-            return false;
-        }
+        statusValidator.validateTransition("SUPPLIER_SETTLEMENT", "DRAFT", "CONFIRMED");
         settlement.setStatus(1);
         settlement.setApproverId(approverId);
         settlement.setApproverName(approverName);
@@ -69,10 +68,15 @@ public class SupSettlementCommandService {
             log.warn("对账单不存在: id={}", id);
             return false;
         }
-        if (settlement.getStatus() != 1 && settlement.getStatus() != 2 && settlement.getStatus() != 3) {
-            log.warn("对账单状态不允许标记付款: id={}, status={}", id, settlement.getStatus());
-            return false;
+        String payFromStatus;
+        if (settlement.getStatus() == 1) {
+            payFromStatus = "CONFIRMED";
+        } else if (settlement.getStatus() == 2) {
+            payFromStatus = "PARTIAL_PAID";
+        } else {
+            payFromStatus = "FULLY_PAID";
         }
+        statusValidator.validateTransition("SUPPLIER_SETTLEMENT", payFromStatus, "CLOSED");
         settlement.setStatus(4);
         settlement.setPaymentAmount(settlement.getActualAmount());
         settlement.setUpdateTime(LocalDateTime.now());

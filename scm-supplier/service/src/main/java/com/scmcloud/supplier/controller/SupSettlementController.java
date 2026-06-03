@@ -2,6 +2,7 @@ package com.scmcloud.supplier.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.scmcloud.common.response.ApiResponse;
+import com.scmcloud.common.status.StatusValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import java.util.UUID;
 public class SupSettlementController {
 
     private final ISupSettlementService settlementService;
+    private final StatusValidator statusValidator;
 
     @GetMapping("/{id}")
     public ApiResponse<SupSettlement> getById(@PathVariable String id) {
@@ -50,9 +52,7 @@ public class SupSettlementController {
         if (existing == null || Boolean.TRUE.equals(existing.getDeleted())) {
             return ApiResponse.fail(404, "对账单不存在");
         }
-        if (existing.getStatus() != 0) {
-            return ApiResponse.fail(400, "只有待确认状态的对账单才能修改");
-        }
+        statusValidator.validateTransition("SUPPLIER_SETTLEMENT", "DRAFT", "CONFIRMED");
         settlement.setId(UUID.fromString(id));
         settlement.setUpdateTime(LocalDateTime.now());
         settlementService.updateById(settlement);

@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.scmcloud.common.status.StatusValidator;
+
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 public class PurRfqCommandService {
 
     private final PurRfqMapper purRfqMapper;
+    private final StatusValidator statusValidator;
 
     @Master(reason = "保存询价单")
     @Transactional(rollbackFor = Exception.class)
@@ -42,10 +45,8 @@ public class PurRfqCommandService {
         if (rfq == null || rfq.getDeleted()) {
             throw new IllegalArgumentException("询价单不存在: " + id);
         }
-        if (rfq.getStatus() != 0) {
-            throw new IllegalStateException("只有草稿状态的询价单才能发布");
-        }
-        rfq.setStatus(1);
+        statusValidator.validateTransition("PURCHASE", "DRAFT", "PENDING_APPROVAL");
+        rfq.setStatus(1); // PENDING_APPROVAL
         rfq.setUpdateTime(LocalDateTime.now());
         return purRfqMapper.updateById(rfq) > 0;
     }
@@ -57,10 +58,17 @@ public class PurRfqCommandService {
         if (rfq == null || rfq.getDeleted()) {
             throw new IllegalArgumentException("询价单不存在: " + id);
         }
-        if (rfq.getStatus() == 4) {
-            throw new IllegalStateException("询价单已关闭");
+        String fromStatus;
+        switch (rfq.getStatus()) {
+            case 0: fromStatus = "DRAFT"; break;
+            case 1: fromStatus = "PENDING_APPROVAL"; break;
+            case 2: fromStatus = "APPROVED"; break;
+            case 3: fromStatus = "REJECTED"; break;
+            case 4: fromStatus = "CANCELLED"; break;
+            default: throw new IllegalStateException("未知状态: " + rfq.getStatus());
         }
-        rfq.setStatus(4);
+        statusValidator.validateTransition("PURCHASE", fromStatus, "CANCELLED");
+        rfq.setStatus(4); // CANCELLED
         rfq.setUpdateTime(LocalDateTime.now());
         return purRfqMapper.updateById(rfq) > 0;
     }

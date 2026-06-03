@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.scmcloud.common.status.StatusValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -18,6 +20,9 @@ import java.util.List;
 @Slf4j
 @Service
 public class PurQuotationServiceImpl extends ServiceImpl<PurQuotationMapper, PurQuotation> implements IPurQuotationService {
+
+    @Autowired
+    private StatusValidator statusValidator;
 
     @Override
     public PurQuotation getByQuotationNo(String quotationNo) {
@@ -69,10 +74,8 @@ public class PurQuotationServiceImpl extends ServiceImpl<PurQuotationMapper, Pur
         if (quotation == null || quotation.getDeleted()) {
             throw new IllegalArgumentException("报价单不存在: " + id);
         }
-        if (quotation.getStatus() != 0) {
-            throw new IllegalStateException("只有草稿状态的报价单才能提交");
-        }
-        quotation.setStatus(1);
+        statusValidator.validateTransition("QUOTATION", "DRAFT", "SUBMITTED");
+        quotation.setStatus(1); // SUBMITTED
         quotation.setUpdateTime(LocalDateTime.now());
         return updateById(quotation);
     }

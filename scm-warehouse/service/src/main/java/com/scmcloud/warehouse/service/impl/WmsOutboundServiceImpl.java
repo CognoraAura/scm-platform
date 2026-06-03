@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.scmcloud.common.status.StatusValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class WmsOutboundServiceImpl extends ServiceImpl<WmsOutboundMapper, WmsOu
         implements IWmsOutboundService {
 
     private final IWmsOutboundItemService outboundItemService;
+    private final StatusValidator statusValidator;
 
     @Override
     public Page<WmsOutbound> pageList(int page, int size, String warehouseId, Integer outboundType, Integer status) {
@@ -53,9 +55,17 @@ public class WmsOutboundServiceImpl extends ServiceImpl<WmsOutboundMapper, WmsOu
             log.warn("出库单不存在: id={}", outboundId);
             return false;
         }
-        if (outbound.getStatus() != 0 && outbound.getStatus() != 1 && outbound.getStatus() != 2) {
-            throw new IllegalStateException("出库单状态不允许出库，当前状态 " + outbound.getStatus());
+        String shipFromStatus;
+        if (outbound.getStatus() == 0) {
+            shipFromStatus = "WAITING";
+        } else if (outbound.getStatus() == 1) {
+            shipFromStatus = "PICKING";
+        } else if (outbound.getStatus() == 2) {
+            shipFromStatus = "PACKED";
+        } else {
+            shipFromStatus = "SHIPPED";
         }
+        statusValidator.validateTransition("OUTBOUND", shipFromStatus, "SHIPPED");
 
         List<WmsOutboundItem> items = outboundItemService.lambdaQuery()
                 .eq(WmsOutboundItem::getOutboundId, outboundId)
@@ -94,9 +104,17 @@ public class WmsOutboundServiceImpl extends ServiceImpl<WmsOutboundMapper, WmsOu
             log.warn("出库单不存在: id={}", outboundId);
             return false;
         }
-        if (outbound.getStatus() == 3) {
-            throw new IllegalStateException("已出库的出库单不能取消");
+        String outboundCancelFromStatus;
+        if (outbound.getStatus() == 0) {
+            outboundCancelFromStatus = "WAITING";
+        } else if (outbound.getStatus() == 1) {
+            outboundCancelFromStatus = "PICKING";
+        } else if (outbound.getStatus() == 2) {
+            outboundCancelFromStatus = "PACKED";
+        } else {
+            outboundCancelFromStatus = "SHIPPED";
         }
+        statusValidator.validateTransition("OUTBOUND", outboundCancelFromStatus, "CANCELLED");
 
         outbound.setStatus(4); // 4-已取消
         outbound.setUpdateTime(LocalDateTime.now());

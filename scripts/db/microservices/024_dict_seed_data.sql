@@ -127,6 +127,128 @@ INSERT INTO sys_status_transition (id, tenant_id, biz_type, from_status, to_stat
 ('st-approval-04', NULL, 'APPROVAL', 'IN_PROGRESS', 'REJECTED', 'REJECT', '驳回', 'Reject', false, true, 1);
 
 -- ============================================================
+-- 物流状态 (LOGISTICS)
+-- ============================================================
+INSERT INTO sys_status_dict (id, tenant_id, biz_type, status_code, status_name, status_name_en, color, icon, sort_order, is_initial, is_terminal, is_cancellable, enabled) VALUES
+('sd-logistics-00', NULL, 'LOGISTICS', 'CREATED', '已创建', 'Created', '#d9d9d9', 'file', 0, true, false, true, true),
+('sd-logistics-01', NULL, 'LOGISTICS', 'PENDING', '待发货', 'Pending', '#faad14', 'clock-circle', 1, false, false, true, true),
+('sd-logistics-02', NULL, 'LOGISTICS', 'IN_TRANSIT', '运输中', 'In Transit', '#1890ff', 'rocket', 2, false, false, false, true),
+('sd-logistics-03', NULL, 'LOGISTICS', 'DELIVERED', '已签收', 'Delivered', '#52c41a', 'check-circle', 3, false, true, false, true),
+('sd-logistics-04', NULL, 'LOGISTICS', 'CANCELLED', '已取消', 'Cancelled', '#ff4d4f', 'close-circle', 4, false, true, false, true);
+
+INSERT INTO sys_status_transition (id, tenant_id, biz_type, from_status, to_status, action_code, action_name, action_name_en, need_approval, enabled, sort_order) VALUES
+('st-logistics-01', NULL, 'LOGISTICS', 'CREATED', 'PENDING', 'CONFIRM', '确认', 'Confirm', false, true, 0),
+('st-logistics-02', NULL, 'LOGISTICS', 'CREATED', 'CANCELLED', 'CANCEL', '取消', 'Cancel', false, true, 1),
+('st-logistics-03', NULL, 'LOGISTICS', 'PENDING', 'IN_TRANSIT', 'DISPATCH', '派送', 'Dispatch', false, true, 0),
+('st-logistics-04', NULL, 'LOGISTICS', 'PENDING', 'CANCELLED', 'CANCEL', '取消', 'Cancel', false, true, 1),
+('st-logistics-05', NULL, 'LOGISTICS', 'IN_TRANSIT', 'DELIVERED', 'DELIVER', '签收', 'Deliver', false, true, 0);
+
+-- ============================================================
+-- 结算单状态 (SETTLEMENT)
+-- ============================================================
+INSERT INTO sys_status_dict (id, tenant_id, biz_type, status_code, status_name, status_name_en, color, icon, sort_order, is_initial, is_terminal, is_cancellable, enabled) VALUES
+('sd-settle-00', NULL, 'SETTLEMENT', 'DRAFT', '草稿', 'Draft', '#d9d9d9', 'file', 0, true, false, true, true),
+('sd-settle-01', NULL, 'SETTLEMENT', 'CONFIRMED', '已确认', 'Confirmed', '#52c41a', 'check-circle', 1, false, false, false, true),
+('sd-settle-02', NULL, 'SETTLEMENT', 'PARTIAL_PAID', '部分付款', 'Partial Paid', '#faad14', 'credit-card', 2, false, false, false, true),
+('sd-settle-03', NULL, 'SETTLEMENT', 'FULLY_PAID', '已付清', 'Fully Paid', '#52c41a', 'smile', 3, false, true, false, true),
+('sd-settle-04', NULL, 'SETTLEMENT', 'CLOSED', '已关闭', 'Closed', '#d9d9d9', 'lock', 4, false, true, false, true);
+
+INSERT INTO sys_status_transition (id, tenant_id, biz_type, from_status, to_status, action_code, action_name, action_name_en, need_approval, enabled, sort_order) VALUES
+('st-settle-01', NULL, 'SETTLEMENT', 'DRAFT', 'CONFIRMED', 'CONFIRM', '确认', 'Confirm', false, true, 0),
+('st-settle-02', NULL, 'SETTLEMENT', 'CONFIRMED', 'PARTIAL_PAID', 'PAY_PARTIAL', '部分付款', 'Partial Pay', false, true, 0),
+('st-settle-03', NULL, 'SETTLEMENT', 'CONFIRMED', 'FULLY_PAID', 'PAY_FULL', '全额付款', 'Full Pay', false, true, 1),
+('st-settle-04', NULL, 'SETTLEMENT', 'PARTIAL_PAID', 'FULLY_PAID', 'PAY_FULL', '全额付款', 'Full Pay', false, true, 0),
+('st-settle-05', NULL, 'SETTLEMENT', 'DRAFT', 'CLOSED', 'CLOSE', '关闭', 'Close', false, true, 1);
+
+-- ============================================================
+-- 发票状态 (INVOICE)
+-- ============================================================
+INSERT INTO sys_status_dict (id, tenant_id, biz_type, status_code, status_name, status_name_en, color, icon, sort_order, is_initial, is_terminal, is_cancellable, enabled) VALUES
+('sd-invoice-00', NULL, 'INVOICE', 'DRAFT', '草稿', 'Draft', '#d9d9d9', 'file', 0, true, false, true, true),
+('sd-invoice-01', NULL, 'INVOICE', 'ISSUED', '已开票', 'Issued', '#52c41a', 'check-circle', 1, false, false, false, true),
+('sd-invoice-02', NULL, 'INVOICE', 'VERIFIED', '已验真', 'Verified', '#1890ff', 'safety-certificate', 2, false, false, false, true),
+('sd-invoice-03', NULL, 'INVOICE', 'REJECTED', '已驳回', 'Rejected', '#ff4d4f', 'close-circle', 3, false, true, false, true),
+('sd-invoice-04', NULL, 'INVOICE', 'VOIDED', '已作废', 'Voided', '#d9d9d9', 'stop', 4, false, true, false, true);
+
+INSERT INTO sys_status_transition (id, tenant_id, biz_type, from_status, to_status, action_code, action_name, action_name_en, need_approval, enabled, sort_order) VALUES
+('st-invoice-01', NULL, 'INVOICE', 'DRAFT', 'ISSUED', 'ISSUE', '开票', 'Issue', false, true, 0),
+('st-invoice-02', NULL, 'INVOICE', 'ISSUED', 'VERIFIED', 'VERIFY', '验真', 'Verify', false, true, 0),
+('st-invoice-03', NULL, 'INVOICE', 'ISSUED', 'REJECTED', 'REJECT', '驳回', 'Reject', false, true, 1),
+('st-invoice-04', NULL, 'INVOICE', 'ISSUED', 'VOIDED', 'VOID', '作废', 'Void', true, true, 2);
+
+-- ============================================================
+-- 对账状态 (RECONCILIATION)
+-- ============================================================
+INSERT INTO sys_status_dict (id, tenant_id, biz_type, status_code, status_name, status_name_en, color, icon, sort_order, is_initial, is_terminal, is_cancellable, enabled) VALUES
+('sd-recon-00', NULL, 'RECONCILIATION', 'DRAFT', '草稿', 'Draft', '#d9d9d9', 'file', 0, true, false, true, true),
+('sd-recon-01', NULL, 'RECONCILIATION', 'COMPARING', '对账中', 'Comparing', '#1890ff', 'sync', 1, false, false, false, true),
+('sd-recon-02', NULL, 'RECONCILIATION', 'MATCHED', '已匹配', 'Matched', '#52c41a', 'check-circle', 2, false, true, false, true),
+('sd-recon-03', NULL, 'RECONCILIATION', 'MISMATCHED', '有差异', 'Mismatched', '#faad14', 'warning', 3, false, false, false, true),
+('sd-recon-04', NULL, 'RECONCILIATION', 'RESOLVED', '已解决', 'Resolved', '#52c41a', 'smile', 4, false, true, false, true);
+
+INSERT INTO sys_status_transition (id, tenant_id, biz_type, from_status, to_status, action_code, action_name, action_name_en, need_approval, enabled, sort_order) VALUES
+('st-recon-01', NULL, 'RECONCILIATION', 'DRAFT', 'COMPARING', 'START', '开始对账', 'Start', false, true, 0),
+('st-recon-02', NULL, 'RECONCILIATION', 'COMPARING', 'MATCHED', 'MATCH', '匹配', 'Match', false, true, 0),
+('st-recon-03', NULL, 'RECONCILIATION', 'COMPARING', 'MISMATCHED', 'MISMATCH', '有差异', 'Mismatch', false, true, 1),
+('st-recon-04', NULL, 'RECONCILIATION', 'MISMATCHED', 'RESOLVED', 'RESOLVE', '解决', 'Resolve', false, true, 0);
+
+-- ============================================================
+-- 采购报价状态 (QUOTATION)
+-- ============================================================
+INSERT INTO sys_status_dict (id, tenant_id, biz_type, status_code, status_name, status_name_en, color, icon, sort_order, is_initial, is_terminal, is_cancellable, enabled) VALUES
+('sd-quotation-00', NULL, 'QUOTATION', 'DRAFT', '草稿', 'Draft', '#d9d9d9', 'file', 0, true, false, true, true),
+('sd-quotation-01', NULL, 'QUOTATION', 'SUBMITTED', '已提交', 'Submitted', '#1890ff', 'check-circle', 1, false, false, false, true),
+('sd-quotation-02', NULL, 'QUOTATION', 'ACCEPTED', '已采纳', 'Accepted', '#52c41a', 'smile', 2, false, true, false, true),
+('sd-quotation-03', NULL, 'QUOTATION', 'REJECTED', '未采纳', 'Rejected', '#ff4d4f', 'close-circle', 3, false, true, false, true);
+
+INSERT INTO sys_status_transition (id, tenant_id, biz_type, from_status, to_status, action_code, action_name, action_name_en, need_approval, enabled, sort_order) VALUES
+('st-quotation-01', NULL, 'QUOTATION', 'DRAFT', 'SUBMITTED', 'SUBMIT', '提交', 'Submit', false, true, 0),
+('st-quotation-02', NULL, 'QUOTATION', 'SUBMITTED', 'ACCEPTED', 'ACCEPT', '采纳', 'Accept', false, true, 0),
+('st-quotation-03', NULL, 'QUOTATION', 'SUBMITTED', 'REJECTED', 'REJECT', '未采纳', 'Reject', false, true, 1);
+
+-- ============================================================
+-- 采购收货状态 (RECEIPT)
+-- ============================================================
+INSERT INTO sys_status_dict (id, tenant_id, biz_type, status_code, status_name, status_name_en, color, icon, sort_order, is_initial, is_terminal, is_cancellable, enabled) VALUES
+('sd-receipt-00', NULL, 'RECEIPT', 'WAITING', '待收货', 'Waiting', '#faad14', 'clock-circle', 0, true, false, false, true),
+('sd-receipt-01', NULL, 'RECEIPT', 'RECEIVING', '收货中', 'Receiving', '#1890ff', 'loading', 1, false, false, false, true),
+('sd-receipt-02', NULL, 'RECEIPT', 'INSPECTING', '质检中', 'Inspecting', '#722ed1', 'search', 2, false, false, false, true),
+('sd-receipt-03', NULL, 'RECEIPT', 'COMPLETED', '已完成', 'Completed', '#52c41a', 'check-circle', 3, false, true, false, true);
+
+INSERT INTO sys_status_transition (id, tenant_id, biz_type, from_status, to_status, action_code, action_name, action_name_en, need_approval, enabled, sort_order) VALUES
+('st-receipt-01', NULL, 'RECEIPT', 'WAITING', 'RECEIVING', 'START', '开始收货', 'Start', false, true, 0),
+('st-receipt-02', NULL, 'RECEIPT', 'RECEIVING', 'INSPECTING', 'INSPECT', '质检', 'Inspect', false, true, 0),
+('st-receipt-03', NULL, 'RECEIPT', 'INSPECTING', 'COMPLETED', 'COMPLETE', '完成', 'Complete', false, true, 0);
+
+-- ============================================================
+-- 供应商结算状态 (SUPPLIER_SETTLEMENT)
+-- ============================================================
+INSERT INTO sys_status_dict (id, tenant_id, biz_type, status_code, status_name, status_name_en, color, icon, sort_order, is_initial, is_terminal, is_cancellable, enabled) VALUES
+('sd-supsettle-00', NULL, 'SUPPLIER_SETTLEMENT', 'DRAFT', '草稿', 'Draft', '#d9d9d9', 'file', 0, true, false, true, true),
+('sd-supsettle-01', NULL, 'SUPPLIER_SETTLEMENT', 'CONFIRMED', '已确认', 'Confirmed', '#52c41a', 'check-circle', 1, false, false, false, true),
+('sd-supsettle-02', NULL, 'SUPPLIER_SETTLEMENT', 'PARTIAL_PAID', '部分付款', 'Partial Paid', '#faad14', 'credit-card', 2, false, false, false, true),
+('sd-supsettle-03', NULL, 'SUPPLIER_SETTLEMENT', 'FULLY_PAID', '已付清', 'Fully Paid', '#52c41a', 'smile', 3, false, true, false, true),
+('sd-supsettle-04', NULL, 'SUPPLIER_SETTLEMENT', 'CLOSED', '已关闭', 'Closed', '#d9d9d9', 'lock', 4, false, true, false, true);
+
+INSERT INTO sys_status_transition (id, tenant_id, biz_type, from_status, to_status, action_code, action_name, action_name_en, need_approval, enabled, sort_order) VALUES
+('st-supsettle-01', NULL, 'SUPPLIER_SETTLEMENT', 'DRAFT', 'CONFIRMED', 'CONFIRM', '确认', 'Confirm', false, true, 0),
+('st-supsettle-02', NULL, 'SUPPLIER_SETTLEMENT', 'CONFIRMED', 'PARTIAL_PAID', 'PAY_PARTIAL', '部分付款', 'Partial Pay', false, true, 0),
+('st-supsettle-03', NULL, 'SUPPLIER_SETTLEMENT', 'CONFIRMED', 'FULLY_PAID', 'PAY_FULL', '全额付款', 'Full Pay', false, true, 1),
+('st-supsettle-04', NULL, 'SUPPLIER_SETTLEMENT', 'PARTIAL_PAID', 'FULLY_PAID', 'PAY_FULL', '全额付款', 'Full Pay', false, true, 0),
+('st-supsettle-05', NULL, 'SUPPLIER_SETTLEMENT', 'DRAFT', 'CLOSED', 'CLOSE', '关闭', 'Close', false, true, 1);
+
+-- ============================================================
+-- 通知模板状态 (NOTIFICATION)
+-- ============================================================
+INSERT INTO sys_status_dict (id, tenant_id, biz_type, status_code, status_name, status_name_en, color, icon, sort_order, is_initial, is_terminal, is_cancellable, enabled) VALUES
+('sd-notify-00', NULL, 'NOTIFICATION', 'DISABLED', '已禁用', 'Disabled', '#d9d9d9', 'pause-circle', 0, false, false, false, true),
+('sd-notify-01', NULL, 'NOTIFICATION', 'ENABLED', '已启用', 'Enabled', '#52c41a', 'check-circle', 1, true, false, false, true);
+
+INSERT INTO sys_status_transition (id, tenant_id, biz_type, from_status, to_status, action_code, action_name, action_name_en, need_approval, enabled, sort_order) VALUES
+('st-notify-01', NULL, 'NOTIFICATION', 'DISABLED', 'ENABLED', 'ENABLE', '启用', 'Enable', false, true, 0),
+('st-notify-02', NULL, 'NOTIFICATION', 'ENABLED', 'DISABLED', 'DISABLE', '禁用', 'Disable', false, true, 0);
+
+-- ============================================================
 -- 字典类型初始数据
 -- ============================================================
 INSERT INTO sys_dict_type (id, tenant_id, dict_code, dict_name, dict_name_en, description, status, is_system, sort_order) VALUES

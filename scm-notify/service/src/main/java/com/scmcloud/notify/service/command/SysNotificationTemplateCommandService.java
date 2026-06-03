@@ -1,6 +1,7 @@
 package com.scmcloud.notify.service.command;
 
 import com.scmcloud.common.data.rw.annotation.Master;
+import com.scmcloud.common.status.StatusValidator;
 import com.scmcloud.notify.domain.entity.SysNotificationTemplate;
 import com.scmcloud.notify.mapper.SysNotificationTemplateMapper;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class SysNotificationTemplateCommandService {
 
     private final SysNotificationTemplateMapper sysNotificationTemplateMapper;
+    private final StatusValidator statusValidator;
 
     @Master(reason = "创建通知模板")
     @Transactional(rollbackFor = Exception.class)
@@ -58,6 +60,10 @@ public class SysNotificationTemplateCommandService {
     @Transactional(rollbackFor = Exception.class)
     public boolean enableTemplate(String id) {
         log.info("启用通知模板: id={}", id);
+        SysNotificationTemplate current = sysNotificationTemplateMapper.selectById(id);
+        String fromStatus = current.getStatus() == 0 ? "DISABLED" : "ENABLED";
+        statusValidator.validateTransition("NOTIFICATION", fromStatus, "ENABLED");
+
         SysNotificationTemplate template = new SysNotificationTemplate();
         template.setId(id);
         template.setStatus(1);
@@ -69,6 +75,10 @@ public class SysNotificationTemplateCommandService {
     @Transactional(rollbackFor = Exception.class)
     public boolean disableTemplate(String id) {
         log.info("禁用通知模板: id={}", id);
+        SysNotificationTemplate current = sysNotificationTemplateMapper.selectById(id);
+        String fromStatus = current.getStatus() == 0 ? "DISABLED" : "ENABLED";
+        statusValidator.validateTransition("NOTIFICATION", fromStatus, "DISABLED");
+
         SysNotificationTemplate template = new SysNotificationTemplate();
         template.setId(id);
         template.setStatus(0);

@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.scmcloud.common.status.StatusValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -18,6 +20,9 @@ import java.util.List;
 @Slf4j
 @Service
 public class PurRfqServiceImpl extends ServiceImpl<PurRfqMapper, PurRfq> implements IPurRfqService {
+
+    @Autowired
+    private StatusValidator statusValidator;
 
     @Override
     public PurRfq getByRfqNo(String rfqNo) {
@@ -63,10 +68,8 @@ public class PurRfqServiceImpl extends ServiceImpl<PurRfqMapper, PurRfq> impleme
         if (rfq == null || rfq.getDeleted()) {
             throw new IllegalArgumentException("询价单不存在: " + id);
         }
-        if (rfq.getStatus() != 0) {
-            throw new IllegalStateException("只有草稿状态的询价单才能发布");
-        }
-        rfq.setStatus(1);
+        statusValidator.validateTransition("PURCHASE", "DRAFT", "PENDING_APPROVAL");
+        rfq.setStatus(1); // PENDING_APPROVAL
         rfq.setUpdateTime(LocalDateTime.now());
         return updateById(rfq);
     }
@@ -78,10 +81,17 @@ public class PurRfqServiceImpl extends ServiceImpl<PurRfqMapper, PurRfq> impleme
         if (rfq == null || rfq.getDeleted()) {
             throw new IllegalArgumentException("询价单不存在: " + id);
         }
-        if (rfq.getStatus() == 4) {
-            throw new IllegalStateException("询价单已关闭");
+        String fromStatus;
+        switch (rfq.getStatus()) {
+            case 0: fromStatus = "DRAFT"; break;
+            case 1: fromStatus = "PENDING_APPROVAL"; break;
+            case 2: fromStatus = "APPROVED"; break;
+            case 3: fromStatus = "REJECTED"; break;
+            case 4: fromStatus = "CANCELLED"; break;
+            default: throw new IllegalStateException("未知状态: " + rfq.getStatus());
         }
-        rfq.setStatus(4);
+        statusValidator.validateTransition("PURCHASE", fromStatus, "CANCELLED");
+        rfq.setStatus(4); // CANCELLED
         rfq.setUpdateTime(LocalDateTime.now());
         return updateById(rfq);
     }

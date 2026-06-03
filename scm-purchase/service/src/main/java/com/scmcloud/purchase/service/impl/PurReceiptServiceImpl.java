@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.scmcloud.common.status.StatusValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -18,6 +20,9 @@ import java.util.List;
 @Slf4j
 @Service
 public class PurReceiptServiceImpl extends ServiceImpl<PurReceiptMapper, PurReceipt> implements IPurReceiptService {
+
+    @Autowired
+    private StatusValidator statusValidator;
 
     @Override
     public PurReceipt getByReceiptNo(String receiptNo) {
@@ -68,10 +73,8 @@ public class PurReceiptServiceImpl extends ServiceImpl<PurReceiptMapper, PurRece
         if (receipt == null || receipt.getDeleted()) {
             throw new IllegalArgumentException("入库单不存在: " + id);
         }
-        if (receipt.getStatus() != 0) {
-            throw new IllegalStateException("只有待收货的入库单才能收货");
-        }
-        receipt.setStatus(1);
+        statusValidator.validateTransition("RECEIPT", "WAITING", "RECEIVING");
+        receipt.setStatus(1); // RECEIVING
         receipt.setReceiverId(receiverId);
         receipt.setReceiverName(receiverName);
         receipt.setReceivedAt(LocalDateTime.now());
@@ -86,10 +89,8 @@ public class PurReceiptServiceImpl extends ServiceImpl<PurReceiptMapper, PurRece
         if (receipt == null || receipt.getDeleted()) {
             throw new IllegalArgumentException("入库单不存在: " + id);
         }
-        if (receipt.getStatus() != 1) {
-            throw new IllegalStateException("只有已收货的入库单才能质检");
-        }
-        receipt.setStatus(2);
+        statusValidator.validateTransition("RECEIPT", "RECEIVING", "INSPECTING");
+        receipt.setStatus(2); // INSPECTING
         receipt.setQualityInspectorId(inspectorId);
         receipt.setQualityInspectorName(inspectorName);
         receipt.setQualityInspectedAt(LocalDateTime.now());
@@ -106,10 +107,8 @@ public class PurReceiptServiceImpl extends ServiceImpl<PurReceiptMapper, PurRece
         if (receipt == null || receipt.getDeleted()) {
             throw new IllegalArgumentException("入库单不存在: " + id);
         }
-        if (receipt.getStatus() != 2) {
-            throw new IllegalStateException("只有已质检的入库单才能上架");
-        }
-        receipt.setStatus(3);
+        statusValidator.validateTransition("RECEIPT", "INSPECTING", "COMPLETED");
+        receipt.setStatus(3); // COMPLETED
         receipt.setShelved(true);
         receipt.setShelvedBy(shelvedBy);
         receipt.setShelvedByName(shelvedByName);

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.scmcloud.common.status.StatusValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class WmsInboundServiceImpl extends ServiceImpl<WmsInboundMapper, WmsInbo
         implements IWmsInboundService {
 
     private final IWmsInboundItemService inboundItemService;
+    private final StatusValidator statusValidator;
 
     @Override
     public Page<WmsInbound> pageList(int page, int size, String warehouseId, Integer inboundType, Integer status) {
@@ -53,9 +55,6 @@ public class WmsInboundServiceImpl extends ServiceImpl<WmsInboundMapper, WmsInbo
             log.warn("入库单不存在: id={}", inboundId);
             return false;
         }
-        if (inbound.getStatus() != 0 && inbound.getStatus() != 1) {
-            throw new IllegalStateException("入库单状态不允许收货，当前状态 " + inbound.getStatus());
-        }
 
         List<WmsInboundItem> items = inboundItemService.lambdaQuery()
                 .eq(WmsInboundItem::getInboundId, inboundId)
@@ -73,6 +72,14 @@ public class WmsInboundServiceImpl extends ServiceImpl<WmsInboundMapper, WmsInbo
         boolean allReceived = items.stream()
                 .allMatch(item -> item.getActualQuantity() != null
                         && item.getActualQuantity().equals(item.getPlanQuantity()));
+
+        String receiveFromStatus;
+        if (inbound.getStatus() == 0) {
+            receiveFromStatus = "WAITING";
+        } else {
+            receiveFromStatus = "PROCESSING";
+        }
+        statusValidator.validateTransition("INBOUND", receiveFromStatus, allReceived ? "CANCELLED" : "FINISHED");
 
         inbound.setReceivedQuantity(totalReceived);
         inbound.setStatus(allReceived ? 3 : 2); // 3-已完成 2-部分入库
@@ -101,9 +108,15 @@ public class WmsInboundServiceImpl extends ServiceImpl<WmsInboundMapper, WmsInbo
             log.warn("入库单不存在: id={}", inboundId);
             return false;
         }
-        if (inbound.getStatus() == 3) {
-            throw new IllegalStateException("已完成的入库单不能取消");
+        String inboundCancelFromStatus;
+        if (inbound.getStatus() == 0) {
+            inboundCancelFromStatus = "WAITING";
+        } else if (inbound.getStatus() == 1) {
+            inboundCancelFromStatus = "PROCESSING";
+        } else {
+            inboundCancelFromStatus = "FINISHED";
         }
+        statusValidator.validateTransition("INBOUND", inboundCancelFromStatus, "CANCELLED");
 
         inbound.setStatus(4); // 4-已取消
         inbound.setOperatorId(operatorId);

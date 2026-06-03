@@ -84,6 +84,7 @@ public class Inventory {
   /**
    * 乐观锁版本号
    */
+  @com.baomidou.mybatisplus.annotation.Version
   private Integer version;
 
   /**
