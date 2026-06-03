@@ -1,5 +1,6 @@
 package com.scmcloud.inventory.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -27,6 +28,9 @@ import lombok.experimental.Accessors;
 public class InvAlert implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
+
+    @TableField(value = "tenant_id", fill = FieldFill.INSERT)
+    private String tenantId;
 
     @TableId(value = "id", type = IdType.NONE)
     private String id;

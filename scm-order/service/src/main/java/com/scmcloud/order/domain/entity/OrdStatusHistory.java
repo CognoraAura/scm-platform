@@ -2,6 +2,7 @@ package com.scmcloud.order.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -25,6 +26,9 @@ import lombok.experimental.Accessors;
 public class OrdStatusHistory implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    @TableField(value = "tenant_id", fill = FieldFill.INSERT)
+    private String tenantId;
 
     @TableId(value = "id", type = IdType.NONE)
     private Long id;
