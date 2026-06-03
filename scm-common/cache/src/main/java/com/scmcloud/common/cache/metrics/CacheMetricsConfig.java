@@ -1,4 +1,4 @@
-package com.scmcloud.common.web.metrics;
+package com.scmcloud.common.cache.metrics;
 
 import com.scmcloud.common.cache.spring.TwoLevelCache;
 import com.scmcloud.common.cache.spring.TwoLevelCacheManager;
