@@ -19,6 +19,8 @@
 
     <modules>
         <module>core</module>
+        <module>cache</module>
+        <module>data-rw</module>
         <module>data</module>
         <module>web</module>
         <module>monitoring</module>

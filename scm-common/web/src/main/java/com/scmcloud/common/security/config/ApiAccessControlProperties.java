@@ -18,9 +18,6 @@ public class ApiAccessControlProperties {
             "/api/auth/login",
             "/api/auth/register",
             "/api/auth/refresh",
-            "/swagger-ui/**",
-            "/v3/api-docs/**",
-            "/doc.html",
             "/actuator/health"
     ));
     private List<String> bypassPaths = new ArrayList<>();

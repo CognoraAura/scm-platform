@@ -122,13 +122,6 @@ public class SecurityConfig {
                                 "/api/auth/logout",
                                 "/api/public/**"
                         ).permitAll()
-                        .requestMatchers(
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/swagger-resources/**",
-                                "/webjars/**",
-                                "/doc.html"
-                        ).permitAll()
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                         .anyRequest().authenticated())
 

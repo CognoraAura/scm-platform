@@ -55,4 +55,29 @@ public class TenantPackageQueryService {
 
         return tenantPackageMapper.selectPage(new Page<>(page, size), wrapper);
     }
+
+    @Slave
+    public TenantPackage findDefaultTrialPackage() {
+        LambdaQueryWrapper<TenantPackage> wrapper = Wrappers.lambdaQuery();
+        wrapper.eq(TenantPackage::getIsTrial, true)
+                .eq(TenantPackage::getEnabled, true)
+                .eq(TenantPackage::getDeleted, false)
+                .orderByAsc(TenantPackage::getSortOrder)
+                .last("LIMIT 1");
+        TenantPackage trialPackage = tenantPackageMapper.selectOne(wrapper);
+        if (trialPackage == null) {
+            // Fallback to the basic package (level 1)
+            wrapper = Wrappers.lambdaQuery();
+            wrapper.eq(TenantPackage::getPackageLevel, 1)
+                    .eq(TenantPackage::getEnabled, true)
+                    .eq(TenantPackage::getDeleted, false)
+                    .orderByAsc(TenantPackage::getSortOrder)
+                    .last("LIMIT 1");
+            trialPackage = tenantPackageMapper.selectOne(wrapper);
+        }
+        if (trialPackage == null) {
+            throw new IllegalStateException("No trial or basic package found. Create a package first.");
+        }
+        return trialPackage;
+    }
 }
