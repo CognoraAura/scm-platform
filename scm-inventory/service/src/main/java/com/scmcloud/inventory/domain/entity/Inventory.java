@@ -22,6 +22,9 @@ import java.time.LocalDateTime;
 @TableName("inv_inventory")
 public class Inventory {
 
+  @TableField(value = "tenant_id", fill = FieldFill.INSERT)
+  private String tenantId;
+
   /**
    * 主键 ID（UUID
    */

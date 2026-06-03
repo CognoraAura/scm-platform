@@ -3,6 +3,7 @@ package com.scmcloud.logistics.domain.entity;
 import java.io.Serial;
 import java.math.BigDecimal;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -26,6 +27,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("tms_carrier")
 public class TmsCarrier implements Serializable {
+    @TableField(value = "tenant_id", fill = FieldFill.INSERT)
+    private String tenantId;
+
     @Serial
     private static final long serialVersionUID = 1L;
 

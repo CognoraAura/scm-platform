@@ -1,6 +1,7 @@
 package com.scmcloud.common.cache.spring;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.scmcloud.common.tenant.TenantContextHolder;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -8,6 +9,7 @@ import org.springframework.data.redis.core.ScanOptions;
 
 import java.time.Duration;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 @Slf4j
@@ -114,10 +116,14 @@ public class TwoLevelCache implements org.springframework.cache.Cache {
     public void clear() {
         local.invalidateAll();
         try {
+            UUID tenantId = TenantContextHolder.getTenantId();
+            String pattern = (tenantId != null)
+                    ? name + ":" + tenantId + ":*"
+                    : name + ":*";
             redisTemplate.execute(connection -> {
                 try (var cursor = connection.keyCommands().scan(
                         ScanOptions.scanOptions()
-                                .match(redisKey("*"))
+                                .match(pattern)
                                 .count(500)
                                 .build())) {
                     while (cursor.hasNext()) {
@@ -166,7 +172,9 @@ public class TwoLevelCache implements org.springframework.cache.Cache {
 
     @NonNull
     private String keyString(Object key) {
-        return String.valueOf(key);
+        UUID tenantId = TenantContextHolder.getTenantId();
+        String tenantPrefix = tenantId != null ? tenantId + ":" : "";
+        return tenantPrefix + String.valueOf(key);
     }
 
     private String redisKey(String k) {

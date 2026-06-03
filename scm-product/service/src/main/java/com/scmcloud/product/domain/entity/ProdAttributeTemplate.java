@@ -1,5 +1,6 @@
 package com.scmcloud.product.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -23,6 +24,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("prod_attribute_template")
 public class ProdAttributeTemplate {
+
+    @TableField(value = "tenant_id", fill = FieldFill.INSERT)
+    private String tenantId;
 
     @TableId(value = "id", type = IdType.NONE)
     private String id;

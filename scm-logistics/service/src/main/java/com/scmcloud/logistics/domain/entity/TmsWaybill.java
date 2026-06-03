@@ -25,6 +25,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("tms_waybill")
 public class TmsWaybill implements Serializable {
+    @TableField(value = "tenant_id", fill = FieldFill.INSERT)
+    private String tenantId;
+
     @Serial
     private static final long serialVersionUID = 1L;
 

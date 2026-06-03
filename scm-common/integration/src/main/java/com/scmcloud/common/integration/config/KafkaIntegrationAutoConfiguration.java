@@ -1,5 +1,6 @@
 package com.scmcloud.common.integration.config;
 
+import com.scmcloud.common.integration.idempotency.IdempotencyChecker;
 import com.scmcloud.common.integration.messaging.InstrumentedKafkaConsumer;
 import com.scmcloud.common.integration.messaging.KafkaMessagePublisher;
 import io.micrometer.observation.ObservationRegistry;
@@ -90,8 +91,9 @@ public class KafkaIntegrationAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public InstrumentedKafkaConsumer instrumentedKafkaConsumer(ObservationRegistry observationRegistry, Tracer tracer) {
-        return new InstrumentedKafkaConsumer(observationRegistry, tracer);
+    public InstrumentedKafkaConsumer instrumentedKafkaConsumer(ObservationRegistry observationRegistry,
+                                                               Tracer tracer, IdempotencyChecker idempotencyChecker) {
+        return new InstrumentedKafkaConsumer(observationRegistry, tracer, idempotencyChecker);
     }
 
     @Bean

@@ -36,12 +36,6 @@
             <version>4.3.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core</artifactId>
-            <version>5.4.1</version>
-        </dependency>
-
         <!-- Jakarta Validation -->
         <dependency>
             <groupId>jakarta.validation</groupId>
@@ -90,7 +84,7 @@
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
         </dependency>
-        <!-- 动态多数据�?-->
+        <!-- 动态多数据�?-->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-jsqlparser</artifactId>
@@ -136,7 +130,7 @@
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-annotation-aspectj</artifactId>
         </dependency>
-        <!-- Sentinel 规则数据源支�?-->
+        <!-- Sentinel 规则数据源支�?-->
         <dependency>
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-datasource-extension</artifactId>

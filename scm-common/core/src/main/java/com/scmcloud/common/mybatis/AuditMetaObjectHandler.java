@@ -59,10 +59,13 @@ public class AuditMetaObjectHandler implements MetaObjectHandler {
         // 1. 自动填充 id（UUIDv7�
         this.strictInsertFill(metaObject, "id", UUID.class, UUIDv7Util.generate());
 
-        // 2. 自动填充 tenant_id
+        // 2. 自动填充 tenant_id (supports both UUID and String field types)
         UUID tenantId = TenantContextHolder.getTenantId();
         if (tenantId != null) {
-            this.strictInsertFill(metaObject, "tenantId", UUID.class, tenantId);
+            if (!this.strictInsertFill(metaObject, "tenantId", UUID.class, tenantId)) {
+                // Field type is not UUID, try String
+                this.strictInsertFill(metaObject, "tenantId", String.class, tenantId.toString());
+            }
         } else {
             log.warn("Tenant ID is null when inserting, entity: {}", metaObject.getOriginalObject().getClass().getName());
         }

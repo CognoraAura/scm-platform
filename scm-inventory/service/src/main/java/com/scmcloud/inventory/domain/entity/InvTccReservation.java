@@ -15,6 +15,9 @@ import java.time.LocalDateTime;
 @TableName("inv_tcc_reservation")
 public class InvTccReservation {
 
+    @TableField(value = "tenant_id", fill = FieldFill.INSERT)
+    private String tenantId;
+
     @TableId(type = IdType.AUTO)
     private Long id;
 
