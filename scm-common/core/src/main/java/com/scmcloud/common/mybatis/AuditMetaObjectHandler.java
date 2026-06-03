@@ -9,7 +9,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
@@ -59,11 +58,17 @@ public class AuditMetaObjectHandler implements MetaObjectHandler {
         // 1. 自动填充 id（UUIDv7�
         this.strictInsertFill(metaObject, "id", UUID.class, UUIDv7Util.generate());
 
-        // 2. 自动填充 tenant_id (supports both UUID and String field types)
+        // 2. 自动填充 tenant_id
         UUID tenantId = TenantContextHolder.getTenantId();
         if (tenantId != null) {
-            if (!this.strictInsertFill(metaObject, "tenantId", UUID.class, tenantId)) {
-                // Field type is not UUID, try String
+            // 检查字段的当前值类型
+            Object tenantIdValue = metaObject.getValue("tenantId");
+            if (tenantIdValue instanceof UUID) {
+                this.strictInsertFill(metaObject, "tenantId", UUID.class, tenantId);
+            } else if (tenantIdValue instanceof String) {
+                this.strictInsertFill(metaObject, "tenantId", String.class, tenantId.toString());
+            } else {
+                // 字段未填充，默认使用 String 类型
                 this.strictInsertFill(metaObject, "tenantId", String.class, tenantId.toString());
             }
         } else {

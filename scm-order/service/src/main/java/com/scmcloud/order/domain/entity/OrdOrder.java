@@ -1,6 +1,7 @@
 package com.scmcloud.order.domain.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.FieldFill;

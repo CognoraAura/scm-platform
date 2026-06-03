@@ -17,7 +17,7 @@ import org.springframework.util.CollectionUtils;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
+
 
 @Slf4j
 @Service
@@ -39,7 +39,6 @@ public class OrdOrderCommandService {
             throw new IllegalArgumentException("订单明细不能为空");
         }
 
-        order.setId(UUID.randomUUID().toString());
         order.setStatus(0);
         order.setCreateTime(LocalDateTime.now());
         order.setUpdateTime(LocalDateTime.now());
@@ -65,7 +64,6 @@ public class OrdOrderCommandService {
         }
 
         for (OrdOrderItem item : items) {
-            item.setId(UUID.randomUUID().toString());
             item.setOrderId(order.getId());
             item.setOrderNo(order.getOrderNo());
             item.setCreateTime(LocalDateTime.now());
@@ -73,7 +71,6 @@ public class OrdOrderCommandService {
         ordOrderItemCommandService.saveBatch(items);
 
         OrdStatusHistory history = new OrdStatusHistory();
-        history.setId(UUID.randomUUID().toString());
         history.setOrderId(order.getId());
         history.setOrderNo(order.getOrderNo());
         history.setFromStatus(null);
@@ -128,7 +125,6 @@ public class OrdOrderCommandService {
         int updated = ordOrderMapper.updateById(order);
         if (updated > 0) {
             OrdStatusHistory history = new OrdStatusHistory();
-            history.setId(UUID.randomUUID().toString());
             history.setOrderId(order.getId());
             history.setOrderNo(order.getOrderNo());
             history.setFromStatus(fromStatus);
@@ -143,7 +139,7 @@ public class OrdOrderCommandService {
 
     @Master(reason = "删除订单")
     @Transactional(rollbackFor = Exception.class)
-    public int removeById(String id) {
+    public int removeById(Long id) {
         return ordOrderMapper.deleteById(id);
     }
 
