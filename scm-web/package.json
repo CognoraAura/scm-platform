@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate:api": "openapi-generator-cli generate -i http://localhost:8761/v3/api-docs -g typescript-axios -o src/lib/api/generated --additional-properties=withInterfaces=true,useSingleRequestParameter=true"
+    "generate:api": "openapi-generator-cli generate",
+    "generate:api:auth": "openapi-generator-cli generate --generator-key scm-auth-api",
+    "generate:api:system": "openapi-generator-cli generate --generator-key scm-system-api"
   },
   "dependencies": {
     "next": "^15.2.0",
