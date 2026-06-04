@@ -7,6 +7,8 @@ export const authApi = {
   refreshToken: (refreshToken: string) =>
     apiClient.post("/api/auth/refresh", { refreshToken }),
   me: () => apiClient.get("/api/auth/me"),
+  verifyMfa: (data: { tempToken: string; code: string }) =>
+    apiClient.post("/api/auth/mfa/verify", data),
 };
 
 export const userApi = {
