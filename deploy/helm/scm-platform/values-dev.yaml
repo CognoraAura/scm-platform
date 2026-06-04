@@ -1,0 +1,52 @@
+# SCM Platform Helm Values - Development
+global:
+  environment: development
+
+# Reduce replicas for dev
+services:
+  gateway:
+    replicas: 1
+  auth:
+    replicas: 1
+  system:
+    replicas: 1
+  inventory:
+    replicas: 1
+  order:
+    replicas: 1
+
+# Dev infrastructure
+postgresql:
+  auth:
+    postgresPassword: dev123
+  primary:
+    persistence:
+      size: 2Gi
+
+redis:
+  auth:
+    password: dev123
+  master:
+    persistence:
+      size: 1Gi
+
+kafka:
+  persistence:
+    size: 1Gi
+
+# Disable ingress for dev
+ingress:
+  enabled: false
+
+# Disable autoscaling for dev
+autoscaling:
+  enabled: false
+
+# Dev-specific config
+config:
+  nacos:
+    server: "nacos-headless.nacos:8848"
+    namespace: "scm-dev"
+  logging:
+    level:
+      com.scmcloud: DEBUG

@@ -1,0 +1,84 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: scm-platform-alerts
+  namespace: scm-platform
+  labels:
+    app: scm-platform
+    prometheus: kube-prometheus
+spec:
+  groups:
+    - name: scm-platform.rules
+      interval: 30s
+      rules:
+        # High order failure rate
+        - alert: HighOrderFailureRate
+          expr: |
+            sum(rate(scm_orders_failed_total[5m])) / sum(rate(scm_orders_created_total[5m])) > 0.02
+          for: 5m
+          labels:
+            severity: critical
+            team: scm
+          annotations:
+            summary: "High order failure rate"
+            description: "Order failure rate is {{ $value | humanizePercentage }} (threshold: 2%)"
+
+        # DLQ depth too high
+        - alert: DLQDepthHigh
+          expr: |
+            sum(kafka_consumer_group_lag{group=~".*dlq.*"}) > 100
+          for: 2m
+          labels:
+            severity: warning
+            team: scm
+          annotations:
+            summary: "DLQ depth is high"
+            description: "Dead letter queue has {{ $value }} messages pending"
+
+        # Tenant API quota near limit
+        - alert: TenantQuotaNearLimit
+          expr: |
+            scm_tenant_api_calls_total / scm_tenant_api_quota_limit > 0.9
+          for: 5m
+          labels:
+            severity: warning
+            team: scm
+          annotations:
+            summary: "Tenant API quota near limit"
+            description: "Tenant {{ $labels.tenant_id }} API usage is at {{ $value | humanizePercentage }}"
+
+        # High P99 latency
+        - alert: HighP99Latency
+          expr: |
+            histogram_quantile(0.99, sum(rate(http_server_requests_seconds_bucket[5m])) by (le)) > 0.5
+          for: 5m
+          labels:
+            severity: warning
+            team: scm
+          annotations:
+            summary: "High P99 latency"
+            description: "P99 latency is {{ $value }}s (threshold: 500ms)"
+
+        # Service down
+        - alert: ServiceDown
+          expr: |
+            up{job=~"scm-.*"} == 0
+          for: 1m
+          labels:
+            severity: critical
+            team: scm
+          annotations:
+            summary: "Service is down"
+            description: "{{ $labels.instance }} ({{ $labels.job }}) is unreachable"
+
+        # Low stock alerts
+        - alert: LowStockAlert
+          expr: |
+            scm_inventory_available_quantity < scm_inventory_low_stock_threshold
+          for: 10m
+          labels:
+            severity: warning
+            team: scm
+          annotations:
+            summary: "Low stock alert"
+            description: "SKU {{ $labels.sku_id }} has {{ $value }} units available (threshold: {{ $labels.threshold }})"

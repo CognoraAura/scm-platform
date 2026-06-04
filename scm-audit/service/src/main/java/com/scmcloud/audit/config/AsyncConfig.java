@@ -1,6 +1,6 @@
 package com.scmcloud.audit.config;
 
-import com.scmcloud.common.tenant.TenantAwareTaskDecorator;
+import com.scmcloud.common.tenant.TenantAwareMDCTaskDecorator;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
@@ -21,7 +21,7 @@ public class AsyncConfig implements AsyncConfigurer {
         executor.setMaxPoolSize(20);
         executor.setQueueCapacity(100);
         executor.setThreadNamePrefix("async-");
-        executor.setTaskDecorator(new TenantAwareTaskDecorator());
+        executor.setTaskDecorator(new TenantAwareMDCTaskDecorator());
         executor.initialize();
         return executor;
     }
