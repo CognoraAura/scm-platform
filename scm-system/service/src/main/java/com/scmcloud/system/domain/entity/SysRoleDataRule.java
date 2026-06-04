@@ -23,7 +23,7 @@ public class SysRoleDataRule {
     @TableId(value = "id", type = IdType.ASSIGN_UUID)
     private UUID id;
 
-    @TableField("tenant_id")
+    @TableField(value = "tenant_id", fill = FieldFill.INSERT)
     private UUID tenantId;
 
     private UUID roleId;

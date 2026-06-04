@@ -1,6 +1,7 @@
 package com.scmcloud.purchase.domain.entity;
 
 import java.math.BigDecimal;
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -31,6 +32,7 @@ public class PurQuotation implements Serializable {
     @TableId(value = "id", type = IdType.NONE)
     private String id;
 
+    @TableField(value = "tenant_id", fill = FieldFill.INSERT)
     private String tenantId;
 
     private String quotationNo;

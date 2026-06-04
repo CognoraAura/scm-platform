@@ -33,7 +33,7 @@ public class SysUser implements Serializable {
     )
     private UUID id;
 
-    @TableField("tenant_id")
+    @TableField(value = "tenant_id", fill = FieldFill.INSERT)
     private UUID tenantId;
 
     @TableField("username")
