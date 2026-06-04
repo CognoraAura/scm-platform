@@ -1,0 +1,97 @@
+# SCM Platform Helm Values - Production
+global:
+  environment: production
+
+# Production replicas
+services:
+  gateway:
+    replicas: 3
+  auth:
+    replicas: 3
+  system:
+    replicas: 2
+  inventory:
+    replicas: 3
+  order:
+    replicas: 3
+  product:
+    replicas: 2
+  warehouse:
+    replicas: 2
+  logistics:
+    replicas: 2
+
+# Production infrastructure - use external managed services
+postgresql:
+  enabled: false  # Use external managed PostgreSQL
+  external:
+    host: ${PROD_DB_HOST}
+    port: 5432
+    database: db_user
+    username: ${PROD_DB_USERNAME}
+    password: ${PROD_DB_PASSWORD}
+
+redis:
+  enabled: false  # Use external managed Redis
+  external:
+    host: ${PROD_REDIS_HOST}
+    port: 6379
+    password: ${PROD_REDIS_PASSWORD}
+
+kafka:
+  enabled: false  # Use external managed Kafka
+  external:
+    bootstrap: ${PROD_KAFKA_BOOTSTRAP}
+
+# Production ingress
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+  hosts:
+    - host: scm.scmcloud.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: scm-tls
+      hosts:
+        - scm.scmcloud.com
+
+# Production autoscaling
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 20
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 75
+
+# Production resources
+resources:
+  gateway:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+  auth:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+
+# Production config
+config:
+  nacos:
+    server: "nacos-headless.nacos:8848"
+    namespace: "scm-production"
+  logging:
+    level:
+      com.scmcloud: WARN
+      root: WARN

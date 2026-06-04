@@ -29,7 +29,7 @@ public class SysDictType implements Serializable {
     @TableId(value = "id", type = IdType.NONE)
     private String id;
 
-    @TableField("tenant_id")
+    @TableField(value = "tenant_id", fill = FieldFill.INSERT)
     private UUID tenantId;
 
     @TableField("dict_code")

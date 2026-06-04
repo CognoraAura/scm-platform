@@ -1,0 +1,121 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "description": "SCM Platform Business KPIs",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 1000},
+              {"color": "red", "value": 5000}
+            ]
+          }
+        }
+      },
+      "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
+      "id": 1,
+      "title": "Orders / Hour",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(rate(scm_orders_created_total[1h]))",
+          "legendFormat": "Orders"
+        }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyCNY",
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 100000},
+              {"color": "red", "value": 1000000}
+            ]
+          }
+        }
+      },
+      "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
+      "id": 2,
+      "title": "Revenue / Day",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(scm_revenue_daily_total)",
+          "legendFormat": "Revenue"
+        }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 0.05},
+              {"color": "red", "value": 0.1}
+            ]
+          }
+        }
+      },
+      "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0},
+      "id": 3,
+      "title": "Cancellation Rate",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(scm_orders_cancelled_total) / sum(scm_orders_created_total)",
+          "legendFormat": "Rate"
+        }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"}
+        }
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 18, "y": 0},
+      "id": 4,
+      "title": "Order Trend (24h)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(scm_orders_created_total[5m]))",
+          "legendFormat": "Orders Created"
+        },
+        {
+          "expr": "sum(rate(scm_orders_completed_total[5m]))",
+          "legendFormat": "Orders Completed"
+        }
+      ]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "tags": ["scm", "business"],
+  "templating": {"list": []},
+  "time": {"from": "now-24h", "to": "now"},
+  "timezone": "browser",
+  "uid": "scm-business-kpi",
+  "version": 1
+}

@@ -1,0 +1,92 @@
+package com.scmcloud.order;
+
+import com.scmcloud.order.domain.entity.OrdOrder;
+import com.scmcloud.order.domain.entity.OrderStatus;
+import com.scmcloud.order.domain.repository.OrdOrderRepository;
+import com.scmcloud.test.AbstractIntegrationTest;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Integration test for full order lifecycle.
+ * Tests the order aggregate with real database.
+ */
+class OrderLifecycleIntegrationTest extends AbstractIntegrationTest {
+
+    @Autowired
+    private OrdOrderRepository orderRepository;
+
+    @Test
+    @Transactional
+    void shouldCreateOrderAndTransitionStatuses() {
+        // Create order
+        OrdOrder order = new OrdOrder();
+        order.setOrderNo("ORD-TEST-001");
+        order.setUserId("user-001");
+        order.setTotalAmount(new BigDecimal("100.00"));
+        order.setPayableAmount(new BigDecimal("100.00"));
+        order.setStatus(OrderStatus.PENDING_PAYMENT.getCode());
+
+        // Save order
+        orderRepository.save(order);
+        assertNotNull(order.getId());
+
+        // Pay order
+        order.pay(new BigDecimal("100.00"), "PAY-001");
+        assertEquals(OrderStatus.PAID.getCode(), order.getStatus());
+        assertEquals("PAY-001", order.getPaymentNo());
+        assertTrue(order.hasDomainEvents());
+
+        // Ship order
+        order.ship("WB-001", "SF Express");
+        assertEquals(OrderStatus.SHIPPED.getCode(), order.getStatus());
+        assertEquals("WB-001", order.getWaybillNo());
+
+        // Complete order
+        order.complete();
+        assertEquals(OrderStatus.COMPLETED.getCode(), order.getStatus());
+        assertTrue(order.isTerminal());
+    }
+
+    @Test
+    @Transactional
+    void shouldCancelOrderFromPendingPayment() {
+        OrdOrder order = new OrdOrder();
+        order.setOrderNo("ORD-TEST-002");
+        order.setUserId("user-002");
+        order.setStatus(OrderStatus.PENDING_PAYMENT.getCode());
+
+        order.cancel("User requested");
+        assertEquals(OrderStatus.CANCELLED.getCode(), order.getStatus());
+        assertEquals("User requested", order.getCancelReason());
+        assertTrue(order.isTerminal());
+    }
+
+    @Test
+    @Transactional
+    void shouldNotCancelCompletedOrder() {
+        OrdOrder order = new OrdOrder();
+        order.setOrderNo("ORD-TEST-003");
+        order.setUserId("user-003");
+        order.setStatus(OrderStatus.COMPLETED.getCode());
+
+        assertThrows(IllegalStateException.class, () -> order.cancel("Invalid"));
+    }
+
+    @Test
+    @Transactional
+    void shouldNotPayCancelledOrder() {
+        OrdOrder order = new OrdOrder();
+        order.setOrderNo("ORD-TEST-004");
+        order.setUserId("user-004");
+        order.setStatus(OrderStatus.CANCELLED.getCode());
+
+        assertThrows(IllegalStateException.class, () -> 
+            order.pay(new BigDecimal("100.00"), "PAY-004"));
+    }
+}

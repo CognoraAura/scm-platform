@@ -1,5 +1,6 @@
 package com.scmcloud.common.integration.outbox;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -31,7 +32,7 @@ public class OutboxEvent {
     @TableField("payload")
     private String payload;
 
-    @TableField("tenant_id")
+    @TableField(value = "tenant_id", fill = FieldFill.INSERT)
     private UUID tenantId;
 
     @TableField("status")

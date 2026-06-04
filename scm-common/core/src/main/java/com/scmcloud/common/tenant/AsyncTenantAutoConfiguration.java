@@ -22,7 +22,7 @@ public class AsyncTenantAutoConfiguration {
         executor.setMaxPoolSize(16);
         executor.setQueueCapacity(100);
         executor.setThreadNamePrefix("async-tenant-");
-        executor.setTaskDecorator(new TenantAwareTaskDecorator());
+        executor.setTaskDecorator(new TenantAwareMDCTaskDecorator());
         executor.initialize();
         return executor;
     }

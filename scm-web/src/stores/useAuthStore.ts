@@ -1,29 +1,46 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-type User = {
+interface User {
   id: string;
   username: string;
   displayName: string;
+  email?: string;
   avatar?: string;
-};
+  roles?: string[];
+}
 
-type AuthState = {
-  token: string | null;
+interface AuthState {
   user: User | null;
-  setAuth: (token: string, user: User) => void;
+  accessToken: string | null;
+  refreshToken: string | null;
+  isAuthenticated: boolean;
+  login: (user: User, accessToken: string, refreshToken: string) => void;
   logout: () => void;
-  isAuthenticated: () => boolean;
-};
+  setUser: (user: User) => void;
+}
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
-      token: null,
+    (set) => ({
       user: null,
-      setAuth: (token, user) => set({ token, user }),
-      logout: () => set({ token: null, user: null }),
-      isAuthenticated: () => !!get().token,
+      accessToken: null,
+      refreshToken: null,
+      isAuthenticated: false,
+      login: (user, accessToken, refreshToken) => {
+        set({ user, accessToken, refreshToken, isAuthenticated: true });
+      },
+      logout: () => {
+        set({
+          user: null,
+          accessToken: null,
+          refreshToken: null,
+          isAuthenticated: false,
+        });
+      },
+      setUser: (user) => {
+        set({ user });
+      },
     }),
     { name: "scm-auth" }
   )

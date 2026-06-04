@@ -1,5 +1,6 @@
 package com.scmcloud.tenant.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDateTime;
@@ -29,7 +30,7 @@ public class TenantConfig implements Serializable {
     @TableId(value = "id", type = IdType.NONE)
     private String id;
 
-    @TableField("tenant_id")
+    @TableField(value = "tenant_id", fill = FieldFill.INSERT)
     private String tenantId;
 
     @TableField("config_category")

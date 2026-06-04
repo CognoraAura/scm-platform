@@ -1,0 +1,31 @@
+apiVersion: v2
+name: scm-platform
+description: Enterprise Supply Chain Management Platform
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - scm
+  - supply-chain
+  - microservices
+  - spring-cloud
+maintainers:
+  - name: SCM Team
+    email: admin@scmcloud.com
+dependencies:
+  - name: postgresql
+    version: "12.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql.enabled
+  - name: redis
+    version: "17.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled
+  - name: kafka
+    version: "22.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: kafka.enabled
+  - name: nacos
+    version: "1.x.x"
+    repository: "https://nacos-group.github.io/nacos-helm-chart"
+    condition: nacos.enabled

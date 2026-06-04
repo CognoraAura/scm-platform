@@ -31,7 +31,7 @@ public class SysRole {
     @TableId(value = "id", type = IdType.NONE)
     private UUID id;
 
-    @TableField("tenant_id")
+    @TableField(value = "tenant_id", fill = FieldFill.INSERT)
     private UUID tenantId;
 
     private String roleCode;
