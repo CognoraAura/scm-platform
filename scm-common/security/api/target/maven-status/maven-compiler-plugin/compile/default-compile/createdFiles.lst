@@ -1,0 +1,3 @@
+com\scmcloud\common\security\PermissionService.class
+com\scmcloud\common\security\SecurityContext.class
+com\scmcloud\common\security\PermissionService$PermissionServiceException.class
