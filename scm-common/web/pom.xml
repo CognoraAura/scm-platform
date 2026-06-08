@@ -32,7 +32,7 @@
                         <exclude>**/DynamicPermissionLoader.java</exclude>
                         <exclude>**/FeignPermissionAccess.java</exclude>
                         <exclude>**/RestClientHttpExchangeConfig.java</exclude>
-                        <exclude>**/StatusValidator.java</exclude>
+
                         <exclude>**/CustomUserDetailsService.java</exclude>
                     </excludes>
                     <testExcludes>
