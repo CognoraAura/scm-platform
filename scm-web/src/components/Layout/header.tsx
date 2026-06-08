@@ -15,6 +15,7 @@ import {
 } from '@ant-design/icons'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useUIStore } from '@/stores/ui-store'
+import TenantSwitcher from '@/components/business/tenant-switcher'
 
 const { Header: AntHeader } = Layout
 
@@ -85,6 +86,8 @@ export default function AppHeader() {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <TenantSwitcher />
+
         <Tooltip title="全屏">
           <ExpandOutlined
             onClick={toggleFullscreen}

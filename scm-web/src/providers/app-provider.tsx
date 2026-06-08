@@ -3,6 +3,7 @@
 import { ReactNode } from 'react'
 import QueryProvider from '@/components/providers/QueryProvider'
 import ThemeProvider from './theme-provider'
+import AuthProvider from './auth-provider'
 
 interface AppProviderProps {
   children: ReactNode
@@ -11,7 +12,9 @@ interface AppProviderProps {
 export default function AppProvider({ children }: AppProviderProps) {
   return (
     <QueryProvider>
-      <ThemeProvider>{children}</ThemeProvider>
+      <ThemeProvider>
+        <AuthProvider>{children}</AuthProvider>
+      </ThemeProvider>
     </QueryProvider>
   )
 }

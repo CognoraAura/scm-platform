@@ -9,6 +9,18 @@ export const authApi = {
   me: () => apiClient.get("/api/auth/me"),
   verifyMfa: (data: { tempToken: string; code: string }) =>
     apiClient.post("/api/auth/mfa/verify", data),
+  forgotPassword: (email: string) =>
+    apiClient.post('/api/auth/forgot-password', { email }),
+  verifyResetCode: (email: string, code: string) =>
+    apiClient.post('/api/auth/verify-reset-code', { email, code }),
+  resetPassword: (token: string, password: string) =>
+    apiClient.post('/api/auth/reset-password', { token, password }),
+  getPermissions: () => apiClient.get('/api/auth/permissions'),
+};
+
+export const tenantApi = {
+  list: () => apiClient.get('/api/tenants'),
+  switch: (tenantId: string) => apiClient.post(`/api/tenants/${tenantId}/switch`),
 };
 
 export const userApi = {
