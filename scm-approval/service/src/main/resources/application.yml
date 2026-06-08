@@ -1,4 +1,4 @@
-server:
+﻿server:
   port: 8209
 
 spring:
@@ -27,7 +27,7 @@ mybatis-plus:
     cache-enabled: false
     log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
 
-# Seata 分布式事务配�?
+  Seata 分布式事务配�?
 seata:
   enabled: true
   application-id: ${spring.application.name}
