@@ -24,7 +24,7 @@ public class TenantProvisioningController {
         if (result.isSuccess()) {
             return ApiResponse.success(result);
         } else {
-            return ApiResponse.fail(result.getErrorMessage());
+            return ApiResponse.fail(500, result.getErrorMessage());
         }
     }
 }
