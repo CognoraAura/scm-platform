@@ -4,8 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Table, Button, Tag, Space, message, Popconfirm, Input } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons'
-import MainLayout from '@/components/Layout/MainLayout'
-import ProtectedRoute from '@/components/Auth/ProtectedRoute'
 import client from '@/lib/api/client'
 
 interface User {
@@ -116,33 +114,31 @@ export default function UserListPage() {
   }
 
   return (
-    <ProtectedRoute>
-      <MainLayout>
-        <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
-          <Input.Search
-            placeholder="搜索用户"
-            allowClear
-            enterButton={<SearchOutlined />}
-            size="large"
-            onSearch={loadUsers}
-            style={{ width: 400 }}
-          />
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            size="large"
-            onClick={() => router.push('/users/add')}
-          >
-            新增用户
-          </Button>
-        </div>
-        <Table
-          columns={columns}
-          dataSource={users}
-          loading={loading}
-          rowKey="id"
+    <>
+      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+        <Input.Search
+          placeholder="搜索用户"
+          allowClear
+          enterButton={<SearchOutlined />}
+          size="large"
+          onSearch={loadUsers}
+          style={{ width: 400 }}
         />
-      </MainLayout>
-    </ProtectedRoute>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          size="large"
+          onClick={() => router.push('/users/add')}
+        >
+          新增用户
+        </Button>
+      </div>
+      <Table
+        columns={columns}
+        dataSource={users}
+        loading={loading}
+        rowKey="id"
+      />
+    </>
   )
 }

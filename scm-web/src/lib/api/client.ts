@@ -1,68 +1,116 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { useTenantStore } from '@/stores/tenant-store'
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8761";
+  process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8761'
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 30000,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
-});
+})
 
+// Request interceptor
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("access_token");
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+    const { accessToken } = useAuthStore.getState()
+    const { currentTenant } = useTenantStore.getState()
+
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`
     }
-    return config;
+
+    if (currentTenant) {
+      config.headers['X-Tenant-Id'] = currentTenant.id
+      config.headers['X-Tenant-Code'] = currentTenant.code
+    }
+
+    // Request ID for tracing
+    config.headers['X-Request-Id'] = crypto.randomUUID()
+
+    return config
   },
   (error) => Promise.reject(error)
-);
+)
+
+// Response interceptor
+let isRefreshing = false
+let pendingRequests: Array<{
+  resolve: (token: string) => void
+  reject: (error: Error) => void
+}> = []
 
 apiClient.interceptors.response.use(
   (response) => response.data,
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & {
-      _retry?: boolean;
-    };
+      _retry?: boolean
+    }
 
+    // 401 — attempt token refresh
     if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+      originalRequest._retry = true
+
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          pendingRequests.push({
+            resolve: (token: string) => {
+              originalRequest.headers.Authorization = `Bearer ${token}`
+              resolve(apiClient(originalRequest))
+            },
+            reject,
+          })
+        })
+      }
+
+      isRefreshing = true
 
       try {
-        const refreshToken = localStorage.getItem("refresh_token");
+        const { refreshToken } = useAuthStore.getState()
         if (!refreshToken) {
-          throw new Error("No refresh token");
+          throw new Error('No refresh token')
         }
 
-        const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+        const response = await axios.post(`${API_BASE_URL}/api/auth/refresh`, {
           refreshToken,
-        });
+        })
 
-        const { accessToken, refreshToken: newRefreshToken } =
-          response.data.data;
-        localStorage.setItem("access_token", accessToken);
-        localStorage.setItem("refresh_token", newRefreshToken);
+        const {
+          accessToken: newToken,
+          refreshToken: newRefreshToken,
+        } = (response.data as { data: { accessToken: string; refreshToken: string } }).data
 
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        return apiClient(originalRequest);
-      } catch {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        if (typeof window !== "undefined") {
-          window.location.href = "/login";
+        const { login, user } = useAuthStore.getState()
+        if (user) {
+          login(user, newToken, newRefreshToken)
         }
-        return Promise.reject(error);
+
+        pendingRequests.forEach(({ resolve }) => resolve(newToken))
+        pendingRequests = []
+
+        originalRequest.headers.Authorization = `Bearer ${newToken}`
+        return apiClient(originalRequest)
+      } catch (refreshError) {
+        pendingRequests.forEach(({ reject }) =>
+          reject(new Error('Token refresh failed'))
+        )
+        pendingRequests = []
+
+        useAuthStore.getState().logout()
+        if (typeof window !== 'undefined') {
+          window.location.href = '/login'
+        }
+        return Promise.reject(refreshError)
+      } finally {
+        isRefreshing = false
       }
     }
 
-    return Promise.reject(error);
+    return Promise.reject(error)
   }
-);
+)
 
-export default apiClient;
+export default apiClient
