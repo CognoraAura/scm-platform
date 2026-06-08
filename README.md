@@ -29,13 +29,14 @@
 | 🔍 | **Full-Text Search** | Elasticsearch-powered product search with real-time sync via Canal binlog |
 | 📊 | **Observability** | Sentinel circuit breaking, SkyWalking tracing, Prometheus metrics, Grafana dashboards |
 | 🏢 | **Multi-Tenant** | Tenant isolation with dynamic data source routing and configurable feature flags |
+| 🖥️ | **Modern Frontend** | Next.js 15 App Router, Ant Design 5 Pro, Zustand state management, TanStack Query |
 | 📦 | **Domain-Driven Design** | Clean CQRS separation, aggregate roots, domain events via Kafka/RabbitMQ |
 
 ## Tech Stack
 
 | Layer | Components |
-|---|---|
-| **Runtime** | Java 21 (Virtual Threads), Spring Boot 4.0.6, Spring Cloud 2025.1.1 |
+|---|---|---|
+| **Backend** | Java 21 (Virtual Threads), Spring Boot 4.0.6, Spring Cloud 2025.1.1 |
 | **Alibaba** | Spring Cloud Alibaba 2025.1.0.0 (Nacos, Sentinel, Seata) |
 | **Database** | PostgreSQL, MyBatis-Plus 3.5.15, ShardingSphere 5.5.1 |
 | **Cache** | Redis (distributed cache, Lua scripts for atomic operations) |
@@ -44,31 +45,40 @@
 | **RPC** | Apache Dubbo 3.3.6 (internal service calls) |
 | **Scheduling** | XXL-Job 3.3.1 (distributed task scheduling) |
 | **Monitoring** | Sentinel, SkyWalking 9.3.0, Micrometer + Prometheus |
+| **Frontend** | Next.js 15 (App Router), React 19, Ant Design 5, Zustand 5, TanStack Query 5, ECharts, next-intl |
+| **DevOps** | Docker, GitHub Actions, SonarCloud, OWASP Dependency Check |
 
 ## Architecture
 
 ```
-                           ┌─────────────────┐
-                           │   API Gateway   │ :8761
-                           └────────┬────────┘
-                                    │
-       ┌────────────┬───────────┬───┴────┬───────────┬───────────┐
-       │            │           │        │           │           │
-  ┌────▼────┐  ┌────▼────┐ ┌───▼───┐ ┌──▼────┐ ┌───▼────┐ ┌───▼────┐
-  │  Auth   │  │ System  │ │Product│ │ Order │ │  WMS   │ │Logistics│
-  │  :8106  │  │  :8081  │ │ :8201 │ │ :8203 │ │ :8204  │ │  :8205  │
-  └─────────┘  └─────────┘ └───────┘ └───────┘ └────────┘ └────────┘
-       │            │           │        │           │           │
-  ┌────▼────┐  ┌────▼────┐ ┌───▼───┐ ┌──▼────┐ ┌───▼────┐ ┌───▼────┐
-  │Approval │  │  Audit  │ │  INV  │ │Finance│ │Supplier│ │ Notify │
-  │         │  │         │ │ :8202 │ │       │ │ :8206  │ │        │
-  └─────────┘  └─────────┘ └───────┘ └───────┘ └────────┘ └────────┘
+                            ┌─────────────────┐
+                            │ Frontend (scm-web)│
+                            │  Next.js 15      │
+                            │  Ant Design 5    │
+                            └────────┬────────┘
+                                     │
+                            ┌────────▼────────┐
+                            │   API Gateway   │ :8761
+                            └────────┬────────┘
+                                     │
+        ┌────────────┬───────────┬───┴────┬───────────┬───────────┐
+        │            │           │        │           │           │
+   ┌────▼────┐  ┌────▼────┐ ┌───▼───┐ ┌──▼────┐ ┌───▼────┐ ┌───▼────┐
+   │  Auth   │  │ System  │ │Product│ │ Order │ │  WMS   │ │Logistics│
+   │  :8106  │  │  :8081  │ │ :8201 │ │ :8203 │ │ :8204  │ │  :8205  │
+   └─────────┘  └─────────┘ └───────┘ └───────┘ └────────┘ └────────┘
+        │            │           │        │           │           │
+   ┌────▼────┐  ┌────▼────┐ ┌───▼───┐ ┌──▼────┐ ┌───▼────┐ ┌───▼────┐
+   │Approval │  │  Audit  │ │  INV  │ │Finance│ │Supplier│ │ Notify │
+   │         │  │         │ │ :8202 │ │       │ │ :8206  │ │        │
+   └─────────┘  └─────────┘ └───────┘ └───────┘ └────────┘ └────────┘
 ```
 
 ## Modules
 
 | Module | Port | Description |
-|---|---|---|
+|---|---|---|---|
+| `scm-web` | 3000 | Frontend — Next.js 15, Ant Design 5, Zustand, TanStack Query |
 | `scm-gateway` | 8761 | API Gateway — routing, rate limiting, cross-cutting concerns |
 | `scm-auth` | 8106 | Authentication — OAuth2, JWT, WebAuthn passwordless login |
 | `scm-system` | 8081 | System management — users, roles, permissions, departments |
@@ -91,6 +101,7 @@
 
 - **JDK 21** (virtual threads required)
 - **Maven 3.8+**
+- **Node.js 20+** (for frontend)
 - **Docker & Docker Compose**
 
 ### 1. Start Infrastructure
@@ -143,12 +154,31 @@ cd scm-order/service && mvn spring-boot:run
 ### 5. Access
 
 | Service | URL |
-|---|---|
+|---|---|---|
 | API Gateway | http://localhost:8761 |
 | Nacos Console | http://localhost:8848/nacos |
 | Sentinel Dashboard | http://localhost:8080 |
 | XXL-Job Admin | http://localhost:8088/xxl-job-admin |
 | Prometheus | http://localhost:9090 |
+
+### 6. Frontend
+
+```bash
+cd scm-web
+npm install
+npm run dev
+```
+
+Frontend runs at **http://localhost:3000** with zh-CN and en-US language support.
+
+| Page | Route |
+|---|---|
+| Login | `/login` |
+| Dashboard | `/dashboard` |
+| Product Management | `/product` |
+| Order Management | `/order` |
+| Inventory Management | `/inventory` |
+| System Settings | `/system/*` |
 
 ## Key Patterns
 
@@ -199,6 +229,7 @@ public Order createOrder(OrderDTO dto) {
 ```
 scm-platform/
 ├── com.scm.parent/          # Parent POM (dependency management)
+├── scm-web/                 # Frontend (Next.js 15, React 19, Ant Design 5)
 ├── scm-common/              # Shared modules
 │   ├── core/                # Utilities, exceptions, tenant context
 │   ├── data/                # Data access, read-write separation, multi-tenant routing
