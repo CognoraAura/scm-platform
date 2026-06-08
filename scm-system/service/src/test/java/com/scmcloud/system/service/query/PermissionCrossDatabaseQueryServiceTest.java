@@ -44,7 +44,7 @@ class PermissionCrossDatabaseQueryServiceTest {
         testPermission.setPermissionName("User Management");
         testPermission.setPermissionCode("user:manage");
         testPermission.setPermissionType(1); // Menu
-        testPermission.setPath("/user");
+        testPermission.setRoutePath("/user");
         testPermission.setComponent("User");
         testPermission.setIcon("user");
         testPermission.setSortOrder(1);
@@ -71,7 +71,7 @@ class PermissionCrossDatabaseQueryServiceTest {
         assertEquals(testPermissionId, menu.getId());
         assertEquals("User Management", menu.getPermissionName());
         assertEquals("user:manage", menu.getPermissionCode());
-        assertEquals("/user", menu.getPath());
+        assertEquals("/user", menu.getRoutePath());
         verify(permissionMapper).findMenuTreeByUserId(testUserId);
     }
 
@@ -298,16 +298,13 @@ class PermissionCrossDatabaseQueryServiceTest {
         completeMenu.setPermissionName("Complete Menu");
         completeMenu.setPermissionCode("complete:menu");
         completeMenu.setPermissionType(1);
-        completeMenu.setPath("/complete");
+        completeMenu.setRoutePath("/complete");
         completeMenu.setComponent("Complete");
         completeMenu.setIcon("complete-icon");
         completeMenu.setRedirect("/complete/index");
-        completeMenu.setIsVisible(true);
-        completeMenu.setIsCache(true);
-        completeMenu.setIsFrame(false);
+        completeMenu.setVisible(true);
         completeMenu.setSortOrder(1);
         completeMenu.setStatus(1);
-        completeMenu.setRemark("Test menu");
 
         List<PermissionDTO> expectedMenus = Collections.singletonList(completeMenu);
         when(permissionMapper.findMenuTreeByUserId(testUserId)).thenReturn(expectedMenus);
@@ -323,7 +320,7 @@ class PermissionCrossDatabaseQueryServiceTest {
         assertEquals(testPermissionId, resultMenu.getId());
         assertEquals("Complete Menu", resultMenu.getPermissionName());
         assertEquals("complete:menu", resultMenu.getPermissionCode());
-        assertEquals("/complete", resultMenu.getPath());
+        assertEquals("/complete", resultMenu.getRoutePath());
         assertEquals("Complete", resultMenu.getComponent());
         assertEquals("complete-icon", resultMenu.getIcon());
         assertEquals(1, resultMenu.getPermissionType());
