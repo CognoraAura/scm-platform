@@ -17,28 +17,12 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * 商品搜索集成测试
- *
- * <p>测试场景�
- * 1. 全文搜索 - 关键词匹�
- * 2. 分类筛�- 精确匹配
- * 3. 品牌筛�- 精确匹配
- * 4. 价格区间查询 - 范围过滤
- * 5. 多条件组合搜�
- * 6. 排序功能 - 销�价格/时间
- * 7. 分页功能
- * 8. 热门商品/最新商�
- *
- * @author SCM Platform Team
- * @since 2025-12-26
- */
 @RequiredArgsConstructor
 @Slf4j
 @SpringBootTest
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@DisplayName("商品搜索集成测试")
+@DisplayName("Product Search Integration Test")
 public class ProductSearchIntegrationTest {
 
     private final ProductSearchService productSearchService;
@@ -48,19 +32,12 @@ public class ProductSearchIntegrationTest {
     private static final String TEST_CATEGORY_ID = "cat_test_001";
     private static final String TEST_BRAND_ID = "brand_test_001";
 
-    /**
-     * 准备测试数据
-     */
     @BeforeEach
     public void setup() {
-        log.info("========================================");
-        log.info("准备商品搜索测试数据");
-        log.info("========================================");
+        log.info("=== Preparing product search test data ===");
 
-        // 清理测试数据
         productSearchRepository.deleteAll();
 
-        // 插入测试商品
         createTestProduct("prod_001", "iPhone 15 Pro Max", TEST_CATEGORY_ID, TEST_BRAND_ID,
                 new BigDecimal("9999.00"), new BigDecimal("13999.00"), 1000, 5000, 100);
 
@@ -76,26 +53,20 @@ public class ProductSearchIntegrationTest {
         createTestProduct("prod_005", "iPad Pro", TEST_CATEGORY_ID, TEST_BRAND_ID,
                 new BigDecimal("6999.00"), new BigDecimal("15999.00"), 600, 3000, 60);
 
-        // 等待 Elasticsearch 索引刷新
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
 
-        log.info("�测试数据准备完成: 共插�5 个商�);
+        log.info("Test data ready: inserted 5 products");
     }
 
-    /**
-     * 场景 1: 全文搜索 - 关键词匹�
-     */
     @Test
     @Order(1)
-    @DisplayName("场景1: 全文搜索 - iPhone 关键�)
+    @DisplayName("Scenario 1: Full text search by keyword")
     public void testFullTextSearch_Keyword() {
-        log.info("========================================");
-        log.info("测试场景 1: 全文搜索 - iPhone 关键�);
-        log.info("========================================");
+        log.info("=== Scenario 1: Full text search - iPhone keyword ===");
 
         ProductSearchRequest request = new ProductSearchRequest();
         request.setKeyword("iPhone");
@@ -104,82 +75,59 @@ public class ProductSearchIntegrationTest {
 
         Page<ProductSearchResponse> result = productSearchService.search(request);
 
-        assertNotNull(result, "搜索结果不应为空");
-        assertTrue(result.getTotalElements() >= 2, "应该至少找到 2 �iPhone 商品");
+        assertNotNull(result, "Search result should not be null");
+        assertTrue(result.getTotalElements() >= 2, "Should find at least 2 iPhone products");
 
-        log.info("�全文搜索验证通过: 找到 {} 个商�, result.getTotalElements());
+        log.info("Full text search passed: found {} products", result.getTotalElements());
 
-        log.info("========================================");
-        log.info("场景 1 测试通过 �);
-        log.info("========================================");
+        log.info("=== Scenario 1 passed ===");
     }
 
-    /**
-     * 场景 2: 分类筛�
-     */
     @Test
     @Order(2)
-    @DisplayName("场景2: 分类筛�)
+    @DisplayName("Scenario 2: Category filter")
     public void testCategoryFilter() {
-        log.info("========================================");
-        log.info("测试场景 2: 分类筛�);
-        log.info("========================================");
+        log.info("=== Scenario 2: Category filter ===");
 
         Page<ProductSearchResponse> result = productSearchService.findByCategory(TEST_CATEGORY_ID, 1, 20);
 
-        assertNotNull(result, "搜索结果不应为空");
-        assertEquals(4, result.getTotalElements(), "应该找到 4 个商品（同一分类�);
+        assertNotNull(result, "Search result should not be null");
+        assertEquals(4, result.getTotalElements(), "Should find 4 products in same category");
 
-        // 验证所有商品都属于指定分类
         result.getContent().forEach(product -> {
-            assertEquals(TEST_CATEGORY_ID, product.getCategoryId(), "商品分类应该匹配");
+            assertEquals(TEST_CATEGORY_ID, product.getCategoryId(), "Product category should match");
         });
 
-        log.info("�分类筛选验证通过: 找到 {} 个商�, result.getTotalElements());
+        log.info("Category filter passed: found {} products", result.getTotalElements());
 
-        log.info("========================================");
-        log.info("场景 2 测试通过 �);
-        log.info("========================================");
+        log.info("=== Scenario 2 passed ===");
     }
 
-    /**
-     * 场景 3: 品牌筛�
-     */
     @Test
     @Order(3)
-    @DisplayName("场景3: 品牌筛�)
+    @DisplayName("Scenario 3: Brand filter")
     public void testBrandFilter() {
-        log.info("========================================");
-        log.info("测试场景 3: 品牌筛�);
-        log.info("========================================");
+        log.info("=== Scenario 3: Brand filter ===");
 
         Page<ProductSearchResponse> result = productSearchService.findByBrand(TEST_BRAND_ID, 1, 20);
 
-        assertNotNull(result, "搜索结果不应为空");
-        assertEquals(4, result.getTotalElements(), "应该找到 4 个商品（同一品牌�);
+        assertNotNull(result, "Search result should not be null");
+        assertEquals(4, result.getTotalElements(), "Should find 4 products in same brand");
 
-        // 验证所有商品都属于指定品牌
         result.getContent().forEach(product -> {
-            assertEquals(TEST_BRAND_ID, product.getBrandId(), "商品品牌应该匹配");
+            assertEquals(TEST_BRAND_ID, product.getBrandId(), "Product brand should match");
         });
 
-        log.info("�品牌筛选验证通过: 找到 {} 个商�, result.getTotalElements());
+        log.info("Brand filter passed: found {} products", result.getTotalElements());
 
-        log.info("========================================");
-        log.info("场景 3 测试通过 �);
-        log.info("========================================");
+        log.info("=== Scenario 3 passed ===");
     }
 
-    /**
-     * 场景 4: 价格区间查询
-     */
     @Test
     @Order(4)
-    @DisplayName("场景4: 价格区间查询")
+    @DisplayName("Scenario 4: Price range filter")
     public void testPriceRangeFilter() {
-        log.info("========================================");
-        log.info("测试场景 4: 价格区间查询�000-10000�);
-        log.info("========================================");
+        log.info("=== Scenario 4: Price range filter 5000-10000 ===");
 
         ProductSearchRequest request = new ProductSearchRequest();
         request.setMinPrice(new BigDecimal("5000.00"));
@@ -189,26 +137,19 @@ public class ProductSearchIntegrationTest {
 
         Page<ProductSearchResponse> result = productSearchService.search(request);
 
-        assertNotNull(result, "搜索结果不应为空");
-        assertTrue(result.getTotalElements() >= 1, "应该至少找到 1 个商�);
+        assertNotNull(result, "Search result should not be null");
+        assertTrue(result.getTotalElements() >= 1, "Should find at least 1 product");
 
-        log.info("�价格区间查询验证通过: 找到 {} 个商�, result.getTotalElements());
+        log.info("Price range filter passed: found {} products", result.getTotalElements());
 
-        log.info("========================================");
-        log.info("场景 4 测试通过 �);
-        log.info("========================================");
+        log.info("=== Scenario 4 passed ===");
     }
 
-    /**
-     * 场景 5: 多条件组合搜�
-     */
     @Test
     @Order(5)
-    @DisplayName("场景5: 多条件组合搜索（关键�分类+品牌�)
+    @DisplayName("Scenario 5: Advanced search (keyword + category + brand)")
     public void testAdvancedSearch() {
-        log.info("========================================");
-        log.info("测试场景 5: 多条件组合搜�);
-        log.info("========================================");
+        log.info("=== Scenario 5: Advanced search ===");
 
         ProductSearchRequest request = new ProductSearchRequest();
         request.setKeyword("iPhone");
@@ -219,26 +160,19 @@ public class ProductSearchIntegrationTest {
 
         Page<ProductSearchResponse> result = productSearchService.search(request);
 
-        assertNotNull(result, "搜索结果不应为空");
-        assertTrue(result.getTotalElements() >= 2, "应该找到至少 2 个商�);
+        assertNotNull(result, "Search result should not be null");
+        assertTrue(result.getTotalElements() >= 2, "Should find at least 2 products");
 
-        log.info("�多条件组合搜索验证通过: 找到 {} 个商�, result.getTotalElements());
+        log.info("Advanced search passed: found {} products", result.getTotalElements());
 
-        log.info("========================================");
-        log.info("场景 5 测试通过 �);
-        log.info("========================================");
+        log.info("=== Scenario 5 passed ===");
     }
 
-    /**
-     * 场景 6: 排序功能 - 按销量降�
-     */
     @Test
     @Order(6)
-    @DisplayName("场景6: 排序功能 - 按销量降�)
+    @DisplayName("Scenario 6: Sort by sales descending")
     public void testSortBySales() {
-        log.info("========================================");
-        log.info("测试场景 6: 排序功能 - 按销量降�);
-        log.info("========================================");
+        log.info("=== Scenario 6: Sort by sales descending ===");
 
         ProductSearchRequest request = new ProductSearchRequest();
         request.setSortBy("sales");
@@ -248,81 +182,56 @@ public class ProductSearchIntegrationTest {
 
         Page<ProductSearchResponse> result = productSearchService.search(request);
 
-        assertNotNull(result, "搜索结果不应为空");
-        assertTrue(result.getTotalElements() >= 5, "应该找到 5 个商�);
+        assertNotNull(result, "Search result should not be null");
+        assertTrue(result.getTotalElements() >= 5, "Should find 5 products");
 
-        // 验证排序正确性（销量降序）
         ProductSearchResponse first = result.getContent().get(0);
-        assertEquals(10000, first.getTotalSales(), "第一个商品销量应该最高（10000�);
+        assertEquals(10000, first.getTotalSales(), "First product should have highest sales (10000)");
 
-        log.info("�排序功能验证通过: 第一个商品销�{}", first.getTotalSales());
+        log.info("Sort by sales passed: first product sales={}", first.getTotalSales());
 
-        log.info("========================================");
-        log.info("场景 6 测试通过 �);
-        log.info("========================================");
+        log.info("=== Scenario 6 passed ===");
     }
 
-    /**
-     * 场景 7: 热门商品列表
-     */
     @Test
     @Order(7)
-    @DisplayName("场景7: 热门商品列表")
+    @DisplayName("Scenario 7: Hot products list")
     public void testHotProducts() {
-        log.info("========================================");
-        log.info("测试场景 7: 热门商品列表");
-        log.info("========================================");
+        log.info("=== Scenario 7: Hot products list ===");
 
         Page<ProductSearchResponse> result = productSearchService.getHotProducts(1, 10);
 
-        assertNotNull(result, "热门商品列表不应为空");
-        assertTrue(result.getTotalElements() >= 5, "应该找到 5 个商�);
+        assertNotNull(result, "Hot products list should not be null");
+        assertTrue(result.getTotalElements() >= 5, "Should find 5 products");
 
-        log.info("�热门商品列表验证通过: 找到 {} 个商�, result.getTotalElements());
+        log.info("Hot products list passed: found {} products", result.getTotalElements());
 
-        log.info("========================================");
-        log.info("场景 7 测试通过 �);
-        log.info("========================================");
+        log.info("=== Scenario 7 passed ===");
     }
 
-    /**
-     * 场景 8: 最新商品列�
-     */
     @Test
     @Order(8)
-    @DisplayName("场景8: 最新商品列�)
+    @DisplayName("Scenario 8: Latest products list")
     public void testLatestProducts() {
-        log.info("========================================");
-        log.info("测试场景 8: 最新商品列�);
-        log.info("========================================");
+        log.info("=== Scenario 8: Latest products list ===");
 
         Page<ProductSearchResponse> result = productSearchService.getLatestProducts(1, 10);
 
-        assertNotNull(result, "最新商品列表不应为�);
-        assertTrue(result.getTotalElements() >= 5, "应该找到 5 个商�);
+        assertNotNull(result, "Latest products list should not be null");
+        assertTrue(result.getTotalElements() >= 5, "Should find 5 products");
 
-        log.info("�最新商品列表验证通过: 找到 {} 个商�, result.getTotalElements());
+        log.info("Latest products list passed: found {} products", result.getTotalElements());
 
-        log.info("========================================");
-        log.info("场景 8 测试通过 �);
-        log.info("========================================");
+        log.info("=== Scenario 8 passed ===");
     }
 
-    /**
-     * 清理测试数据
-     */
     @AfterEach
     public void cleanup() {
-        log.info("清理商品搜索测试数据...");
+        log.info("Cleaning up product search test data...");
         productSearchRepository.deleteAll();
-        log.info("�测试数据清理完成");
+        log.info("Test data cleaned up");
     }
 
-    // ==================== 辅助方法 ====================
-
-    /**
-     * 创建测试商品
-     */
     private void createTestProduct(String id, String spuName, String categoryId, String brandId,
                                      BigDecimal minPrice, BigDecimal maxPrice,
                                      Integer totalStock, Integer totalSales, Integer sortOrder) {
@@ -331,17 +240,17 @@ public class ProductSearchIntegrationTest {
         product.setSpuCode("SPU_" + id);
         product.setSpuName(spuName);
         product.setCategoryId(categoryId);
-        product.setCategoryName("测试分类");
+        product.setCategoryName("Test Category");
         product.setBrandId(brandId);
-        product.setBrandName("测试品牌");
-        product.setDescription(spuName + " 详细描述");
+        product.setBrandName("Test Brand");
+        product.setDescription(spuName + " description");
         product.setMainImage("https://example.com/images/" + id + ".jpg");
         product.setMinPrice(minPrice);
         product.setMaxPrice(maxPrice);
         product.setTotalStock(totalStock);
         product.setTotalSales(totalSales);
         product.setSortOrder(sortOrder);
-        product.setStatus(1);  // 上架
+        product.setStatus(1);
         product.setPublishedAt(LocalDateTime.now());
         product.setCreateTime(LocalDateTime.now());
         product.setUpdateTime(LocalDateTime.now());
