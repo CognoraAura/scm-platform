@@ -1,7 +1,7 @@
 package com.scmcloud.order;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.scmcloud.order.domain.entity.Order;
+import com.scmcloud.order.domain.entity.OrdOrder;
 import com.scmcloud.order.job.OrderTimeoutCancelJobHandler;
 import com.scmcloud.order.mapper.OrdOrderMapper;
 import com.xxl.job.core.handler.annotation.XxlJob;
@@ -38,8 +38,8 @@ public class XxlJobIntegrationTest {
         log.info("========================================");
 
         orderMapper.delete(
-                new LambdaQueryWrapper<Order>()
-                        .ge(Order::getUserId, TEST_USER_ID)
+                new LambdaQueryWrapper<OrdOrder>()
+                        .ge(OrdOrder::getUserId, TEST_USER_ID)
         );
 
         log.info("Test data cleanup completed");
@@ -53,7 +53,7 @@ public class XxlJobIntegrationTest {
         log.info("Test Scenario 1: Order timeout cancel (normal timeout)");
         log.info("========================================");
 
-        Order timeoutOrder = createTestOrder(TEST_USER_ID, 1L, 10, "PENDING_PAYMENT");
+        OrdOrder timeoutOrder = createTestOrder(TEST_USER_ID, 1L, 10, "PENDING_PAYMENT");
         timeoutOrder.setCreateTime(LocalDateTime.now().minusMinutes(35));
         orderMapper.insert(timeoutOrder);
 
@@ -63,7 +63,7 @@ public class XxlJobIntegrationTest {
         log.info("Executing OrderTimeoutCancelJobHandler...");
         orderTimeoutCancelJobHandler.execute();
 
-        Order updatedOrder = orderMapper.selectById(timeoutOrder.getId());
+        OrdOrder updatedOrder = orderMapper.selectById(timeoutOrder.getId());
         assertNotNull(updatedOrder, "Order should exist");
         assertEquals("CANCELLED", updatedOrder.getStatus(), "Order status should be CANCELLED");
         assertNotNull(updatedOrder.getCancelTime(), "Cancel time should not be null");
@@ -84,7 +84,7 @@ public class XxlJobIntegrationTest {
         log.info("Test Scenario 2: Order timeout cancel (not timed out)");
         log.info("========================================");
 
-        Order validOrder = createTestOrder(TEST_USER_ID, 2L, 10, "PENDING_PAYMENT");
+        OrdOrder validOrder = createTestOrder(TEST_USER_ID, 2L, 10, "PENDING_PAYMENT");
         validOrder.setCreateTime(LocalDateTime.now().minusMinutes(10));
         orderMapper.insert(validOrder);
 
@@ -94,7 +94,7 @@ public class XxlJobIntegrationTest {
         log.info("Executing OrderTimeoutCancelJobHandler...");
         orderTimeoutCancelJobHandler.execute();
 
-        Order updatedOrder = orderMapper.selectById(validOrder.getId());
+        OrdOrder updatedOrder = orderMapper.selectById(validOrder.getId());
         assertNotNull(updatedOrder, "Order should exist");
         assertEquals("PENDING_PAYMENT", updatedOrder.getStatus(), "Order status should remain PENDING_PAYMENT");
         assertNull(updatedOrder.getCancelTime(), "Cancel time should be null");
@@ -117,7 +117,7 @@ public class XxlJobIntegrationTest {
 
         int batchSize = 5;
         for (int i = 0; i < batchSize; i++) {
-            Order timeoutOrder = createTestOrder(TEST_USER_ID + i, (long) (100 + i), 10, "PENDING_PAYMENT");
+            OrdOrder timeoutOrder = createTestOrder(TEST_USER_ID + i, (long) (100 + i), 10, "PENDING_PAYMENT");
             timeoutOrder.setCreateTime(LocalDateTime.now().minusMinutes(35 + i));
             orderMapper.insert(timeoutOrder);
             log.info("Created timed out order {}: OrderNo={}", i + 1, timeoutOrder.getOrderNo());
@@ -127,9 +127,9 @@ public class XxlJobIntegrationTest {
         orderTimeoutCancelJobHandler.execute();
 
         Long cancelledCount = orderMapper.selectCount(
-                new LambdaQueryWrapper<Order>()
-                        .ge(Order::getUserId, TEST_USER_ID)
-                        .eq(Order::getStatus, "CANCELLED")
+                new LambdaQueryWrapper<OrdOrder>()
+                        .ge(OrdOrder::getUserId, TEST_USER_ID)
+                        .eq(OrdOrder::getStatus, "CANCELLED")
         );
 
         assertEquals((long) batchSize, cancelledCount, "Should cancel " + batchSize + " orders");
@@ -149,7 +149,7 @@ public class XxlJobIntegrationTest {
         log.info("Test Scenario 4: Order timeout cancel (custom timeout parameter)");
         log.info("========================================");
 
-        Order order = createTestOrder(TEST_USER_ID, 3L, 10, "PENDING_PAYMENT");
+        OrdOrder order = createTestOrder(TEST_USER_ID, 3L, 10, "PENDING_PAYMENT");
         order.setCreateTime(LocalDateTime.now().minusMinutes(20));
         orderMapper.insert(order);
 
@@ -158,7 +158,7 @@ public class XxlJobIntegrationTest {
         log.info("Executing OrderTimeoutCancelJobHandler (timeout=15 mins)...");
         orderTimeoutCancelJobHandler.execute();
 
-        Order updatedOrder = orderMapper.selectById(order.getId());
+        OrdOrder updatedOrder = orderMapper.selectById(order.getId());
         assertEquals("PENDING_PAYMENT", updatedOrder.getStatus(),
                 "20-min old order, default 30-min timeout, should not be cancelled");
 
@@ -178,7 +178,7 @@ public class XxlJobIntegrationTest {
         log.info("Test Scenario 5: Order timeout cancel (paid order)");
         log.info("========================================");
 
-        Order paidOrder = createTestOrder(TEST_USER_ID, 4L, 10, "PAID");
+        OrdOrder paidOrder = createTestOrder(TEST_USER_ID, 4L, 10, "PAID");
         paidOrder.setCreateTime(LocalDateTime.now().minusMinutes(35));
         paidOrder.setPayTime(LocalDateTime.now().minusMinutes(30));
         orderMapper.insert(paidOrder);
@@ -189,7 +189,7 @@ public class XxlJobIntegrationTest {
         log.info("Executing OrderTimeoutCancelJobHandler...");
         orderTimeoutCancelJobHandler.execute();
 
-        Order updatedOrder = orderMapper.selectById(paidOrder.getId());
+        OrdOrder updatedOrder = orderMapper.selectById(paidOrder.getId());
         assertEquals("PAID", updatedOrder.getStatus(), "Paid order should not be cancelled");
         assertNull(updatedOrder.getCancelTime(), "Cancel time should be null");
 
@@ -209,7 +209,7 @@ public class XxlJobIntegrationTest {
         log.info("Test Scenario 6: Order timeout cancel (already cancelled order)");
         log.info("========================================");
 
-        Order cancelledOrder = createTestOrder(TEST_USER_ID, 5L, 10, "CANCELLED");
+        OrdOrder cancelledOrder = createTestOrder(TEST_USER_ID, 5L, 10, "CANCELLED");
         cancelledOrder.setCreateTime(LocalDateTime.now().minusMinutes(35));
         cancelledOrder.setCancelTime(LocalDateTime.now().minusMinutes(5));
         orderMapper.insert(cancelledOrder);
@@ -222,7 +222,7 @@ public class XxlJobIntegrationTest {
         log.info("Executing OrderTimeoutCancelJobHandler...");
         orderTimeoutCancelJobHandler.execute();
 
-        Order updatedOrder = orderMapper.selectById(cancelledOrder.getId());
+        OrdOrder updatedOrder = orderMapper.selectById(cancelledOrder.getId());
         assertEquals("CANCELLED", updatedOrder.getStatus(), "Order status should remain CANCELLED");
         assertEquals(originalCancelTime, updatedOrder.getCancelTime(),
                 "Cancel time should not change (idempotency)");
@@ -272,15 +272,15 @@ public class XxlJobIntegrationTest {
         log.info("========================================");
 
         orderMapper.delete(
-                new LambdaQueryWrapper<Order>()
-                        .ge(Order::getUserId, TEST_USER_ID)
+                new LambdaQueryWrapper<OrdOrder>()
+                        .ge(OrdOrder::getUserId, TEST_USER_ID)
         );
 
         log.info("XXL-Job test data cleanup completed");
     }
 
-    private Order createTestOrder(Long userId, Long skuId, Integer quantity, String status) {
-        Order order = new Order();
+    private OrdOrder createTestOrder(Long userId, Long skuId, Integer quantity, String status) {
+        OrdOrder order = new OrdOrder();
         order.setOrderNo("TEST" + System.currentTimeMillis() + userId);
         order.setUserId(userId);
         order.setSkuId(skuId);

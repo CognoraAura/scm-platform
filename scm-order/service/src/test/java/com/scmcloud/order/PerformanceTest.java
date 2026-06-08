@@ -4,9 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.scmcloud.inventory.domain.entity.Inventory;
 import com.scmcloud.inventory.mapper.InvInventoryMapper;
 import com.scmcloud.order.api.OrderDubboService;
-import com.scmcloud.order.domain.entity.Order;
+import com.scmcloud.order.api.request.CreateOrderRequest;
+import com.scmcloud.order.domain.entity.OrdOrder;
 import com.scmcloud.order.mapper.OrdOrderMapper;
-import com.scmcloud.order.service.impl.OrderDubboServiceImpl;
+import com.scmcloud.order.service.dubbo.OrderDubboServiceImpl;
 import com.scmcloud.order.service.impl.OrderTccServiceImpl;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -52,8 +53,8 @@ public class PerformanceTest {
         log.info("========================================");
 
         orderMapper.delete(
-                new LambdaQueryWrapper<Order>()
-                        .ge(Order::getUserId, PERF_TEST_USER_ID)
+                new LambdaQueryWrapper<OrdOrder>()
+                        .ge(OrdOrder::getUserId, PERF_TEST_USER_ID)
         );
         inventoryMapper.delete(
                 new LambdaQueryWrapper<Inventory>()
@@ -89,7 +90,7 @@ public class PerformanceTest {
             long reqStartTime = System.nanoTime();
 
             try {
-                OrderDubboService.CreateOrderRequest request = createRequest(
+                CreateOrderRequest request = createRequest(
                         PERF_TEST_USER_ID + i, PERF_TEST_SKU_ID, 1);
                 orderAtService.createOrder(request);
 
@@ -142,7 +143,7 @@ public class PerformanceTest {
                     long reqStartTime = System.nanoTime();
                     long userId = requestIdCounter.incrementAndGet();
 
-                    OrderDubboService.CreateOrderRequest request = createRequest(
+                    CreateOrderRequest request = createRequest(
                             userId, PERF_TEST_SKU_ID, 1);
                     orderAtService.createOrder(request);
 
@@ -194,7 +195,7 @@ public class PerformanceTest {
             long reqStartTime = System.nanoTime();
 
             try {
-                OrderDubboService.CreateOrderRequest request = createRequest(
+                CreateOrderRequest request = createRequest(
                         PERF_TEST_USER_ID + 20000 + i, PERF_TEST_SKU_ID, 1);
                 orderTccService.createOrderWithTcc(request);
 
@@ -248,7 +249,7 @@ public class PerformanceTest {
                     long reqStartTime = System.nanoTime();
                     long userId = requestIdCounter.incrementAndGet();
 
-                    OrderDubboService.CreateOrderRequest request = createRequest(
+                    CreateOrderRequest request = createRequest(
                             userId, PERF_TEST_SKU_ID, 1);
                     orderTccService.createOrderWithTcc(request);
 
@@ -318,8 +319,8 @@ public class PerformanceTest {
         log.info("Cleaning up performance test data...");
 
         orderMapper.delete(
-                new LambdaQueryWrapper<Order>()
-                        .ge(Order::getUserId, PERF_TEST_USER_ID)
+                new LambdaQueryWrapper<OrdOrder>()
+                        .ge(OrdOrder::getUserId, PERF_TEST_USER_ID)
         );
 
         inventoryMapper.delete(
@@ -330,8 +331,8 @@ public class PerformanceTest {
         log.info("Perf test data cleanup completed");
     }
 
-    private OrderDubboService.CreateOrderRequest createRequest(Long userId, Long skuId, Integer quantity) {
-        OrderDubboService.CreateOrderRequest request = new OrderDubboService.CreateOrderRequest();
+    private CreateOrderRequest createRequest(Long userId, Long skuId, Integer quantity) {
+        CreateOrderRequest request = new CreateOrderRequest();
         request.setUserId(userId);
         request.setSkuId(skuId);
         request.setSkuName("PerfTest-Product");
