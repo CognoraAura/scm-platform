@@ -5,9 +5,9 @@
 **Enterprise Supply Chain Management System**
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/dengxingzhi000/scm-platform/maven-build.yml?branch=master&style=flat-square&logo=github&label=build)](https://github.com/dengxingzhi000/scm-platform/actions)
-[![GitHub Stars](https://img.shields.io/github/stars/dengxingzhi000/scm-platform?color=ffcb47&labelColor=black&style=flat-square&logo=github)](https://github.com/dengxingzhi000/scm-platform/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/dengxingzhi000/scm-platform?color=8ae8ff&labelColor=black&style=flat-square&logo=github)](https://github.com/dengxingzhi000/scm-platform/network/members)
-[![GitHub Issues](https://img.shields.io/github/issues/dengxingzhi000/scm-platform?color=ff80eb&labelColor=black&style=flat-square&logo=github)](https://github.com/dengxingzhi000/scm-platform/issues)
+[![Stars](https://img.shields.io/github/stars/dengxingzhi000/scm-platform?color=ffcb47&labelColor=black&style=flat-square&logo=github)](https://github.com/dengxingzhi000/scm-platform/stargazers)
+[![Forks](https://img.shields.io/github/forks/dengxingzhi000/scm-platform?color=8ae8ff&labelColor=black&style=flat-square&logo=github)](https://github.com/dengxingzhi000/scm-platform/network/members)
+[![Issues](https://img.shields.io/github/issues/dengxingzhi000/scm-platform?color=ff80eb&labelColor=black&style=flat-square&logo=github)](https://github.com/dengxingzhi000/scm-platform/issues)
 [![License](https://img.shields.io/badge/license-Apache%202.0-white?labelColor=black&style=flat-square)](https://github.com/dengxingzhi000/scm-platform/blob/master/LICENSE)
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
@@ -20,8 +20,8 @@
 
 ## Highlights
 
-| | Feature | Description |
-|---|---|---|
+| Icon | Feature | Description |
+|------|---------|-------------|
 | 🏗️ | **Microservices Architecture** | 15+ independently deployable services with API Gateway, service discovery, and config management |
 | 🔐 | **Enterprise Security** | OAuth2 + JWT + WebAuthn passwordless auth, RBAC with fine-grained data scope control |
 | 💰 | **Distributed Transactions** | Seata AT/TCC/Saga modes for cross-service data consistency |
@@ -35,7 +35,7 @@
 ## Tech Stack
 
 | Layer | Components |
-|---|---|---|
+|-------|-----------|
 | **Backend** | Java 21 (Virtual Threads), Spring Boot 4.0.6, Spring Cloud 2025.1.1 |
 | **Alibaba** | Spring Cloud Alibaba 2025.1.0.0 (Nacos, Sentinel, Seata) |
 | **Database** | PostgreSQL, MyBatis-Plus 3.5.15, ShardingSphere 5.5.1 |
@@ -51,33 +51,33 @@
 ## Architecture
 
 ```
-                            ┌─────────────────┐
-                            │ Frontend (scm-web)│
-                            │  Next.js 15      │
-                            │  Ant Design 5    │
-                            └────────┬────────┘
-                                     │
-                            ┌────────▼────────┐
-                            │   API Gateway   │ :8761
-                            └────────┬────────┘
-                                     │
-        ┌────────────┬───────────┬───┴────┬───────────┬───────────┐
-        │            │           │        │           │           │
-   ┌────▼────┐  ┌────▼────┐ ┌───▼───┐ ┌──▼────┐ ┌───▼────┐ ┌───▼────┐
-   │  Auth   │  │ System  │ │Product│ │ Order │ │  WMS   │ │Logistics│
-   │  :8106  │  │  :8081  │ │ :8201 │ │ :8203 │ │ :8204  │ │  :8205  │
-   └─────────┘  └─────────┘ └───────┘ └───────┘ └────────┘ └────────┘
-        │            │           │        │           │           │
-   ┌────▼────┐  ┌────▼────┐ ┌───▼───┐ ┌──▼────┐ ┌───▼────┐ ┌───▼────┐
-   │Approval │  │  Audit  │ │  INV  │ │Finance│ │Supplier│ │ Notify │
-   │         │  │         │ │ :8202 │ │       │ │ :8206  │ │        │
-   └─────────┘  └─────────┘ └───────┘ └───────┘ └────────┘ └────────┘
+                         ┌──────────────────────┐
+                         │   Frontend (scm-web)  │
+                         │   Next.js 15 / React  │
+                         │   Ant Design 5        │
+                         └──────────┬───────────┘
+                                    │
+                         ┌──────────▼───────────┐
+                         │     API Gateway      │ :8761
+                         └──────────┬───────────┘
+                                    │
+     ┌──────────┬──────────┬────────┼────────┬──────────┬──────────┐
+     │          │          │        │        │          │          │
+  ┌──▼───┐  ┌───▼───┐  ┌──▼───┐ ┌─▼────┐ ┌─▼────┐  ┌──▼───┐  ┌──▼───┐
+  │ Auth  │  │System │  │Product│ │Order │ │ WMS  │  │Logist│  │Notify │
+  │ :8106 │  │ :8081 │  │:8201  │ │:8203 │ │:8204 │  │:8205 │  │       │
+  └───────┘  └───────┘  └───────┘ └──────┘ └──────┘  └──────┘  └──────┘
+     │          │          │        │        │          │          │
+  ┌──▼───┐  ┌───▼───┐  ┌──▼───┐ ┌─▼────┐ ┌─▼────┐  ┌──▼───┐  ┌──▼───┐
+  │Approv│  │ Audit │  │ INV  │ │Finance│ │Suppl │  │Purch │  │ Tenant│
+  │      │  │       │  │:8202 │ │       │ │:8206 │  │      │  │       │
+  └──────┘  └───────┘  └──────┘ └───────┘ └──────┘  └──────┘  └──────┘
 ```
 
 ## Modules
 
 | Module | Port | Description |
-|---|---|---|---|
+|--------|------|-------------|
 | `scm-web` | 3000 | Frontend — Next.js 15, Ant Design 5, Zustand, TanStack Query |
 | `scm-gateway` | 8761 | API Gateway — routing, rate limiting, cross-cutting concerns |
 | `scm-auth` | 8106 | Authentication — OAuth2, JWT, WebAuthn passwordless login |
@@ -87,8 +87,8 @@
 | `scm-order` | 8203 | Orders — lifecycle, state machine, payments, refunds |
 | `scm-warehouse` | 8204 | Warehouse — inbound/outbound, wave picking, location management |
 | `scm-logistics` | 8205 | Logistics — carriers, waybills, tracking, route optimization |
-| `scm-purchase` | — | Procurement — RFQ, quotations, contracts, purchase orders |
 | `scm-supplier` | 8206 | Suppliers — onboarding, evaluation, settlements |
+| `scm-purchase` | — | Procurement — RFQ, quotations, contracts, purchase orders |
 | `scm-finance` | — | Finance — settlements, invoices, freight rules, reconciliation |
 | `scm-tenant` | — | Multi-tenant — tenant lifecycle, packages, feature flags |
 | `scm-approval` | — | Approval workflows — configurable approval processes |
@@ -107,7 +107,6 @@
 ### 1. Start Infrastructure
 
 ```bash
-# Start Nacos, Redis, PostgreSQL, Kafka, RabbitMQ, Elasticsearch
 docker-compose up -d
 ```
 
@@ -124,7 +123,7 @@ export PGPASSWORD=admin123 && cd scripts/db && ./init-all-databases.sh
 ### 3. Build
 
 ```bash
-# Build all modules (parent POM is at com.scm.parent/pom.xml)
+# Build all modules
 mvn clean install -DskipTests -f com.scm.parent/pom.xml
 
 # Build a single module
@@ -133,7 +132,7 @@ mvn clean package -pl scm-order/service -am -f com.scm.parent/pom.xml
 
 ### 4. Start Services
 
-**Order:** Infrastructure → Gateway → Auth → System → Business services
+> **Order:** Infrastructure → Gateway → Auth → System → Business services
 
 ```bash
 # Gateway
@@ -151,10 +150,10 @@ cd scm-inventory/service && mvn spring-boot:run
 cd scm-order/service && mvn spring-boot:run
 ```
 
-### 5. Access
+### 5. Access Endpoints
 
 | Service | URL |
-|---|---|---|
+|---------|-----|
 | API Gateway | http://localhost:8761 |
 | Nacos Console | http://localhost:8848/nacos |
 | Sentinel Dashboard | http://localhost:8080 |
@@ -169,18 +168,18 @@ npm install
 npm run dev
 ```
 
-Frontend runs at **http://localhost:3000** with zh-CN and en-US language support.
+The frontend runs at **http://localhost:3000** with built-in zh-CN and en-US language support.
 
-| Page | Route |
-|---|---|
-| Login | `/login` |
-| Dashboard | `/dashboard` |
-| Product Management | `/product` |
-| Order Management | `/order` |
-| Inventory Management | `/inventory` |
-| System Settings | `/system/*` |
+| Route | Page |
+|-------|------|
+| `/login` | Login & authentication |
+| `/dashboard` | Analytics dashboard |
+| `/product` | Product catalog management |
+| `/order` | Order lifecycle management |
+| `/inventory` | Inventory & stock alerts |
+| `/system/*` | System settings (users, roles, permissions) |
 
-## Key Patterns
+## Key Architecture Patterns
 
 ### Multi-Tenant Data Routing
 
@@ -212,7 +211,7 @@ String script = """
     """;
 ```
 
-### Distributed Transaction (Seata)
+### Distributed Transaction (Seata AT)
 
 ```java
 @GlobalTransactional(name = "create-order", rollbackFor = Exception.class)
