@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface DistributedLock {
+public @interface DistributedLockAnnotation {
 
     /**
      * Lock key. Supports SpEL expressions.
