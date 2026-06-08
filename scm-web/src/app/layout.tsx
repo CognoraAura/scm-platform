@@ -1,5 +1,10 @@
-import { ReactNode } from "react";
+import { ReactNode } from 'react'
+import '@/lib/design-tokens.css'
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  return children;
+  return (
+    <html suppressHydrationWarning>
+      <body>{children}</body>
+    </html>
+  )
 }
