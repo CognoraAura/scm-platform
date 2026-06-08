@@ -146,13 +146,15 @@ class ApiSignatureFilterTest {
 
     private MockServerWebExchange signedExchange(String path, String body, String appId, String nonce, String timestamp) {
         byte[] bodyBytes = body.getBytes(StandardCharsets.UTF_8);
-        MockServerHttpRequest unsigned = MockServerHttpRequest.post(path)
-                .header("X-App-Id", appId)
-                .header("X-Timestamp", timestamp)
-                .header("X-Nonce", nonce)
-                .header("X-Sign-Version", properties.getDefaultVersion())
-                .body(bodyBytes);
-        ServerHttpRequest requestForSignature = new CachedBodyRequestDecorator(unsigned, bodyBytes);
+
+        ServerHttpRequest requestForSignature = new CachedBodyRequestDecorator(
+                MockServerHttpRequest.post(path)
+                        .header("X-App-Id", appId)
+                        .header("X-Timestamp", timestamp)
+                        .header("X-Nonce", nonce)
+                        .header("X-Sign-Version", properties.getDefaultVersion())
+                        .body(body),
+                bodyBytes);
 
         String signature = registry.getAlgorithm(properties.getDefaultVersion())
                 .calculate(requestForSignature, appId, timestamp, nonce, properties.getAppSecrets().get(appId))
@@ -164,9 +166,9 @@ class ApiSignatureFilterTest {
                 .header("X-Nonce", nonce)
                 .header("X-Sign-Version", properties.getDefaultVersion())
                 .header("X-Signature", signature)
-                .body(bodyBytes);
-        ServerHttpRequest decorated = new CachedBodyRequestDecorator(signed, bodyBytes);
-        return MockServerWebExchange.from(decorated);
+                .body(body);
+
+        return MockServerWebExchange.from(signed);
     }
 
     private String responseBody(MockServerWebExchange exchange) {
