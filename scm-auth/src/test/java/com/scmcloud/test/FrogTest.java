@@ -43,7 +43,7 @@ public class FrogTest {
     @Test
     public void testAnotherExample() {
         String str = "Frog";
-        assertEquals("Frog", str, "字符串应该相�);
+        assertEquals("Frog", str, "strings should be equal");
         System.out.println("str = " + str);
     }
 
