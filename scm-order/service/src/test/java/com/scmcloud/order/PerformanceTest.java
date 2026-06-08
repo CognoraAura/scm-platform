@@ -62,10 +62,10 @@ public class PerformanceTest {
         );
 
         Inventory inventory = new Inventory();
-        inventory.setSkuId(PERF_TEST_SKU_ID);
+        inventory.setSkuId(String.valueOf(PERF_TEST_SKU_ID));
         inventory.setAvailableStock(INITIAL_STOCK);
         inventory.setLockedStock(0);
-        inventory.setWarehouseId(1L);
+        inventory.setWarehouseId("1");
         inventoryMapper.insert(inventory);
 
         log.info("Perf test environment ready: SKU={}, initialStock={}", PERF_TEST_SKU_ID, INITIAL_STOCK);

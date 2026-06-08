@@ -6,6 +6,7 @@ import com.scmcloud.inventory.domain.entity.Inventory;
 import com.scmcloud.inventory.mapper.InvInventoryMapper;
 import com.scmcloud.inventory.mapper.InvTccReservationMapper;
 import com.scmcloud.order.api.OrderDubboService;
+import com.scmcloud.order.api.dto.OrderVO;
 import com.scmcloud.order.api.request.CreateOrderRequest;
 import com.scmcloud.order.domain.entity.OrdOrder;
 import com.scmcloud.order.mapper.OrdOrderMapper;
@@ -61,10 +62,10 @@ public class SeataTccModeIntegrationTest {
         );
 
         Inventory inventory = new Inventory();
-        inventory.setSkuId(TEST_SKU_ID);
+        inventory.setSkuId(String.valueOf(TEST_SKU_ID));
         inventory.setAvailableStock(100);
         inventory.setLockedStock(0);
-        inventory.setWarehouseId(1L);
+        inventory.setWarehouseId("1");
         inventoryMapper.insert(inventory);
 
         log.info("Initialized stock: SKU={}, availableStock=100, lockedStock=0", TEST_SKU_ID);
@@ -87,7 +88,7 @@ public class SeataTccModeIntegrationTest {
         request.setTotalAmount(new BigDecimal("990.00"));
         request.setRemark("TCC mode test - success scenario");
 
-        OrderDubboService.OrderVO orderVO = orderTccService.createOrderWithTcc(request);
+        OrderVO orderVO = orderTccService.createOrderWithTcc(request);
 
         assertNotNull(orderVO, "Order should be created successfully");
         assertNotNull(orderVO.getOrderNo(), "Order number should not be null");
@@ -216,7 +217,7 @@ public class SeataTccModeIntegrationTest {
         request.setTotalAmount(new BigDecimal("495.00"));
         request.setRemark("TCC mode test - idempotency scenario");
 
-        OrderDubboService.OrderVO orderVO1 = orderTccService.createOrderWithTcc(request);
+        OrderVO orderVO1 = orderTccService.createOrderWithTcc(request);
         assertNotNull(orderVO1, "First creation should succeed");
         String orderNo = orderVO1.getOrderNo();
 
@@ -347,7 +348,7 @@ public class SeataTccModeIntegrationTest {
         request.setTotalAmount(new BigDecimal("297.00"));
         request.setRemark("TCC mode test - state transition verification");
 
-        OrderDubboService.OrderVO orderVO = orderTccService.createOrderWithTcc(request);
+        OrderVO orderVO = orderTccService.createOrderWithTcc(request);
         String orderNo = orderVO.getOrderNo();
 
         log.info("Order created successfully: OrderNo={}", orderNo);

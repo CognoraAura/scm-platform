@@ -2,6 +2,7 @@ package com.scmcloud.order;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.scmcloud.order.domain.entity.OrdOrder;
+import com.scmcloud.order.domain.entity.OrderStatus;
 import com.scmcloud.order.job.OrderTimeoutCancelJobHandler;
 import com.scmcloud.order.mapper.OrdOrderMapper;
 import com.xxl.job.core.handler.annotation.XxlJob;
@@ -66,10 +67,10 @@ public class XxlJobIntegrationTest {
         OrdOrder updatedOrder = orderMapper.selectById(timeoutOrder.getId());
         assertNotNull(updatedOrder, "Order should exist");
         assertEquals("CANCELLED", updatedOrder.getStatus(), "Order status should be CANCELLED");
-        assertNotNull(updatedOrder.getCancelTime(), "Cancel time should not be null");
+        assertNotNull(updatedOrder.getCancelledAt(), "Cancel time should not be null");
 
         log.info("Order cancelled: OrderNo={}, Status={}, CancelTime={}",
-                updatedOrder.getOrderNo(), updatedOrder.getStatus(), updatedOrder.getCancelTime());
+                updatedOrder.getOrderNo(), updatedOrder.getStatus(), updatedOrder.getCancelledAt());
 
         log.info("========================================");
         log.info("Scenario 1 test passed");
@@ -97,7 +98,7 @@ public class XxlJobIntegrationTest {
         OrdOrder updatedOrder = orderMapper.selectById(validOrder.getId());
         assertNotNull(updatedOrder, "Order should exist");
         assertEquals("PENDING_PAYMENT", updatedOrder.getStatus(), "Order status should remain PENDING_PAYMENT");
-        assertNull(updatedOrder.getCancelTime(), "Cancel time should be null");
+        assertNull(updatedOrder.getCancelledAt(), "Cancel time should be null");
 
         log.info("Order not cancelled (as expected): OrderNo={}, Status={}",
                 updatedOrder.getOrderNo(), updatedOrder.getStatus());
@@ -180,18 +181,18 @@ public class XxlJobIntegrationTest {
 
         OrdOrder paidOrder = createTestOrder(TEST_USER_ID, 4L, 10, "PAID");
         paidOrder.setCreateTime(LocalDateTime.now().minusMinutes(35));
-        paidOrder.setPayTime(LocalDateTime.now().minusMinutes(30));
+        paidOrder.setPaidAt(LocalDateTime.now().minusMinutes(30));
         orderMapper.insert(paidOrder);
 
         log.info("Created paid order: OrderNo={}, Status={}, PayTime={}",
-                paidOrder.getOrderNo(), paidOrder.getStatus(), paidOrder.getPayTime());
+                paidOrder.getOrderNo(), paidOrder.getStatus(), paidOrder.getPaidAt());
 
         log.info("Executing OrderTimeoutCancelJobHandler...");
         orderTimeoutCancelJobHandler.execute();
 
         OrdOrder updatedOrder = orderMapper.selectById(paidOrder.getId());
         assertEquals("PAID", updatedOrder.getStatus(), "Paid order should not be cancelled");
-        assertNull(updatedOrder.getCancelTime(), "Cancel time should be null");
+        assertNull(updatedOrder.getCancelledAt(), "Cancel time should be null");
 
         log.info("Paid order not cancelled (as expected): OrderNo={}, Status={}",
                 updatedOrder.getOrderNo(), updatedOrder.getStatus());
@@ -211,24 +212,24 @@ public class XxlJobIntegrationTest {
 
         OrdOrder cancelledOrder = createTestOrder(TEST_USER_ID, 5L, 10, "CANCELLED");
         cancelledOrder.setCreateTime(LocalDateTime.now().minusMinutes(35));
-        cancelledOrder.setCancelTime(LocalDateTime.now().minusMinutes(5));
+        cancelledOrder.setCancelledAt(LocalDateTime.now().minusMinutes(5));
         orderMapper.insert(cancelledOrder);
 
         log.info("Created cancelled order: OrderNo={}, Status={}, CancelTime={}",
-                cancelledOrder.getOrderNo(), cancelledOrder.getStatus(), cancelledOrder.getCancelTime());
+                cancelledOrder.getOrderNo(), cancelledOrder.getStatus(), cancelledOrder.getCancelledAt());
 
-        LocalDateTime originalCancelTime = cancelledOrder.getCancelTime();
+        LocalDateTime originalCancelTime = cancelledOrder.getCancelledAt();
 
         log.info("Executing OrderTimeoutCancelJobHandler...");
         orderTimeoutCancelJobHandler.execute();
 
         OrdOrder updatedOrder = orderMapper.selectById(cancelledOrder.getId());
         assertEquals("CANCELLED", updatedOrder.getStatus(), "Order status should remain CANCELLED");
-        assertEquals(originalCancelTime, updatedOrder.getCancelTime(),
-                "Cancel time should not change (idempotency)");
+        assertEquals(originalCancelTime, updatedOrder.getCancelledAt(),
+                "Cancelled time should not change (idempotency)");
 
         log.info("Already cancelled order not re-processed (as expected): OrderNo={}, CancelTime={}",
-                updatedOrder.getOrderNo(), updatedOrder.getCancelTime());
+                updatedOrder.getOrderNo(), updatedOrder.getCancelledAt());
 
         log.info("========================================");
         log.info("Scenario 6 test passed");
@@ -282,13 +283,11 @@ public class XxlJobIntegrationTest {
     private OrdOrder createTestOrder(Long userId, Long skuId, Integer quantity, String status) {
         OrdOrder order = new OrdOrder();
         order.setOrderNo("TEST" + System.currentTimeMillis() + userId);
-        order.setUserId(userId);
-        order.setSkuId(skuId);
-        order.setSkuName("TestProduct-" + skuId);
+        order.setUserId(String.valueOf(userId));
+        order.setSkuId(String.valueOf(skuId));
         order.setQuantity(quantity);
-        order.setUnitPrice(new BigDecimal("99.00"));
         order.setTotalAmount(new BigDecimal("99.00").multiply(new BigDecimal(quantity)));
-        order.setStatus(status);
+        order.setStatus(OrderStatus.valueOf(status).getCode());
         order.setRemark("XXL-Job test order");
         order.setCreateTime(LocalDateTime.now());
         return order;
