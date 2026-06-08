@@ -80,4 +80,7 @@ export interface LoginResponse {
   tokenType: string;
   expiresIn: number;
   user: UserVO;
+  requireMfa?: boolean;
+  tempToken?: string;
+  permissions?: string[];
 }
