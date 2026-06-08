@@ -4,7 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.scmcloud.inventory.api.InventoryDubboService;
 import com.scmcloud.inventory.domain.entity.Inventory;
 import com.scmcloud.inventory.mapper.InvInventoryMapper;
-import com.scmcloud.order.api.OrderDubboService;
+        import com.scmcloud.order.api.OrderDubboService;
+import com.scmcloud.order.api.dto.OrderVO;
 import com.scmcloud.order.api.request.CreateOrderRequest;
 import com.scmcloud.order.domain.entity.OrdOrder;
 import com.scmcloud.order.mapper.OrdOrderMapper;
@@ -56,10 +57,10 @@ public class SeataAtModeIntegrationTest {
         );
 
         Inventory inventory = new Inventory();
-        inventory.setSkuId(TEST_SKU_ID);
+        inventory.setSkuId(String.valueOf(TEST_SKU_ID));
         inventory.setAvailableStock(100);
         inventory.setLockedStock(0);
-        inventory.setWarehouseId(1L);
+        inventory.setWarehouseId("1");
         inventoryMapper.insert(inventory);
 
         log.info("Initialized stock: SKU={}, availableStock=100", TEST_SKU_ID);
@@ -82,7 +83,7 @@ public class SeataAtModeIntegrationTest {
         request.setTotalAmount(new BigDecimal("990.00"));
         request.setRemark("AT mode test - success scenario");
 
-        OrderDubboService.OrderVO orderVO = orderService.createOrder(request);
+        OrderVO orderVO = orderService.createOrder(request);
 
         assertNotNull(orderVO, "Order should be created successfully");
         assertNotNull(orderVO.getOrderNo(), "Order number should not be null");
