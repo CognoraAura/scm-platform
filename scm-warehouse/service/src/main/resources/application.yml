@@ -5,21 +5,21 @@ spring:
   application:
     name: scm-warehouse
 
-    Nacos 服务发现与配置中�?  cloud:
+    Nacos 服务发现与配置中??  cloud:
     nacos:
       discovery:
-        server-addr: ${NACOS_SERVER:localhost:8848}
+        server-addr: ${NACOS_SERVER:192.168.80.140:8848}
         namespace: ${NACOS_NAMESPACE:}
         group: DEFAULT_GROUP
       config:
-        server-addr: ${NACOS_SERVER:localhost:8848}
+        server-addr: ${NACOS_SERVER:192.168.80.140:8848}
         namespace: ${NACOS_NAMESPACE:}
         group: DEFAULT_GROUP
         file-extension: yml
 
-    数据源配�?  datasource:
+    数据源配??  datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/db_warehouse
+    url: jdbc:postgresql://${DB_HOST:192.168.80.140}:${DB_PORT:5432}/db_warehouse
     username: ${DB_USERNAME:admin}
     password: ${DB_PASSWORD:admin}
     hikari:
@@ -30,7 +30,7 @@ spring:
     Redis 配置
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
+      host: ${REDIS_HOST:192.168.80.140}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
       database: 3
@@ -53,7 +53,7 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
 
-  Seata 分布式事务配�?seata:
+  Seata 分布式事务配??seata:
   enabled: true
   application-id: ${spring.application.name}
   tx-service-group: ${spring.application.name}-tx-group
@@ -62,7 +62,7 @@ mybatis-plus:
   config:
     type: nacos
     nacos:
-      server-addr: ${NACOS_SERVER:localhost:8848}
+      server-addr: ${NACOS_SERVER:192.168.80.140:8848}
       namespace: ${NACOS_NAMESPACE:}
       group: SEATA_GROUP
       data-id: seataServer.properties
@@ -74,14 +74,14 @@ mybatis-plus:
     type: nacos
     nacos:
       application: seata-server
-      server-addr: ${NACOS_SERVER:localhost:8848}
+      server-addr: ${NACOS_SERVER:192.168.80.140:8848}
       namespace: ${NACOS_NAMESPACE:}
       group: SEATA_GROUP
       cluster: default
       username: nacos
       password: nacos
 
-    客户端配�?  client:
+    客户端配??  client:
     rm:
       async-commit-buffer-limit: 10000
       report-retry-count: 5
@@ -107,7 +107,7 @@ mybatis-plus:
     log:
       exceptionRate: 100
 
-  Actuator 健康检�?management:
+  Actuator 健康检??management:
   endpoints:
     web:
       exposure:
@@ -120,7 +120,7 @@ mybatis-plus:
 xxl:
   job:
     admin:
-      addresses: ${XXL_JOB_ADMIN:http://localhost:8088/xxl-job-admin}
+      addresses: ${XXL_JOB_ADMIN:http://192.168.80.140:8088/xxl-job-admin}
     executor:
       appname: scm-warehouse-executor
       address:
