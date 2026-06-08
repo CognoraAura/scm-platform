@@ -1,5 +1,5 @@
-# Prometheus 配置文件
-# 采集 SCM Platform 各服务的指标
+﻿# Prometheus 閰嶇疆鏂囦欢
+# 閲囬泦 SCM Platform 鍚勬湇鍔＄殑鎸囨爣
 
 global:
   scrape_interval: 15s
@@ -8,18 +8,18 @@ global:
     cluster: 'scm-platform'
     environment: 'dev'
 
-# 告警规则配置
+# 鍛婅瑙勫垯閰嶇疆
 rule_files:
   # - "alerts/*.yml"
 
-# 数据采集配置
+# 鏁版嵁閲囬泦閰嶇疆
 scrape_configs:
-  # Prometheus 自身
+  # Prometheus 鑷韩
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: ['192.168.80.140:9090']
 
-  # Spring Boot Actuator 端点
+  # Spring Boot Actuator 绔偣
   - job_name: 'scm-gateway'
     metrics_path: '/actuator/prometheus'
     static_configs:
@@ -76,7 +76,7 @@ scrape_configs:
         labels:
           service: 'supplier'
 
-  # 中间件监控
+  # 涓棿浠剁洃鎺?
   - job_name: 'redis'
     static_configs:
       - targets: ['redis-exporter:9121']
@@ -89,7 +89,7 @@ scrape_configs:
     static_configs:
       - targets: ['elasticsearch:9200']
 
-  # Node Exporter (系统指标)
+  # Node Exporter (绯荤粺鎸囨爣)
   - job_name: 'node'
     static_configs:
       - targets: ['node-exporter:9100']

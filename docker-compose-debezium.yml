@@ -1,7 +1,7 @@
-version: '3.8'
+﻿version: '3.8'
 
 services:
-  # Zookeeper (Kafka 依赖)
+  # Zookeeper (Kafka 渚濊禆)
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
     container_name: scm-zookeeper
@@ -24,7 +24,7 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://192.168.80.140:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
@@ -33,7 +33,7 @@ services:
     networks:
       - scm-network
 
-  # Kafka Connect (包含 Debezium PostgreSQL Connector)
+  # Kafka Connect (鍖呭惈 Debezium PostgreSQL Connector)
   kafka-connect:
     image: debezium/connect:2.5
     container_name: scm-kafka-connect
@@ -48,19 +48,19 @@ services:
       CONFIG_STORAGE_TOPIC: connect_configs
       OFFSET_STORAGE_TOPIC: connect_offsets
       STATUS_STORAGE_TOPIC: connect_status
-      # 内部 Topic 副本数设置为 1（单节点 Kafka）
+      # 鍐呴儴 Topic 鍓湰鏁拌缃负 1锛堝崟鑺傜偣 Kafka锛?
       CONFIG_STORAGE_REPLICATION_FACTOR: 1
       OFFSET_STORAGE_REPLICATION_FACTOR: 1
       STATUS_STORAGE_REPLICATION_FACTOR: 1
     networks:
       - scm-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8083/"]
+      test: ["CMD", "curl", "-f", "http://192.168.80.140:8083/"]
       interval: 30s
       timeout: 10s
       retries: 5
 
-  # PostgreSQL (主数据库)
+  # PostgreSQL (涓绘暟鎹簱)
   postgres:
     image: postgres:16-alpine
     container_name: scm-postgres
@@ -73,7 +73,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/db/microservices/010_db_product.sql:/docker-entrypoint-initdb.d/010_db_product.sql
-    # 启用 PostgreSQL 逻辑复制（Debezium 需要）
+    # 鍚敤 PostgreSQL 閫昏緫澶嶅埗锛圖ebezium 闇€瑕侊級
     command:
       - "postgres"
       - "-c"

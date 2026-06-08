@@ -1,46 +1,42 @@
-spring:
+﻿锘縮pring:
   cloud:
-    # Spring Cloud LoadBalancer 配置
+    # Spring Cloud LoadBalancer 閰嶇疆
     loadbalancer:
-      # 负载均衡策略选择
-      # 可选值: round-robin（默认轮询）, random（随机）, weighted-round-robin（加权轮询）
+      # 璐熻浇鍧囪　绛栫暐閫夋嫨
+      # 鍙€夊€硷細round-robin锛堥粯璁よ疆璇級, random锛堥殢鏈猴級, weighted-round-robin锛堝姞鏉冭疆璇級
       strategy: weighted-round-robin
 
-      # Nacos 权重负载均衡（仅 weighted-round-robin 策略生效）
-      nacos:
+      # Nacos 鏉冮噸璐熻浇鍧囪　锛堜粎 weighted-round-robin 绛栫暐鐢熸晥锛?      nacos:
         enabled: true
 
-      # 健康检查配置
-      health-check:
-        # 启用健康检查，过滤不健康的实例
+      # 鍋ュ悍妫€鏌ラ厤缃?      health-check:
+        # 鍚敤鍋ュ悍妫€鏌ワ紝杩囨护涓嶅仴搴风殑瀹炰緥
         path:
           enabled: true
 
-      # 缓存配置
+      # 缂撳瓨閰嶇疆
       cache:
-        # 启用实例列表缓存，减少 Nacos 查询频率
+        # 鍚敤瀹炰緥鍒楄〃缂撳瓨锛屽噺灏?Nacos 鏌ヨ棰戠巼
         enabled: true
-        # 缓存 TTL（秒）
-        ttl: 35
-        # 缓存容量
+        # 缂撳瓨 TTL锛堢锛?        ttl: 35
+        # 缂撳瓨瀹归噺
         capacity: 256
 
-      # 重试配置
+      # 閲嶈瘯閰嶇疆
       retry:
         enabled: true
-        # 最大重试次数
-        max-retries-on-same-service-instance: 0
+        # 鏈€澶ч噸璇曟鏁?        max-retries-on-same-service-instance: 0
         max-retries-on-next-service-instance: 1
 
-# RestClient 配置
+# RestClient 閰嶇疆
 rest:
   client:
-    # 连接超时（毫秒）
+    # 杩炴帴瓒呮椂锛堟绉掞級
     connect-timeout: 5000
-    # 读取超时（毫秒）
+    # 璇诲彇瓒呮椂锛堟绉掞級
     read-timeout: 30000
 
-    # mTLS 证书配置
+    # mTLS 璇佷功閰嶇疆
     mtls:
       enabled: true
       keystore:
@@ -52,47 +48,44 @@ rest:
         password: ${TRUSTSTORE_PASSWORD:changeit}
         type: PKCS12
 
-    # HMAC 签名配置
+    # HMAC 绛惧悕閰嶇疆
     signature:
       enabled: true
       app-id: ${API_APP_ID:scm-internal-service}
       secret-key: ${API_SECRET_INTERNAL_SERVICE:your-secret-key-here}
-      # 签名算法: HmacSHA256, HmacSHA512
+      # 绛惧悕绠楁硶: HmacSHA256, HmacSHA512
       algorithm: HmacSHA256
-      # 签名有效期（秒），防止重放攻击
-      max-age: 300
+      # 绛惧悕鏈夋晥鏈燂紙绉掞級锛岄槻姝㈤噸鏀炬敾鍑?      max-age: 300
 
-# Sentinel 限流降级配置（针对 @SentinelResource）
-spring.cloud.sentinel:
+# Sentinel 闄愭祦闄嶇骇閰嶇疆锛堥拡瀵?@SentinelResource锛?spring.cloud.sentinel:
   transport:
-    # Sentinel Dashboard 地址
+    # Sentinel Dashboard 鍦板潃
     dashboard: ${SENTINEL_DASHBOARD:localhost:8080}
-  # 开启 Sentinel
+  # 寮€鍚?Sentinel
   enabled: true
   eager: true
 
 ---
-# 开发环境配置
-spring.config.activate.on-profile: dev
+# 寮€鍙戠幆澧冮厤缃?spring.config.activate.on-profile: dev
 
 spring.cloud.loadbalancer:
   strategy: round-robin
 
 rest.client:
-  mtls.enabled: false  # 开发环境可禁用 mTLS
+  mtls.enabled: false  # 寮€鍙戠幆澧冨彲绂佺敤 mTLS
   signature.enabled: true
 
 ---
-# 生产环境配置
+# 鐢熶骇鐜閰嶇疆
 spring.config.activate.on-profile: prod
 
 spring.cloud.loadbalancer:
-  # 生产环境使用加权轮询，根据机器性能分配流量
+  # 鐢熶骇鐜浣跨敤鍔犳潈杞锛屾牴鎹満鍣ㄦ€ц兘鍒嗛厤娴侀噺
   strategy: weighted-round-robin
   nacos.enabled: true
 
 rest.client:
-  mtls.enabled: true  # 生产环境必须启用 mTLS
+  mtls.enabled: true  # 鐢熶骇鐜蹇呴』鍚敤 mTLS
   signature.enabled: true
   connect-timeout: 3000
   read-timeout: 15000
