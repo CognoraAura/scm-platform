@@ -3,6 +3,7 @@ package com.scmcloud.common.mybatisPlus.aspect;
 import com.scmcloud.common.mybatisPlus.annotation.DataScope;
 import com.scmcloud.common.mybatisPlus.context.DataScopeContextHolder;
 import com.scmcloud.common.mybatisPlus.context.DataScopeFilter;
+import com.scmcloud.common.mybatisPlus.service.DataPermissionService;
 import com.scmcloud.common.security.SecurityContext;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.jupiter.api.AfterEach;
@@ -18,23 +19,15 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * DataScopeAspect Test Suite
- *
- * <p>REFACTORED: Tests the refactored DataScopeAspect that now depends on
- * SecurityContext interface instead of concrete SecurityUser class.
- *
- * <p>This validates:
- * - Proper dependency inversion (depends on interface, not implementation)
- * - Data scope filtering logic remains correct after refactoring
- * - ThreadLocal context management works properly
- */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("DataScopeAspect Refactoring Tests")
 class DataScopeAspectTest {
 
     @Mock
     private SecurityContext securityContext;
+
+    @Mock
+    private DataPermissionService dataPermissionService;
 
     @Mock
     private ProceedingJoinPoint joinPoint;
@@ -49,11 +42,10 @@ class DataScopeAspectTest {
 
     @BeforeEach
     void setUp() {
-        aspect = new DataScopeAspect(securityContext);
+        aspect = new DataScopeAspect(securityContext, dataPermissionService);
         testUserId = UUID.randomUUID();
         testDeptId = UUID.randomUUID();
 
-        // Default annotation values
         when(dataScopeAnnotation.userAlias()).thenReturn("u");
         when(dataScopeAnnotation.deptAlias()).thenReturn("d");
     }
@@ -66,37 +58,31 @@ class DataScopeAspectTest {
     @Test
     @DisplayName("Should skip data scope when user is not authenticated")
     void testAround_NotAuthenticated_SkipsDataScope() throws Throwable {
-        // Arrange
         when(securityContext.isAuthenticated()).thenReturn(false);
         Object expectedResult = "proceed-result";
         when(joinPoint.proceed()).thenReturn(expectedResult);
 
-        // Act
         Object result = aspect.around(joinPoint, dataScopeAnnotation);
 
-        // Assert
         assertThat(result).isEqualTo(expectedResult);
-        assertThat(DataScopeContextHolder.getFilter()).isNull();
+        assertThat(DataScopeContextHolder.get()).isNull();
         verify(securityContext).isAuthenticated();
         verify(joinPoint).proceed();
-        verifyNoMoreInteractions(securityContext); // Should not call other methods
+        verifyNoMoreInteractions(securityContext);
     }
 
     @Test
     @DisplayName("Should skip data scope when userId is null")
     void testAround_NullUserId_SkipsDataScope() throws Throwable {
-        // Arrange
         when(securityContext.isAuthenticated()).thenReturn(true);
         when(securityContext.getCurrentUserId()).thenReturn(null);
         Object expectedResult = "proceed-result";
         when(joinPoint.proceed()).thenReturn(expectedResult);
 
-        // Act
         Object result = aspect.around(joinPoint, dataScopeAnnotation);
 
-        // Assert
         assertThat(result).isEqualTo(expectedResult);
-        assertThat(DataScopeContextHolder.getFilter()).isNull();
+        assertThat(DataScopeContextHolder.get()).isNull();
         verify(securityContext).isAuthenticated();
         verify(securityContext).getCurrentUserId();
         verify(joinPoint).proceed();
@@ -105,24 +91,21 @@ class DataScopeAspectTest {
     @Test
     @DisplayName("Should apply data scope level 5 (SELF) correctly")
     void testAround_LevelSelf_AppliesDataScope() throws Throwable {
-        // Arrange
         when(securityContext.isAuthenticated()).thenReturn(true);
         when(securityContext.getCurrentUserId()).thenReturn(testUserId);
         when(securityContext.getCurrentDeptId()).thenReturn(testDeptId);
-        when(securityContext.getDataScopeLevel()).thenReturn(5); // SELF
+        when(securityContext.getDataScopeLevel()).thenReturn(5);
 
         Object expectedResult = "proceed-result";
         when(joinPoint.proceed()).thenReturn(expectedResult);
 
-        // Act
         Object result = aspect.around(joinPoint, dataScopeAnnotation);
 
-        // Assert
         assertThat(result).isEqualTo(expectedResult);
 
-        DataScopeFilter filter = DataScopeContextHolder.getFilter();
+        DataScopeFilter filter = DataScopeContextHolder.get();
         assertThat(filter).isNotNull();
-        assertThat(filter.getClause()).contains("u = UNHEX(REPLACE(#{__ds_userId}, '-', ''))");
+        assertThat(filter.getClause()).contains("u = #{__ds_userId}::uuid");
         assertThat(filter.getParams()).containsEntry("__ds_userId", testUserId.toString());
 
         verify(securityContext).isAuthenticated();
@@ -135,69 +118,60 @@ class DataScopeAspectTest {
     @Test
     @DisplayName("Should apply data scope level 3 (DEPT) correctly")
     void testAround_LevelDept_AppliesDataScope() throws Throwable {
-        // Arrange
         when(securityContext.isAuthenticated()).thenReturn(true);
         when(securityContext.getCurrentUserId()).thenReturn(testUserId);
         when(securityContext.getCurrentDeptId()).thenReturn(testDeptId);
-        when(securityContext.getDataScopeLevel()).thenReturn(3); // DEPT
+        when(securityContext.getDataScopeLevel()).thenReturn(3);
 
         Object expectedResult = "proceed-result";
         when(joinPoint.proceed()).thenReturn(expectedResult);
 
-        // Act
         Object result = aspect.around(joinPoint, dataScopeAnnotation);
 
-        // Assert
         assertThat(result).isEqualTo(expectedResult);
 
-        DataScopeFilter filter = DataScopeContextHolder.getFilter();
+        DataScopeFilter filter = DataScopeContextHolder.get();
         assertThat(filter).isNotNull();
-        assertThat(filter.getClause()).contains("d = UNHEX(REPLACE(#{__ds_deptId}, '-', ''))");
+        assertThat(filter.getClause()).contains("d = #{__ds_deptId}::uuid");
         assertThat(filter.getParams()).containsEntry("__ds_deptId", testDeptId.toString());
     }
 
     @Test
     @DisplayName("Should apply data scope level 1 (ALL) correctly")
     void testAround_LevelAll_AppliesNoFiltering() throws Throwable {
-        // Arrange
         when(securityContext.isAuthenticated()).thenReturn(true);
         when(securityContext.getCurrentUserId()).thenReturn(testUserId);
         when(securityContext.getCurrentDeptId()).thenReturn(testDeptId);
-        when(securityContext.getDataScopeLevel()).thenReturn(1); // ALL
+        when(securityContext.getDataScopeLevel()).thenReturn(1);
 
         Object expectedResult = "proceed-result";
         when(joinPoint.proceed()).thenReturn(expectedResult);
 
-        // Act
         Object result = aspect.around(joinPoint, dataScopeAnnotation);
 
-        // Assert
         assertThat(result).isEqualTo(expectedResult);
 
-        DataScopeFilter filter = DataScopeContextHolder.getFilter();
+        DataScopeFilter filter = DataScopeContextHolder.get();
         assertThat(filter).isNotNull();
-        assertThat(filter.getClause()).isEqualTo("1=1"); // No filtering
+        assertThat(filter.getClause()).isEqualTo("1=1");
     }
 
     @Test
     @DisplayName("Should apply data scope level 4 (DEPT_AND_CHILDREN) with recursive CTE")
     void testAround_LevelDeptAndChildren_AppliesRecursiveCTE() throws Throwable {
-        // Arrange
         when(securityContext.isAuthenticated()).thenReturn(true);
         when(securityContext.getCurrentUserId()).thenReturn(testUserId);
         when(securityContext.getCurrentDeptId()).thenReturn(testDeptId);
-        when(securityContext.getDataScopeLevel()).thenReturn(4); // DEPT_AND_CHILDREN
+        when(securityContext.getDataScopeLevel()).thenReturn(4);
 
         Object expectedResult = "proceed-result";
         when(joinPoint.proceed()).thenReturn(expectedResult);
 
-        // Act
         Object result = aspect.around(joinPoint, dataScopeAnnotation);
 
-        // Assert
         assertThat(result).isEqualTo(expectedResult);
 
-        DataScopeFilter filter = DataScopeContextHolder.getFilter();
+        DataScopeFilter filter = DataScopeContextHolder.get();
         assertThat(filter).isNotNull();
         assertThat(filter.getClause()).contains("WITH RECURSIVE dept_tree");
         assertThat(filter.getClause()).contains("d IN");
@@ -207,46 +181,40 @@ class DataScopeAspectTest {
     @Test
     @DisplayName("Should handle null deptId for DEPT level gracefully")
     void testAround_LevelDept_NullDeptId_DeniesAccess() throws Throwable {
-        // Arrange
         when(securityContext.isAuthenticated()).thenReturn(true);
         when(securityContext.getCurrentUserId()).thenReturn(testUserId);
-        when(securityContext.getCurrentDeptId()).thenReturn(null); // No department
-        when(securityContext.getDataScopeLevel()).thenReturn(3); // DEPT
+        when(securityContext.getCurrentDeptId()).thenReturn(null);
+        when(securityContext.getDataScopeLevel()).thenReturn(3);
 
         Object expectedResult = "proceed-result";
         when(joinPoint.proceed()).thenReturn(expectedResult);
 
-        // Act
         Object result = aspect.around(joinPoint, dataScopeAnnotation);
 
-        // Assert
         assertThat(result).isEqualTo(expectedResult);
 
-        DataScopeFilter filter = DataScopeContextHolder.getFilter();
+        DataScopeFilter filter = DataScopeContextHolder.get();
         assertThat(filter).isNotNull();
-        assertThat(filter.getClause()).isEqualTo("1=0"); // Deny all access
+        assertThat(filter.getClause()).isEqualTo("1=0");
     }
 
     @Test
     @DisplayName("Should use custom table aliases from annotation")
     void testAround_CustomAliases_UsedInFilter() throws Throwable {
-        // Arrange
         when(dataScopeAnnotation.userAlias()).thenReturn("user_table");
         when(dataScopeAnnotation.deptAlias()).thenReturn("dept_table");
 
         when(securityContext.isAuthenticated()).thenReturn(true);
         when(securityContext.getCurrentUserId()).thenReturn(testUserId);
         when(securityContext.getCurrentDeptId()).thenReturn(testDeptId);
-        when(securityContext.getDataScopeLevel()).thenReturn(5); // SELF
+        when(securityContext.getDataScopeLevel()).thenReturn(5);
 
         Object expectedResult = "proceed-result";
         when(joinPoint.proceed()).thenReturn(expectedResult);
 
-        // Act
         Object result = aspect.around(joinPoint, dataScopeAnnotation);
 
-        // Assert
-        DataScopeFilter filter = DataScopeContextHolder.getFilter();
+        DataScopeFilter filter = DataScopeContextHolder.get();
         assertThat(filter).isNotNull();
         assertThat(filter.getClause()).contains("user_table =");
     }
@@ -254,7 +222,6 @@ class DataScopeAspectTest {
     @Test
     @DisplayName("Should clear ThreadLocal context after processing")
     void testAround_ClearsThreadLocalContext() throws Throwable {
-        // Arrange
         when(securityContext.isAuthenticated()).thenReturn(true);
         when(securityContext.getCurrentUserId()).thenReturn(testUserId);
         when(securityContext.getCurrentDeptId()).thenReturn(testDeptId);
@@ -262,18 +229,14 @@ class DataScopeAspectTest {
 
         when(joinPoint.proceed()).thenReturn("result");
 
-        // Act
         aspect.around(joinPoint, dataScopeAnnotation);
 
-        // Assert
-        // ThreadLocal should be cleared after around() completes
-        assertThat(DataScopeContextHolder.getFilter()).isNull();
+        assertThat(DataScopeContextHolder.get()).isNull();
     }
 
     @Test
     @DisplayName("Should clear ThreadLocal even when exception occurs")
     void testAround_ClearsThreadLocalOnException() {
-        // Arrange
         when(securityContext.isAuthenticated()).thenReturn(true);
         when(securityContext.getCurrentUserId()).thenReturn(testUserId);
         when(securityContext.getCurrentDeptId()).thenReturn(testDeptId);
@@ -282,33 +245,24 @@ class DataScopeAspectTest {
         try {
             when(joinPoint.proceed()).thenThrow(new RuntimeException("Test exception"));
         } catch (Throwable e) {
-            // Expected
         }
 
-        // Act & Assert
         assertThatThrownBy(() -> aspect.around(joinPoint, dataScopeAnnotation))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Test exception");
 
-        // ThreadLocal should still be cleared even after exception
-        assertThat(DataScopeContextHolder.getFilter()).isNull();
+        assertThat(DataScopeContextHolder.get()).isNull();
     }
 
     @Test
     @DisplayName("REFACTORING: Verify no dependency on SecurityUser or SecurityUtils")
     void testRefactoring_NoDependencyOnWebLayer() {
-        // This test validates that DataScopeAspect only depends on SecurityContext interface
-        // If this test compiles, it proves we successfully decoupled from web layer
-
-        // Arrange
         when(securityContext.isAuthenticated()).thenReturn(false);
 
         try {
             when(joinPoint.proceed()).thenReturn("result");
-            // Act
             aspect.around(joinPoint, dataScopeAnnotation);
 
-            // Assert: If we reach here, refactoring is successful
             assertThat(aspect).isNotNull();
         } catch (Throwable e) {
             fail("Should not throw exception", e);
