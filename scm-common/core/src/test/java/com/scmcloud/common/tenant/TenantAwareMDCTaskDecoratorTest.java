@@ -158,7 +158,7 @@ class TenantAwareMDCTaskDecoratorTest {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(1);
         executor.setMaxPoolSize(1);
-        executor.setQueueCapacity(1);
+        executor.setQueueCapacity(5);
         executor.setThreadNamePrefix("test-async-");
         return executor;
     }
