@@ -134,6 +134,9 @@ public class OrdOrder {
     @TableField(exist = false)
     private List<DomainEvent> domainEvents = new ArrayList<>();
 
+    @TableField(exist = false)
+    private List<OrdOrderItem> items;
+
     /**
      * Register a domain event for later publication.
      */

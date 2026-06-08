@@ -23,7 +23,6 @@ import com.scmcloud.order.service.IOrdStatusHistoryService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -45,7 +44,6 @@ public class OrdOrderServiceImpl extends ServiceImpl<OrdOrderMapper, OrdOrder> i
             throw new IllegalArgumentException("订单明细不能为空");
         }
 
-        order.setId(UUID.randomUUID().toString());
         order.setStatus(0);
         order.setCreateTime(LocalDateTime.now());
         order.setUpdateTime(LocalDateTime.now());
@@ -71,7 +69,6 @@ public class OrdOrderServiceImpl extends ServiceImpl<OrdOrderMapper, OrdOrder> i
         }
 
         for (OrdOrderItem item : items) {
-            item.setId(UUID.randomUUID().toString());
             item.setOrderId(order.getId());
             item.setOrderNo(order.getOrderNo());
             item.setCreateTime(LocalDateTime.now());
@@ -79,7 +76,6 @@ public class OrdOrderServiceImpl extends ServiceImpl<OrdOrderMapper, OrdOrder> i
         orderItemService.saveBatch(items);
 
         OrdStatusHistory history = new OrdStatusHistory();
-        history.setId(UUID.randomUUID().toString());
         history.setOrderId(order.getId());
         history.setOrderNo(order.getOrderNo());
         history.setFromStatus(null);
@@ -122,7 +118,6 @@ public class OrdOrderServiceImpl extends ServiceImpl<OrdOrderMapper, OrdOrder> i
         boolean updated = updateById(order);
         if (updated) {
             OrdStatusHistory history = new OrdStatusHistory();
-            history.setId(UUID.randomUUID().toString());
             history.setOrderId(order.getId());
             history.setOrderNo(order.getOrderNo());
             history.setFromStatus(fromStatus);
@@ -136,7 +131,7 @@ public class OrdOrderServiceImpl extends ServiceImpl<OrdOrderMapper, OrdOrder> i
     }
 
     @Override
-    public List<OrdOrder> listByUserId(Long userId) {
+    public List<OrdOrder> listByUserId(String userId) {
         log.debug("查询用户订单: userId={}", userId);
         LambdaQueryWrapper<OrdOrder> wrapper = Wrappers.lambdaQuery();
         wrapper.eq(OrdOrder::getUserId, userId)
@@ -146,7 +141,7 @@ public class OrdOrderServiceImpl extends ServiceImpl<OrdOrderMapper, OrdOrder> i
     }
 
     @Override
-    public Page<OrdOrder> pageByUserId(Long userId, Integer pageNum, Integer pageSize) {
+    public Page<OrdOrder> pageByUserId(String userId, Integer pageNum, Integer pageSize) {
         log.debug("分页查询用户订单: userId={}, pageNum={}, pageSize={}", userId, pageNum, pageSize);
         LambdaQueryWrapper<OrdOrder> wrapper = Wrappers.lambdaQuery();
         wrapper.eq(OrdOrder::getUserId, userId)

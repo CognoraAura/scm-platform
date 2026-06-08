@@ -16,7 +16,6 @@ import com.scmcloud.order.service.IOrdOrderService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 /**
  * 订单Dubbo服务实现
@@ -49,7 +48,6 @@ public class OrderDubboServiceImpl implements OrderDubboService {
 
         // 构建订单实体
         OrdOrder order = new OrdOrder();
-        order.setId(UUID.randomUUID().toString().replace("-", ""));
         order.setOrderNo(generateOrderNo());
         order.setUserId(request.getUserId() != null ? request.getUserId().toString() : null);
         order.setOrderType(1); // 普通订单
@@ -145,7 +143,7 @@ public class OrderDubboServiceImpl implements OrderDubboService {
      */
     private OrderVO convertToVO(OrdOrder order) {
         OrderVO vo = new OrderVO();
-        vo.setId(order.getId() != null ? Long.parseLong(order.getId()) : null);
+        vo.setId(order.getId());
         vo.setOrderNo(order.getOrderNo());
         vo.setUserId(order.getUserId() != null ? Long.parseLong(order.getUserId()) : null);
         vo.setStatus(order.getStatus() != null ? String.valueOf(order.getStatus()) : null);

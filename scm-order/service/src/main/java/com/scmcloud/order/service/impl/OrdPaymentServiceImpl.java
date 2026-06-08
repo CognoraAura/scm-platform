@@ -11,7 +11,6 @@ import com.scmcloud.order.service.IOrdPaymentService;
 import com.scmcloud.common.status.StatusValidator;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -25,7 +24,6 @@ public class OrdPaymentServiceImpl extends ServiceImpl<OrdPaymentMapper, OrdPaym
     public OrdPayment createPayment(OrdPayment payment) {
         log.info("创建支付记录: orderNo={}, amount={}", payment.getOrderNo(), payment.getPaymentAmount());
 
-        payment.setId(UUID.randomUUID().toString());
         payment.setStatus(0);
         payment.setInitiatedAt(LocalDateTime.now());
         payment.setCreateTime(LocalDateTime.now());
