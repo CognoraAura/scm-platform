@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Security 工具�
+ * Security 宸ュ叿锟?
  *
  * @author Deng
  * createData 2025/10/14 17:37
@@ -28,7 +28,7 @@ public final class SecurityUtils {
     }
 
     /**
-     * 获取当前登录用户
+     * 鑾峰彇褰撳墠鐧诲綍鐢ㄦ埛
      */
     public static SecurityUser getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -82,7 +82,7 @@ public final class SecurityUtils {
             if (a == null || !a.isAuthenticated()) return Optional.empty();
             Object p = a.getPrincipal();
             
-            // 使用 switch 语句替换 if 语句
+            // 浣跨敤 switch 璇彞鏇挎崲 if 璇彞
             return switch (p) {
                 case null -> Optional.empty();
                 case Jwt jwt -> Optional.ofNullable(jwt.getClaimAsString("userId"))
@@ -93,7 +93,7 @@ public final class SecurityUtils {
                     yield uid != null ? Optional.of(uid) : Optional.empty();
                 }
                 default -> {
-                    // 自定�SecurityUser 可在此判断并�userId
+                    // 鑷畾锟絊ecurityUser 鍙湪姝ゅ垽鏂苟锟絬serId
                     try {
                         var method = p.getClass().getMethod("getUserId");
                         Object v = method.invoke(p);
@@ -121,7 +121,7 @@ public final class SecurityUtils {
             return getCurrentUserUuid().orElseThrow(() -> new IllegalStateException("Missing or invalid userId (UUID)"));
         }
 
-        // 兼容 36 位（带横线）�32 位（�hex）两种字符串
+        // 鍏煎 36 浣嶏紙甯︽í绾匡級锟?2 浣嶏紙锟絟ex锛変袱绉嶅瓧绗︿覆
         static Optional<UUID> parseUuid(String raw) {
             if (raw == null || raw.isBlank()) return Optional.empty();
             String s = raw.trim();

@@ -3,7 +3,7 @@ package com.scmcloud.common.tenant.quota;
 import lombok.Getter;
 
 /**
- * 配额类型枚举
+ * 閰嶉绫诲瀷鏋氫妇
  *
  * @author Claude Code
  * @since 2025-01-24
@@ -12,47 +12,47 @@ import lombok.Getter;
 public enum QuotaType {
 
     /**
-     * 用户�
+     * 鐢ㄦ埛锟?
      */
-    USERS("用户数", "current_users", "max_users"),
+    USERS("鐢ㄦ埛鏁?, "current_users", "max_users"),
 
     /**
-     * 仓库�
+     * 浠撳簱锟?
      */
-    WAREHOUSES("仓库数", "current_warehouses", "max_warehouses"),
+    WAREHOUSES("浠撳簱鏁?, "current_warehouses", "max_warehouses"),
 
     /**
-     * SKU�
+     * SKU锟?
      */
-    SKUS("SKU数", "current_skus", "max_skus"),
+    SKUS("SKU鏁?, "current_skus", "max_skus"),
 
     /**
-     * 每日订单�
+     * 姣忔棩璁㈠崟锟?
      */
-    ORDERS("每日订单数", "current_orders_today", "max_orders_per_day"),
+    ORDERS("姣忔棩璁㈠崟鏁?, "current_orders_today", "max_orders_per_day"),
 
     /**
-     * 存储空间（GB�
+     * 瀛樺偍绌洪棿锛圙B锟?
      */
-    STORAGE("存储空间(GB)", "current_storage_gb", "max_storage_gb"),
+    STORAGE("瀛樺偍绌洪棿(GB)", "current_storage_gb", "max_storage_gb"),
 
     /**
-     * 每日API调用�
+     * 姣忔棩API璋冪敤锟?
      */
-    API_CALLS("每日API调用数", "current_api_calls_today", "max_api_calls_per_day");
+    API_CALLS("姣忔棩API璋冪敤鏁?, "current_api_calls_today", "max_api_calls_per_day");
 
     /**
-     * 描述
+     * 鎻忚堪
      */
     private final String description;
 
     /**
-     * 当前使用量字段名（数据库字段�
+     * 褰撳墠浣跨敤閲忓瓧娈靛悕锛堟暟鎹簱瀛楁锟?
      */
     private final String currentField;
 
     /**
-     * 最大限额字段名（数据库字段�
+     * 鏈€澶ч檺棰濆瓧娈靛悕锛堟暟鎹簱瀛楁锟?
      */
     private final String maxField;
 

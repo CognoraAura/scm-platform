@@ -14,32 +14,32 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 /**
- * Spring Cloud LoadBalancer 负载均衡策略配置
+ * Spring Cloud LoadBalancer 璐熻浇鍧囪　绛栫暐閰嶇疆
  *
- * <p>支持的负载均衡策略：
+ * <p>鏀寔鐨勮礋杞藉潎琛＄瓥鐣ワ細
  * <ul>
- *   <li><b>round-robin</b>（默认）: 轮询策略，依次选择实例</li>
- *   <li><b>random</b>: 随机策略，随机选择实例</li>
- *   <li><b>weighted-round-robin</b>: 加权轮询，根据实例权重分配请�/li>
+ *   <li><b>round-robin</b>锛堥粯璁わ級: 杞绛栫暐锛屼緷娆￠€夋嫨瀹炰緥</li>
+ *   <li><b>random</b>: 闅忔満绛栫暐锛岄殢鏈洪€夋嫨瀹炰緥</li>
+ *   <li><b>weighted-round-robin</b>: 鍔犳潈杞锛屾牴鎹疄渚嬫潈閲嶅垎閰嶈锟?li>
  * </ul>
  *
- * <p>配置方式（application.yml�
+ * <p>閰嶇疆鏂瑰紡锛坅pplication.yml锟?
  * <pre>
  * spring:
  *   cloud:
  *     loadbalancer:
- *       # 负载均衡策略: round-robin（默认）, random, weighted-round-robin
+ *       # 璐熻浇鍧囪　绛栫暐: round-robin锛堥粯璁わ級, random, weighted-round-robin
  *       strategy: round-robin
  *
- *       # Nacos 权重配置（仅 weighted-round-robin 策略生效�
+ *       # Nacos 鏉冮噸閰嶇疆锛堜粎 weighted-round-robin 绛栫暐鐢熸晥锟?
  *       nacos:
  *         enabled: true
  * </pre>
  *
- * <p>Nacos 实例权重配置示例�
+ * <p>Nacos 瀹炰緥鏉冮噸閰嶇疆绀轰緥锟?
  * <pre>
- * # �Nacos 控制台配置实�metadata
- * weight: 80  # 权重�0-100，默�100
+ * # 锟絅acos 鎺у埗鍙伴厤缃疄锟絤etadata
+ * weight: 80  # 鏉冮噸锟?-100锛岄粯锟?00
  * </pre>
  *
  * @author Claude
@@ -50,8 +50,8 @@ import org.springframework.core.env.Environment;
 public class LoadBalancerConfiguration {
 
     /**
-     * Round Robin 负载均衡器（默认策略�
-     * <p>轮询选择实例，适用于实例性能相近的场�/p>
+     * Round Robin 璐熻浇鍧囪　鍣紙榛樿绛栫暐锟?
+     * <p>杞閫夋嫨瀹炰緥锛岄€傜敤浜庡疄渚嬫€ц兘鐩歌繎鐨勫満锟?p>
      */
     @Bean
     @ConditionalOnProperty(
@@ -70,8 +70,8 @@ public class LoadBalancerConfiguration {
     }
 
     /**
-     * Random 负载均衡�
-     * <p>随机选择实例，适用于快速分散请求的场景</p>
+     * Random 璐熻浇鍧囪　锟?
+     * <p>闅忔満閫夋嫨瀹炰緥锛岄€傜敤浜庡揩閫熷垎鏁ｈ姹傜殑鍦烘櫙</p>
      */
     @Bean
     @ConditionalOnProperty(
@@ -89,19 +89,19 @@ public class LoadBalancerConfiguration {
     }
 
     /**
-     * Weighted Round Robin 负载均衡器（基于 Nacos 权重�
-     * <p>根据实例权重分配请求，适用于实例性能差异较大的场�/p>
+     * Weighted Round Robin 璐熻浇鍧囪　鍣紙鍩轰簬 Nacos 鏉冮噸锟?
+     * <p>鏍规嵁瀹炰緥鏉冮噸鍒嗛厤璇锋眰锛岄€傜敤浜庡疄渚嬫€ц兘宸紓杈冨ぇ鐨勫満锟?p>
      *
-     * <p>权重配置�
+     * <p>鏉冮噸閰嶇疆锟?
      * <ul>
-     *   <li>�Nacos 控制台设置实�metadata: {@code weight=80}</li>
-     *   <li>权重范围: 0-100，默�100</li>
-     *   <li>权重�0 的实例不接收请求</li>
+     *   <li>锟絅acos 鎺у埗鍙拌缃疄锟絤etadata: {@code weight=80}</li>
+     *   <li>鏉冮噸鑼冨洿: 0-100锛岄粯锟?00</li>
+     *   <li>鏉冮噸锟? 鐨勫疄渚嬩笉鎺ユ敹璇锋眰</li>
      * </ul>
      *
-     * <p>注意：Spring Cloud LoadBalancer 2023.0.0+ 原生支持 Nacos 权重�
-     * 只需配置 {@code spring.cloud.loadbalancer.nacos.enabled=true} 即可�
-     * �Bean 使用 RoundRobinLoadBalancer 配合 Nacos 权重特性实现�
+     * <p>娉ㄦ剰锛歋pring Cloud LoadBalancer 2023.0.0+ 鍘熺敓鏀寔 Nacos 鏉冮噸锟?
+     * 鍙渶閰嶇疆 {@code spring.cloud.loadbalancer.nacos.enabled=true} 鍗冲彲锟?
+     * 锟紹ean 浣跨敤 RoundRobinLoadBalancer 閰嶅悎 Nacos 鏉冮噸鐗规€у疄鐜帮拷
      */
     @Bean
     @ConditionalOnProperty(
@@ -115,8 +115,8 @@ public class LoadBalancerConfiguration {
         String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME, "default");
         log.info("Using WeightedRoundRobinLoadBalancer (Nacos-based) for service: {}", name);
 
-        // Spring Cloud Alibaba �NacosServiceInstanceListSupplier 会自�
-        // 根据 Nacos 实例�weight 字段过滤和加权实例列�
+        // Spring Cloud Alibaba 锟絅acosServiceInstanceListSupplier 浼氳嚜锟?
+        // 鏍规嵁 Nacos 瀹炰緥锟絯eight 瀛楁杩囨护鍜屽姞鏉冨疄渚嬪垪锟?
         return new RoundRobinLoadBalancer(serviceInstanceListSupplierProvider, name);
     }
 }

@@ -17,11 +17,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
- * 读写分离路由切面
+ * 璇诲啓鍒嗙璺敱鍒囬潰
  * <p>
- * 处理 @Master、@Slave 注解，以及自动判断事务类�
+ * 澶勭悊 @Master銆丂Slave 娉ㄨВ锛屼互鍙婅嚜鍔ㄥ垽鏂簨鍔＄被锟?
  * <p>
- * 优先级高�@Transactional，确保在事务开启前设置路由
+ * 浼樺厛绾ч珮锟紷Transactional锛岀‘淇濆湪浜嬪姟寮€鍚墠璁剧疆璺敱
  *
  * @author Deng
  * @since 2025-12-16
@@ -46,7 +46,7 @@ public class ReadWriteRoutingAspect {
     public void transactionalPointcut() {}
 
     /**
-     * 处理 @Master 注解
+     * 澶勭悊 @Master 娉ㄨВ
      */
     @Around("masterPointcut() || masterClassPointcut()")
     public Object aroundMaster(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -67,7 +67,7 @@ public class ReadWriteRoutingAspect {
     }
 
     /**
-     * 处理 @Slave 注解
+     * 澶勭悊 @Slave 娉ㄨВ
      */
     @Around("slavePointcut() || slaveClassPointcut()")
     public Object aroundSlave(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -92,16 +92,16 @@ public class ReadWriteRoutingAspect {
     }
 
     /**
-     * 处理 @Transactional 注解
+     * 澶勭悊 @Transactional 娉ㄨВ
      * <p>
-     * - readOnly=true �从库
-     * - readOnly=false �主库
+     * - readOnly=true 锟戒粠搴?
+     * - readOnly=false 锟戒富搴?
      */
     @Around("transactionalPointcut()")
     public Object aroundTransactional(ProceedingJoinPoint joinPoint) throws Throwable {
         Transactional transactional = getAnnotation(joinPoint, Transactional.class);
 
-        // 如果已经有显式路由，不再处理
+        // 濡傛灉宸茬粡鏈夋樉寮忚矾鐢憋紝涓嶅啀澶勭悊
         if (ReadWriteRoutingContext.current() != ReadWriteRoutingContext.RoutingType.AUTO) {
             return joinPoint.proceed();
         }
@@ -118,11 +118,11 @@ public class ReadWriteRoutingAspect {
                 ReadWriteRoutingContext.pop();
             }
         } else {
-            // 写事务，记录写操作时�
+            // 鍐欎簨鍔★紝璁板綍鍐欐搷浣滄椂锟?
             ReadWriteRoutingContext.push(ReadWriteRoutingContext.RoutingType.MASTER);
             try {
                 Object result = joinPoint.proceed();
-                // 事务成功后标记写操作
+                // 浜嬪姟鎴愬姛鍚庢爣璁板啓鎿嶄綔
                 ReadWriteRoutingContext.markWrite();
                 return result;
             } finally {
@@ -136,13 +136,13 @@ public class ReadWriteRoutingAspect {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
 
-        // 先从方法上找
+        // 鍏堜粠鏂规硶涓婃壘
         T annotation = method.getAnnotation(annotationClass);
         if (annotation != null) {
             return annotation;
         }
 
-        // 再从类上�
+        // 鍐嶄粠绫讳笂锟?
         return joinPoint.getTarget().getClass().getAnnotation(annotationClass);
     }
 }

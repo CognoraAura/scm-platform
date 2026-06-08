@@ -10,7 +10,7 @@ import java.util.UUID;
 
 /**
  * <p>
- * 角色�Mapper 接口
+ * 瑙掕壊锟組apper 鎺ュ彛
  * </p>
  *
  * @author author
@@ -21,7 +21,7 @@ import java.util.UUID;
 public interface SysRoleMapper extends BaseMapper<SysRole> {
 
     /**
-     * 检查角色编码是否存在（不考虑租户�
+     * 妫€鏌ヨ鑹茬紪鐮佹槸鍚﹀瓨鍦紙涓嶈€冭檻绉熸埛锟?
      */
     @Select("""
             SELECT COUNT(*) > 0 FROM sys_role
@@ -30,8 +30,8 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
     boolean existsByRoleCode(@Param("roleCode") String roleCode);
 
     /**
-     * 检查角色编码在指定租户下是否存�
-     * 用于多租户环境下的唯一性校�
+     * 妫€鏌ヨ鑹茬紪鐮佸湪鎸囧畾绉熸埛涓嬫槸鍚﹀瓨锟?
+     * 鐢ㄤ簬澶氱鎴风幆澧冧笅鐨勫敮涓€鎬ф牎锟?
      */
     @Select("""
             SELECT COUNT(*) > 0 FROM sys_role
@@ -42,7 +42,7 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
     boolean existsByRoleCodeAndTenantId(@Param("roleCode") String roleCode, @Param("tenantId") UUID tenantId);
 
     /**
-     * 根据角色编码查询角色 ID
+     * 鏍规嵁瑙掕壊缂栫爜鏌ヨ瑙掕壊 ID
      */
     @Select("""
             SELECT id FROM sys_role
@@ -51,7 +51,7 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
     UUID findIdByRoleCode(@Param("roleCode") String roleCode);
 
     /**
-     * 根据角色编码查询角色
+     * 鏍规嵁瑙掕壊缂栫爜鏌ヨ瑙掕壊
      */
     @Select("""
             SELECT * FROM sys_role
@@ -60,12 +60,12 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
     SysRole findByRoleCode(@Param("roleCode") String roleCode);
 
     /**
-     * 获取角色等级
+     * 鑾峰彇瑙掕壊绛夌骇
      * <p>
-     * role_level 字段值越小，权限越高
+     * role_level 瀛楁鍊艰秺灏忥紝鏉冮檺瓒婇珮
      *
-     * @param roleId 角色 ID
-     * @return 角色等级（role_level），如果角色不存在则返回 null
+     * @param roleId 瑙掕壊 ID
+     * @return 瑙掕壊绛夌骇锛坮ole_level锛夛紝濡傛灉瑙掕壊涓嶅瓨鍦ㄥ垯杩斿洖 null
      */
     @Select("""
             SELECT role_level FROM sys_role
@@ -74,12 +74,12 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
     Integer getRoleLevel(@Param("roleId") UUID roleId);
 
     /**
-     * 获取角色所属的租户 ID
+     * 鑾峰彇瑙掕壊鎵€灞炵殑绉熸埛 ID
      * <p>
-     * 用于验证角色归属（NULL 表示平台角色�
+     * 鐢ㄤ簬楠岃瘉瑙掕壊褰掑睘锛圢ULL 琛ㄧず骞冲彴瑙掕壊锟?
      *
-     * @param roleId 角色 ID
-     * @return 租户 ID（NULL 表示平台角色�
+     * @param roleId 瑙掕壊 ID
+     * @return 绉熸埛 ID锛圢ULL 琛ㄧず骞冲彴瑙掕壊锟?
      */
     @Select("""
             SELECT tenant_id FROM sys_role

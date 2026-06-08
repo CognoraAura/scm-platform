@@ -19,22 +19,22 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * 权限服务客户端（@HttpExchange 版本�
- * <p>替代 OpenFeign �SysPermissionServiceClient</p>
+ * 鏉冮檺鏈嶅姟瀹㈡埛绔紙@HttpExchange 鐗堟湰锟?
+ * <p>鏇夸唬 OpenFeign 锟絊ysPermissionServiceClient</p>
  *
- * <p>架构说明�
+ * <p>鏋舵瀯璇存槑锟?
  * <ul>
- *   <li>主要通信：Dubbo (PermissionDubboService) - 高性能 RPC</li>
- *   <li>降级备用：RestClient + @HttpExchange (SysPermissionServiceClient) - HTTP REST</li>
+ *   <li>涓昏閫氫俊锛欴ubbo (PermissionDubboService) - 楂樻€ц兘 RPC</li>
+ *   <li>闄嶇骇澶囩敤锛歊estClient + @HttpExchange (SysPermissionServiceClient) - HTTP REST</li>
  * </ul>
  *
- * <p>此客户端�system-service �SysPermissionController 端点对应
+ * <p>姝ゅ鎴风锟絪ystem-service 锟絊ysPermissionController 绔偣瀵瑰簲
  *
- * <p><strong>重要安全特性：Fail-Closed 模式</strong>
+ * <p><strong>閲嶈瀹夊叏鐗规€э細Fail-Closed 妯″紡</strong>
  * <ul>
- *   <li>权限查询失败时，默认拒绝访问（而不是放行）</li>
- *   <li>{@code findPermissionsByUrl} 失败时抛�AccessDeniedException</li>
- *   <li>{@code getUserPermissions} 失败时返回空集合（拒绝所有权限）</li>
+ *   <li>鏉冮檺鏌ヨ澶辫触鏃讹紝榛樿鎷掔粷璁块棶锛堣€屼笉鏄斁琛岋級</li>
+ *   <li>{@code findPermissionsByUrl} 澶辫触鏃舵姏锟紸ccessDeniedException</li>
+ *   <li>{@code getUserPermissions} 澶辫触鏃惰繑鍥炵┖闆嗗悎锛堟嫆缁濇墍鏈夋潈闄愶級</li>
  * </ul>
  *
  * @author Claude
@@ -54,10 +54,10 @@ public interface SysPermissionServiceClient {
     Logger log = LoggerFactory.getLogger(SysPermissionServiceClient.class);
 
     /**
-     * 查询权限�
-     * <p>对应: SysPermissionController.tree()</p>
+     * 鏌ヨ鏉冮檺锟?
+     * <p>瀵瑰簲: SysPermissionController.tree()</p>
      *
-     * @return 权限�
+     * @return 鏉冮檺锟?
      */
     @GetExchange("/tree")
     @SentinelResource(
@@ -67,25 +67,25 @@ public interface SysPermissionServiceClient {
     ApiResponse<List<PermissionDTO>> getPermissionTree();
 
     /**
-     * 查询权限树的降级方法
-     * <p>Note: Sentinel Dashboard 会记录降级事�/p>
+     * 鏌ヨ鏉冮檺鏍戠殑闄嶇骇鏂规硶
+     * <p>Note: Sentinel Dashboard 浼氳褰曢檷绾т簨锟?p>
      *
-     * @param ex 异常
-     * @return 空列�
+     * @param ex 寮傚父
+     * @return 绌哄垪锟?
      */
     default ApiResponse<List<PermissionDTO>> getPermissionTreeFallback(Throwable ex) {
         return ApiResponse.success(new ArrayList<>());
     }
 
     /**
-     * 查询用户权限（用�FeignPermissionAccess�
-     * <p>对应: SysPermissionController.getUserPermissions()</p>
+     * 鏌ヨ鐢ㄦ埛鏉冮檺锛堢敤锟紽eignPermissionAccess锟?
+     * <p>瀵瑰簲: SysPermissionController.getUserPermissions()</p>
      * <p>Dubbo: PermissionDubboService.findAllPermissionsByUserId()</p>
      *
-     * <p><strong>SECURITY: Fail-Closed 模式</strong> - 失败时返回空集合（拒绝所有权限）</p>
+     * <p><strong>SECURITY: Fail-Closed 妯″紡</strong> - 澶辫触鏃惰繑鍥炵┖闆嗗悎锛堟嫆缁濇墍鏈夋潈闄愶級</p>
      *
-     * @param userId 用户 ID
-     * @return 用户权限集合
+     * @param userId 鐢ㄦ埛 ID
+     * @return 鐢ㄦ埛鏉冮檺闆嗗悎
      */
     @GetExchange("/user/{userId}")
     @SentinelResource(
@@ -95,26 +95,26 @@ public interface SysPermissionServiceClient {
     ApiResponse<Set<String>> getUserPermissions(@PathVariable UUID userId);
 
     /**
-     * 查询用户权限的降级方�
-     * <p><strong>SECURITY: Fail-Closed</strong> - 返回空集合，拒绝所有权�/p>
+     * 鏌ヨ鐢ㄦ埛鏉冮檺鐨勯檷绾ф柟锟?
+     * <p><strong>SECURITY: Fail-Closed</strong> - 杩斿洖绌洪泦鍚堬紝鎷掔粷鎵€鏈夋潈锟?p>
      *
-     * @param userId 用户 ID
-     * @param ex 异常
-     * @return 空权限集�
+     * @param userId 鐢ㄦ埛 ID
+     * @param ex 寮傚父
+     * @return 绌烘潈闄愰泦锟?
      */
     default ApiResponse<Set<String>> getUserPermissionsFallback(UUID userId, Throwable ex) {
         log.error("SECURITY ALERT: Permission lookup failed for userId={} - DENYING ALL ACCESS. Error: {}",
                   userId, ex.getMessage());
-        // Fail-Closed: 权限查询失败时返回空集合（拒绝所有权限）
+        // Fail-Closed: 鏉冮檺鏌ヨ澶辫触鏃惰繑鍥炵┖闆嗗悎锛堟嫆缁濇墍鏈夋潈闄愶級
         return ApiResponse.success(Collections.emptySet());
     }
 
     /**
-     * 根据 ID 获取权限详情
-     * <p>对应: SysPermissionController.getById()</p>
+     * 鏍规嵁 ID 鑾峰彇鏉冮檺璇︽儏
+     * <p>瀵瑰簲: SysPermissionController.getById()</p>
      *
-     * @param id 权限 ID
-     * @return 权限详情
+     * @param id 鏉冮檺 ID
+     * @return 鏉冮檺璇︽儏
      */
     @GetExchange("/{id}")
     @SentinelResource(
@@ -124,27 +124,27 @@ public interface SysPermissionServiceClient {
     ApiResponse<PermissionDTO> getPermissionById(@PathVariable UUID id);
 
     /**
-     * 根据 ID 获取权限的降级方�
-     * <p>Note: Sentinel Dashboard 会记录降级事�/p>
+     * 鏍规嵁 ID 鑾峰彇鏉冮檺鐨勯檷绾ф柟锟?
+     * <p>Note: Sentinel Dashboard 浼氳褰曢檷绾т簨锟?p>
      *
-     * @param id 权限 ID
-     * @param ex 异常
-     * @return 失败响应
+     * @param id 鏉冮檺 ID
+     * @param ex 寮傚父
+     * @return 澶辫触鍝嶅簲
      */
     default ApiResponse<PermissionDTO> getPermissionByIdFallback(UUID id, Throwable ex) {
-        return ApiResponse.fail(503, "权限服务暂时不可用");
+        return ApiResponse.fail(503, "鏉冮檺鏈嶅姟鏆傛椂涓嶅彲鐢?);
     }
 
     /**
-     * 根据 URL �HTTP 方法查询权限（用�FeignPermissionAccess�
-     * <p>对应: SysPermissionController.findPermissionsByUrl()</p>
+     * 鏍规嵁 URL 锟紿TTP 鏂规硶鏌ヨ鏉冮檺锛堢敤锟紽eignPermissionAccess锟?
+     * <p>瀵瑰簲: SysPermissionController.findPermissionsByUrl()</p>
      * <p>Dubbo: PermissionDubboService.findPermissionsByUrl()</p>
      *
-     * <p><strong>SECURITY: Fail-Closed 模式</strong> - 失败时抛�AccessDeniedException（拒绝访问）</p>
+     * <p><strong>SECURITY: Fail-Closed 妯″紡</strong> - 澶辫触鏃舵姏锟紸ccessDeniedException锛堟嫆缁濊闂級</p>
      *
-     * @param url URL 路径
-     * @param method HTTP 方法
-     * @return 权限编码列表
+     * @param url URL 璺緞
+     * @param method HTTP 鏂规硶
+     * @return 鏉冮檺缂栫爜鍒楄〃
      */
     @GetExchange("/find-by-url")
     @SentinelResource(
@@ -157,13 +157,13 @@ public interface SysPermissionServiceClient {
     );
 
     /**
-     * 根据 URL 查询权限的降级方�
-     * <p><strong>SECURITY: Fail-Closed</strong> - 抛出异常，拒绝访�/p>
+     * 鏍规嵁 URL 鏌ヨ鏉冮檺鐨勯檷绾ф柟锟?
+     * <p><strong>SECURITY: Fail-Closed</strong> - 鎶涘嚭寮傚父锛屾嫆缁濊锟?p>
      *
-     * @param url URL 路径
-     * @param method HTTP 方法
-     * @param ex 异常
-     * @throws AccessDeniedException 始终抛出（Fail-Closed 策略�
+     * @param url URL 璺緞
+     * @param method HTTP 鏂规硶
+     * @param ex 寮傚父
+     * @throws AccessDeniedException 濮嬬粓鎶涘嚭锛團ail-Closed 绛栫暐锟?
      */
     default List<String> findPermissionsByUrlFallback(
         String url,
@@ -174,7 +174,7 @@ public interface SysPermissionServiceClient {
                   "url={}, method={}, error={}",
                   url, method, ex.getMessage());
 
-        // Fail-Closed: 权限查询失败时必须拒绝访问（安全第一�
+        // Fail-Closed: 鏉冮檺鏌ヨ澶辫触鏃跺繀椤绘嫆缁濊闂紙瀹夊叏绗竴锟?
         throw new AccessDeniedException(
             "Permission service unavailable (Sentinel circuit open or error) - access denied as safety measure",
             ex
@@ -182,10 +182,10 @@ public interface SysPermissionServiceClient {
     }
 
     /**
-     * 查询所�API 权限（用�DynamicPermissionLoader�
-     * <p>对应: SysPermissionController.findApiPermissions()</p>
+     * 鏌ヨ鎵€锟紸PI 鏉冮檺锛堢敤锟紻ynamicPermissionLoader锟?
+     * <p>瀵瑰簲: SysPermissionController.findApiPermissions()</p>
      *
-     * @return API 权限列表，包含路径、HTTP 方法和权限编�
+     * @return API 鏉冮檺鍒楄〃锛屽寘鍚矾寰勩€丠TTP 鏂规硶鍜屾潈闄愮紪锟?
      */
     @GetExchange("/api")
     @SentinelResource(
@@ -195,11 +195,11 @@ public interface SysPermissionServiceClient {
     List<ApiPermissionDTO> findApiPermissions();
 
     /**
-     * 查询 API 权限的降级方�
-     * <p>Note: Sentinel Dashboard 会记录降级事�/p>
+     * 鏌ヨ API 鏉冮檺鐨勯檷绾ф柟锟?
+     * <p>Note: Sentinel Dashboard 浼氳褰曢檷绾т簨锟?p>
      *
-     * @param ex 异常
-     * @return 空列�
+     * @param ex 寮傚父
+     * @return 绌哄垪锟?
      */
     default List<ApiPermissionDTO> findApiPermissionsFallback(Throwable ex) {
         return Collections.emptyList();

@@ -9,7 +9,7 @@ import java.util.UUID;
 
 /**
  * <p>
- * 部门�服务�
+ * 閮ㄩ棬锟芥湇鍔★拷
  * </p>
  *
  * @author author
@@ -18,54 +18,54 @@ import java.util.UUID;
 public interface ISysDeptService extends IService<SysDept> {
 
     /**
-     * 查询部门树（树形结构，从根节点开始）�
+     * 鏌ヨ閮ㄩ棬鏍戯紙鏍戝舰缁撴瀯锛屼粠鏍硅妭鐐瑰紑濮嬶級锟?
      *
-     * @return 部门树列�
+     * @return 閮ㄩ棬鏍戝垪锟?
      */
     List<DeptDTO> getDeptTree();
 
     /**
-     * 查询指定部门及其所有子部门ID（包含自身）�
+     * 鏌ヨ鎸囧畾閮ㄩ棬鍙婂叾鎵€鏈夊瓙閮ㄩ棬ID锛堝寘鍚嚜韬級锟?
      *
-     * @param deptId 部门 ID
-     * @return 部门ID列表（包含自身及所有子部门�
+     * @param deptId 閮ㄩ棬 ID
+     * @return 閮ㄩ棬ID鍒楄〃锛堝寘鍚嚜韬強鎵€鏈夊瓙閮ㄩ棬锟?
      */
     List<UUID> getDeptAndChildren(UUID deptId);
 
     /**
-     * 新增部门�
+     * 鏂板閮ㄩ棬锟?
      *
-     * @param deptDTO 部门信息
+     * @param deptDTO 閮ㄩ棬淇℃伅
      */
     void addDept(DeptDTO deptDTO);
 
     /**
-     * 修改部门�
+     * 淇敼閮ㄩ棬锟?
      *
-     * @param deptDTO 部门信息
+     * @param deptDTO 閮ㄩ棬淇℃伅
      */
     void updateDept(DeptDTO deptDTO);
 
     /**
-     * 删除部门�
+     * 鍒犻櫎閮ㄩ棬锟?
      *
-     * @param id 部门 ID
+     * @param id 閮ㄩ棬 ID
      */
     void deleteDept(UUID id);
 
     /**
-     * 检查部门下是否存在用户�
+     * 妫€鏌ラ儴闂ㄤ笅鏄惁瀛樺湪鐢ㄦ埛锟?
      *
-     * @param deptId 部门 ID
-     * @return true 表示存在用户；false 表示不存�
+     * @param deptId 閮ㄩ棬 ID
+     * @return true 琛ㄧず瀛樺湪鐢ㄦ埛锛沠alse 琛ㄧず涓嶅瓨锟?
      */
     boolean hasUsers(UUID deptId);
 
     /**
-     * 检查部门下是否存在子部门�
+     * 妫€鏌ラ儴闂ㄤ笅鏄惁瀛樺湪瀛愰儴闂拷
      *
-     * @param deptId 部门 ID
-     * @return true 表示存在子部门；false 表示不存�
+     * @param deptId 閮ㄩ棬 ID
+     * @return true 琛ㄧず瀛樺湪瀛愰儴闂紱false 琛ㄧず涓嶅瓨锟?
      */
     boolean hasChildren(UUID deptId);
 }

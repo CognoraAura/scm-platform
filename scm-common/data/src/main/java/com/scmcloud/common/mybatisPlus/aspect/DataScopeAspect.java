@@ -19,8 +19,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * 数据权限切面
- * 根据用户角色的dataScope自动注入SQL过滤条件
+ * 鏁版嵁鏉冮檺鍒囬潰
+ * 鏍规嵁鐢ㄦ埛瑙掕壊鐨刣ataScope鑷姩娉ㄥ叆SQL杩囨护鏉′欢
  *
  * <p>REFACTORED: Now depends on SecurityContext interface instead of concrete SecurityUser class.
  * This follows Dependency Inversion Principle (DIP) and decouples data layer from web layer.
@@ -49,7 +49,7 @@ public class DataScopeAspect {
     }
 
     /**
-     * 拦截带有@DataScope注解的方�
+     * 鎷︽埅甯︽湁@DataScope娉ㄨВ鐨勬柟锟?
      */
     @Around("@annotation(dataScope)")
     public Object around(ProceedingJoinPoint point, DataScope dataScope) throws Throwable {
@@ -74,7 +74,7 @@ public class DataScopeAspect {
             // Build SQL filter based on data scope level
             DataScopeFilter filter = buildSqlFilter(dataScopeLevel, userId, deptId, dataScope);
 
-            // 设置到ThreadLocal，由DataScopeInterceptor使用
+            // 璁剧疆鍒癟hreadLocal锛岀敱DataScopeInterceptor浣跨敤
             DataScopeContextHolder.set(filter);
 
             log.debug("Data scope applied: userId={}, level={}, filter={}",
@@ -82,7 +82,7 @@ public class DataScopeAspect {
 
             return point.proceed();
         } finally {
-            // 清理 ThreadLocal
+            // 娓呯悊 ThreadLocal
             DataScopeContextHolder.clear();
         }
     }
@@ -97,44 +97,44 @@ public class DataScopeAspect {
         String userAlias = validateSqlIdentifier(annotation.userAlias(), "create_by");
 
         return switch (dataScope) {
-            case 1 -> // 全部数据权限
+            case 1 -> // 鍏ㄩ儴鏁版嵁鏉冮檺
                     new DataScopeFilter("1=1", java.util.Collections.emptyMap());
 
-            case 2 -> // 自定义数据权限（从数据库查询配置�
+            case 2 -> // 鑷畾涔夋暟鎹潈闄愶紙浠庢暟鎹簱鏌ヨ閰嶇疆锟?
                     buildCustomDataScope(userId, deptAlias, userAlias);
 
-            case 3 -> // 本部门数据权�(PostgreSQL UUID)
+            case 3 -> // 鏈儴闂ㄦ暟鎹潈锟?PostgreSQL UUID)
                     deptId != null
                             ? new DataScopeFilter(
                                     deptAlias + " = #{__ds_deptId}::uuid",
                                     java.util.Map.of("__ds_deptId", deptId.toString()))
                             : new DataScopeFilter("1=0", java.util.Collections.emptyMap());
 
-            case 4 -> // 本部门及以下数据权限
+            case 4 -> // 鏈儴闂ㄥ強浠ヤ笅鏁版嵁鏉冮檺
                     deptId != null
                             ? buildDeptAndChildrenScope(deptId, deptAlias)
                             : new DataScopeFilter("1=0", java.util.Collections.emptyMap());
 
-            case 5 -> // 仅本人数据权�(PostgreSQL UUID)
+            case 5 -> // 浠呮湰浜烘暟鎹潈锟?PostgreSQL UUID)
                     new DataScopeFilter(
                             userAlias + " = #{__ds_userId}::uuid",
                             java.util.Map.of("__ds_userId", userId.toString()));
 
             default ->
-                    new DataScopeFilter("1=0", java.util.Collections.emptyMap()); // 无权�
+                    new DataScopeFilter("1=0", java.util.Collections.emptyMap()); // 鏃犳潈锟?
         };
     }
 
     /**
-     * 构建自定义数据权�
-     * �sys_role_dept 表查询用户的自定义权限规�
+     * 鏋勫缓鑷畾涔夋暟鎹潈锟?
+     * 锟絪ys_role_dept 琛ㄦ煡璇㈢敤鎴风殑鑷畾涔夋潈闄愯锟?
      */
     private DataScopeFilter buildCustomDataScope(UUID userId, String deptAlias, String userAlias) {
-        // 查询用户的自定义数据权限部门列表
+        // 鏌ヨ鐢ㄦ埛鐨勮嚜瀹氫箟鏁版嵁鏉冮檺閮ㄩ棬鍒楄〃
         List<UUID> customDepts = dataPermissionService.findCustomDeptPermissions(userId);
 
         if (customDepts == null || customDepts.isEmpty()) {
-            // 没有自定义权限配置，降级为仅本人
+            // 娌℃湁鑷畾涔夋潈闄愰厤缃紝闄嶇骇涓轰粎鏈汉
             log.debug("No custom data permission found for user {}, fallback to self only", userId);
             return new DataScopeFilter(
                     userAlias + " = #{__ds_userId}::uuid",
@@ -142,17 +142,17 @@ public class DataScopeAspect {
             );
         }
 
-        // 构建 IN 子句 (PostgreSQL UUID 数组)
+        // 鏋勫缓 IN 瀛愬彞 (PostgreSQL UUID 鏁扮粍)
         Map<String, Object> params = new HashMap<>();
         params.put("__ds_userId", userId.toString());
 
-        // 使用 PostgreSQL �ANY 语法配合数组，更高效
+        // 浣跨敤 PostgreSQL 锟紸NY 璇硶閰嶅悎鏁扮粍锛屾洿楂樻晥
         String deptList = customDepts.stream()
                 .map(UUID::toString)
                 .map(s -> "'" + s + "'::uuid")
                 .collect(Collectors.joining(","));
 
-        // 组合条件：部门在自定义列表中 OR 本人创建的数�
+        // 缁勫悎鏉′欢锛氶儴闂ㄥ湪鑷畾涔夊垪琛ㄤ腑 OR 鏈汉鍒涘缓鐨勬暟锟?
         String clause = String.format("(%s IN (%s) OR %s = #{__ds_userId}::uuid)",
                 deptAlias, deptList, userAlias);
 
@@ -161,11 +161,11 @@ public class DataScopeAspect {
     }
 
     /**
-     * 构建部门及子部门权限
-     * 使用 PostgreSQL 递归 CTE 查询部门�
+     * 鏋勫缓閮ㄩ棬鍙婂瓙閮ㄩ棬鏉冮檺
+     * 浣跨敤 PostgreSQL 閫掑綊 CTE 鏌ヨ閮ㄩ棬锟?
      */
     private DataScopeFilter buildDeptAndChildrenScope(UUID deptId, String deptAlias) {
-        // 使用递归CTE查询所有子部门 (PostgreSQL 原生 UUID)
+        // 浣跨敤閫掑綊CTE鏌ヨ鎵€鏈夊瓙閮ㄩ棬 (PostgreSQL 鍘熺敓 UUID)
         String clause = """
                 %s IN (
                     WITH RECURSIVE dept_tree AS (

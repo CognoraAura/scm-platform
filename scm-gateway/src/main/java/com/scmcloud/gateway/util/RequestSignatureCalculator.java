@@ -3,7 +3,7 @@ package com.scmcloud.gateway.util;
 import org.springframework.stereotype.Component;
 
 /**
- * HMAC-SHA256 实现，包括规范化主体以实现更高的防篡改能力�
+ * HMAC-SHA256 瀹炵幇锛屽寘鎷鑼冨寲涓讳綋浠ュ疄鐜版洿楂樼殑闃茬鏀硅兘鍔涳拷
  */
 @Component
 public class RequestSignatureCalculator extends AbstractHmacSignatureAlgorithm {

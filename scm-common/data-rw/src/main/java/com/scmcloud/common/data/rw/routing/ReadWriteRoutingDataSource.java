@@ -14,13 +14,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 读写分离路由数据�
+ * 璇诲啓鍒嗙璺敱鏁版嵁锟?
  * <p>
- * 基于 Spring AbstractRoutingDataSource 实现，支持：
- * - 主从自动路由
- * - 负载均衡
- * - 健康检�
- * - 读写一致性保�
+ * 鍩轰簬 Spring AbstractRoutingDataSource 瀹炵幇锛屾敮鎸侊細
+ * - 涓讳粠鑷姩璺敱
+ * - 璐熻浇鍧囪　
+ * - 鍋ュ悍妫€锟?
+ * - 璇诲啓涓€鑷存€т繚锟?
  *
  * @author Deng
  * @since 2025-12-16
@@ -37,7 +37,7 @@ public class ReadWriteRoutingDataSource extends AbstractRoutingDataSource {
     private List<SlaveLoadBalancer.SlaveInfo> slaveInfos;
 
     /**
-     * 从库可用性状�
+     * 浠庡簱鍙敤鎬х姸锟?
      */
     private final Map<String, Boolean> slaveAvailability = new ConcurrentHashMap<>();
 
@@ -56,7 +56,7 @@ public class ReadWriteRoutingDataSource extends AbstractRoutingDataSource {
         this.properties = properties;
         this.loadBalancer = loadBalancer;
 
-        // 设置数据�
+        // 璁剧疆鏁版嵁锟?
         Map<Object, Object> targetDataSources = new ConcurrentHashMap<>();
         targetDataSources.put(MASTER_KEY, masterDataSource);
         targetDataSources.putAll(slaveDataSources);
@@ -64,10 +64,10 @@ public class ReadWriteRoutingDataSource extends AbstractRoutingDataSource {
         setTargetDataSources(targetDataSources);
         setDefaultTargetDataSource(masterDataSource);
 
-        // 初始化从库可用�
+        // 鍒濆鍖栦粠搴撳彲鐢拷
         slaveDataSources.keySet().forEach(name -> slaveAvailability.put(name, true));
 
-        // 初始化指�
+        // 鍒濆鍖栨寚锟?
         if (meterRegistry != null) {
             initMetrics(meterRegistry);
         }
@@ -94,7 +94,7 @@ public class ReadWriteRoutingDataSource extends AbstractRoutingDataSource {
 
     @Override
     protected Object determineCurrentLookupKey() {
-        // 1. 检查是否应该使用主�
+        // 1. 妫€鏌ユ槸鍚﹀簲璇ヤ娇鐢ㄤ富锟?
         long readMasterAfterWriteMs = properties.getReadMasterAfterWrite().toMillis();
         if (ReadWriteRoutingContext.shouldUseMaster(readMasterAfterWriteMs)) {
             log.debug("[RW-Routing] Group [{}] routing to MASTER", groupName);
@@ -102,7 +102,7 @@ public class ReadWriteRoutingDataSource extends AbstractRoutingDataSource {
             return MASTER_KEY;
         }
 
-        // 2. 检查路由类�
+        // 2. 妫€鏌ヨ矾鐢辩被锟?
         ReadWriteRoutingContext.RoutingType routingType = ReadWriteRoutingContext.current();
 
         if (routingType == ReadWriteRoutingContext.RoutingType.MASTER) {
@@ -111,11 +111,11 @@ public class ReadWriteRoutingDataSource extends AbstractRoutingDataSource {
             return MASTER_KEY;
         }
 
-        // 3. 尝试路由到从�
+        // 3. 灏濊瘯璺敱鍒颁粠锟?
         if (routingType == ReadWriteRoutingContext.RoutingType.SLAVE ||
                 routingType == ReadWriteRoutingContext.RoutingType.AUTO) {
 
-            // 检查是否指定了特定从库
+            // 妫€鏌ユ槸鍚︽寚瀹氫簡鐗瑰畾浠庡簱
             String specifiedSlave = ReadWriteRoutingContext.getSpecifiedSlave();
             if (specifiedSlave != null && slaveAvailability.getOrDefault(specifiedSlave, false)) {
                 log.debug("[RW-Routing] Group [{}] routing to SLAVE [{}] (specified)",
@@ -124,7 +124,7 @@ public class ReadWriteRoutingDataSource extends AbstractRoutingDataSource {
                 return specifiedSlave;
             }
 
-            // 使用负载均衡选择从库
+            // 浣跨敤璐熻浇鍧囪　閫夋嫨浠庡簱
             String selectedSlave = selectSlave();
             if (selectedSlave != null) {
                 log.debug("[RW-Routing] Group [{}] routing to SLAVE [{}]",
@@ -133,7 +133,7 @@ public class ReadWriteRoutingDataSource extends AbstractRoutingDataSource {
                 return selectedSlave;
             }
 
-            // 从库不可用，降级到主�
+            // 浠庡簱涓嶅彲鐢紝闄嶇骇鍒颁富锟?
             log.warn("[RW-Routing] Group [{}] no available slave, fallback to MASTER", groupName);
             incrementFallbackCounter();
         }
@@ -147,7 +147,7 @@ public class ReadWriteRoutingDataSource extends AbstractRoutingDataSource {
             return null;
         }
 
-        // 过滤可用的从�
+        // 杩囨护鍙敤鐨勪粠锟?
         List<SlaveLoadBalancer.SlaveInfo> availableSlaves = slaveInfos.stream()
                 .filter(s -> slaveAvailability.getOrDefault(s.name(), false))
                 .toList();
@@ -160,7 +160,7 @@ public class ReadWriteRoutingDataSource extends AbstractRoutingDataSource {
     }
 
     /**
-     * 标记从库不可�
+     * 鏍囪浠庡簱涓嶅彲锟?
      */
     public void markSlaveUnavailable(String slaveName) {
         slaveAvailability.put(slaveName, false);
@@ -169,7 +169,7 @@ public class ReadWriteRoutingDataSource extends AbstractRoutingDataSource {
     }
 
     /**
-     * 标记从库可用
+     * 鏍囪浠庡簱鍙敤
      */
     public void markSlaveAvailable(String slaveName) {
         slaveAvailability.put(slaveName, true);
@@ -178,7 +178,7 @@ public class ReadWriteRoutingDataSource extends AbstractRoutingDataSource {
     }
 
     /**
-     * 获取从库可用性状�
+     * 鑾峰彇浠庡簱鍙敤鎬х姸锟?
      */
     public Map<String, Boolean> getSlaveAvailability() {
         return Map.copyOf(slaveAvailability);

@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 操作审计日志表按月分�
+ * 鎿嶄綔瀹¤鏃ュ織琛ㄦ寜鏈堝垎锟?
  * </p>
  *
  * @author deng

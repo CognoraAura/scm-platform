@@ -23,7 +23,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * 全局异常处理
+ * 鍏ㄥ眬寮傚父澶勭悊
  *
  * @author Deng
  * createData 2025/10/11 14:33
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GlobalExceptionHandler {
     /**
-     * 业务异常
+     * 涓氬姟寮傚父
      */
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<ApiResponse<Void>> handleServiceException(ServiceException e, HttpServletRequest request) {
@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 认证异常
+     * 璁よ瘉寮傚父
      */
     @ExceptionHandler(AuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 错误凭证异常
+     * 閿欒鍑瘉寮傚父
      */
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -67,7 +67,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 授权异常
+     * 鎺堟潈寮傚父
      */
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 账户锁定异常
+     * 璐︽埛閿佸畾寮傚父
      */
     @ExceptionHandler(LockedException.class)
     @ResponseStatus(HttpStatus.LOCKED)
@@ -89,7 +89,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 限流异常
+     * 闄愭祦寮傚父
      */
     @ExceptionHandler(RateLimitException.class)
     @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
@@ -99,7 +99,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 未授权异�
+     * 鏈巿鏉冨紓锟?
      */
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -109,7 +109,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 业务异常
+     * 涓氬姟寮傚父
      */
     @ExceptionHandler(BusinessException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -119,7 +119,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 参数校验异常
+     * 鍙傛暟鏍￠獙寮傚父
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -137,7 +137,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 绑定异常
+     * 缁戝畾寮傚父
      */
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -157,7 +157,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 非法参数异常
+     * 闈炴硶鍙傛暟寮傚父
      */
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -167,7 +167,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 空指针异�
+     * 绌烘寚閽堝紓锟?
      */
     @ExceptionHandler(NullPointerException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -179,7 +179,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 通用异常
+     * 閫氱敤寮傚父
      */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * 自定义指�
+ * 鑷畾涔夋寚锟?
  *
  * @author Deng
  * createData 2025/10/22 14:01
@@ -25,36 +25,36 @@ import java.util.concurrent.atomic.AtomicLong;
 public class BusinessMetrics {
     private final MeterRegistry registry;
 
-    // 缓存指标对象
+    // 缂撳瓨鎸囨爣瀵硅薄
     private final Map<String, Counter> counterCache = new ConcurrentHashMap<>();
     private final Map<String, Timer> timerCache = new ConcurrentHashMap<>();
     private final Map<String, DistributionSummary> summaryCache = new ConcurrentHashMap<>();
     private final Map<String, AtomicLong> gaugeCache = new ConcurrentHashMap<>();
 
     /**
-     * 记录业务指标 - 计数�
-     * 示例：登录次数、订单数量、支付次�
+     * 璁板綍涓氬姟鎸囨爣 - 璁℃暟锟?
+     * 绀轰緥锛氱櫥褰曟鏁般€佽鍗曟暟閲忋€佹敮浠樻锟?
      */
     public void recordCount(String metricName, String... tags) {
         String key = metricName + String.join(",", tags);
         counterCache.computeIfAbsent(key, k ->
                 Counter.builder(metricName)
                         .tags(tags)
-                        .description("业务计数指标: " + metricName)
+                        .description("涓氬姟璁℃暟鎸囨爣: " + metricName)
                         .register(registry)
         ).increment();
     }
 
     /**
-     * 记录业务指标 - 计时�
-     * 示例：接口耗时、业务处理时�
+     * 璁板綍涓氬姟鎸囨爣 - 璁℃椂锟?
+     * 绀轰緥锛氭帴鍙ｈ€楁椂銆佷笟鍔″鐞嗘椂锟?
      */
     public void recordTime(String metricName, long timeMs, String... tags) {
         String key = metricName + String.join(",", tags);
         timerCache.computeIfAbsent(key, k ->
                 Timer.builder(metricName)
                         .tags(tags)
-                        .description("业务耗时指标: " + metricName)
+                        .description("涓氬姟鑰楁椂鎸囨爣: " + metricName)
                         .publishPercentiles(0.5, 0.9, 0.95, 0.99)
                         .publishPercentileHistogram()
                         .register(registry)
@@ -62,23 +62,23 @@ public class BusinessMetrics {
     }
 
     /**
-     * 记录业务指标 - 分布摘要
-     * 示例：订单金额分布、请求体大小
+     * 璁板綍涓氬姟鎸囨爣 - 鍒嗗竷鎽樿
+     * 绀轰緥锛氳鍗曢噾棰濆垎甯冦€佽姹備綋澶у皬
      */
     public void recordDistribution(String metricName, double value, String... tags) {
         String key = metricName + String.join(",", tags);
         summaryCache.computeIfAbsent(key, k ->
                 DistributionSummary.builder(metricName)
                         .tags(tags)
-                        .description("业务分布指标: " + metricName)
+                        .description("涓氬姟鍒嗗竷鎸囨爣: " + metricName)
                         .publishPercentiles(0.5, 0.9, 0.95, 0.99)
                         .register(registry)
         ).record(value);
     }
 
     /**
-     * 记录业务指标 - 仪表�
-     * 示例：在线用户数、队列长度、缓存命中率
+     * 璁板綍涓氬姟鎸囨爣 - 浠〃锟?
+     * 绀轰緥锛氬湪绾跨敤鎴锋暟銆侀槦鍒楅暱搴︺€佺紦瀛樺懡涓巼
      */
     public void recordGauge(String metricName, long value, String... tags) {
         String key = metricName + String.join(",", tags);
@@ -86,7 +86,7 @@ public class BusinessMetrics {
             AtomicLong atomic = new AtomicLong(value);
             Gauge.builder(metricName, atomic, AtomicLong::get)
                     .tags(tags)
-                    .description("业务状态指� " + metricName)
+                    .description("涓氬姟鐘舵€佹寚锟?" + metricName)
                     .register(registry);
             return atomic;
         });
@@ -94,14 +94,14 @@ public class BusinessMetrics {
     }
 
     /**
-     * 快捷方法 - 记录登录
+     * 蹇嵎鏂规硶 - 璁板綍鐧诲綍
      */
     public void recordLogin(boolean success, String source) {
         recordCount("business.login.total", "success", String.valueOf(success), "source", source);
     }
 
     /**
-     * 快捷方法 - 记录API调用
+     * 蹇嵎鏂规硶 - 璁板綍API璋冪敤
      */
     public void recordApi(String api, long timeMs, boolean success) {
         recordCount("business.api.calls", "api", api, "success", String.valueOf(success));
@@ -109,14 +109,14 @@ public class BusinessMetrics {
     }
 
     /**
-     * 快捷方法 - 记录缓存命中
+     * 蹇嵎鏂规硶 - 璁板綍缂撳瓨鍛戒腑
      */
     public void recordCache(String cacheName, boolean hit) {
         recordCount("business.cache.access", "cache", cacheName, "hit", String.valueOf(hit));
     }
 
     /**
-     * 登录成功�
+     * 鐧诲綍鎴愬姛锟?
      */
     public void recordLoginAttempt(boolean success, String reason) {
         Counter.builder("business.login.attempts")
@@ -127,7 +127,7 @@ public class BusinessMetrics {
     }
 
     /**
-     * 权限授予审计
+     * 鏉冮檺鎺堜簣瀹¤
      */
     public void recordPermissionGrant(String type, int count) {
         Counter.builder("business.permission.grants")
@@ -137,11 +137,11 @@ public class BusinessMetrics {
     }
 
     /**
-     * 临时权限过期预警
+     * 涓存椂鏉冮檺杩囨湡棰勮
      */
     public void recordExpiringPermissions(int count) {
         Gauge.builder("business.permissions.expiring", () -> count)
-                .description("即将过期的临时权限数量")
+                .description("鍗冲皢杩囨湡鐨勪复鏃舵潈闄愭暟閲?)
                 .register(registry);
     }
 }

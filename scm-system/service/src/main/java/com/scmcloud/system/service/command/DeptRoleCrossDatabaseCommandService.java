@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 /**
- * 部门角色跨库命令服务
+ * 閮ㄩ棬瑙掕壊璺ㄥ簱鍛戒护鏈嶅姟
  * <p>
- * 处理部门角色关联的写操作（db_permission�
+ * 澶勭悊閮ㄩ棬瑙掕壊鍏宠仈鐨勫啓鎿嶄綔锛坉b_permission锟?
  *
  * @author Deng
  * @since 2025-01-16
@@ -24,15 +24,15 @@ public class DeptRoleCrossDatabaseCommandService {
     private final SysRoleDeptMapper roleDeptMapper;
 
     /**
-     * 删除部门的角色关�
+     * 鍒犻櫎閮ㄩ棬鐨勮鑹插叧锟?
      * <p>
-     * 用于删除部门时清�db_permission.sys_role_dept 中的关联数据
-     * 跨库操作：db_org �db_permission
+     * 鐢ㄤ簬鍒犻櫎閮ㄩ棬鏃舵竻锟絛b_permission.sys_role_dept 涓殑鍏宠仈鏁版嵁
+     * 璺ㄥ簱鎿嶄綔锛歞b_org 锟絛b_permission
      *
-     * @param deptId 部门 ID
-     * @return 删除行数
+     * @param deptId 閮ㄩ棬 ID
+     * @return 鍒犻櫎琛屾暟
      */
-    @Master(reason = "写操作必须走主库")
+    @Master(reason = "鍐欐搷浣滃繀椤昏蛋涓诲簱")
     @Transactional(rollbackFor = Exception.class)
     public int deleteRoleDeptsByDeptId(UUID deptId) {
         if (deptId == null) {

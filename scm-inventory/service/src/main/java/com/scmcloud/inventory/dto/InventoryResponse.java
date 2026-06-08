@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 库存响应对象
+ * 搴撳瓨鍝嶅簲瀵硅薄
  *
  * @author SCM Platform Team
  * @since 2025-12-26
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class InventoryResponse {
 
   /**
-   * 库存 ID
+   * 搴撳瓨 ID
    */
   private String id;
 
@@ -25,82 +25,82 @@ public class InventoryResponse {
   private String skuId;
 
   /**
-   * 仓库 ID
+   * 浠撳簱 ID
    */
   private String warehouseId;
 
   /**
-   * 总库�
+   * 鎬诲簱锟?
    */
   private Integer totalStock;
 
   /**
-   * 可用库存
+   * 鍙敤搴撳瓨
    */
   private Integer availableStock;
 
   /**
-   * 锁定库存（已预占�
+   * 閿佸畾搴撳瓨锛堝凡棰勫崰锟?
    */
   private Integer lockedStock;
 
   /**
-   * 损坏库存
+   * 鎹熷潖搴撳瓨
    */
   private Integer damagedStock;
 
   /**
-   * 安全库存
+   * 瀹夊叏搴撳瓨
    */
   private Integer safetyStock;
 
   /**
-   * 最大库�
+   * 鏈€澶у簱锟?
    */
   private Integer maxStock;
 
   /**
-   * 库位编码
+   * 搴撲綅缂栫爜
    */
   private String locationCode;
 
   /**
-   * 平均成本
+   * 骞冲潎鎴愭湰
    */
   private BigDecimal averageCost;
 
   /**
-   * 库存状态（NORMAL-正常, LOW_STOCK-低库� OUT_OF_STOCK-缺货�
+   * 搴撳瓨鐘舵€侊紙NORMAL-姝ｅ父, LOW_STOCK-浣庡簱锟?OUT_OF_STOCK-缂鸿揣锟?
    */
   private String stockStatus;
 
   /**
-   * 乐观锁版本号
+   * 涔愯閿佺増鏈彿
    */
   private Integer version;
 
   /**
-   * 最近入库时�
+   * 鏈€杩戝叆搴撴椂锟?
    */
   private LocalDateTime lastInboundAt;
 
   /**
-   * 最近出库时�
+   * 鏈€杩戝嚭搴撴椂锟?
    */
   private LocalDateTime lastOutboundAt;
 
   /**
-   * 创建时间
+   * 鍒涘缓鏃堕棿
    */
   private LocalDateTime createTime;
 
   /**
-   * 更新时间
+   * 鏇存柊鏃堕棿
    */
   private LocalDateTime updateTime;
 
   /**
-   * 备注
+   * 澶囨敞
    */
   private String remark;
 }

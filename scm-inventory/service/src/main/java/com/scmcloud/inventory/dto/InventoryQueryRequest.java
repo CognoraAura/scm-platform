@@ -5,15 +5,15 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * 库存查询请求
+ * 搴撳瓨鏌ヨ璇锋眰
  *
- * <p>支持多种查询条件组合�
+ * <p>鏀寔澶氱鏌ヨ鏉′欢缁勫悎锟?
  * <ul>
- *   <li>SKU 列表查询</li>
- *   <li>仓库列表查询</li>
- *   <li>库位编码查询</li>
- *   <li>库存状态过滤（缺货/低库�正常�/li>
- *   <li>可用库存范围查询</li>
+ *   <li>SKU 鍒楄〃鏌ヨ</li>
+ *   <li>浠撳簱鍒楄〃鏌ヨ</li>
+ *   <li>搴撲綅缂栫爜鏌ヨ</li>
+ *   <li>搴撳瓨鐘舵€佽繃婊わ紙缂鸿揣/浣庡簱锟芥甯革拷/li>
+ *   <li>鍙敤搴撳瓨鑼冨洿鏌ヨ</li>
  * </ul>
  *
  * @author SCM Platform Team
@@ -23,57 +23,57 @@ import java.util.List;
 public class InventoryQueryRequest {
 
   /**
-   * SKU ID 列表（支持批量查询）
+   * SKU ID 鍒楄〃锛堟敮鎸佹壒閲忔煡璇級
    */
   private List<String> skuIds;
 
   /**
-   * 仓库 ID 列表
+   * 浠撳簱 ID 鍒楄〃
    */
   private List<String> warehouseIds;
 
   /**
-   * 库位编码
+   * 搴撲綅缂栫爜
    */
   private String locationCode;
 
   /**
-   * 库存状态过滤（NORMAL-正常, LOW_STOCK-低库� OUT_OF_STOCK-缺货�
+   * 搴撳瓨鐘舵€佽繃婊わ紙NORMAL-姝ｅ父, LOW_STOCK-浣庡簱锟?OUT_OF_STOCK-缂鸿揣锟?
    */
   private String stockStatus;
 
   /**
-   * 最小可用库存（大于等于�
+   * 鏈€灏忓彲鐢ㄥ簱瀛橈紙澶т簬绛変簬锟?
    */
   private Integer minAvailableStock;
 
   /**
-   * 最大可用库存（小于等于�
+   * 鏈€澶у彲鐢ㄥ簱瀛橈紙灏忎簬绛変簬锟?
    */
   private Integer maxAvailableStock;
 
   /**
-   * 是否仅查询有库存商品
+   * 鏄惁浠呮煡璇㈡湁搴撳瓨鍟嗗搧
    */
   private Boolean onlyInStock;
 
   /**
-   * 页码（从1开始）
+   * 椤电爜锛堜粠1寮€濮嬶級
    */
   private Integer page = 1;
 
   /**
-   * 每页条数
+   * 姣忛〉鏉℃暟
    */
   private Integer size = 20;
 
   /**
-   * 排序字段（available_stock, total_stock, update_time�
+   * 鎺掑簭瀛楁锛坅vailable_stock, total_stock, update_time锟?
    */
   private String sortBy = "update_time";
 
   /**
-   * 排序方向（ASC, DESC�
+   * 鎺掑簭鏂瑰悜锛圓SC, DESC锟?
    */
   private String sortOrder = "DESC";
 }

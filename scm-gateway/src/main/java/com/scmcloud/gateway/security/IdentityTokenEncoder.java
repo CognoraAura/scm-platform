@@ -11,7 +11,7 @@ import java.util.Map;
 
 /**
  * Signs identity payloads for downstream verification.
- * 对用于下游验证的身份信息载荷进行签名�
+ * 瀵圭敤浜庝笅娓搁獙璇佺殑韬唤淇℃伅杞借嵎杩涜绛惧悕锟?
  */
 public record IdentityTokenEncoder(byte[] secret) {
     private static final Base64.Encoder BASE64 = Base64.getUrlEncoder().withoutPadding();

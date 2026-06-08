@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 配额使用情况
+ * 閰嶉浣跨敤鎯呭喌
  *
  * @author Claude Code
  * @since 2025-01-24
@@ -18,37 +18,37 @@ import lombok.NoArgsConstructor;
 public class QuotaUsage {
 
     /**
-     * 配额类型
+     * 閰嶉绫诲瀷
      */
     private QuotaType quotaType;
 
     /**
-     * 当前使用�
+     * 褰撳墠浣跨敤锟?
      */
     private int currentUsage;
 
     /**
-     * 最大限�
+     * 鏈€澶ч檺锟?
      */
     private int maxQuota;
 
     /**
-     * 可用配额
+     * 鍙敤閰嶉
      */
     private int availableQuota;
 
     /**
-     * 使用率（百分比）
+     * 浣跨敤鐜囷紙鐧惧垎姣旓級
      */
     private double usagePercent;
 
     /**
-     * 是否已超�
+     * 鏄惁宸茶秴锟?
      */
     private boolean exceeded;
 
     /**
-     * 计算可用配额
+     * 璁＄畻鍙敤閰嶉
      */
     public void calculateAvailable() {
         this.availableQuota = Math.max(0, maxQuota - currentUsage);

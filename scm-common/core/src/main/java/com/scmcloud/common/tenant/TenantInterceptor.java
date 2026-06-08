@@ -31,15 +31,15 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * MyBatis 租户拦截�
- * 自动�SQL 中注�tenant_id 过滤条件
+ * MyBatis 绉熸埛鎷︽埅锟?
+ * 鑷姩锟絊QL 涓敞锟絫enant_id 杩囨护鏉′欢
  *
- * 功能�
- * 1. SELECT 查询自动添加 WHERE tenant_id = ?
- * 2. UPDATE/DELETE 自动添加 WHERE tenant_id = ?
- * 3. INSERT 自动添加 tenant_id 字段
+ * 鍔熻兘锟?
+ * 1. SELECT 鏌ヨ鑷姩娣诲姞 WHERE tenant_id = ?
+ * 2. UPDATE/DELETE 鑷姩娣诲姞 WHERE tenant_id = ?
+ * 3. INSERT 鑷姩娣诲姞 tenant_id 瀛楁
  *
- * 排除表：不需要租户隔离的系统表（如租户表本身�
+ * 鎺掗櫎琛細涓嶉渶瑕佺鎴烽殧绂荤殑绯荤粺琛紙濡傜鎴疯〃鏈韩锟?
  *
  * @author Claude Code
  * @since 2025-01-24
@@ -55,12 +55,12 @@ import java.util.UUID;
 public class TenantInterceptor implements Interceptor {
 
     /**
-     * 租户字段�
+     * 绉熸埛瀛楁锟?
      */
     private static final String TENANT_COLUMN = "tenant_id";
 
     /**
-     * 不需要租户隔离的表（系统表、租户表本身等）
+     * 涓嶉渶瑕佺鎴烽殧绂荤殑琛紙绯荤粺琛ㄣ€佺鎴疯〃鏈韩绛夛級
      */
     private static final Set<String> EXCLUDE_TABLES = new HashSet<>(Arrays.asList(
         "tenant",
@@ -77,11 +77,11 @@ public class TenantInterceptor implements Interceptor {
         StatementHandler statementHandler = PluginUtils.realTarget(invocation.getTarget());
         MetaObject metaObject = SystemMetaObject.forObject(statementHandler);
 
-        // 获取 MappedStatement
+        // 鑾峰彇 MappedStatement
         MappedStatement mappedStatement = (MappedStatement) metaObject.getValue("delegate.mappedStatement");
         SqlCommandType sqlCommandType = mappedStatement.getSqlCommandType();
 
-        // 只处�SELECT, UPDATE, DELETE, INSERT
+        // 鍙锟絊ELECT, UPDATE, DELETE, INSERT
         if (!SqlCommandType.SELECT.equals(sqlCommandType) &&
             !SqlCommandType.UPDATE.equals(sqlCommandType) &&
             !SqlCommandType.DELETE.equals(sqlCommandType) &&
@@ -89,7 +89,7 @@ public class TenantInterceptor implements Interceptor {
             return invocation.proceed();
         }
 
-        // 获取租户ID
+        // 鑾峰彇绉熸埛ID
         UUID tenantId = TenantContextHolder.getTenantId();
         if (tenantId == null) {
             log.warn("Tenant ID is null, skipping tenant filter for SQL: {}",
@@ -97,15 +97,15 @@ public class TenantInterceptor implements Interceptor {
             return invocation.proceed();
         }
 
-        // 获取原始SQL
+        // 鑾峰彇鍘熷SQL
         BoundSql boundSql = statementHandler.getBoundSql();
         String originalSql = boundSql.getSql();
 
         try {
-            // 解析SQL
+            // 瑙ｆ瀽SQL
             Statement statement = CCJSqlParserUtil.parse(originalSql);
 
-            // 根据SQL类型处理
+            // 鏍规嵁SQL绫诲瀷澶勭悊
             if (statement instanceof Select select) {
                 handleSelect(select, tenantId);
             } else if (statement instanceof Update update) {
@@ -113,40 +113,40 @@ public class TenantInterceptor implements Interceptor {
             } else if (statement instanceof Delete delete) {
                 handleDelete(delete, tenantId);
             } else if (statement instanceof Insert insert) {
-                // INSERT 语句�tenant_id 由应用层设置，不在拦截器中处�
+                // INSERT 璇彞锟絫enant_id 鐢卞簲鐢ㄥ眰璁剧疆锛屼笉鍦ㄦ嫤鎴櫒涓锟?
                 log.debug("INSERT statement detected, tenant_id should be set by application layer");
             }
 
-            // 重新设置SQL
+            // 閲嶆柊璁剧疆SQL
             String newSql = statement.toString();
             metaObject.setValue("delegate.boundSql.sql", newSql);
 
             log.debug("Injected tenant_id={} into SQL: {}", tenantId, newSql);
         } catch (Exception e) {
             log.error("Failed to inject tenant_id into SQL: {}", originalSql, e);
-            // 如果解析失败，继续执行原SQL（安全起见，建议配置为抛异常�
+            // 濡傛灉瑙ｆ瀽澶辫触锛岀户缁墽琛屽師SQL锛堝畨鍏ㄨ捣瑙侊紝寤鸿閰嶇疆涓烘姏寮傚父锟?
         }
 
         return invocation.proceed();
     }
 
     /**
-     * 处理 SELECT 语句
+     * 澶勭悊 SELECT 璇彞
      */
     private void handleSelect(Select select, UUID tenantId) {
         PlainSelect plainSelect = (PlainSelect) select.getSelectBody();
 
-        // 获取表名
+        // 鑾峰彇琛ㄥ悕
         String tableName = plainSelect.getFromItem().toString();
         if (isExcludeTable(tableName)) {
             log.debug("Table {} is excluded from tenant filter", tableName);
             return;
         }
 
-        // 构建 tenant_id = 'xxx' 条件
+        // 鏋勫缓 tenant_id = 'xxx' 鏉′欢
         EqualsTo tenantCondition = buildTenantCondition(tenantId);
 
-        // 添加到WHERE条件
+        // 娣诲姞鍒癢HERE鏉′欢
         Expression where = plainSelect.getWhere();
         if (where == null) {
             plainSelect.setWhere(tenantCondition);
@@ -157,7 +157,7 @@ public class TenantInterceptor implements Interceptor {
     }
 
     /**
-     * 处理 UPDATE 语句 - 添加 tenant_id �WHERE 条件
+     * 澶勭悊 UPDATE 璇彞 - 娣诲姞 tenant_id 锟絎HERE 鏉′欢
      */
     private void handleUpdate(Update update, UUID tenantId) {
         Table table = update.getTable();
@@ -178,7 +178,7 @@ public class TenantInterceptor implements Interceptor {
     }
 
     /**
-     * 处理 DELETE 语句 - 添加 tenant_id �WHERE 条件
+     * 澶勭悊 DELETE 璇彞 - 娣诲姞 tenant_id 锟絎HERE 鏉′欢
      */
     private void handleDelete(Delete delete, UUID tenantId) {
         Table table = delete.getTable();
@@ -199,7 +199,7 @@ public class TenantInterceptor implements Interceptor {
     }
 
     /**
-     * 构建 tenant_id = 'xxx' 条件表达�
+     * 鏋勫缓 tenant_id = 'xxx' 鏉′欢琛ㄨ揪锟?
      */
     private EqualsTo buildTenantCondition(UUID tenantId) {
         EqualsTo condition = new EqualsTo();
@@ -209,15 +209,15 @@ public class TenantInterceptor implements Interceptor {
     }
 
     /**
-     * 判断是否是排除表
+     * 鍒ゆ柇鏄惁鏄帓闄よ〃
      */
     private boolean isExcludeTable(String tableName) {
-        // 去除表别�
+        // 鍘婚櫎琛ㄥ埆锟?
         String actualTableName = tableName.contains(" ")
             ? tableName.substring(0, tableName.indexOf(" ")).trim()
             : tableName.trim();
 
-        // 去除数据库名前缀（如 db_product.prod_category -> prod_category�
+        // 鍘婚櫎鏁版嵁搴撳悕鍓嶇紑锛堝 db_product.prod_category -> prod_category锟?
         if (actualTableName.contains(".")) {
             actualTableName = actualTableName.substring(actualTableName.indexOf(".") + 1);
         }
@@ -235,7 +235,7 @@ public class TenantInterceptor implements Interceptor {
 
     @Override
     public void setProperties(Properties properties) {
-        // 可以从配置文件读取排除表列表
+        // 鍙互浠庨厤缃枃浠惰鍙栨帓闄よ〃鍒楄〃
         String excludeTables = properties.getProperty("excludeTables");
         if (excludeTables != null && !excludeTables.trim().isEmpty()) {
             String[] tables = excludeTables.split(",");

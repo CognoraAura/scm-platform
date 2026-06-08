@@ -13,17 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Sentinel RestClient 集成配置
- * <p>替代 OpenFeign �Sentinel 集成</p>
+ * Sentinel RestClient 闆嗘垚閰嶇疆
+ * <p>鏇夸唬 OpenFeign 锟絊entinel 闆嗘垚</p>
  *
- * <p>功能�
+ * <p>鍔熻兘锟?
  * <ul>
- *   <li>配置 @SentinelResource 限流规则</li>
- *   <li>配置熔断降级规则</li>
- *   <li>不依�Feign，使用通用�@SentinelResource 注解</li>
+ *   <li>閰嶇疆 @SentinelResource 闄愭祦瑙勫垯</li>
+ *   <li>閰嶇疆鐔旀柇闄嶇骇瑙勫垯</li>
+ *   <li>涓嶄緷锟紽eign锛屼娇鐢ㄩ€氱敤锟紷SentinelResource 娉ㄨВ</li>
  * </ul>
  *
- * <p>注意：生产环境建议从 Nacos 动态加载规则，本配置仅作为默认规则</p>
+ * <p>娉ㄦ剰锛氱敓浜х幆澧冨缓璁粠 Nacos 鍔ㄦ€佸姞杞借鍒欙紝鏈厤缃粎浣滀负榛樿瑙勫垯</p>
  *
  * @author Claude
  * @since 2025-12-29
@@ -33,7 +33,7 @@ import java.util.List;
 public class SentinelRestClientConfiguration {
 
     /**
-     * 初始�Sentinel 规则
+     * 鍒濆锟絊entinel 瑙勫垯
      */
     @PostConstruct
     public void initSentinelRules() {
@@ -43,13 +43,13 @@ public class SentinelRestClientConfiguration {
     }
 
     /**
-     * 初始化限流规�
-     * <p>为每�HTTP Exchange 资源配置 QPS 限流</p>
+     * 鍒濆鍖栭檺娴佽锟?
+     * <p>涓烘瘡锟紿TTP Exchange 璧勬簮閰嶇疆 QPS 闄愭祦</p>
      */
     private void initFlowRules() {
         List<FlowRule> rules = new ArrayList<>();
 
-        // 用户服务 - 更新登录信息（每秒最�1000 次）
+        // 鐢ㄦ埛鏈嶅姟 - 鏇存柊鐧诲綍淇℃伅锛堟瘡绉掓渶锟?000 娆★級
         FlowRule userLoginRule = new FlowRule();
         userLoginRule.setResource("user-service:updateLastLogin");
         userLoginRule.setGrade(RuleConstant.FLOW_GRADE_QPS);
@@ -57,7 +57,7 @@ public class SentinelRestClientConfiguration {
         userLoginRule.setLimitApp("default");
         rules.add(userLoginRule);
 
-        // 认证服务 - 强制登出（每秒最�100 次）
+        // 璁よ瘉鏈嶅姟 - 寮哄埗鐧诲嚭锛堟瘡绉掓渶锟?00 娆★級
         FlowRule authLogoutRule = new FlowRule();
         authLogoutRule.setResource("auth-service:forceLogout");
         authLogoutRule.setGrade(RuleConstant.FLOW_GRADE_QPS);
@@ -65,7 +65,7 @@ public class SentinelRestClientConfiguration {
         authLogoutRule.setLimitApp("default");
         rules.add(authLogoutRule);
 
-        // 权限服务 - 通过 URL 查找权限（每秒最�500 次）
+        // 鏉冮檺鏈嶅姟 - 閫氳繃 URL 鏌ユ壘鏉冮檺锛堟瘡绉掓渶锟?00 娆★級
         FlowRule permByUrlRule = new FlowRule();
         permByUrlRule.setResource("permission-service:findByUrl");
         permByUrlRule.setGrade(RuleConstant.FLOW_GRADE_QPS);
@@ -73,7 +73,7 @@ public class SentinelRestClientConfiguration {
         permByUrlRule.setLimitApp("default");
         rules.add(permByUrlRule);
 
-        // 权限服务 - 查询用户权限（每秒最�1000 次）
+        // 鏉冮檺鏈嶅姟 - 鏌ヨ鐢ㄦ埛鏉冮檺锛堟瘡绉掓渶锟?000 娆★級
         FlowRule permByUserRule = new FlowRule();
         permByUserRule.setResource("permission-service:getUserPermissions");
         permByUserRule.setGrade(RuleConstant.FLOW_GRADE_QPS);
@@ -81,7 +81,7 @@ public class SentinelRestClientConfiguration {
         permByUserRule.setLimitApp("default");
         rules.add(permByUserRule);
 
-        // 权限服务 - 查询权限树（每秒最�200 次）
+        // 鏉冮檺鏈嶅姟 - 鏌ヨ鏉冮檺鏍戯紙姣忕鏈€锟?00 娆★級
         FlowRule permTreeRule = new FlowRule();
         permTreeRule.setResource("permission-service:getTree");
         permTreeRule.setGrade(RuleConstant.FLOW_GRADE_QPS);
@@ -89,7 +89,7 @@ public class SentinelRestClientConfiguration {
         permTreeRule.setLimitApp("default");
         rules.add(permTreeRule);
 
-        // 权限服务 - 查询 API 权限（每秒最�200 次）
+        // 鏉冮檺鏈嶅姟 - 鏌ヨ API 鏉冮檺锛堟瘡绉掓渶锟?00 娆★級
         FlowRule permApiRule = new FlowRule();
         permApiRule.setResource("permission-service:getApiPermissions");
         permApiRule.setGrade(RuleConstant.FLOW_GRADE_QPS);
@@ -102,50 +102,50 @@ public class SentinelRestClientConfiguration {
     }
 
     /**
-     * 初始化熔断降级规�
-     * <p>基于异常比例进行熔断</p>
+     * 鍒濆鍖栫啍鏂檷绾ц锟?
+     * <p>鍩轰簬寮傚父姣斾緥杩涜鐔旀柇</p>
      */
     private void initDegradeRules() {
         List<DegradeRule> rules = new ArrayList<>();
 
-        // 权限服务 - 通过 URL 查找权限（异常比�50% 触发熔断�
+        // 鏉冮檺鏈嶅姟 - 閫氳繃 URL 鏌ユ壘鏉冮檺锛堝紓甯告瘮锟?0% 瑙﹀彂鐔旀柇锟?
         DegradeRule permByUrlDegrade = new DegradeRule();
         permByUrlDegrade.setResource("permission-service:findByUrl");
         permByUrlDegrade.setGrade(RuleConstant.DEGRADE_GRADE_EXCEPTION_RATIO);
-        permByUrlDegrade.setCount(0.5);  // 50% 异常�
-        permByUrlDegrade.setTimeWindow(10);  // 熔断时长 10 �
-        permByUrlDegrade.setMinRequestAmount(5);  // 最小请求数 5
-        permByUrlDegrade.setStatIntervalMs(1000);  // 统计时长 1 �
+        permByUrlDegrade.setCount(0.5);  // 50% 寮傚父锟?
+        permByUrlDegrade.setTimeWindow(10);  // 鐔旀柇鏃堕暱 10 锟?
+        permByUrlDegrade.setMinRequestAmount(5);  // 鏈€灏忚姹傛暟 5
+        permByUrlDegrade.setStatIntervalMs(1000);  // 缁熻鏃堕暱 1 锟?
         rules.add(permByUrlDegrade);
 
-        // 权限服务 - 查询用户权限（异常比�50% 触发熔断�
+        // 鏉冮檺鏈嶅姟 - 鏌ヨ鐢ㄦ埛鏉冮檺锛堝紓甯告瘮锟?0% 瑙﹀彂鐔旀柇锟?
         DegradeRule permByUserDegrade = new DegradeRule();
         permByUserDegrade.setResource("permission-service:getUserPermissions");
         permByUserDegrade.setGrade(RuleConstant.DEGRADE_GRADE_EXCEPTION_RATIO);
-        permByUserDegrade.setCount(0.5);  // 50% 异常�
-        permByUserDegrade.setTimeWindow(10);  // 熔断时长 10 �
-        permByUserDegrade.setMinRequestAmount(5);  // 最小请求数 5
-        permByUserDegrade.setStatIntervalMs(1000);  // 统计时长 1 �
+        permByUserDegrade.setCount(0.5);  // 50% 寮傚父锟?
+        permByUserDegrade.setTimeWindow(10);  // 鐔旀柇鏃堕暱 10 锟?
+        permByUserDegrade.setMinRequestAmount(5);  // 鏈€灏忚姹傛暟 5
+        permByUserDegrade.setStatIntervalMs(1000);  // 缁熻鏃堕暱 1 锟?
         rules.add(permByUserDegrade);
 
-        // 用户服务 - 更新登录信息（异常比�60% 触发熔断�
+        // 鐢ㄦ埛鏈嶅姟 - 鏇存柊鐧诲綍淇℃伅锛堝紓甯告瘮锟?0% 瑙﹀彂鐔旀柇锟?
         DegradeRule userLoginDegrade = new DegradeRule();
         userLoginDegrade.setResource("user-service:updateLastLogin");
         userLoginDegrade.setGrade(RuleConstant.DEGRADE_GRADE_EXCEPTION_RATIO);
-        userLoginDegrade.setCount(0.6);  // 60% 异常�
-        userLoginDegrade.setTimeWindow(15);  // 熔断时长 15 �
-        userLoginDegrade.setMinRequestAmount(10);  // 最小请求数 10
-        userLoginDegrade.setStatIntervalMs(1000);  // 统计时长 1 �
+        userLoginDegrade.setCount(0.6);  // 60% 寮傚父锟?
+        userLoginDegrade.setTimeWindow(15);  // 鐔旀柇鏃堕暱 15 锟?
+        userLoginDegrade.setMinRequestAmount(10);  // 鏈€灏忚姹傛暟 10
+        userLoginDegrade.setStatIntervalMs(1000);  // 缁熻鏃堕暱 1 锟?
         rules.add(userLoginDegrade);
 
-        // 认证服务 - 强制登出（异常比�50% 触发熔断�
+        // 璁よ瘉鏈嶅姟 - 寮哄埗鐧诲嚭锛堝紓甯告瘮锟?0% 瑙﹀彂鐔旀柇锟?
         DegradeRule authLogoutDegrade = new DegradeRule();
         authLogoutDegrade.setResource("auth-service:forceLogout");
         authLogoutDegrade.setGrade(RuleConstant.DEGRADE_GRADE_EXCEPTION_RATIO);
-        authLogoutDegrade.setCount(0.5);  // 50% 异常�
-        authLogoutDegrade.setTimeWindow(10);  // 熔断时长 10 �
-        authLogoutDegrade.setMinRequestAmount(5);  // 最小请求数 5
-        authLogoutDegrade.setStatIntervalMs(1000);  // 统计时长 1 �
+        authLogoutDegrade.setCount(0.5);  // 50% 寮傚父锟?
+        authLogoutDegrade.setTimeWindow(10);  // 鐔旀柇鏃堕暱 10 锟?
+        authLogoutDegrade.setMinRequestAmount(5);  // 鏈€灏忚姹傛暟 5
+        authLogoutDegrade.setStatIntervalMs(1000);  // 缁熻鏃堕暱 1 锟?
         rules.add(authLogoutDegrade);
 
         DegradeRuleManager.loadRules(rules);

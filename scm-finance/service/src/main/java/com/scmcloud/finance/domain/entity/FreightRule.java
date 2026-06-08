@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 运费规则�
+ * 杩愯垂瑙勫垯锟?
  * </p>
  *
  * @author deng

@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 数据同步配置属�
+ * 鏁版嵁鍚屾閰嶇疆灞烇拷
  *
  * @author Deng
  * @since 2025-12-16
@@ -17,74 +17,74 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "datasync")
 public class DataSyncProperties {
     /**
-     * 是否启用数据同步
+     * 鏄惁鍚敤鏁版嵁鍚屾
      */
     private boolean enabled = true;
 
     /**
-     * 当前服务名称
+     * 褰撳墠鏈嶅姟鍚嶇О
      */
     private String serviceName = "unknown";
 
     /**
-     * Kafka 主题前缀
+     * Kafka 涓婚鍓嶇紑
      */
     private String topicPrefix = "datasync";
 
     /**
-     * 死信队列主题
+     * 姝讳俊闃熷垪涓婚
      */
     private String deadLetterTopic = "datasync.dlq";
 
     /**
-     * 发布超时时间（毫秒）
+     * 鍙戝竷瓒呮椂鏃堕棿锛堟绉掞級
      */
     private long publishTimeoutMs = 5000;
 
     /**
-     * 消费者配�
+     * 娑堣垂鑰呴厤锟?
      */
     private ConsumerConfig consumer = new ConsumerConfig();
 
     /**
-     * 重试配置
+     * 閲嶈瘯閰嶇疆
      */
     private RetryConfig retry = new RetryConfig();
 
     /**
-     * 幂等配置
+     * 骞傜瓑閰嶇疆
      */
     private IdempotentConfig idempotent = new IdempotentConfig();
 
     /**
-     * 对账配置
+     * 瀵硅处閰嶇疆
      */
     private ReconciliationConfig reconciliation = new ReconciliationConfig();
 
     /**
-     * 处理器映射：aggregateType -> handlerBeanName
+     * 澶勭悊鍣ㄦ槧灏勶細aggregateType -> handlerBeanName
      */
     private Map<String, String> handlers = new HashMap<>();
 
     @Data
     public static class ConsumerConfig {
         /**
-         * 消费者组 ID
+         * 娑堣垂鑰呯粍 ID
          */
         private String groupId = "datasync-consumer";
 
         /**
-         * 并发消费者数�
+         * 骞跺彂娑堣垂鑰呮暟锟?
          */
         private int concurrency = 3;
 
         /**
-         * 批量拉取大小
+         * 鎵归噺鎷夊彇澶у皬
          */
         private int batchSize = 100;
 
         /**
-         * 消费超时时间
+         * 娑堣垂瓒呮椂鏃堕棿
          */
         private Duration pollTimeout = Duration.ofSeconds(5);
     }
@@ -92,27 +92,27 @@ public class DataSyncProperties {
     @Data
     public static class RetryConfig {
         /**
-         * 是否启用重试
+         * 鏄惁鍚敤閲嶈瘯
          */
         private boolean enabled = true;
 
         /**
-         * 最大重试次�
+         * 鏈€澶ч噸璇曟锟?
          */
         private int maxAttempts = 3;
 
         /**
-         * 初始退避间隔（毫秒�
+         * 鍒濆閫€閬块棿闅旓紙姣锟?
          */
         private long initialIntervalMs = 1000;
 
         /**
-         * 最大退避间隔（毫秒�
+         * 鏈€澶ч€€閬块棿闅旓紙姣锟?
          */
         private long maxIntervalMs = 30000;
 
         /**
-         * 退避乘�
+         * 閫€閬夸箻锟?
          */
         private double multiplier = 2.0;
     }
@@ -120,17 +120,17 @@ public class DataSyncProperties {
     @Data
     public static class IdempotentConfig {
         /**
-         * 是否启用幂等
+         * 鏄惁鍚敤骞傜瓑
          */
         private boolean enabled = true;
 
         /**
-         * 幂等 key 过期时间（秒�
+         * 骞傜瓑 key 杩囨湡鏃堕棿锛堢锟?
          */
         private long expireSeconds = 86400; // 24 hours
 
         /**
-         * Redis key 前缀
+         * Redis key 鍓嶇紑
          */
         private String keyPrefix = "datasync:idempotent:";
     }
@@ -138,22 +138,22 @@ public class DataSyncProperties {
     @Data
     public static class ReconciliationConfig {
         /**
-         * 是否启用对账
+         * 鏄惁鍚敤瀵硅处
          */
         private boolean enabled = false;
 
         /**
-         * 对账 cron 表达�
+         * 瀵硅处 cron 琛ㄨ揪锟?
          */
-        private String cron = "0 0 3 * * ?"; // 每天凌晨 3 �
+        private String cron = "0 0 3 * * ?"; // 姣忓ぉ鍑屾櫒 3 锟?
 
         /**
-         * 对账批次大小
+         * 瀵硅处鎵规澶у皬
          */
         private int batchSize = 1000;
 
         /**
-         * 是否自动修复
+         * 鏄惁鑷姩淇
          */
         private boolean autoFix = false;
     }

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * OAuth第三方登录绑�Mapper 接口
+ * OAuth绗笁鏂圭櫥褰曠粦锟組apper 鎺ュ彛
  *
  * @author Deng
  * @since 2025-12-15
@@ -19,7 +19,7 @@ import java.util.UUID;
 public interface SysUserOauthMapper extends BaseMapper<SysUserOauth> {
 
     /**
-     * 根据 OAuth提供商和OpenID查询绑定信息
+     * 鏍规嵁 OAuth鎻愪緵鍟嗗拰OpenID鏌ヨ缁戝畾淇℃伅
      */
     @Select("""
             SELECT * FROM sys_user_oauth
@@ -28,7 +28,7 @@ public interface SysUserOauthMapper extends BaseMapper<SysUserOauth> {
     SysUserOauth findByProviderAndOpenid(@Param("provider") String provider, @Param("openid") String openid);
 
     /**
-     * 根据用户 ID查询所有OAuth绑定
+     * 鏍规嵁鐢ㄦ埛 ID鏌ヨ鎵€鏈塐Auth缁戝畾
      */
     @Select("""
             SELECT * FROM sys_user_oauth
@@ -37,7 +37,7 @@ public interface SysUserOauthMapper extends BaseMapper<SysUserOauth> {
     List<SysUserOauth> findByUserId(@Param("userId") UUID userId);
 
     /**
-     * 根据用户 ID和提供商查询绑定信息
+     * 鏍规嵁鐢ㄦ埛 ID鍜屾彁渚涘晢鏌ヨ缁戝畾淇℃伅
      */
     @Select("""
             SELECT * FROM sys_user_oauth
@@ -46,7 +46,7 @@ public interface SysUserOauthMapper extends BaseMapper<SysUserOauth> {
     SysUserOauth findByUserIdAndProvider(@Param("userId") UUID userId, @Param("provider") String provider);
 
     /**
-     * 检查用户是否已绑定指定提供�
+     * 妫€鏌ョ敤鎴锋槸鍚﹀凡缁戝畾鎸囧畾鎻愪緵锟?
      */
     @Select("""
             SELECT COUNT(*) > 0 FROM sys_user_oauth
@@ -55,7 +55,7 @@ public interface SysUserOauthMapper extends BaseMapper<SysUserOauth> {
     boolean existsByUserIdAndProvider(@Param("userId") UUID userId, @Param("provider") String provider);
 
     /**
-     * 更新最后登录时�
+     * 鏇存柊鏈€鍚庣櫥褰曟椂锟?
      */
     @Update("""
             UPDATE sys_user_oauth
@@ -65,7 +65,7 @@ public interface SysUserOauthMapper extends BaseMapper<SysUserOauth> {
     int updateLastLoginTime(@Param("id") UUID id);
 
     /**
-     * 解绑 OAuth账号
+     * 瑙ｇ粦 OAuth璐﹀彿
      */
     @Update("""
             UPDATE sys_user_oauth

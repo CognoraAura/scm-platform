@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * SPU 标准产品单元�
+ * SPU 鏍囧噯浜у搧鍗曞厓锟?
  * </p>
  *
  * @author author

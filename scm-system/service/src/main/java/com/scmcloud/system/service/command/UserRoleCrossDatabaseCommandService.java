@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 用户角色跨库命令服务
+ * 鐢ㄦ埛瑙掕壊璺ㄥ簱鍛戒护鏈嶅姟
  * <p>
- * 处理用户角色关联的写操作（db_permission�
+ * 澶勭悊鐢ㄦ埛瑙掕壊鍏宠仈鐨勫啓鎿嶄綔锛坉b_permission锟?
  *
  * @author Deng
  * @since 2025-01-16
@@ -26,17 +26,17 @@ public class UserRoleCrossDatabaseCommandService {
     private final SysUserRoleMapper userRoleMapper;
 
     /**
-     * 批量插入用户角色关联（永久授权）
+     * 鎵归噺鎻掑叆鐢ㄦ埛瑙掕壊鍏宠仈锛堟案涔呮巿鏉冿級
      * <p>
-     * 替代 SysUserRoleMapper.batchInsert
-     * 跨库操作：db_permission
+     * 鏇夸唬 SysUserRoleMapper.batchInsert
+     * 璺ㄥ簱鎿嶄綔锛歞b_permission
      *
-     * @param userId   用户 ID
-     * @param roleIds  角色 ID 列表
-     * @param createBy 创建�ID
-     * @return 插入行数
+     * @param userId   鐢ㄦ埛 ID
+     * @param roleIds  瑙掕壊 ID 鍒楄〃
+     * @param createBy 鍒涘缓锟絀D
+     * @return 鎻掑叆琛屾暟
      */
-    @Master(reason = "写操作必须走主库")
+    @Master(reason = "鍐欐搷浣滃繀椤昏蛋涓诲簱")
     @Transactional(rollbackFor = Exception.class)
     public int batchInsertUserRoles(UUID userId, List<UUID> roleIds, UUID createBy) {
         if (userId == null || roleIds == null || roleIds.isEmpty()) {
@@ -47,19 +47,19 @@ public class UserRoleCrossDatabaseCommandService {
     }
 
     /**
-     * 批量插入临时用户角色关联
+     * 鎵归噺鎻掑叆涓存椂鐢ㄦ埛瑙掕壊鍏宠仈
      * <p>
-     * 替代 SysUserRoleMapper.batchInsertTemporary
-     * 跨库操作：db_permission
+     * 鏇夸唬 SysUserRoleMapper.batchInsertTemporary
+     * 璺ㄥ簱鎿嶄綔锛歞b_permission
      *
-     * @param userId        用户 ID
-     * @param roleIds       角色 ID 列表
-     * @param effectiveTime 生效时间
-     * @param expireTime    过期时间
-     * @param createBy      创建�ID
-     * @return 插入行数
+     * @param userId        鐢ㄦ埛 ID
+     * @param roleIds       瑙掕壊 ID 鍒楄〃
+     * @param effectiveTime 鐢熸晥鏃堕棿
+     * @param expireTime    杩囨湡鏃堕棿
+     * @param createBy      鍒涘缓锟絀D
+     * @return 鎻掑叆琛屾暟
      */
-    @Master(reason = "写操作必须走主库")
+    @Master(reason = "鍐欐搷浣滃繀椤昏蛋涓诲簱")
     @Transactional(rollbackFor = Exception.class)
     public int batchInsertTemporaryUserRoles(UUID userId, List<UUID> roleIds,
                                               LocalDateTime effectiveTime,
@@ -74,15 +74,15 @@ public class UserRoleCrossDatabaseCommandService {
     }
 
     /**
-     * 删除用户的所有角色关�
+     * 鍒犻櫎鐢ㄦ埛鐨勬墍鏈夎鑹插叧锟?
      * <p>
-     * 替代 SysUserRoleMapper.deleteByUserId
-     * 跨库操作：db_permission
+     * 鏇夸唬 SysUserRoleMapper.deleteByUserId
+     * 璺ㄥ簱鎿嶄綔锛歞b_permission
      *
-     * @param userId 用户 ID
-     * @return 删除行数
+     * @param userId 鐢ㄦ埛 ID
+     * @return 鍒犻櫎琛屾暟
      */
-    @Master(reason = "写操作必须走主库")
+    @Master(reason = "鍐欐搷浣滃繀椤昏蛋涓诲簱")
     @Transactional(rollbackFor = Exception.class)
     public int deleteUserRoles(UUID userId) {
         if (userId == null) {
@@ -93,17 +93,17 @@ public class UserRoleCrossDatabaseCommandService {
     }
 
     /**
-     * 延长临时角色有效�
+     * 寤堕暱涓存椂瑙掕壊鏈夋晥锟?
      * <p>
-     * 替代 SysUserRoleMapper.extendTemporaryRole
-     * 跨库操作：db_permission
+     * 鏇夸唬 SysUserRoleMapper.extendTemporaryRole
+     * 璺ㄥ簱鎿嶄綔锛歞b_permission
      *
-     * @param userId        用户 ID
-     * @param roleId        角色 ID
-     * @param newExpireTime 新的过期时间
-     * @return 更新行数
+     * @param userId        鐢ㄦ埛 ID
+     * @param roleId        瑙掕壊 ID
+     * @param newExpireTime 鏂扮殑杩囨湡鏃堕棿
+     * @return 鏇存柊琛屾暟
      */
-    @Master(reason = "写操作必须走主库")
+    @Master(reason = "鍐欐搷浣滃繀椤昏蛋涓诲簱")
     @Transactional(rollbackFor = Exception.class)
     public int extendTemporaryRole(UUID userId, UUID roleId, LocalDateTime newExpireTime) {
         if (userId == null || roleId == null || newExpireTime == null) {
@@ -115,16 +115,16 @@ public class UserRoleCrossDatabaseCommandService {
     }
 
     /**
-     * 终止临时角色
+     * 缁堟涓存椂瑙掕壊
      * <p>
-     * 替代 SysUserRoleMapper.terminateTemporaryRole
-     * 跨库操作：db_permission
+     * 鏇夸唬 SysUserRoleMapper.terminateTemporaryRole
+     * 璺ㄥ簱鎿嶄綔锛歞b_permission
      *
-     * @param userId 用户 ID
-     * @param roleId 角色 ID
-     * @return 更新行数
+     * @param userId 鐢ㄦ埛 ID
+     * @param roleId 瑙掕壊 ID
+     * @return 鏇存柊琛屾暟
      */
-    @Master(reason = "写操作必须走主库")
+    @Master(reason = "鍐欐搷浣滃繀椤昏蛋涓诲簱")
     @Transactional(rollbackFor = Exception.class)
     public int terminateTemporaryRole(UUID userId, UUID roleId) {
         if (userId == null || roleId == null) {

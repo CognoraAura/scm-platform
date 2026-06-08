@@ -12,7 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Instant;
 /**
- * TOTP 双因素认证工具类
+ * TOTP 鍙屽洜绱犺璇佸伐鍏风被
  *
  * @author Deng
  * createData 2025/11/5 17:20
@@ -23,12 +23,12 @@ import java.time.Instant;
 public class TotpUtils {
     private static final int SECRET_SIZE = 20; // 160 bits
     private static final String ALGORITHM = "HmacSHA1";
-    private static final int TIME_STEP = 30; // 30秒时间窗�
-    private static final int DIGITS = 6; // 6位验证码
-    private static final int WINDOW = 1; // 允许前后1个时间窗口（防止时间误差�
+    private static final int TIME_STEP = 30; // 30绉掓椂闂寸獥锟?
+    private static final int DIGITS = 6; // 6浣嶉獙璇佺爜
+    private static final int WINDOW = 1; // 鍏佽鍓嶅悗1涓椂闂寸獥鍙ｏ紙闃叉鏃堕棿璇樊锟?
 
     /**
-     * 生成密钥（Base32编码�
+     * 鐢熸垚瀵嗛挜锛圔ase32缂栫爜锟?
      */
     public String generateSecret() {
         SecureRandom random = new SecureRandom();
@@ -38,11 +38,11 @@ public class TotpUtils {
     }
 
     /**
-     * 生成二维码URL（用于Google Authenticator扫描�
+     * 鐢熸垚浜岀淮鐮乁RL锛堢敤浜嶨oogle Authenticator鎵弿锟?
      *
-     * @param account 账户名（如邮箱或用户名）
-     * @param issuer 发行者（应用名称�
-     * @param secret Base32编码的密�
+     * @param account 璐︽埛鍚嶏紙濡傞偖绠辨垨鐢ㄦ埛鍚嶏級
+     * @param issuer 鍙戣鑰咃紙搴旂敤鍚嶇О锟?
+     * @param secret Base32缂栫爜鐨勫瘑锟?
      */
     public String generateQrCodeUrl(String account, String issuer, String secret) {
         return String.format(
@@ -52,11 +52,11 @@ public class TotpUtils {
     }
 
     /**
-     * 验证 TOTP验证�
+     * 楠岃瘉 TOTP楠岃瘉锟?
      *
-     * @param secret Base32编码的密�
-     * @param code 用户输入�位验证码
-     * @return 验证是否通过
+     * @param secret Base32缂栫爜鐨勫瘑锟?
+     * @param code 鐢ㄦ埛杈撳叆锟戒綅楠岃瘉鐮?
+     * @return 楠岃瘉鏄惁閫氳繃
      */
     public boolean verifyCode(String secret, String code) {
         if (code == null || code.length() != DIGITS) {
@@ -66,33 +66,33 @@ public class TotpUtils {
         try {
             long currentTime = Instant.now().getEpochSecond() / TIME_STEP;
 
-            // 检查当前时间窗口和前后�WINDOW个窗�
+            // 妫€鏌ュ綋鍓嶆椂闂寸獥鍙ｅ拰鍓嶅悗锟絎INDOW涓獥锟?
             for (int i = -WINDOW; i <= WINDOW; i++) {
                 long time = currentTime + i;
                 String generatedCode = generateCode(secret, time);
 
                 if (code.equals(generatedCode)) {
-                    log.debug("TOTP验证成功，时间偏� {}", i);
+                    log.debug("TOTP楠岃瘉鎴愬姛锛屾椂闂村亸锟?{}", i);
                     return true;
                 }
             }
 
-            log.warn("TOTP 验证失败");
+            log.warn("TOTP 楠岃瘉澶辫触");
             return false;
         } catch (Exception e) {
-            log.error("TOTP 验证异常", e);
+            log.error("TOTP 楠岃瘉寮傚父", e);
             return false;
         }
     }
 
     /**
-     * 生成指定时间的验证码
+     * 鐢熸垚鎸囧畾鏃堕棿鐨勯獙璇佺爜
      */
     private String generateCode(String secret, long timeCounter)
             throws NoSuchAlgorithmException, InvalidKeyException {
         byte[] key = BaseEncoding.base32().decode(secret);
 
-        // 时间转换�字节数组
+        // 鏃堕棿杞崲锟藉瓧鑺傛暟缁?
         ByteBuffer buffer = ByteBuffer.allocate(8);
         buffer.putLong(timeCounter);
         byte[] timeBytes = buffer.array();
@@ -102,7 +102,7 @@ public class TotpUtils {
         mac.init(new SecretKeySpec(key, ALGORITHM));
         byte[] hash = mac.doFinal(timeBytes);
 
-        // 动态截�
+        // 鍔ㄦ€佹埅锟?
         int offset = hash[hash.length - 1] & 0x0F;
         int binary = ((hash[offset] & 0x7F) << 24)
                 | ((hash[offset + 1] & 0xFF) << 16)
@@ -111,19 +111,19 @@ public class TotpUtils {
 
         int otp = binary % (int) Math.pow(10, DIGITS);
 
-        // 格式化为6位字符串（前导零补齐�
+        // 鏍煎紡鍖栦负6浣嶅瓧绗︿覆锛堝墠瀵奸浂琛ラ綈锟?
         return String.format("%0" + DIGITS + "d", otp);
     }
 
     /**
-     * 获取当前验证码（用于测试�
+     * 鑾峰彇褰撳墠楠岃瘉鐮侊紙鐢ㄤ簬娴嬭瘯锟?
      */
     public String getCurrentCode(String secret) {
         try {
             long currentTime = Instant.now().getEpochSecond() / TIME_STEP;
             return generateCode(secret, currentTime);
         } catch (Exception e) {
-            log.error("生成验证码失败", e);
+            log.error("鐢熸垚楠岃瘉鐮佸け璐?, e);
             return null;
         }
     }

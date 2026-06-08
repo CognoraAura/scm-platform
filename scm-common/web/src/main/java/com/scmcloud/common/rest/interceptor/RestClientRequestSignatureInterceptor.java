@@ -18,23 +18,23 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * RestClient 请求签名拦截�
- * <p>替代 OpenFeign �FeignRequestSignatureInterceptor</p>
+ * RestClient 璇锋眰绛惧悕鎷︽埅锟?
+ * <p>鏇夸唬 OpenFeign 锟紽eignRequestSignatureInterceptor</p>
  *
- * <p>功能�
+ * <p>鍔熻兘锟?
  * <ul>
- *   <li>自动为所�HTTP 请求添加 HMAC-SHA256 签名</li>
- *   <li>防重放攻击：使用时间�+ nonce</li>
- *   <li>参数排序：确保签名一致�/li>
- *   <li>服务间认证：基于 App-ID �Secret-Key</li>
+ *   <li>鑷姩涓烘墍锟紿TTP 璇锋眰娣诲姞 HMAC-SHA256 绛惧悕</li>
+ *   <li>闃查噸鏀炬敾鍑伙細浣跨敤鏃堕棿锟? nonce</li>
+ *   <li>鍙傛暟鎺掑簭锛氱‘淇濈鍚嶄竴鑷达拷/li>
+ *   <li>鏈嶅姟闂磋璇侊細鍩轰簬 App-ID 锟絊ecret-Key</li>
  * </ul>
  *
- * <p>签名格式�
+ * <p>绛惧悕鏍煎紡锟?
  * <pre>
  * signature = HMAC-SHA256(secretKey, timestamp + nonce + appId + uri + sortedParams)
  * </pre>
  *
- * <p>HTTP Headers�
+ * <p>HTTP Headers锟?
  * <pre>
  * X-Timestamp: 1640995200000
  * X-Nonce: 550e8400e29b41d4a716446655440000
@@ -61,14 +61,14 @@ public class RestClientRequestSignatureInterceptor implements ClientHttpRequestI
             byte[] body,
             ClientHttpRequestExecution execution) throws IOException {
 
-        // 生成时间戳和 nonce
+        // 鐢熸垚鏃堕棿鎴冲拰 nonce
         String timestamp = String.valueOf(System.currentTimeMillis());
         String nonce = UUIDv7Util.generate().toString().replace("-", "");
 
-        // 计算签名
+        // 璁＄畻绛惧悕
         String signature = calculateSignature(request, timestamp, nonce);
 
-        // 添加签名 Header
+        // 娣诲姞绛惧悕 Header
         request.getHeaders().set("X-Timestamp", timestamp);
         request.getHeaders().set("X-Nonce", nonce);
         request.getHeaders().set("X-Signature", signature);
@@ -79,31 +79,31 @@ public class RestClientRequestSignatureInterceptor implements ClientHttpRequestI
                       request.getMethod(), request.getURI(), signature);
         }
 
-        // 继续执行请求
+        // 缁х画鎵ц璇锋眰
         return execution.execute(request, body);
     }
 
     /**
-     * 计算请求签名
+     * 璁＄畻璇锋眰绛惧悕
      *
-     * <p>签名算法�
+     * <p>绛惧悕绠楁硶锟?
      * <pre>
-     * 1. 提取 URI 路径（不含域名和端口�
-     * 2. 提取查询参数并按 key 排序
-     * 3. 拼接签名内容：timestamp + nonce + appId + uri + sortedParams
-     * 4. 使用 HMAC-SHA256 计算签名
+     * 1. 鎻愬彇 URI 璺緞锛堜笉鍚煙鍚嶅拰绔彛锟?
+     * 2. 鎻愬彇鏌ヨ鍙傛暟骞舵寜 key 鎺掑簭
+     * 3. 鎷兼帴绛惧悕鍐呭锛歵imestamp + nonce + appId + uri + sortedParams
+     * 4. 浣跨敤 HMAC-SHA256 璁＄畻绛惧悕
      * </pre>
      *
-     * @param request   HTTP 请求
-     * @param timestamp 时间�
-     * @param nonce     随机�
-     * @return 签名字符串（十六进制�
+     * @param request   HTTP 璇锋眰
+     * @param timestamp 鏃堕棿锟?
+     * @param nonce     闅忔満锟?
+     * @return 绛惧悕瀛楃涓诧紙鍗佸叚杩涘埗锟?
      */
     private String calculateSignature(HttpRequest request, String timestamp, String nonce) {
-        // 获取 URI 路径
+        // 鑾峰彇 URI 璺緞
         String uri = request.getURI().getPath();
 
-        // 获取查询参数并排�
+        // 鑾峰彇鏌ヨ鍙傛暟骞舵帓锟?
         Map<String, String> params = new HashMap<>();
         String query = request.getURI().getQuery();
         if (query != null && !query.isEmpty()) {
@@ -116,28 +116,28 @@ public class RestClientRequestSignatureInterceptor implements ClientHttpRequestI
             }
         }
 
-        // 排序并拼接参�
+        // 鎺掑簭骞舵嫾鎺ュ弬锟?
         String sortedParams = sortAndConcatParams(params);
 
-        // 构建签名内容
+        // 鏋勫缓绛惧悕鍐呭
         String signContent = timestamp + nonce + appId + uri + sortedParams;
 
         if (log.isTraceEnabled()) {
             log.trace("Signature content: {}", signContent);
         }
 
-        // 计算 HMAC-SHA256 签名
+        // 璁＄畻 HMAC-SHA256 绛惧悕
         return SecureUtil.hmac(HmacAlgorithm.HmacSHA256, secretKey.getBytes(StandardCharsets.UTF_8))
             .digestHex(signContent);
     }
 
     /**
-     * 对参数进行排序并拼接
+     * 瀵瑰弬鏁拌繘琛屾帓搴忓苟鎷兼帴
      *
-     * <p>格式：key1=value1&key2=value2&...（按 key 字典序排序）</p>
+     * <p>鏍煎紡锛歬ey1=value1&key2=value2&...锛堟寜 key 瀛楀吀搴忔帓搴忥級</p>
      *
-     * @param params 参数 Map
-     * @return 排序后的参数字符�
+     * @param params 鍙傛暟 Map
+     * @return 鎺掑簭鍚庣殑鍙傛暟瀛楃锟?
      */
     private String sortAndConcatParams(Map<String, String> params) {
         if (params == null || params.isEmpty()) {

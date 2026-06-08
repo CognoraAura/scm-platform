@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 数据权限规则�
+ * 鏁版嵁鏉冮檺瑙勫垯锟?
  *
  * @author Deng
  * @since 2025-12-15
@@ -72,15 +72,15 @@ public class SysDataPermissionRule {
     private Boolean deleted;
 
     /**
-     * 规则类型枚举
+     * 瑙勫垯绫诲瀷鏋氫妇
      */
     @Getter
     public enum RuleType {
-        ALL(1, "全部数据"),
-        CUSTOM_SQL(2, "自定义SQL"),
-        DEPT(3, "本部门"),
-        DEPT_AND_CHILDREN(4, "本部门及以下"),
-        SELF(5, "仅本人");
+        ALL(1, "鍏ㄩ儴鏁版嵁"),
+        CUSTOM_SQL(2, "鑷畾涔塖QL"),
+        DEPT(3, "鏈儴闂?),
+        DEPT_AND_CHILDREN(4, "鏈儴闂ㄥ強浠ヤ笅"),
+        SELF(5, "浠呮湰浜?);
 
         private final int code;
         private final String desc;

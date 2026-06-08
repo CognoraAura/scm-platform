@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 部门数据同步处理�
+ * 閮ㄩ棬鏁版嵁鍚屾澶勭悊锟?
  * <p>
- * 处理部门数据变更，同步更新冗余字段到其他库：
+ * 澶勭悊閮ㄩ棬鏁版嵁鍙樻洿锛屽悓姝ユ洿鏂板啑浣欏瓧娈靛埌鍏朵粬搴擄細
  * - db_audit.sys_audit_log (dept_name)
  * - db_approval.sys_permission_approval (applicant_dept_name)
  *
@@ -51,7 +51,7 @@ public class DeptSyncHandler implements DataSyncHandler {
 
     private void syncDeptName(UUID deptId, Map<String, Object> data) {
         String deptName = (String) data.get("deptName");
-        // 通过独立�Bean 调用，确�@Transactional �@DS 生效
+        // 閫氳繃鐙珛锟紹ean 璋冪敤锛岀‘锟紷Transactional 锟紷DS 鐢熸晥
         syncExecutor.syncToAuditDb(deptId, deptName);
         syncExecutor.syncToApprovalDb(deptId, deptName);
     }

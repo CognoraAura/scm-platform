@@ -9,17 +9,17 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Dubbo API 用于服务间的高速内�RPC 通信�
- * 提供高性能的用户相关操作，包括身份验证和授权�
+ * Dubbo API 鐢ㄤ簬鏈嶅姟闂寸殑楂橀€熷唴锟絉PC 閫氫俊锟?
+ * 鎻愪緵楂樻€ц兘鐨勭敤鎴风浉鍏虫搷浣滐紝鍖呮嫭韬唤楠岃瘉鍜屾巿鏉冿拷
  */
 public interface UserDubboService {
 
     /**
-     * 根据用户名获取用户进行身份验证�
-     * �Spring Security �UserDetailsService 使用�
+     * 鏍规嵁鐢ㄦ埛鍚嶈幏鍙栫敤鎴疯繘琛岃韩浠介獙璇侊拷
+     * 锟絊pring Security 锟経serDetailsService 浣跨敤锟?
      *
-     * @param username 要搜索的用户�
-     * @return 包含身份验证信息�SecurityUser 对象，如果找不到则返�null
+     * @param username 瑕佹悳绱㈢殑鐢ㄦ埛锟?
+     * @return 鍖呭惈韬唤楠岃瘉淇℃伅锟絊ecurityUser 瀵硅薄锛屽鏋滄壘涓嶅埌鍒欒繑锟絥ull
      */
     SecurityUser getUserByUsername(String username);
 

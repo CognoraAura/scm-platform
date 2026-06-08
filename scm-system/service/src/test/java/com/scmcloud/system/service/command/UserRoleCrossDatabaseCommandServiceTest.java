@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
 
 /**
- * UserRoleCrossDatabaseCommandService 单元测试
+ * UserRoleCrossDatabaseCommandService 鍗曞厓娴嬭瘯
  *
  * @author Deng
  * @since 2025-01-16
@@ -52,7 +52,7 @@ class UserRoleCrossDatabaseCommandServiceTest {
     }
 
     // ========================================
-    // 用户角色关联写操作测�
+    // 鐢ㄦ埛瑙掕壊鍏宠仈鍐欐搷浣滄祴锟?
     // ========================================
 
     @Test
@@ -256,7 +256,7 @@ class UserRoleCrossDatabaseCommandServiceTest {
     }
 
     // ========================================
-    // 临时角色管理写操作测�
+    // 涓存椂瑙掕壊绠＄悊鍐欐搷浣滄祴锟?
     // ========================================
 
     @Test
@@ -390,7 +390,7 @@ class UserRoleCrossDatabaseCommandServiceTest {
     }
 
     // ========================================
-    // 事务回滚测试
+    // 浜嬪姟鍥炴粴娴嬭瘯
     // ========================================
 
     @Test
@@ -422,7 +422,7 @@ class UserRoleCrossDatabaseCommandServiceTest {
     }
 
     // ========================================
-    // 边界条件测试
+    // 杈圭晫鏉′欢娴嬭瘯
     // ========================================
 
     @Test

@@ -14,19 +14,19 @@ import java.time.ZoneOffset;
 import java.util.UUID;
 
 /**
- * MyBatis-Plus 审计字段自动填充处理�
+ * MyBatis-Plus 瀹¤瀛楁鑷姩濉厖澶勭悊锟?
 
- * 自动填充字段�
- * 1. id - UUIDv7（INSERT时）
- * 2. tenant_id - 从ThreadLocal获取（INSERT时）
- * 3. create_time - 当前时间（INSERT时）
- * 4. create_by - 当前用户ID（INSERT时）
- * 5. update_time - 当前时间（INSERT和UPDATE时）
- * 6. update_by - 当前用户ID（UPDATE时）
- * 7. deleted - false（INSERT时）
+ * 鑷姩濉厖瀛楁锟?
+ * 1. id - UUIDv7锛圛NSERT鏃讹級
+ * 2. tenant_id - 浠嶵hreadLocal鑾峰彇锛圛NSERT鏃讹級
+ * 3. create_time - 褰撳墠鏃堕棿锛圛NSERT鏃讹級
+ * 4. create_by - 褰撳墠鐢ㄦ埛ID锛圛NSERT鏃讹級
+ * 5. update_time - 褰撳墠鏃堕棿锛圛NSERT鍜孶PDATE鏃讹級
+ * 6. update_by - 褰撳墠鐢ㄦ埛ID锛圲PDATE鏃讹級
+ * 7. deleted - false锛圛NSERT鏃讹級
 
- * 使用方式�
- * 实体类字段添�@TableField 注解�
+ * 浣跨敤鏂瑰紡锟?
+ * 瀹炰綋绫诲瓧娈垫坊锟紷TableField 娉ㄨВ锟?
  * <pre>
  * @TableField(fill = FieldFill.INSERT)
  * private UUID id;
@@ -49,66 +49,66 @@ import java.util.UUID;
 public class AuditMetaObjectHandler implements MetaObjectHandler {
 
     /**
-     * 插入时自动填�
+     * 鎻掑叆鏃惰嚜鍔ㄥ～锟?
      */
     @Override
     public void insertFill(MetaObject metaObject) {
         log.debug("Start insert fill ...");
 
-        // 1. 自动填充 id（UUIDv7�
+        // 1. 鑷姩濉厖 id锛圲UIDv7锟?
         this.strictInsertFill(metaObject, "id", UUID.class, UUIDv7Util.generate());
 
-        // 2. 自动填充 tenant_id
+        // 2. 鑷姩濉厖 tenant_id
         UUID tenantId = TenantContextHolder.getTenantId();
         if (tenantId != null) {
-            // 检查字段的当前值类型
+            // 妫€鏌ュ瓧娈电殑褰撳墠鍊肩被鍨?
             Object tenantIdValue = metaObject.getValue("tenantId");
             if (tenantIdValue instanceof UUID) {
                 this.strictInsertFill(metaObject, "tenantId", UUID.class, tenantId);
             } else if (tenantIdValue instanceof String) {
                 this.strictInsertFill(metaObject, "tenantId", String.class, tenantId.toString());
             } else {
-                // 字段未填充，默认使用 String 类型
+                // 瀛楁鏈～鍏咃紝榛樿浣跨敤 String 绫诲瀷
                 this.strictInsertFill(metaObject, "tenantId", String.class, tenantId.toString());
             }
         } else {
             log.warn("Tenant ID is null when inserting, entity: {}", metaObject.getOriginalObject().getClass().getName());
         }
 
-        // 3. 自动填充 create_time
+        // 3. 鑷姩濉厖 create_time
         OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
         this.strictInsertFill(metaObject, "createTime", OffsetDateTime.class, now);
 
-        // 4. 自动填充 create_by（需要从SecurityContext或其他地方获取当前用户）
+        // 4. 鑷姩濉厖 create_by锛堥渶瑕佷粠SecurityContext鎴栧叾浠栧湴鏂硅幏鍙栧綋鍓嶇敤鎴凤級
         UUID currentUserId = getCurrentUserId();
         if (currentUserId != null) {
             this.strictInsertFill(metaObject, "createBy", UUID.class, currentUserId);
         }
 
-        // 5. 自动填充 update_time
+        // 5. 鑷姩濉厖 update_time
         this.strictInsertFill(metaObject, "updateTime", OffsetDateTime.class, now);
 
-        // 6. 自动填充 update_by
+        // 6. 鑷姩濉厖 update_by
         if (currentUserId != null) {
             this.strictInsertFill(metaObject, "updateBy", UUID.class, currentUserId);
         }
 
-        // 7. 自动填充 deleted（软删除标志�
+        // 7. 鑷姩濉厖 deleted锛堣蒋鍒犻櫎鏍囧織锟?
         this.strictInsertFill(metaObject, "deleted", Boolean.class, false);
     }
 
     /**
-     * 更新时自动填�
+     * 鏇存柊鏃惰嚜鍔ㄥ～锟?
      */
     @Override
     public void updateFill(MetaObject metaObject) {
         log.debug("Start update fill ...");
 
-        // 1. 自动填充 update_time
+        // 1. 鑷姩濉厖 update_time
         OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
         this.strictUpdateFill(metaObject, "updateTime", OffsetDateTime.class, now);
 
-        // 2. 自动填充 update_by
+        // 2. 鑷姩濉厖 update_by
         UUID currentUserId = getCurrentUserId();
         if (currentUserId != null) {
             this.strictUpdateFill(metaObject, "updateBy", UUID.class, currentUserId);
@@ -116,8 +116,8 @@ public class AuditMetaObjectHandler implements MetaObjectHandler {
     }
 
     /**
-     * 获取当前登录用户ID
-     * �SecurityContextHolder 中获取认证信息，支持 SecurityUser（通过反射）和 Subject 回退
+     * 鑾峰彇褰撳墠鐧诲綍鐢ㄦ埛ID
+     * 锟絊ecurityContextHolder 涓幏鍙栬璇佷俊鎭紝鏀寔 SecurityUser锛堥€氳繃鍙嶅皠锛夊拰 Subject 鍥為€€
      */
     private UUID getCurrentUserId() {
         try {

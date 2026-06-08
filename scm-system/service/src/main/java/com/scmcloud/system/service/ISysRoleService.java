@@ -10,7 +10,7 @@ import java.util.UUID;
 
 /**
  * <p>
- * 角色�服务�
+ * 瑙掕壊锟芥湇鍔★拷
  * </p>
  *
  * @author author
@@ -19,64 +19,64 @@ import java.util.UUID;
 public interface ISysRoleService extends IService<SysRole> {
 
     /**
-     * 分页查询角色列表�
+     * 鍒嗛〉鏌ヨ瑙掕壊鍒楄〃锟?
      *
-     * @param pageNum  页码，从 1 开�
-     * @param pageSize 每页数量
-     * @param roleName 角色名称（可选，支持模糊查询�
-     * @return 角色分页数据
+     * @param pageNum  椤电爜锛屼粠 1 寮€锟?
+     * @param pageSize 姣忛〉鏁伴噺
+     * @param roleName 瑙掕壊鍚嶇О锛堝彲閫夛紝鏀寔妯＄硦鏌ヨ锟?
+     * @return 瑙掕壊鍒嗛〉鏁版嵁
      */
     Page<RoleDTO> listRoles(Integer pageNum, Integer pageSize, String roleName);
 
     /**
-     * 查询所有角色（不分页）�
+     * 鏌ヨ鎵€鏈夎鑹诧紙涓嶅垎椤碉級锟?
      *
-     * @return 全部角色列表
+     * @return 鍏ㄩ儴瑙掕壊鍒楄〃
      */
     List<RoleDTO> listAllRoles();
 
     /**
-     * 根据角色ID获取角色详情�
+     * 鏍规嵁瑙掕壊ID鑾峰彇瑙掕壊璇︽儏锟?
      *
-     * @param id 角色 ID
-     * @return 角色详情
+     * @param id 瑙掕壊 ID
+     * @return 瑙掕壊璇︽儏
      */
     RoleDTO getRoleById(UUID id);
 
     /**
-     * 新增角色�
+     * 鏂板瑙掕壊锟?
      *
-     * @param roleDTO 角色信息
+     * @param roleDTO 瑙掕壊淇℃伅
      */
     void addRole(RoleDTO roleDTO);
 
     /**
-     * 修改角色�
+     * 淇敼瑙掕壊锟?
      *
-     * @param roleDTO 角色信息
+     * @param roleDTO 瑙掕壊淇℃伅
      */
     void updateRole(RoleDTO roleDTO);
 
     /**
-     * 删除角色�
+     * 鍒犻櫎瑙掕壊锟?
      *
-     * @param id 角色 ID
+     * @param id 瑙掕壊 ID
      */
     void deleteRole(UUID id);
 
     /**
-     * 为角色授予权限�
+     * 涓鸿鑹叉巿浜堟潈闄愶拷
      *
-     * @param roleId        角色 ID
-     * @param permissionIds 权限 ID列表
+     * @param roleId        瑙掕壊 ID
+     * @param permissionIds 鏉冮檺 ID鍒楄〃
      */
     void grantPermissions(UUID roleId, List<UUID> permissionIds);
 
     /**
-     * 获取角色已绑定的权限ID列表�
+     * 鑾峰彇瑙掕壊宸茬粦瀹氱殑鏉冮檺ID鍒楄〃锟?
      *
-     * @param roleId 角色 ID
-     * @return 权限 ID列表
+     * @param roleId 瑙掕壊 ID
+     * @return 鏉冮檺 ID鍒楄〃
      */
     List<UUID> getRolePermissionIds(UUID roleId);
 }

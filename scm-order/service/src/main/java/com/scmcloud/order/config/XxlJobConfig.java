@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * XXL-Job 配置
+ * XXL-Job 閰嶇疆
  *
- * <p>配置 XXL-Job 执行器，自动注册�XXL-Job Admin
+ * <p>閰嶇疆 XXL-Job 鎵ц鍣紝鑷姩娉ㄥ唽锟絏XL-Job Admin
  *
  * @author SCM Platform Team
  * @since 2025-12-26
@@ -43,11 +43,11 @@ public class XxlJobConfig {
     private int logRetentionDays;
 
     /**
-     * XXL-Job 执行�
+     * XXL-Job 鎵ц锟?
      */
     @Bean
     public XxlJobSpringExecutor xxlJobExecutor() {
-        log.info("🚀 [XXL-Job] 初始化执行器: appname={}, adminAddresses={}",
+        log.info("馃殌 [XXL-Job] 鍒濆鍖栨墽琛屽櫒: appname={}, adminAddresses={}",
                 appname, adminAddresses);
 
         XxlJobSpringExecutor xxlJobSpringExecutor = new XxlJobSpringExecutor();
@@ -60,7 +60,7 @@ public class XxlJobConfig {
         xxlJobSpringExecutor.setLogPath(logPath);
         xxlJobSpringExecutor.setLogRetentionDays(logRetentionDays);
 
-        log.info("�[XXL-Job] 执行器初始化完成");
+        log.info("锟絒XXL-Job] 鎵ц鍣ㄥ垵濮嬪寲瀹屾垚");
         return xxlJobSpringExecutor;
     }
 }

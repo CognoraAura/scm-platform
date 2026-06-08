@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 用户通知偏好�
+ * 鐢ㄦ埛閫氱煡鍋忓ソ锟?
  * </p>
  *
  * @author deng

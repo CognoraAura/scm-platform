@@ -3,7 +3,7 @@ package com.scmcloud.common.trace.annotation;
 import java.lang.annotation.*;
 
 /**
- * 业务追踪注解
+ * 涓氬姟杩借釜娉ㄨВ
  *
  * @author Deng
  * createData 2025/10/21 16:27
@@ -15,17 +15,17 @@ import java.lang.annotation.*;
 @Inherited
 public @interface BusinessTrace {
     /**
-     * 操作名称
+     * 鎿嶄綔鍚嶇О
      */
     String operationName() default "";
 
     /**
-     * 是否记录参数
+     * 鏄惁璁板綍鍙傛暟
      */
     boolean recordArgs() default true;
 
     /**
-     * 是否记录返回�
+     * 鏄惁璁板綍杩斿洖锟?
      */
     boolean recordResult() default false;
 }

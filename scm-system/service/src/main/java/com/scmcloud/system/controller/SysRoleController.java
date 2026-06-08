@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 角色管理控制�
+ * 瑙掕壊绠＄悊鎺у埗锟?
  *
  * @author Deng
  * createData 2025/10/14 18:01
@@ -28,7 +28,7 @@ public class SysRoleController {
     private final ISysRoleService roleService;
 
     /**
-     * 查询角色列表
+     * 鏌ヨ瑙掕壊鍒楄〃
      */
     @GetMapping
     @PreAuthorize("hasAuthority('system:role:list')")
@@ -41,7 +41,7 @@ public class SysRoleController {
     }
 
     /**
-     * 查询所有角色（用于下拉选择�
+     * 鏌ヨ鎵€鏈夎鑹诧紙鐢ㄤ簬涓嬫媺閫夋嫨锟?
      */
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('system:role:list')")
@@ -52,12 +52,12 @@ public class SysRoleController {
     }
 
     /**
-     * 新增角色
+     * 鏂板瑙掕壊
      */
     @PostMapping
     @PreAuthorize("hasAuthority('system:role:add')")
     @AuditLog(
-            operation = "新增角色",
+            operation = "鏂板瑙掕壊",
             businessType = "ROLE",
             riskLevel = 4
     )
@@ -68,12 +68,12 @@ public class SysRoleController {
     }
 
     /**
-     * 修改角色
+     * 淇敼瑙掕壊
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('system:role:edit')")
     @AuditLog(
-            operation = "修改角色",
+            operation = "淇敼瑙掕壊",
             businessType = "ROLE",
             riskLevel = 4
     )
@@ -85,12 +85,12 @@ public class SysRoleController {
     }
 
     /**
-     * 删除角色
+     * 鍒犻櫎瑙掕壊
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('system:role:delete')")
     @AuditLog(
-            operation = "删除角色",
+            operation = "鍒犻櫎瑙掕壊",
             businessType = "ROLE",
             riskLevel = 4
     )
@@ -101,12 +101,12 @@ public class SysRoleController {
     }
 
     /**
-     * 授权权限
+     * 鎺堟潈鏉冮檺
      */
     @PostMapping("/{id}/grant-permissions")
     @PreAuthorize("hasAuthority('system:role:edit')")
     @AuditLog(
-            operation = "角色授权",
+            operation = "瑙掕壊鎺堟潈",
             businessType = "ROLE",
             riskLevel = 4
     )
@@ -117,7 +117,7 @@ public class SysRoleController {
     }
 
     /**
-     * 查询角色权限
+     * 鏌ヨ瑙掕壊鏉冮檺
      */
     @GetMapping("/{id}/permissions")
     @PreAuthorize("hasAuthority('system:role:list')")

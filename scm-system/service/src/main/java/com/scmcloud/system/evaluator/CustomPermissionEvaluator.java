@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 
 /**
- * 自定义权限评估器
+ * 鑷畾涔夋潈闄愯瘎浼板櫒
  *
  * @author Deng
  * createData 2025/10/14 14:59
@@ -25,7 +25,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
     private final ISysPermissionService permissionService;
 
     /**
-     * 判断用户是否有指定权�
+     * 鍒ゆ柇鐢ㄦ埛鏄惁鏈夋寚瀹氭潈锟?
      */
     @Override
     public boolean hasPermission(@NonNull Authentication authentication, @NonNull Object targetDomainObject,
@@ -36,7 +36,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
 
         String permissionCode = permission.toString();
 
-        // 检查用户是否有该权�
+        // 妫€鏌ョ敤鎴锋槸鍚︽湁璇ユ潈锟?
         boolean hasPermission = permissionService.hasPermission(user.getUserId(), permissionCode);
 
         log.debug("Permission check - User: {}, Permission: {}, Result: {}",
@@ -46,7 +46,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
     }
 
     /**
-     * 判断用户是否有指定资源的权限（基于资源ID�
+     * 鍒ゆ柇鐢ㄦ埛鏄惁鏈夋寚瀹氳祫婧愮殑鏉冮檺锛堝熀浜庤祫婧怚D锟?
      */
     @Override
     public boolean hasPermission(@NonNull Authentication authentication, @NonNull Serializable targetId,
@@ -55,8 +55,8 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
             return false;
         }
 
-        // 可以实现更复杂的资源级权限控�
-        // 例如：检查用户是否可以访问特定ID的资�
+        // 鍙互瀹炵幇鏇村鏉傜殑璧勬簮绾ф潈闄愭帶锟?
+        // 渚嬪锛氭鏌ョ敤鎴锋槸鍚﹀彲浠ヨ闂壒瀹欼D鐨勮祫锟?
         boolean hasPermission = permissionService.hasResourcePermission(
                 user.getUserId(), targetType, targetId, permission.toString());
 

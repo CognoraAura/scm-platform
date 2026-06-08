@@ -15,8 +15,8 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * 用户Dubbo服务实现
- * 为用户相关操作提供高性能RPC服务
+ * 鐢ㄦ埛Dubbo鏈嶅姟瀹炵幇
+ * 涓虹敤鎴风浉鍏虫搷浣滄彁渚涢珮鎬ц兘RPC鏈嶅姟
  *
  * @author Deng
  * @version 2.0
@@ -50,7 +50,7 @@ public class UserDubboServiceImpl implements UserDubboService {
 
     @Override
     public void updateLastLogin(UUID userId, String ipAddress, LocalDateTime loginTime) {
-        // 调用现有方法；如果不需要，则忽�loginTime 参数�
+        // 璋冪敤鐜版湁鏂规硶锛涘鏋滀笉闇€瑕侊紝鍒欏拷锟絣oginTime 鍙傛暟锟?
         sysUserService.updateLastLogin(userId, ipAddress);
     }
 

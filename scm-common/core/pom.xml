@@ -20,7 +20,7 @@
     </properties>
 
     <dependencies>
-        <!-- 所有依赖保持不�?-->
+        <!-- 鎵€鏈変緷璧栦繚鎸佷笉锟?-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

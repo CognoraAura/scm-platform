@@ -1,8 +1,8 @@
 package com.scmcloud.common.constant;
 
 /**
- * 角色常量�
- * 定义系统中的角色类型和角色代码常�
+ * 瑙掕壊甯搁噺锟?
+ * 瀹氫箟绯荤粺涓殑瑙掕壊绫诲瀷鍜岃鑹蹭唬鐮佸父锟?
  *
  * @author Claude Code
  * @since 2025-01-15
@@ -13,76 +13,76 @@ public final class RoleConstants {
         throw new UnsupportedOperationException("This is a constants class and cannot be instantiated");
     }
 
-    // ==================== 角色类型 ====================
+    // ==================== 瑙掕壊绫诲瀷 ====================
 
     /**
-     * 平台角色类型
-     * 跨所有租户，只有平台管理员可以管�
+     * 骞冲彴瑙掕壊绫诲瀷
+     * 璺ㄦ墍鏈夌鎴凤紝鍙湁骞冲彴绠＄悊鍛樺彲浠ョ锟?
      */
     public static final String ROLE_TYPE_PLATFORM = "PLATFORM_ROLE";
 
     /**
-     * 租户角色类型
-     * 租户内角色，租户管理员可以管�
+     * 绉熸埛瑙掕壊绫诲瀷
+     * 绉熸埛鍐呰鑹诧紝绉熸埛绠＄悊鍛樺彲浠ョ锟?
      */
     public static final String ROLE_TYPE_TENANT = "TENANT_ROLE";
 
-    // ==================== 角色代码（Spring Security 角色名称�===================
+    // ==================== 瑙掕壊浠ｇ爜锛圫pring Security 瑙掕壊鍚嶇О锟?==================
 
     /**
-     * 超级管理员角�
-     * 拥有系统最高权�
+     * 瓒呯骇绠＄悊鍛樿锟?
+     * 鎷ユ湁绯荤粺鏈€楂樻潈锟?
      */
     public static final String ROLE_SUPER_ADMIN = "ROLE_SUPER_ADMIN";
 
     /**
-     * 平台管理员角�
-     * 可以管理所有租户和平台级资�
+     * 骞冲彴绠＄悊鍛樿锟?
+     * 鍙互绠＄悊鎵€鏈夌鎴峰拰骞冲彴绾ц祫锟?
      */
     public static final String ROLE_PLATFORM_ADMIN = "ROLE_PLATFORM_ADMIN";
 
     /**
-     * 租户管理员角�
-     * 可以管理本租户内的资源和用户
+     * 绉熸埛绠＄悊鍛樿锟?
+     * 鍙互绠＄悊鏈鎴峰唴鐨勮祫婧愬拰鐢ㄦ埛
      */
     public static final String ROLE_TENANT_ADMIN = "ROLE_TENANT_ADMIN";
 
     /**
-     * 租户普通用户角�
+     * 绉熸埛鏅€氱敤鎴疯锟?
      */
     public static final String ROLE_TENANT_USER = "ROLE_TENANT_USER";
 
-    // ==================== 角色分类 ====================
+    // ==================== 瑙掕壊鍒嗙被 ====================
 
     /**
-     * 业务角色
+     * 涓氬姟瑙掕壊
      */
     public static final String ROLE_CATEGORY_BUSINESS = "BUSINESS";
 
     /**
-     * 职能角色
+     * 鑱岃兘瑙掕壊
      */
     public static final String ROLE_CATEGORY_FUNCTIONAL = "FUNCTIONAL";
 
     /**
-     * 自定义角�
+     * 鑷畾涔夎锟?
      */
     public static final String ROLE_CATEGORY_CUSTOM = "CUSTOM";
 
-    // ==================== 用户类型（兼容旧代码�===================
+    // ==================== 鐢ㄦ埛绫诲瀷锛堝吋瀹规棫浠ｇ爜锟?==================
 
     /**
-     * 平台管理员用户类�
+     * 骞冲彴绠＄悊鍛樼敤鎴风被锟?
      */
     public static final String USER_TYPE_PLATFORM_ADMIN = "PLATFORM_ADMIN";
 
     /**
-     * 租户管理员用户类�
+     * 绉熸埛绠＄悊鍛樼敤鎴风被锟?
      */
     public static final String USER_TYPE_TENANT_ADMIN = "TENANT_ADMIN";
 
     /**
-     * 租户普通用户类�
+     * 绉熸埛鏅€氱敤鎴风被锟?
      */
     public static final String USER_TYPE_TENANT_USER = "TENANT_USER";
 }

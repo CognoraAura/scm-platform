@@ -12,8 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 /**
- * 敏感数据序列化器
- * 在JSON序列化时自动脱敏
+ * 鏁忔劅鏁版嵁搴忓垪鍖栧櫒
+ * 鍦↗SON搴忓垪鍖栨椂鑷姩鑴辨晱
  *
  * @author Deng
  * createData 2025/10/30 11:24
@@ -26,19 +26,19 @@ public class SensitiveJsonSerializer extends JsonSerializer<String> implements C
 
     @Override
     public void serialize(String value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        // 处理空值和空字符串
+        // 澶勭悊绌哄€煎拰绌哄瓧绗︿覆
         if (value == null || value.isEmpty()) {
             gen.writeString(value);
             return;
         }
 
-        // 如果未启用脱敏，直接返回原�
+        // 濡傛灉鏈惎鐢ㄨ劚鏁忥紝鐩存帴杩斿洖鍘燂拷
         if (!enabled) {
             gen.writeString(value);
             return;
         }
 
-        // 空指针检查：如果type为null，返回原值并记录警告
+        // 绌烘寚閽堟鏌ワ細濡傛灉type涓簄ull锛岃繑鍥炲師鍊煎苟璁板綍璀﹀憡
         if (type == null) {
             log.warn("SensitiveType is null, returning original value");
             gen.writeString(value);
@@ -46,16 +46,16 @@ public class SensitiveJsonSerializer extends JsonSerializer<String> implements C
         }
 
         try {
-            // 执行脱敏
+            // 鎵ц鑴辨晱
             String desensitizedValue = type.desensitize(value);
             gen.writeString(desensitizedValue);
 
-            // 记录脱敏操作（仅在debug级别，避免性能影响�
+            // 璁板綍鑴辨晱鎿嶄綔锛堜粎鍦╠ebug绾у埆锛岄伩鍏嶆€ц兘褰卞搷锟?
             if (log.isDebugEnabled()) {
                 log.debug("Desensitized field with type: {}", type);
             }
         } catch (Exception e) {
-            // 脱敏失败时返回原值并记录错误
+            // 鑴辨晱澶辫触鏃惰繑鍥炲師鍊煎苟璁板綍閿欒
             log.error("Failed to desensitize value with type: {}, error: {}", type, e.getMessage());
             gen.writeString(value);
         }
@@ -68,13 +68,13 @@ public class SensitiveJsonSerializer extends JsonSerializer<String> implements C
             return prov.findNullValueSerializer(null);
         }
 
-        // 获取字段上的@Sensitive注解
+        // 鑾峰彇瀛楁涓婄殑@Sensitive娉ㄨВ
         Sensitive sensitive = property.getAnnotation(Sensitive.class);
         if (sensitive == null) {
             return prov.findValueSerializer(property.getType(), property);
         }
 
-        // 创建新的序列化器实例
+        // 鍒涘缓鏂扮殑搴忓垪鍖栧櫒瀹炰緥
         SensitiveJsonSerializer serializer = new SensitiveJsonSerializer();
         serializer.type = sensitive.type();
         serializer.enabled = sensitive.enabled();

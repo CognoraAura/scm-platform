@@ -15,16 +15,16 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 读写分离管理端点
+ * 璇诲啓鍒嗙绠＄悊绔偣
  * <p>
- * 提供运行时管理能力：
- * - 查看从库状�
- * - 手动摘除/恢复从库
- * - 查看健康信息
+ * 鎻愪緵杩愯鏃剁鐞嗚兘鍔涳細
+ * - 鏌ョ湅浠庡簱鐘讹拷
+ * - 鎵嬪姩鎽橀櫎/鎭㈠浠庡簱
+ * - 鏌ョ湅鍋ュ悍淇℃伅
  * <p>
- * 访问路径�actuator/readwrite
+ * 璁块棶璺緞锟絘ctuator/readwrite
  * <p>
- * 注意：需�spring-boot-starter-actuator 依赖
+ * 娉ㄦ剰锛氶渶锟絪pring-boot-starter-actuator 渚濊禆
  *
  * @author Deng
  * @since 2025-12-16
@@ -37,7 +37,7 @@ public class ReadWriteEndpoint {
     private final SlaveHealthChecker healthChecker;
 
     /**
-     * 获取所有读写分离状�
+     * 鑾峰彇鎵€鏈夎鍐欏垎绂荤姸锟?
      * <p>
      * GET /actuator/readwrite
      */
@@ -58,7 +58,7 @@ public class ReadWriteEndpoint {
     }
 
     /**
-     * 获取指定组的状�
+     * 鑾峰彇鎸囧畾缁勭殑鐘讹拷
      * <p>
      * GET /actuator/readwrite/{groupName}
      */
@@ -77,7 +77,7 @@ public class ReadWriteEndpoint {
     }
 
     /**
-     * 手动摘除从库
+     * 鎵嬪姩鎽橀櫎浠庡簱
      * <p>
      * POST /actuator/readwrite with {"groupName": "xxx", "slaveName": "xxx", "action": "markUnavailable"}
      */
@@ -91,7 +91,7 @@ public class ReadWriteEndpoint {
     }
 
     /**
-     * 构建组信�
+     * 鏋勫缓缁勪俊锟?
      */
     private Map<String, Object> buildGroupInfo(String groupName) {
         Map<String, Object> groupInfo = new HashMap<>();
@@ -104,7 +104,7 @@ public class ReadWriteEndpoint {
     }
 
     /**
-     * 构建健康详情
+     * 鏋勫缓鍋ュ悍璇︽儏
      */
     private Map<String, Object> buildHealthDetails(String groupName) {
         Map<String, Object> healthDetails = new HashMap<>();

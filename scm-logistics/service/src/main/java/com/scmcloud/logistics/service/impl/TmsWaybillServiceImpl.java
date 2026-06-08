@@ -27,7 +27,7 @@ public class TmsWaybillServiceImpl extends ServiceImpl<TmsWaybillMapper, TmsWayb
 
     @Override
     public Page<TmsWaybill> pageList(int page, int size, String waybillNo, Integer status, String carrierId) {
-        log.debug("查询运单列表: page={}, size={}, waybillNo={}, status={}, carrierId={}", page, size, waybillNo, status, carrierId);
+        log.debug("鏌ヨ杩愬崟鍒楄〃: page={}, size={}, waybillNo={}, status={}, carrierId={}", page, size, waybillNo, status, carrierId);
 
         LambdaQueryWrapper<TmsWaybill> wrapper = Wrappers.lambdaQuery();
         if (StringUtils.hasText(waybillNo)) {
@@ -47,7 +47,7 @@ public class TmsWaybillServiceImpl extends ServiceImpl<TmsWaybillMapper, TmsWayb
 
     @Override
     public TmsWaybill getByWaybillNo(String waybillNo) {
-        log.debug("根据运单号查� waybillNo={}", waybillNo);
+        log.debug("鏍规嵁杩愬崟鍙锋煡锟?waybillNo={}", waybillNo);
         return lambdaQuery()
                 .eq(TmsWaybill::getWaybillNo, waybillNo)
                 .eq(TmsWaybill::getDeleted, false)
@@ -56,7 +56,7 @@ public class TmsWaybillServiceImpl extends ServiceImpl<TmsWaybillMapper, TmsWayb
 
     @Override
     public List<TmsWaybill> listByOrderId(String orderId) {
-        log.debug("根据订单ID查询运单: orderId={}", orderId);
+        log.debug("鏍规嵁璁㈠崟ID鏌ヨ杩愬崟: orderId={}", orderId);
         return lambdaQuery()
                 .eq(TmsWaybill::getOrderId, orderId)
                 .eq(TmsWaybill::getDeleted, false)
@@ -66,7 +66,7 @@ public class TmsWaybillServiceImpl extends ServiceImpl<TmsWaybillMapper, TmsWayb
 
     @Override
     public List<TmsWaybill> listByOrderNo(String orderNo) {
-        log.debug("根据订单号查询运� orderNo={}", orderNo);
+        log.debug("鏍规嵁璁㈠崟鍙锋煡璇㈣繍锟?orderNo={}", orderNo);
         return lambdaQuery()
                 .eq(TmsWaybill::getOrderNo, orderNo)
                 .eq(TmsWaybill::getDeleted, false)
@@ -77,7 +77,7 @@ public class TmsWaybillServiceImpl extends ServiceImpl<TmsWaybillMapper, TmsWayb
     @Override
     @Transactional(rollbackFor = Exception.class)
     public TmsWaybill createWaybill(TmsWaybill waybill) {
-        log.info("创建运单: orderNo={}, carrierId={}", waybill.getOrderNo(), waybill.getCarrierId());
+        log.info("鍒涘缓杩愬崟: orderNo={}, carrierId={}", waybill.getOrderNo(), waybill.getCarrierId());
 
         if (waybill.getId() == null) {
             waybill.setId(UUID.randomUUID().toString());
@@ -92,21 +92,21 @@ public class TmsWaybillServiceImpl extends ServiceImpl<TmsWaybillMapper, TmsWayb
 
         boolean success = save(waybill);
         if (!success) {
-            throw new RuntimeException("创建运单失败");
+            throw new RuntimeException("鍒涘缓杩愬崟澶辫触");
         }
 
-        log.info("运单创建成功: id={}, waybillNo={}", waybill.getId(), waybill.getWaybillNo());
+        log.info("杩愬崟鍒涘缓鎴愬姛: id={}, waybillNo={}", waybill.getId(), waybill.getWaybillNo());
         return waybill;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean updateStatus(String waybillId, Integer status, String operator) {
-        log.info("更新运单状� waybillId={}, status={}, operator={}", waybillId, status, operator);
+        log.info("鏇存柊杩愬崟鐘讹拷 waybillId={}, status={}, operator={}", waybillId, status, operator);
 
         TmsWaybill waybill = getById(waybillId);
         if (waybill == null) {
-            log.warn("运单不存� waybillId={}", waybillId);
+            log.warn("杩愬崟涓嶅瓨锟?waybillId={}", waybillId);
             return false;
         }
 
@@ -120,7 +120,7 @@ public class TmsWaybillServiceImpl extends ServiceImpl<TmsWaybillMapper, TmsWayb
 
         boolean success = updateById(waybill);
         if (success) {
-            log.info("运单状态更新成� waybillNo={}, status={}", waybill.getWaybillNo(), status);
+            log.info("杩愬崟鐘舵€佹洿鏂版垚锟?waybillNo={}, status={}", waybill.getWaybillNo(), status);
         }
         return success;
     }
@@ -128,11 +128,11 @@ public class TmsWaybillServiceImpl extends ServiceImpl<TmsWaybillMapper, TmsWayb
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean cancelWaybill(String waybillId, String reason, String operator) {
-        log.info("取消运单: waybillId={}, reason={}, operator={}", waybillId, reason, operator);
+        log.info("鍙栨秷杩愬崟: waybillId={}, reason={}, operator={}", waybillId, reason, operator);
 
         TmsWaybill waybill = getById(waybillId);
         if (waybill == null) {
-            log.warn("运单不存\u200b waybillId={}", waybillId);
+            log.warn("杩愬崟涓嶅瓨\u200b waybillId={}", waybillId);
             return false;
         }
 
@@ -156,7 +156,7 @@ public class TmsWaybillServiceImpl extends ServiceImpl<TmsWaybillMapper, TmsWayb
 
         boolean success = updateById(waybill);
         if (success) {
-            log.info("运单取消成功: waybillNo={}", waybill.getWaybillNo());
+            log.info("杩愬崟鍙栨秷鎴愬姛: waybillNo={}", waybill.getWaybillNo());
         }
         return success;
     }

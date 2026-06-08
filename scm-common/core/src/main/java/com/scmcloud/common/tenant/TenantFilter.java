@@ -15,14 +15,14 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 租户过滤�
- * 从请求头中提取租户ID，设置到 ThreadLocal
+ * 绉熸埛杩囨护锟?
+ * 浠庤姹傚ご涓彁鍙栫鎴稩D锛岃缃埌 ThreadLocal
 
- * 支持的租户ID来源（优先级从高到低）：
+ * 鏀寔鐨勭鎴稩D鏉ユ簮锛堜紭鍏堢骇浠庨珮鍒颁綆锛夛細
  * 1. HTTP Header: X-Tenant-Id
  * 2. HTTP Header: Tenant-Id
  * 3. Request Parameter: tenantId
- * 4. JWT Token 中的 tenant_id claim（需配合JWT解析�
+ * 4. JWT Token 涓殑 tenant_id claim锛堥渶閰嶅悎JWT瑙ｆ瀽锟?
  *
  * @author Claude Code
  * @since 2025-01-24
@@ -46,7 +46,7 @@ public class TenantFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         try {
-            // 提取租户ID
+            // 鎻愬彇绉熸埛ID
             UUID tenantId = extractTenantId(httpRequest);
 
             if (tenantId != null) {
@@ -55,47 +55,47 @@ public class TenantFilter implements Filter {
                         tenantId, httpRequest.getRequestURI());
             } else {
                 log.warn("No tenant ID found in request: {}", httpRequest.getRequestURI());
-                // 可以选择抛异常或允许继续（根据业务需求）
+                // 鍙互閫夋嫨鎶涘紓甯告垨鍏佽缁х画锛堟牴鎹笟鍔￠渶姹傦級
                 // throw new TenantContextHolder.TenantNotFoundException("Tenant ID is required");
             }
 
-            // 继续执行
+            // 缁х画鎵ц
             chain.doFilter(request, response);
         } finally {
-            // 清理 ThreadLocal，避免内存泄�
+            // 娓呯悊 ThreadLocal锛岄伩鍏嶅唴瀛樻硠锟?
             TenantContextHolder.clear();
         }
     }
 
     /**
-     * 从请求中提取租户ID
+     * 浠庤姹備腑鎻愬彇绉熸埛ID
 
-     * 优先级：
+     * 浼樺厛绾э細
      * 1. X-Tenant-Id header
      * 2. Tenant-Id header
      * 3. tenantId parameter
-     * 4. JWT token（如果已配置�
+     * 4. JWT token锛堝鏋滃凡閰嶇疆锟?
      */
     private UUID extractTenantId(HttpServletRequest request) {
-        // 1. �X-Tenant-Id header
+        // 1. 锟絏-Tenant-Id header
         String tenantIdStr = request.getHeader(HEADER_TENANT_ID);
 
-        // 2. �Tenant-Id header
+        // 2. 锟絋enant-Id header
         if (tenantIdStr == null || tenantIdStr.trim().isEmpty()) {
             tenantIdStr = request.getHeader(HEADER_TENANT_ID_ALT);
         }
 
-        // 3. 从请求参�
+        // 3. 浠庤姹傚弬锟?
         if (tenantIdStr == null || tenantIdStr.trim().isEmpty()) {
             tenantIdStr = request.getParameter(PARAM_TENANT_ID);
         }
 
-        // 4. �JWT Token 中提�
+        // 4. 锟絁WT Token 涓彁锟?
         if (tenantIdStr == null || tenantIdStr.trim().isEmpty()) {
             tenantIdStr = extractFromJwtToken(request);
         }
 
-        // 转换�UUID
+        // 杞崲锟経UID
         if (tenantIdStr != null && !tenantIdStr.trim().isEmpty()) {
             try {
                 return UUID.fromString(tenantIdStr.trim());
@@ -109,9 +109,9 @@ public class TenantFilter implements Filter {
     }
 
     /**
-     * 从JWT Token中提取租户ID
-     * 轻量级实现：Base64解码JWT payload，提�tenant_id claim
-     * 不做签名验证（签名验证由 JwtAuthenticationFilter 负责�
+     * 浠嶫WT Token涓彁鍙栫鎴稩D
+     * 杞婚噺绾у疄鐜帮細Base64瑙ｇ爜JWT payload锛屾彁锟絫enant_id claim
+     * 涓嶅仛绛惧悕楠岃瘉锛堢鍚嶉獙璇佺敱 JwtAuthenticationFilter 璐熻矗锟?
      */
     private String extractFromJwtToken(HttpServletRequest request) {
         String authHeader = request.getHeader(HEADER_AUTHORIZATION);

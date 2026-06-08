@@ -8,29 +8,29 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * WebAuthn 凭证Mapper接口
+ * WebAuthn 鍑瘉Mapper鎺ュ彛
  *
- * <p>该接口提供了对WebAuthn凭证数据的基本操作，包括�/p>
+ * <p>璇ユ帴鍙ｆ彁渚涗簡瀵筗ebAuthn鍑瘉鏁版嵁鐨勫熀鏈搷浣滐紝鍖呮嫭锟?p>
  * <ul>
- *   <li>查询用户的活跃凭�/li>
- *   <li>根据用户 ID和凭�ID查询特定凭证</li>
- *   <li>更新凭证的签名计数和使用时间</li>
- *   <li>更新凭证关联的设备名�/li>
- *   <li>禁用或删除凭�/li>
+ *   <li>鏌ヨ鐢ㄦ埛鐨勬椿璺冨嚟锟?li>
+ *   <li>鏍规嵁鐢ㄦ埛 ID鍜屽嚟锟絀D鏌ヨ鐗瑰畾鍑瘉</li>
+ *   <li>鏇存柊鍑瘉鐨勭鍚嶈鏁板拰浣跨敤鏃堕棿</li>
+ *   <li>鏇存柊鍑瘉鍏宠仈鐨勮澶囧悕锟?li>
+ *   <li>绂佺敤鎴栧垹闄ゅ嚟锟?li>
  * </ul>
  *
- * <p>WebAuthn是一种现代的身份验证标准，允许用户使用生物识别、安全密钥等进行无密码登录�/p>
+ * <p>WebAuthn鏄竴绉嶇幇浠ｇ殑韬唤楠岃瘉鏍囧噯锛屽厑璁哥敤鎴蜂娇鐢ㄧ敓鐗╄瘑鍒€佸畨鍏ㄥ瘑閽ョ瓑杩涜鏃犲瘑鐮佺櫥褰曪拷/p>
  */
 @Mapper
 public interface WebauthnCredentialMapper extends BaseMapper<WebauthnCredential> {
     /**
-     * 根据用户 ID查询所有活跃凭�
+     * 鏍规嵁鐢ㄦ埛 ID鏌ヨ鎵€鏈夋椿璺冨嚟锟?
      *
-     * <p>此方法用于获取指定用户的所有未被禁用的WebAuthn凭证�
-     * 结果按照创建时间倒序排列（最新的在前）�/p>
+     * <p>姝ゆ柟娉曠敤浜庤幏鍙栨寚瀹氱敤鎴风殑鎵€鏈夋湭琚鐢ㄧ殑WebAuthn鍑瘉锟?
+     * 缁撴灉鎸夌収鍒涘缓鏃堕棿鍊掑簭鎺掑垪锛堟渶鏂扮殑鍦ㄥ墠锛夛拷/p>
      *
-     * @param userId 用户ID，不能为�
-     * @return 用户的所有活跃凭证列表，如果不存在则返回空列�
+     * @param userId 鐢ㄦ埛ID锛屼笉鑳戒负锟?
+     * @return 鐢ㄦ埛鐨勬墍鏈夋椿璺冨嚟璇佸垪琛紝濡傛灉涓嶅瓨鍦ㄥ垯杩斿洖绌哄垪锟?
      */
     @Select("""
             SELECT * FROM webauthn_credential
@@ -40,14 +40,14 @@ public interface WebauthnCredentialMapper extends BaseMapper<WebauthnCredential>
     List<WebauthnCredential> findByUserId(@Param("userId") UUID userId);
 
     /**
-     * 根据用户 ID和凭�ID查询单个凭证
+     * 鏍规嵁鐢ㄦ埛 ID鍜屽嚟锟絀D鏌ヨ鍗曚釜鍑瘉
      *
-     * <p>此方法用于精确查找一个特定的WebAuthn凭证�
-     * 只有活跃状态（未被禁用）的凭证才会被返回�/p>
+     * <p>姝ゆ柟娉曠敤浜庣簿纭煡鎵句竴涓壒瀹氱殑WebAuthn鍑瘉锟?
+     * 鍙湁娲昏穬鐘舵€侊紙鏈绂佺敤锛夌殑鍑瘉鎵嶄細琚繑鍥烇拷/p>
      *
-     * @param userId 用户ID，不能为�
-     * @param credentialId 凭证ID，不能为�
-     * @return 匹配的凭证信息，如果不存在则返回null
+     * @param userId 鐢ㄦ埛ID锛屼笉鑳戒负锟?
+     * @param credentialId 鍑瘉ID锛屼笉鑳戒负锟?
+     * @return 鍖归厤鐨勫嚟璇佷俊鎭紝濡傛灉涓嶅瓨鍦ㄥ垯杩斿洖null
      */
     @Select("""
             SELECT * FROM webauthn_credential
@@ -58,14 +58,14 @@ public interface WebauthnCredentialMapper extends BaseMapper<WebauthnCredential>
                                              @Param("credentialId") String credentialId);
 
     /**
-     * 更新签名计数器和最后使用时�
+     * 鏇存柊绛惧悕璁℃暟鍣ㄥ拰鏈€鍚庝娇鐢ㄦ椂锟?
      *
-     * <p>每次成功使用凭证进行身份验证后调用此方法�
-     * 用于更新凭证的签名计数和最后使用时间戳�/p>
+     * <p>姣忔鎴愬姛浣跨敤鍑瘉杩涜韬唤楠岃瘉鍚庤皟鐢ㄦ鏂规硶锟?
+     * 鐢ㄤ簬鏇存柊鍑瘉鐨勭鍚嶈鏁板拰鏈€鍚庝娇鐢ㄦ椂闂存埑锟?p>
      *
-     * @param userId 用户ID，不能为�
-     * @param credentialId 凭证ID，不能为�
-     * @param signCount 新的签名计数，通常比之前的值大
+     * @param userId 鐢ㄦ埛ID锛屼笉鑳戒负锟?
+     * @param credentialId 鍑瘉ID锛屼笉鑳戒负锟?
+     * @param signCount 鏂扮殑绛惧悕璁℃暟锛岄€氬父姣斾箣鍓嶇殑鍊煎ぇ
      */
     @Update("""
             UPDATE webauthn_credential
@@ -77,14 +77,14 @@ public interface WebauthnCredentialMapper extends BaseMapper<WebauthnCredential>
                          @Param("signCount") Long signCount);
 
     /**
-     * 更新设备名称
+     * 鏇存柊璁惧鍚嶇О
      *
-     * <p>允许用户为其注册的凭证设置易于识别的设备名称�/p>
+     * <p>鍏佽鐢ㄦ埛涓哄叾娉ㄥ唽鐨勫嚟璇佽缃槗浜庤瘑鍒殑璁惧鍚嶇О锟?p>
      *
-     * @param userId 用户ID，不能为�
-     * @param credentialId 凭证ID，不能为�
-     * @param deviceName 新的设备名称，不能为�
-     * @return 影响的行数，正常情况下应�
+     * @param userId 鐢ㄦ埛ID锛屼笉鑳戒负锟?
+     * @param credentialId 鍑瘉ID锛屼笉鑳戒负锟?
+     * @param deviceName 鏂扮殑璁惧鍚嶇О锛屼笉鑳戒负锟?
+     * @return 褰卞搷鐨勮鏁帮紝姝ｅ父鎯呭喌涓嬪簲锟?
      */
     @Update("""
             UPDATE webauthn_credential
@@ -96,14 +96,14 @@ public interface WebauthnCredentialMapper extends BaseMapper<WebauthnCredential>
                          @Param("deviceName") String deviceName);
 
     /**
-     * 禁用凭证(软删�
+     * 绂佺敤鍑瘉(杞垹锟?
      *
-     * <p>当用户想要停用某个凭证而不完全删除它时使用�
-     * 此操作将凭证标记为非活跃状态，使其无法再用于身份验证�/p>
+     * <p>褰撶敤鎴锋兂瑕佸仠鐢ㄦ煇涓嚟璇佽€屼笉瀹屽叏鍒犻櫎瀹冩椂浣跨敤锟?
+     * 姝ゆ搷浣滃皢鍑瘉鏍囪涓洪潪娲昏穬鐘舵€侊紝浣垮叾鏃犳硶鍐嶇敤浜庤韩浠介獙璇侊拷/p>
      *
-     * @param userId 用户ID，不能为�
-     * @param credentialId 凭证ID，不能为�
-     * @return 影响的行数，正常情况下应�
+     * @param userId 鐢ㄦ埛ID锛屼笉鑳戒负锟?
+     * @param credentialId 鍑瘉ID锛屼笉鑳戒负锟?
+     * @return 褰卞搷鐨勮鏁帮紝姝ｅ父鎯呭喌涓嬪簲锟?
      */
     @Update("""
             UPDATE webauthn_credential
@@ -114,14 +114,14 @@ public interface WebauthnCredentialMapper extends BaseMapper<WebauthnCredential>
                           @Param("credentialId") String credentialId);
 
     /**
-     * 删除凭证(硬删�
+     * 鍒犻櫎鍑瘉(纭垹锟?
      *
-     * <p>从数据库中永久删除指定的凭证记录�
-     * 注意：这是一个不可逆的操作�/p>
+     * <p>浠庢暟鎹簱涓案涔呭垹闄ゆ寚瀹氱殑鍑瘉璁板綍锟?
+     * 娉ㄦ剰锛氳繖鏄竴涓笉鍙€嗙殑鎿嶄綔锟?p>
      *
-     * @param userId 用户ID，不能为�
-     * @param credentialId 凭证ID，不能为�
-     * @return 影响的行数，正常情况下应�
+     * @param userId 鐢ㄦ埛ID锛屼笉鑳戒负锟?
+     * @param credentialId 鍑瘉ID锛屼笉鑳戒负锟?
+     * @return 褰卞搷鐨勮鏁帮紝姝ｅ父鎯呭喌涓嬪簲锟?
      */
     @Delete("""
             DELETE FROM webauthn_credential
@@ -131,13 +131,13 @@ public interface WebauthnCredentialMapper extends BaseMapper<WebauthnCredential>
                                 @Param("credentialId") String credentialId);
 
     /**
-     * 列出用户所有活跃凭�按最后使用时间排�
+     * 鍒楀嚭鐢ㄦ埛鎵€鏈夋椿璺冨嚟锟芥寜鏈€鍚庝娇鐢ㄦ椂闂存帓锟?
      *
-     * <p>获取用户的所有活跃凭证，并按照最后使用时间倒序排列�
-     * 最近使用的凭证排在前面，从未使用过的凭证按创建时间倒序排列�/p>
+     * <p>鑾峰彇鐢ㄦ埛鐨勬墍鏈夋椿璺冨嚟璇侊紝骞舵寜鐓ф渶鍚庝娇鐢ㄦ椂闂村€掑簭鎺掑垪锟?
+     * 鏈€杩戜娇鐢ㄧ殑鍑瘉鎺掑湪鍓嶉潰锛屼粠鏈娇鐢ㄨ繃鐨勫嚟璇佹寜鍒涘缓鏃堕棿鍊掑簭鎺掑垪锟?p>
      *
-     * @param userId 用户ID，不能为�
-     * @return 用户的所有活跃凭证列表，按使用频率排序，如果不存在则返回空列�
+     * @param userId 鐢ㄦ埛ID锛屼笉鑳戒负锟?
+     * @return 鐢ㄦ埛鐨勬墍鏈夋椿璺冨嚟璇佸垪琛紝鎸変娇鐢ㄩ鐜囨帓搴忥紝濡傛灉涓嶅瓨鍦ㄥ垯杩斿洖绌哄垪锟?
      */
     @Select("""
             SELECT * FROM webauthn_credential

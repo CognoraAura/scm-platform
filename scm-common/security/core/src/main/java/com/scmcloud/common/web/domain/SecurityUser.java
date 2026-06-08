@@ -23,7 +23,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * 自定�UserDetails
+ * 鑷畾锟経serDetails
  *
  * @author Deng
  * createData 2025/10/14 14:52
@@ -49,7 +49,7 @@ public class SecurityUser implements UserDetails {
     private Set<String> permissions = Collections.emptySet();
     private String twoFactorSecret;
 
-    // 安全相关字段
+    // 瀹夊叏鐩稿叧瀛楁
     private Boolean twoFactorEnabled;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -63,7 +63,7 @@ public class SecurityUser implements UserDetails {
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // 合并角色和权限，防御空集�
+        // 鍚堝苟瑙掕壊鍜屾潈闄愶紝闃插尽绌洪泦锟?
         Set<GrantedAuthority> authorities = (roles != null ? roles : Collections.<String>emptySet()).stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toSet());
@@ -92,7 +92,7 @@ public class SecurityUser implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return this.status != 2; // 2表示锁定
+        return this.status != 2; // 2琛ㄧず閿佸畾
     }
 
     @Override
@@ -105,6 +105,6 @@ public class SecurityUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.status == 1; // 1表示启用
+        return this.status == 1; // 1琛ㄧず鍚敤
     }
 }

@@ -11,13 +11,13 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
 /**
- * MyBatis SQL 路由拦截�
+ * MyBatis SQL 璺敱鎷︽埅锟?
  * <p>
- * 参考：
- * - 美团 Zebra ZebraInterceptor
+ * 鍙傝€冿細
+ * - 缇庡洟 Zebra ZebraInterceptor
  * - Apache ShardingSphere SQLRouteExecutor
  * <p>
- * �SQL 执行前解�SQL 类型�Hint，设置路由上下文
+ * 锟絊QL 鎵ц鍓嶈В锟絊QL 绫诲瀷锟紿int锛岃缃矾鐢变笂涓嬫枃
  *
  * @author Deng
  * @since 2025-12-16
@@ -33,7 +33,7 @@ public class SqlRoutingInterceptor implements Interceptor {
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
-        // 如果已经有显式路由设置，不再处理
+        // 濡傛灉宸茬粡鏈夋樉寮忚矾鐢辫缃紝涓嶅啀澶勭悊
         if (ReadWriteRoutingContext.current() != ReadWriteRoutingContext.RoutingType.AUTO) {
             return invocation.proceed();
         }
@@ -41,33 +41,33 @@ public class SqlRoutingInterceptor implements Interceptor {
         MappedStatement ms = (MappedStatement) invocation.getArgs()[0];
         Object parameter = invocation.getArgs()[1];
 
-        // 获取 SQL
+        // 鑾峰彇 SQL
         BoundSql boundSql = ms.getBoundSql(parameter);
         String sql = boundSql.getSql();
 
-        // 1. 解析 Hint
+        // 1. 瑙ｆ瀽 Hint
         SqlTypeParser.RoutingHint hint = SqlTypeParser.parseHint(sql);
         if (hint.type() != SqlTypeParser.RoutingHint.HintType.NONE) {
             return executeWithHint(invocation, hint);
         }
 
-        // 2. 根据 MyBatis SqlCommandType 判断
+        // 2. 鏍规嵁 MyBatis SqlCommandType 鍒ゆ柇
         SqlCommandType commandType = ms.getSqlCommandType();
         if (commandType == SqlCommandType.SELECT) {
-            // 进一步检查是否有 FOR UPDATE
+            // 杩涗竴姝ユ鏌ユ槸鍚︽湁 FOR UPDATE
             SqlTypeParser.SqlType sqlType = SqlTypeParser.parse(sql);
             if (sqlType == SqlTypeParser.SqlType.WRITE) {
-                // SELECT ... FOR UPDATE，走主库
+                // SELECT ... FOR UPDATE锛岃蛋涓诲簱
                 log.debug("[SQL-Routing] Detected SELECT FOR UPDATE, routing to MASTER");
                 return executeWithMaster(invocation);
             }
 
-            // 普�SELECT，走从库
+            // 鏅拷SELECT锛岃蛋浠庡簱
             log.debug("[SQL-Routing] Detected SELECT, routing to SLAVE");
             return executeWithSlave(invocation);
         }
 
-        // INSERT/UPDATE/DELETE，走主库并标记写操作
+        // INSERT/UPDATE/DELETE锛岃蛋涓诲簱骞舵爣璁板啓鎿嶄綔
         log.debug("[SQL-Routing] Detected {} operation, routing to MASTER", commandType);
         return executeWithMasterAndMarkWrite(invocation);
     }
@@ -107,7 +107,7 @@ public class SqlRoutingInterceptor implements Interceptor {
         ReadWriteRoutingContext.push(ReadWriteRoutingContext.RoutingType.MASTER);
         try {
             Object result = invocation.proceed();
-            // 写操作成功后标记
+            // 鍐欐搷浣滄垚鍔熷悗鏍囪
             ReadWriteRoutingContext.markWrite();
             return result;
         } finally {
@@ -121,7 +121,7 @@ public class SqlRoutingInterceptor implements Interceptor {
             return invocation.proceed();
         } finally {
             ReadWriteRoutingContext.pop();
-            ReadWriteRoutingContext.specifySlave(null); // 清除指定的从�
+            ReadWriteRoutingContext.specifySlave(null); // 娓呴櫎鎸囧畾鐨勪粠锟?
         }
     }
 

@@ -14,7 +14,7 @@ import java.util.Locale;
 import java.util.Properties;
 
 /**
- * MyBatis拦截�- 自动添加数据权限过滤
+ * MyBatis鎷︽埅锟? 鑷姩娣诲姞鏁版嵁鏉冮檺杩囨护
  *
  * @author Deng
  * createData 2025/10/15 14:32
@@ -36,7 +36,7 @@ public class DataScopeInterceptor implements Interceptor {
         StatementHandler statementHandler = (StatementHandler) invocation.getTarget();
         MetaObject metaObject = SystemMetaObject.forObject(statementHandler);
 
-        // 获取 SQL过滤条件
+        // 鑾峰彇 SQL杩囨护鏉′欢
         var filter = DataScopeContextHolder.get();
         if (filter != null && filter.getClause() != null && !filter.getClause().isEmpty()
                 && isSafeFilter(filter.getClause()) && isSelectStatement(metaObject)) {
@@ -46,7 +46,7 @@ public class DataScopeInterceptor implements Interceptor {
             String newSql = appendFilter(originalSql, filter.getClause());
 
             metaObject.setValue("delegate.boundSql.sql", newSql);
-            // 追加参数以支�#{...} 占位�
+            // 杩藉姞鍙傛暟浠ユ敮锟?{...} 鍗犱綅锟?
             filter.getParams().forEach(boundSql::setAdditionalParameter);
 
             log.debug("Data scope filter applied: {}", filter.getClause());

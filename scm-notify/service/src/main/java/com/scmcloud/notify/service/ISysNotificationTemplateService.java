@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * <p>
- * 通知模板�服务�
+ * 閫氱煡妯℃澘锟芥湇鍔★拷
  * </p>
  *
  * @author deng

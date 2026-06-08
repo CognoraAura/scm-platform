@@ -7,9 +7,9 @@ import com.scmcloud.finance.api.request.FreightRequest;
 import com.scmcloud.finance.api.request.SettlementRequest;
 
 /**
- * 财务服务 Dubbo 接口
+ * 璐㈠姟鏈嶅姟 Dubbo 鎺ュ彛
  *
- * <p>提供结算、发票、运费计算等核心功能，供其他微服务通过 RPC 调用�
+ * <p>鎻愪緵缁撶畻銆佸彂绁ㄣ€佽繍璐硅绠楃瓑鏍稿績鍔熻兘锛屼緵鍏朵粬寰湇鍔￠€氳繃 RPC 璋冪敤锟?
  *
  * @author SCM Platform Team
  * @since 2025-12-26
@@ -17,26 +17,26 @@ import com.scmcloud.finance.api.request.SettlementRequest;
 public interface FinanceDubboService {
 
     /**
-     * 创建结算�
+     * 鍒涘缓缁撶畻锟?
      *
-     * @param request 结算请求
-     * @return 结算单信�
+     * @param request 缁撶畻璇锋眰
+     * @return 缁撶畻鍗曚俊锟?
      */
     SettlementVO createSettlement(SettlementRequest request);
 
     /**
-     * 根据 ID 查询发票
+     * 鏍规嵁 ID 鏌ヨ鍙戠エ
      *
-     * @param id 发票 ID
-     * @return 发票信息，不存在时返�null
+     * @param id 鍙戠エ ID
+     * @return 鍙戠エ淇℃伅锛屼笉瀛樺湪鏃惰繑锟絥ull
      */
     InvoiceVO getInvoiceById(Long id);
 
     /**
-     * 计算运费
+     * 璁＄畻杩愯垂
      *
-     * @param request 运费计算请求
-     * @return 运费计算结果
+     * @param request 杩愯垂璁＄畻璇锋眰
+     * @return 杩愯垂璁＄畻缁撴灉
      */
     FreightResult calculateFreight(FreightRequest request);
 }

@@ -8,10 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 /**
- * 角色同步执行�
+ * 瑙掕壊鍚屾鎵ц锟?
  * <p>
- * 独立�Bean，用于执行跨库事务操作�
- * 避免 @Transactional 自调用问�
+ * 鐙珛锟紹ean锛岀敤浜庢墽琛岃法搴撲簨鍔℃搷浣滐拷
+ * 閬垮厤 @Transactional 鑷皟鐢ㄩ棶锟?
  *
  * @author Deng
  * @since 2025-12-16
@@ -21,23 +21,23 @@ import java.util.UUID;
 public class RoleSyncExecutor {
 
     /**
-     * 同步角色信息�approval �
+     * 鍚屾瑙掕壊淇℃伅锟絘pproval 锟?
      *
-     * @param roleId   角色 ID
-     * @param roleName 角色名称
-     * @param roleCode 角色编码
+     * @param roleId   瑙掕壊 ID
+     * @param roleName 瑙掕壊鍚嶇О
+     * @param roleCode 瑙掕壊缂栫爜
      */
     @DS("approval")
     @Transactional(rollbackFor = Exception.class)
     public void syncToApprovalDb(UUID roleId, String roleName, String roleCode) {
-        // 更新包含该角色的审批记录�role_names 数组
+        // 鏇存柊鍖呭惈璇ヨ鑹茬殑瀹℃壒璁板綍锟絩ole_names 鏁扮粍
         log.debug("[RoleSync] Would update approval records for role: {}, name: {}", roleId, roleName);
     }
 
     /**
-     * 标记角色�approval 库中已删�
+     * 鏍囪瑙掕壊锟絘pproval 搴撲腑宸插垹锟?
      *
-     * @param roleId 角色 ID
+     * @param roleId 瑙掕壊 ID
      */
     @DS("approval")
     @Transactional(rollbackFor = Exception.class)

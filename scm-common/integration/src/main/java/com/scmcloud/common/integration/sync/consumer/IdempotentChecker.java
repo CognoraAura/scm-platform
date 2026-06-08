@@ -8,9 +8,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import java.time.Duration;
 
 /**
- * 幂等性检查器
+ * 骞傜瓑鎬ф鏌ュ櫒
  * <p>
- * 基于 Redis 实现消息去重，防止重复消�
+ * 鍩轰簬 Redis 瀹炵幇娑堟伅鍘婚噸锛岄槻姝㈤噸澶嶆秷锟?
  *
  * @author Deng
  * @since 2025-12-16
@@ -22,12 +22,12 @@ public class IdempotentChecker {
     private final DataSyncProperties.IdempotentConfig config;
 
     /**
-     * 尝试获取处理�
+     * 灏濊瘯鑾峰彇澶勭悊锟?
      * <p>
-     * 使用 Redis SETNX 实现分布式锁语义
+     * 浣跨敤 Redis SETNX 瀹炵幇鍒嗗竷寮忛攣璇箟
      *
-     * @param eventId 事件 ID
-     * @return true 如果获取成功（首次处理），false 如果已处理过
+     * @param eventId 浜嬩欢 ID
+     * @return true 濡傛灉鑾峰彇鎴愬姛锛堥娆″鐞嗭級锛宖alse 濡傛灉宸插鐞嗚繃
      */
     public boolean tryAcquire(String eventId) {
         if (!config.isEnabled()) {
@@ -48,9 +48,9 @@ public class IdempotentChecker {
     }
 
     /**
-     * 标记处理完成
+     * 鏍囪澶勭悊瀹屾垚
      *
-     * @param eventId 事件 ID
+     * @param eventId 浜嬩欢 ID
      */
     public void markCompleted(String eventId) {
         if (!config.isEnabled()) {
@@ -63,9 +63,9 @@ public class IdempotentChecker {
     }
 
     /**
-     * 标记处理失败（释放锁，允许重试）
+     * 鏍囪澶勭悊澶辫触锛堥噴鏀鹃攣锛屽厑璁搁噸璇曪級
      *
-     * @param eventId 事件 ID
+     * @param eventId 浜嬩欢 ID
      */
     public void markFailed(String eventId) {
         if (!config.isEnabled()) {
@@ -78,10 +78,10 @@ public class IdempotentChecker {
     }
 
     /**
-     * 检查是否已处理
+     * 妫€鏌ユ槸鍚﹀凡澶勭悊
      *
-     * @param eventId 事件 ID
-     * @return true 如果已处�
+     * @param eventId 浜嬩欢 ID
+     * @return true 濡傛灉宸插锟?
      */
     public boolean isProcessed(String eventId) {
         if (!config.isEnabled()) {

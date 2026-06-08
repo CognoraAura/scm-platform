@@ -3,7 +3,7 @@ package com.scmcloud.common.log.annotation;
 import java.lang.annotation.*;
 
 /**
- * 审计日志注解
+ * 瀹¤鏃ュ織娉ㄨВ
  *
  * @author Deng
  * createData 2025/10/14 17:28
@@ -15,27 +15,27 @@ import java.lang.annotation.*;
 public @interface AuditLog {
 
     /**
-     * 操作描述
+     * 鎿嶄綔鎻忚堪
      */
     String operation() default "";
 
     /**
-     * 业务类型
+     * 涓氬姟绫诲瀷
      */
     String businessType() default "";
 
     /**
-     * 风险等级: 1-� 2-� 3-� 4-极高
+     * 椋庨櫓绛夌骇: 1-锟?2-锟?3-锟?4-鏋侀珮
      */
     int riskLevel() default 1;
 
     /**
-     * 是否记录请求参数
+     * 鏄惁璁板綍璇锋眰鍙傛暟
      */
     boolean recordParams() default true;
 
     /**
-     * 是否记录响应结果
+     * 鏄惁璁板綍鍝嶅簲缁撴灉
      */
     boolean recordResult() default false;
 }

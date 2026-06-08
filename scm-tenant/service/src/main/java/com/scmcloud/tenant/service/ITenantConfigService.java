@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- * 租户配置�服务�
+ * 绉熸埛閰嶇疆锟芥湇鍔★拷
  * </p>
  *
  * @author deng

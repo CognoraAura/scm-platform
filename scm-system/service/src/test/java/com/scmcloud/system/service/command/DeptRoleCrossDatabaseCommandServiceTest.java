@@ -15,7 +15,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**
- * DeptRoleCrossDatabaseCommandService 单元测试
+ * DeptRoleCrossDatabaseCommandService 鍗曞厓娴嬭瘯
  *
  * @author Deng
  * @since 2025-01-16
@@ -39,7 +39,7 @@ class DeptRoleCrossDatabaseCommandServiceTest {
     }
 
     // ========================================
-    // 部门-角色关联写操作测�
+    // 閮ㄩ棬-瑙掕壊鍏宠仈鍐欐搷浣滄祴锟?
     // ========================================
 
     @Test
@@ -119,7 +119,7 @@ class DeptRoleCrossDatabaseCommandServiceTest {
     }
 
     // ========================================
-    // 事务回滚测试
+    // 浜嬪姟鍥炴粴娴嬭瘯
     // ========================================
 
     @Test
@@ -152,7 +152,7 @@ class DeptRoleCrossDatabaseCommandServiceTest {
     }
 
     // ========================================
-    // 边界条件测试
+    // 杈圭晫鏉′欢娴嬭瘯
     // ========================================
 
     @Test
@@ -205,7 +205,7 @@ class DeptRoleCrossDatabaseCommandServiceTest {
     }
 
     // ========================================
-    // 集成场景测试
+    // 闆嗘垚鍦烘櫙娴嬭瘯
     // ========================================
 
     @Test
@@ -257,7 +257,7 @@ class DeptRoleCrossDatabaseCommandServiceTest {
     }
 
     // ========================================
-    // 性能和并发测�
+    // 鎬ц兘鍜屽苟鍙戞祴锟?
     // ========================================
 
     @Test
@@ -294,7 +294,7 @@ class DeptRoleCrossDatabaseCommandServiceTest {
     }
 
     // ========================================
-    // 错误处理测试
+    // 閿欒澶勭悊娴嬭瘯
     // ========================================
 
     @Test
@@ -329,7 +329,7 @@ class DeptRoleCrossDatabaseCommandServiceTest {
     }
 
     // ========================================
-    // 数据一致性测�
+    // 鏁版嵁涓€鑷存€ф祴锟?
     // ========================================
 
     @Test

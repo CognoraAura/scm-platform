@@ -5,7 +5,7 @@ import com.scmcloud.purchase.domain.entity.PurOrderItem;
 
 /**
  * <p>
- * 采购订单明细�Mapper 接口
+ * 閲囪喘璁㈠崟鏄庣粏锟組apper 鎺ュ彛
  * </p>
  *
  * @author deng

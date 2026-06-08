@@ -21,7 +21,7 @@ public class SysNotificationAuditServiceImpl extends ServiceImpl<SysNotification
         implements ISysNotificationAuditService {
 
     public SysNotificationAudit createAudit(SysNotificationAudit entity) {
-        log.info("创建通知审计: userId={}, channel={}, templateCode={}", entity.getUserId(), entity.getChannel(), entity.getTemplateCode());
+        log.info("鍒涘缓閫氱煡瀹¤: userId={}, channel={}, templateCode={}", entity.getUserId(), entity.getChannel(), entity.getTemplateCode());
         entity.setId(UUID.randomUUID().toString());
         entity.setCreatedAt(LocalDateTime.now());
         if (entity.getStatus() == null) {
@@ -34,7 +34,7 @@ public class SysNotificationAuditServiceImpl extends ServiceImpl<SysNotification
             entity.setMaxRetries(3);
         }
         save(entity);
-        log.info("通知审计创建成功: id={}", entity.getId());
+        log.info("閫氱煡瀹¤鍒涘缓鎴愬姛: id={}", entity.getId());
         return entity;
     }
 
@@ -45,7 +45,7 @@ public class SysNotificationAuditServiceImpl extends ServiceImpl<SysNotification
     }
 
     public boolean deleteById(String id) {
-        log.info("删除通知审计: id={}", id);
+        log.info("鍒犻櫎閫氱煡瀹¤: id={}", id);
         return removeById(id);
     }
 
@@ -64,24 +64,24 @@ public class SysNotificationAuditServiceImpl extends ServiceImpl<SysNotification
     }
 
     public boolean sendNotification(String id) {
-        log.info("发送通知: id={}", id);
+        log.info("鍙戦€侀€氱煡: id={}", id);
         SysNotificationAudit audit = getById(id);
         if (audit == null) {
-            log.warn("通知审计不存� id={}", id);
+            log.warn("閫氱煡瀹¤涓嶅瓨锟?id={}", id);
             return false;
         }
         audit.setStatus("SENT");
         audit.setSentAt(LocalDateTime.now());
         boolean success = updateById(audit);
         if (success) {
-            log.info("通知发送成� id={}", id);
+            log.info("閫氱煡鍙戦€佹垚锟?id={}", id);
         }
         return success;
     }
 
     public Page<SysNotificationAudit> pageQuery(int page, int size, String userId,
                                                  String channel, String status) {
-        log.debug("分页查询通知审计: page={}, size={}, userId={}, channel={}, status={}",
+        log.debug("鍒嗛〉鏌ヨ閫氱煡瀹¤: page={}, size={}, userId={}, channel={}, status={}",
                 page, size, userId, channel, status);
 
         LambdaQueryWrapper<SysNotificationAudit> wrapper = Wrappers.lambdaQuery();

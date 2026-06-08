@@ -8,10 +8,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * WebAuthn 凭证转换�
+ * WebAuthn 鍑瘉杞崲锟?
  * <p>
- * 实现Entity和DTO之间的转�
- * 隐藏敏感信息，保护数据安�
+ * 瀹炵幇Entity鍜孌TO涔嬮棿鐨勮浆锟?
+ * 闅愯棌鏁忔劅淇℃伅锛屼繚鎶ゆ暟鎹畨锟?
  *
  * @author system
  * @since 2025-11-27
@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 @Component
 public class WebauthnCredentialConverter {
     /**
-     * 将实体转换为DTO
-     * 移除敏感信息（公钥等�
+     * 灏嗗疄浣撹浆鎹负DTO
+     * 绉婚櫎鏁忔劅淇℃伅锛堝叕閽ョ瓑锟?
      *
-     * @param entity 实体对象
-     * @return DTO 对象
+     * @param entity 瀹炰綋瀵硅薄
+     * @return DTO 瀵硅薄
      */
     public WebauthnCredentialDTO toDTO(WebauthnCredential entity) {
         if (entity == null) {
@@ -45,10 +45,10 @@ public class WebauthnCredentialConverter {
     }
 
     /**
-     * 批量转换
+     * 鎵归噺杞崲
      *
-     * @param entities 实体列表
-     * @return DTO 列表
+     * @param entities 瀹炰綋鍒楄〃
+     * @return DTO 鍒楄〃
      */
     public List<WebauthnCredentialDTO> toDTOList(List<WebauthnCredential> entities) {
         if (entities == null || entities.isEmpty()) {
@@ -60,11 +60,11 @@ public class WebauthnCredentialConverter {
     }
 
     /**
-     * 将注册请求转换为实体
+     * 灏嗘敞鍐岃姹傝浆鎹负瀹炰綋
      *
-     * @param request 注册请求
-     * @param userId  用户 ID
-     * @return 实体对象
+     * @param request 娉ㄥ唽璇锋眰
+     * @param userId  鐢ㄦ埛 ID
+     * @return 瀹炰綋瀵硅薄
      */
     public WebauthnCredential toEntity(WebauthnRegistrationRequest request, UUID userId) {
         if (request == null) {
@@ -76,11 +76,11 @@ public class WebauthnCredentialConverter {
         entity.setUserId(userId);
         entity.setPublicKeyPem(request.getPublicKeyPem());
         entity.setAlg(request.getAlgorithm());
-        entity.setSignCount(0L); // 初始计数�
+        entity.setSignCount(0L); // 鍒濆璁℃暟锟?
         entity.setDeviceName(request.getDeviceName());
         entity.setAaguid(request.getAaguid());
         entity.setTransports(request.getTransports() != null ? request.getTransports().split(",") : null);
-        entity.setIsActive(true); // 默认启用
+        entity.setIsActive(true); // 榛樿鍚敤
 
         return entity;
     }

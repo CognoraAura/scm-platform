@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 /**
- * OAuth2 登出控制�
- * 提供 OAuth2 授权撤销功能
+ * OAuth2 鐧诲嚭鎺у埗锟?
+ * 鎻愪緵 OAuth2 鎺堟潈鎾ら攢鍔熻兘
  *
  * @author Deng
  * @since 2025-11-10
@@ -37,7 +37,7 @@ public class OAuth2LogoutController {
             @RequestHeader("Authorization") String authHeader,
             @RequestParam(required = false) String clientId) {
 
-        // 验证并解�Token
+        // 楠岃瘉骞惰В锟絋oken
         if (!StringUtils.hasText(authHeader) || !authHeader.startsWith(BEARER_PREFIX)) {
             log.warn("Invalid authorization header format");
             return ApiResponse.fail(400, "Invalid authorization header");
@@ -52,7 +52,7 @@ public class OAuth2LogoutController {
         UUID userId = jwtUtils.getUserIdFromToken(accessToken);
 
         if (StringUtils.hasText(clientId)) {
-            // 撤销特定客户端的授权
+            // 鎾ら攢鐗瑰畾瀹㈡埛绔殑鎺堟潈
             OAuth2Authorization authorization =
                     authorizationService.findByToken(accessToken, OAuth2TokenType.ACCESS_TOKEN);
             if (authorization != null) {
@@ -62,7 +62,7 @@ public class OAuth2LogoutController {
                 log.warn("OAuth2 logout: authorization not found for userId={} clientId={}", userId, clientId);
             }
         } else {
-            // 撤销所有授�全局登出)
+            // 鎾ら攢鎵€鏈夋巿锟藉叏灞€鐧诲嚭)
             jwtUtils.revokeAllUserTokens(userId);
             log.info("OAuth2 global logout: revoked all tokens for userId={}", userId);
         }

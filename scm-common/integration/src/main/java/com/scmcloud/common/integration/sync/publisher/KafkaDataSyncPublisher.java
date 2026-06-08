@@ -17,13 +17,13 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Kafka 数据同步事件发布�
+ * Kafka 鏁版嵁鍚屾浜嬩欢鍙戝竷锟?
  * <p>
- * 特性：
- * - 分布式追踪集成（OpenTelemetry�
- * - Prometheus 指标监控
- * - 死信队列支持
- * - 批量发布优化
+ * 鐗规€э細
+ * - 鍒嗗竷寮忚拷韪泦鎴愶紙OpenTelemetry锟?
+ * - Prometheus 鎸囨爣鐩戞帶
+ * - 姝讳俊闃熷垪鏀寔
+ * - 鎵归噺鍙戝竷浼樺寲
  *
  * @author Deng
  * @since 2025-12-16

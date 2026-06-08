@@ -5,7 +5,7 @@ import com.scmcloud.order.domain.entity.OrdStatusHistory;
 
 /**
  * <p>
- * 订单状态流转历�Mapper 接口
+ * 璁㈠崟鐘舵€佹祦杞巻锟組apper 鎺ュ彛
  * </p>
  *
  * @author deng

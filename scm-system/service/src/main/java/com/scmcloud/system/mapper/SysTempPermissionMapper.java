@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 临时权限�Mapper 接口
+ * 涓存椂鏉冮檺锟組apper 鎺ュ彛
  *
  * @author Deng
  * @since 2025-12-17
@@ -22,7 +22,7 @@ import java.util.UUID;
 public interface SysTempPermissionMapper extends BaseMapper<SysTempPermission> {
 
     /**
-     * 查询用户有效的临时权�
+     * 鏌ヨ鐢ㄦ埛鏈夋晥鐨勪复鏃舵潈锟?
      */
     @Select("""
             SELECT * FROM sys_temp_permission
@@ -34,7 +34,7 @@ public interface SysTempPermissionMapper extends BaseMapper<SysTempPermission> {
     List<SysTempPermission> findEffectiveByUserId(@Param("userId") UUID userId);
 
     /**
-     * 查询用户有效的临时权�ID 列表
+     * 鏌ヨ鐢ㄦ埛鏈夋晥鐨勪复鏃舵潈锟絀D 鍒楄〃
      */
     @Select("""
             SELECT permission_id FROM sys_temp_permission
@@ -46,7 +46,7 @@ public interface SysTempPermissionMapper extends BaseMapper<SysTempPermission> {
     List<UUID> findEffectivePermissionIdsByUserId(@Param("userId") UUID userId);
 
     /**
-     * 查询即将过期的临时权限（用于清理任务�
+     * 鏌ヨ鍗冲皢杩囨湡鐨勪复鏃舵潈闄愶紙鐢ㄤ簬娓呯悊浠诲姟锟?
      */
     @Select("""
             SELECT * FROM sys_temp_permission
@@ -56,7 +56,7 @@ public interface SysTempPermissionMapper extends BaseMapper<SysTempPermission> {
     List<SysTempPermission> findExpired();
 
     /**
-     * 禁用过期的临时权�
+     * 绂佺敤杩囨湡鐨勪复鏃舵潈锟?
      */
     @Update("""
             UPDATE sys_temp_permission
@@ -67,7 +67,7 @@ public interface SysTempPermissionMapper extends BaseMapper<SysTempPermission> {
     int disableExpired();
 
     /**
-     * 根据审批 ID 查询临时权限
+     * 鏍规嵁瀹℃壒 ID 鏌ヨ涓存椂鏉冮檺
      */
     @Select("""
             SELECT * FROM sys_temp_permission
@@ -76,9 +76,9 @@ public interface SysTempPermissionMapper extends BaseMapper<SysTempPermission> {
     List<SysTempPermission> findByApprovalId(@Param("approvalId") UUID approvalId);
 
     /**
-     * 统计正在使用指定权限的临时授权数�
+     * 缁熻姝ｅ湪浣跨敤鎸囧畾鏉冮檺鐨勪复鏃舵巿鏉冩暟锟?
      * <p>
-     * 用于权限删除前检查，防止意外删除正在被使用的权限
+     * 鐢ㄤ簬鏉冮檺鍒犻櫎鍓嶆鏌ワ紝闃叉鎰忓鍒犻櫎姝ｅ湪琚娇鐢ㄧ殑鏉冮檺
      */
     @Select("""
             SELECT COUNT(*) FROM sys_temp_permission

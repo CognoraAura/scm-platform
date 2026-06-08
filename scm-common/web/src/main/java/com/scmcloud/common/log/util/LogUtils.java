@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 日志工具�
+ * 鏃ュ織宸ュ叿锟?
  *
  * @author Deng
  * createData 2025/10/24 14:03
@@ -23,7 +23,7 @@ public class LogUtils {
     private static final String KEY_REQUEST_ID = "requestId";
 
     /**
-     * 设置用户上下�
+     * 璁剧疆鐢ㄦ埛涓婁笅锟?
      */
     public static void setUserContext(Long userId, String username) {
         if (userId != null) {
@@ -35,7 +35,7 @@ public class LogUtils {
     }
 
     /**
-     * 设置追踪 ID
+     * 璁剧疆杩借釜 ID
      */
     public static void setTraceId(String traceId) {
         if (StrUtil.isNotBlank(traceId)) {
@@ -44,7 +44,7 @@ public class LogUtils {
     }
 
     /**
-     * 设置请求 ID
+     * 璁剧疆璇锋眰 ID
      */
     public static void setRequestId(String requestId) {
         if (StrUtil.isNotBlank(requestId)) {
@@ -53,14 +53,14 @@ public class LogUtils {
     }
 
     /**
-     * 清除 MDC
+     * 娓呴櫎 MDC
      */
     public static void clear() {
         MDC.clear();
     }
 
     /**
-     * 结构化日�- 业务日志
+     * 缁撴瀯鍖栨棩锟? 涓氬姟鏃ュ織
      */
     public static void business(String action, String result, Object data) {
         Map<String, Object> logMap = new HashMap<>();
@@ -74,7 +74,7 @@ public class LogUtils {
     }
 
     /**
-     * 结构化日�- 接口调用
+     * 缁撴瀯鍖栨棩锟? 鎺ュ彛璋冪敤
      */
     public static void api(String method, String uri, long duration, int status) {
         Map<String, Object> logMap = new HashMap<>();
@@ -89,7 +89,7 @@ public class LogUtils {
     }
 
     /**
-     * 结构化日�- RPC调用
+     * 缁撴瀯鍖栨棩锟? RPC璋冪敤
      */
     public static void rpc(String service, String method, long duration, boolean success, String error) {
         Map<String, Object> logMap = new HashMap<>();

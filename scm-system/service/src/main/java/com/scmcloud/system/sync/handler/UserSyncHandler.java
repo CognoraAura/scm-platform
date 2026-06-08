@@ -15,9 +15,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * 用户数据同步处理�
+ * 鐢ㄦ埛鏁版嵁鍚屾澶勭悊锟?
  * <p>
- * 处理用户数据变更，同步更新冗余字段到其他库：
+ * 澶勭悊鐢ㄦ埛鏁版嵁鍙樻洿锛屽悓姝ユ洿鏂板啑浣欏瓧娈靛埌鍏朵粬搴擄細
  * - db_permission.sys_user_role (username, real_name, user_status)
  * - db_org.sys_dept (leader_name, leader_phone)
  *
@@ -66,7 +66,7 @@ public class UserSyncHandler implements DataSyncHandler, DataReconciliationTask.
     }
 
     /**
-     * 通过独立�Bean 同步用户信息，确�@Transactional �@DS 生效
+     * 閫氳繃鐙珛锟紹ean 鍚屾鐢ㄦ埛淇℃伅锛岀‘锟紷Transactional 锟紷DS 鐢熸晥
      */
     private void syncUserInfo(UUID userId, Map<String, Object> data) {
         syncExecutor.syncToPermissionDb(userId, data);
@@ -84,7 +84,7 @@ public class UserSyncHandler implements DataSyncHandler, DataReconciliationTask.
         return data;
     }
 
-    // ==================== 对账实现 ====================
+    // ==================== 瀵硅处瀹炵幇 ====================
 
     @Override
     public DataReconciliationTask.ReconciliationReport reconcile(int batchSize, boolean autoFix) {
@@ -95,24 +95,24 @@ public class UserSyncHandler implements DataSyncHandler, DataReconciliationTask.
         int fixedCount = 0;
         int failedCount = 0;
 
-        // 1. 获取所有有角色关联的用�ID
+        // 1. 鑾峰彇鎵€鏈夋湁瑙掕壊鍏宠仈鐨勭敤锟絀D
         List<UUID> userIds = userRoleMapper.findAllDistinctUserIds();
 
         for (int i = 0; i < userIds.size(); i += batchSize) {
             List<UUID> batch = userIds.subList(i, Math.min(i + batchSize, userIds.size()));
 
-            // 2. �user 库获取用户信�
+            // 2. 锟絬ser 搴撹幏鍙栫敤鎴蜂俊锟?
             List<SysUser> users = userMapper.selectBasicInfoByIds(batch);
             Map<UUID, SysUser> userMap = users.stream()
                     .collect(Collectors.toMap(SysUser::getId, u -> u, (a, b) -> a));
 
-            // 3. 检查每个用户的冗余数据
+            // 3. 妫€鏌ユ瘡涓敤鎴风殑鍐椾綑鏁版嵁
             for (UUID userId : batch) {
                 totalChecked++;
                 SysUser user = userMap.get(userId);
 
                 if (user == null) {
-                    // 用户已删除，但角色关联还�
+                    // 鐢ㄦ埛宸插垹闄わ紝浣嗚鑹插叧鑱旇繕锟?
                     inconsistentCount++;
                     if (autoFix) {
                         try {
@@ -124,7 +124,7 @@ public class UserSyncHandler implements DataSyncHandler, DataReconciliationTask.
                         }
                     }
                 } else if (autoFix) {
-                    // 强制同步确保数据一�
+                    // 寮哄埗鍚屾纭繚鏁版嵁涓€锟?
                     try {
                         fullSync(userId.toString());
                         fixedCount++;

@@ -1,7 +1,7 @@
 package com.scmcloud.common.mybatisPlus.context;
 
 /**
- * 数据权限上下�
+ * 鏁版嵁鏉冮檺涓婁笅锟?
  */
 public class DataScopeContextHolder {
 

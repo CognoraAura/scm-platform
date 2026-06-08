@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 退�退货表
+ * 閫€锟介€€璐ц〃
  * </p>
  *
  * @author deng

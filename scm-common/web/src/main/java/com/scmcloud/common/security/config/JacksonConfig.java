@@ -18,12 +18,12 @@ public class JacksonConfig {
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         
-        // 注册脱敏序列化器
+        // 娉ㄥ唽鑴辨晱搴忓垪鍖栧櫒
         SimpleModule module = new SimpleModule();
         module.addSerializer(String.class, new SensitiveJsonSerializer());
         objectMapper.registerModule(module);
         
-        // 注册JavaTimeModule以支持Java 8时间类型序列�
+        // 娉ㄥ唽JavaTimeModule浠ユ敮鎸丣ava 8鏃堕棿绫诲瀷搴忓垪锟?
         objectMapper.registerModule(new JavaTimeModule());
         
         return objectMapper;

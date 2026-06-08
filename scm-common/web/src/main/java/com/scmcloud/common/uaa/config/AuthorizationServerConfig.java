@@ -75,7 +75,7 @@ public class AuthorizationServerConfig {
     private String keyPassword;
 
     /**
-     * OAuth2授权服务器安全过滤链
+     * OAuth2鎺堟潈鏈嶅姟鍣ㄥ畨鍏ㄨ繃婊ら摼
      * Uses the new Spring Security 7.0 API with http.oauth2AuthorizationServer()
      */
     @Bean
@@ -95,7 +95,7 @@ public class AuthorizationServerConfig {
     }
 
     /**
-     * 默认安全过滤�
+     * 榛樿瀹夊叏杩囨护锟?
      */
     @Bean
     @Order(2)
@@ -112,11 +112,11 @@ public class AuthorizationServerConfig {
     }
 
     /**
-     * 注册客户�
+     * 娉ㄥ唽瀹㈡埛锟?
      */
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
-        // Web 客户�
+        // Web 瀹㈡埛锟?
         RegisteredClient webClient = RegisteredClient.withId(UUIDv7Util.generateString())
                 .clientId("nearsync-web")
                 .clientSecret(passwordEncoder().encode("web-secret-2024"))
@@ -143,10 +143,10 @@ public class AuthorizationServerConfig {
                         .build())
                 .build();
 
-        // 移动客户端（使用PKCE�
+        // 绉诲姩瀹㈡埛绔紙浣跨敤PKCE锟?
         RegisteredClient mobileClient = RegisteredClient.withId(UUIDv7Util.generateString())
                 .clientId("nearsync-mobile")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE) // 公开客户�
+                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE) // 鍏紑瀹㈡埛锟?
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .redirectUri("nearsync://callback")
@@ -159,11 +159,11 @@ public class AuthorizationServerConfig {
                         .build())
                 .clientSettings(ClientSettings.builder()
                         .requireAuthorizationConsent(true)
-                        .requireProofKey(true) // 强制 PKCE
+                        .requireProofKey(true) // 寮哄埗 PKCE
                         .build())
                 .build();
 
-        // 服务间调用客户端
+        // 鏈嶅姟闂磋皟鐢ㄥ鎴风
         RegisteredClient serviceClient = RegisteredClient.withId(UUIDv7Util.generateString())
                 .clientId("internal-service")
                 .clientSecret(passwordEncoder().encode("service-secret-2024"))
@@ -179,7 +179,7 @@ public class AuthorizationServerConfig {
     }
 
     /**
-     * JWT 解码�
+     * JWT 瑙ｇ爜锟?
      */
     @Bean
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
@@ -187,11 +187,11 @@ public class AuthorizationServerConfig {
     }
 
     /**
-     * JWK源（使用RSA密钥对）
+     * JWK婧愶紙浣跨敤RSA瀵嗛挜瀵癸級
      */
     @Bean
     public JWKSource<SecurityContext> jwkSource() {
-        // 优先�keystore 加载；失败则回退到启动时生成
+        // 浼樺厛锟絢eystore 鍔犺浇锛涘け璐ュ垯鍥為€€鍒板惎鍔ㄦ椂鐢熸垚
         RSAKey rsaKey = loadRsaFromKeystore();
         if (rsaKey == null) {
             KeyPair keyPair = generateRsaKey();
@@ -208,7 +208,7 @@ public class AuthorizationServerConfig {
     }
 
     /**
-     * 生成 RSA密钥�
+     * 鐢熸垚 RSA瀵嗛挜锟?
      */
     private static KeyPair generateRsaKey() {
         KeyPair keyPair;
@@ -223,7 +223,7 @@ public class AuthorizationServerConfig {
     }
 
     /**
-     * 授权服务器设�
+     * 鎺堟潈鏈嶅姟鍣ㄨ锟?
      */
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {

@@ -26,7 +26,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Jwt 过滤�
+ * Jwt 杩囨护锟?
  *
  * @author Deng
  * createData 2025/10/11 13:49
@@ -44,23 +44,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response,
                                     @Nonnull FilterChain filterChain) throws IOException {
         try {
-            // 获取 Token
+            // 鑾峰彇 Token
             String token = httpServletRequestUtils.getTokenFromRequest(request);
 
             if (StringUtils.hasText(token)) {
-                // 获取当前请求信息
+                // 鑾峰彇褰撳墠璇锋眰淇℃伅
                 String currentIp = IpUtils.getClientIp(request);
                 String currentDeviceId = httpServletRequestUtils.getDeviceId(request);
 
-                // 验证 Token
+                // 楠岃瘉 Token
                 if (jwtUtils.validateToken(token, currentIp, currentDeviceId)) {
-                    // 提取用户信息（得益于ThreadLocal缓存，这4次调用只会解析Token一次）
+                    // 鎻愬彇鐢ㄦ埛淇℃伅锛堝緱鐩婁簬ThreadLocal缂撳瓨锛岃繖4娆¤皟鐢ㄥ彧浼氳В鏋怲oken涓€娆★級
                     UUID userId = jwtUtils.getUserIdFromToken(token);
                     String username = jwtUtils.getUsernameFromToken(token);
                     Set<String> permissions = jwtUtils.getPermissionsFromToken(token);
                     Set<String> roles = jwtUtils.getRolesFromToken(token);
 
-                    // 构建权限列表
+                    // 鏋勫缓鏉冮檺鍒楄〃
                     Set<SimpleGrantedAuthority> authorities = permissions.stream()
                             .map(SimpleGrantedAuthority::new)
                             .collect(Collectors.toSet());
@@ -69,7 +69,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             .map(SimpleGrantedAuthority::new)
                             .collect(Collectors.toSet()));
 
-                    // 创建认证对象
+                    // 鍒涘缓璁よ瘉瀵硅薄
                     SecurityUser userDetails = SecurityUser.builder()
                             .userId(userId)
                             .username(username)
@@ -82,7 +82,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                    // 设置�Security上下�
+                    // 璁剧疆锟絊ecurity涓婁笅锟?
                     SecurityContextHolder.getContext().setAuthentication(authentication);
 
                     log.debug("User authenticated: traceId={}, userId={}, username={}",
@@ -95,7 +95,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
 
-            // 继续过滤器链
+            // 缁х画杩囨护鍣ㄩ摼
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             securityMetrics.increment("security.jwt.errors");
@@ -103,7 +103,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityErrorResponseWriter.write(request, response, HttpServletResponse.SC_UNAUTHORIZED, "AUTH_ERROR",
                     "Authentication error");
         } finally {
-            // 清理ThreadLocal缓存，防止内存泄�
+            // 娓呯悊ThreadLocal缂撳瓨锛岄槻姝㈠唴瀛樻硠锟?
             JwtUtils.clearTokenCache();
         }
     }

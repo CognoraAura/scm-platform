@@ -32,7 +32,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * 认证服务
+ * 璁よ瘉鏈嶅姟
  *
  * @author Deng
  * createData 2025/10/14 15:00
@@ -61,64 +61,64 @@ public class SysAuthServiceImpl implements ISysAuthService {
     public LoginResponse login(LoginRequest request, String ipAddress, String deviceId) {
         String username = request.getUsername();
 
-        // 1. 检查账户是否被锁定
+        // 1. 妫€鏌ヨ处鎴锋槸鍚﹁閿佸畾
         if (isAccountLocked(username)) {
-            auditLogService.recordLoginFailure(username, ipAddress, "账户已锁定");
-            throw new LockedException("账户已锁定，请稍后再试");
+            auditLogService.recordLoginFailure(username, ipAddress, "璐︽埛宸查攣瀹?);
+            throw new LockedException("璐︽埛宸查攣瀹氾紝璇风◢鍚庡啀璇?);
         }
 
-        // 2. 检查登录失败次�
+        // 2. 妫€鏌ョ櫥褰曞け璐ユ锟?
         int attempts = getLoginAttempts(username);
         if (attempts >= securityProperties.getMaxLoginAttempts()) {
             lockAccount(username);
-            auditLogService.recordLoginFailure(username, ipAddress, "登录失败次数过多");
-            throw new LockedException("登录失败次数过多，账户已被锁定");
+            auditLogService.recordLoginFailure(username, ipAddress, "鐧诲綍澶辫触娆℃暟杩囧");
+            throw new LockedException("鐧诲綍澶辫触娆℃暟杩囧锛岃处鎴峰凡琚攣瀹?);
         }
 
         try {
-            // 3. 执行认证
+            // 3. 鎵ц璁よ瘉
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, request.getPassword())
             );
 
             SecurityUser user = (SecurityUser) authentication.getPrincipal();
             
-            // 验证用户对象非空
+            // 楠岃瘉鐢ㄦ埛瀵硅薄闈炵┖
             if (user == null) {
-                auditLogService.recordLoginFailure(username, ipAddress, "认证失败：用户信息为空");
-                throw new BadCredentialsException("认证失败");
+                auditLogService.recordLoginFailure(username, ipAddress, "璁よ瘉澶辫触锛氱敤鎴蜂俊鎭负绌?);
+                throw new BadCredentialsException("璁よ瘉澶辫触");
             }
 
-            // 4. 检查双因素认证（MFA�
+            // 4. 妫€鏌ュ弻鍥犵礌璁よ瘉锛圡FA锟?
             if (Boolean.TRUE.equals(user.getTwoFactorEnabled())) {
-                // 修复: MFA 启用时必须提供验证码
+                // 淇: MFA 鍚敤鏃跺繀椤绘彁渚涢獙璇佺爜
                 if (!StringUtils.hasText(request.getTwoFactorCode())) {
-                    auditLogService.recordLoginFailure(username, ipAddress, "MFA已启用但未提供验证码");
+                    auditLogService.recordLoginFailure(username, ipAddress, "MFA宸插惎鐢ㄤ絾鏈彁渚涢獙璇佺爜");
                     businessMetrics.recordLoginAttempt(false, "mfa");
-                    throw new BadCredentialsException("双因素认证已启用，必须提供验证码");
+                    throw new BadCredentialsException("鍙屽洜绱犺璇佸凡鍚敤锛屽繀椤绘彁渚涢獙璇佺爜");
                 }
                 if (!verifyTwoFactor(user.getTwoFactorSecret(), request.getTwoFactorCode(), user.getUserId())) {
-                    auditLogService.recordLoginFailure(username, ipAddress, "双因素认证失败");
+                    auditLogService.recordLoginFailure(username, ipAddress, "鍙屽洜绱犺璇佸け璐?);
                     businessMetrics.recordLoginAttempt(false, "mfa");
-                    throw new BadCredentialsException("双因素认证码错误");
+                    throw new BadCredentialsException("鍙屽洜绱犺璇佺爜閿欒");
                 }
             }
 
-            // 5. 检查密码是否过�
+            // 5. 妫€鏌ュ瘑鐮佹槸鍚﹁繃锟?
             if (user.getPasswordExpireTime() != null && user.getPasswordExpireTime().isBefore(LocalDateTime.now())) {
-                auditLogService.recordLogin(user.getUserId(), username, ipAddress, true, "密码已过期");
-                // 修复: 密码过期时不返回 token，显式设置为 null 防止安全漏洞
+                auditLogService.recordLogin(user.getUserId(), username, ipAddress, true, "瀵嗙爜宸茶繃鏈?);
+                // 淇: 瀵嗙爜杩囨湡鏃朵笉杩斿洖 token锛屾樉寮忚缃负 null 闃叉瀹夊叏婕忔礊
                 return LoginResponse.builder()
                         .accessToken(null)
                         .refreshToken(null)
                         .userId(user.getUserId())
                         .username(username)
                         .needChangePassword(true)
-                        .message("密码已过期，请修改密码")
+                        .message("瀵嗙爜宸茶繃鏈燂紝璇蜂慨鏀瑰瘑鐮?)
                         .build();
             }
 
-            // 6. 生成Token
+            // 6. 鐢熸垚Token
             Set<String> roles = user.getRoles();
             Set<String> permissions = user.getPermissions();
             List<String> amr = Boolean.TRUE.equals(user.getTwoFactorEnabled()) ? List.of("pwd","mfa") :
@@ -128,20 +128,20 @@ public class SysAuthServiceImpl implements ISysAuthService {
             String refreshToken = jwtUtils.generateRefreshToken(
                     user.getUserId(), username, deviceId);
 
-            // 7. 清除登录失败记录
+            // 7. 娓呴櫎鐧诲綍澶辫触璁板綍
             clearLoginAttempts(username);
 
-            // 8. 更新最后登录信息（优先 Dubbo，失败回退 Feign�
+            // 8. 鏇存柊鏈€鍚庣櫥褰曚俊鎭紙浼樺厛 Dubbo锛屽け璐ュ洖閫€ Feign锟?
             try {
                 userDubboService.updateLastLogin(user.getUserId(), ipAddress, LocalDateTime.now());
             } catch (Exception ex) {
                 userServiceClient.updateLastLogin(user.getUserId(), ipAddress);
             }
 
-            // 9. 记录登录日志
-            auditLogService.recordLogin(user.getUserId(), username, ipAddress, true, "登录成功");
+            // 9. 璁板綍鐧诲綍鏃ュ織
+            auditLogService.recordLogin(user.getUserId(), username, ipAddress, true, "鐧诲綍鎴愬姛");
 
-            // 10. 记录登录成功指标
+            // 10. 璁板綍鐧诲綍鎴愬姛鎸囨爣
             businessMetrics.recordLogin(true, deviceId);
 
             log.info("User login success: {}, IP: {}, Device: {}", username, ipAddress, deviceId);
@@ -160,14 +160,14 @@ public class SysAuthServiceImpl implements ISysAuthService {
                     .build();
 
         } catch (AuthenticationException e) {
-            // 认证失败，增加失败次�
+            // 璁よ瘉澶辫触锛屽鍔犲け璐ユ锟?
             incrementLoginAttempts(username);
             auditLogService.recordLoginFailure(username, ipAddress, e.getMessage());
 
             int remainingAttempts = securityProperties.getMaxLoginAttempts() - getLoginAttempts(username);
-            String message = "用户名或密码错误";
+            String message = "鐢ㄦ埛鍚嶆垨瀵嗙爜閿欒";
             if (remainingAttempts > 0) {
-                message += "，还可尝试" + remainingAttempts + " 次";
+                message += "锛岃繕鍙皾璇? + remainingAttempts + " 娆?;
             }
 
             log.warn("Login failed for user: {}, IP: {}, Reason: {}", username, ipAddress, e.getMessage());
@@ -229,26 +229,26 @@ public class SysAuthServiceImpl implements ISysAuthService {
 
     @Override
     public void logout(String token, UUID userId, String reason) {
-        jwtUtils.revokeToken(token, reason != null ? reason : "用户主动登出");
-        auditLogService.recordLogout(userId, "登出成功");
+        jwtUtils.revokeToken(token, reason != null ? reason : "鐢ㄦ埛涓诲姩鐧诲嚭");
+        auditLogService.recordLogout(userId, "鐧诲嚭鎴愬姛");
         log.info("User logout: UserId={}", userId);
     }
 
     @Override
     public LoginResponse refreshToken(String refreshToken, String deviceId, String ipAddress) {
-        // 修复: 移除逻辑反转 - isRefreshTokenInvalid() 返回 true 表示无效
+        // 淇: 绉婚櫎閫昏緫鍙嶈浆 - isRefreshTokenInvalid() 杩斿洖 true 琛ㄧず鏃犳晥
         if (jwtUtils.isRefreshTokenInvalid(refreshToken)) {
-            throw new BadCredentialsException("刷新令牌无效或已过期");
+            throw new BadCredentialsException("鍒锋柊浠ょ墝鏃犳晥鎴栧凡杩囨湡");
         }
 
         UUID userId = jwtUtils.getUserIdFromToken(refreshToken);
         String username = jwtUtils.getUsernameFromToken(refreshToken);
 
-        // 重新获取用户权限（使�Dubbo 高性能 RPC�
+        // 閲嶆柊鑾峰彇鐢ㄦ埛鏉冮檺锛堜娇锟紻ubbo 楂樻€ц兘 RPC锟?
         Set<String> roles = userDubboService.findRolesByUserId(userId);
         Set<String> permissions = userDubboService.findPermissionsByUserId(userId);
 
-        // 使用刷新令牌轮换机制（推荐）- 生成新的访问令牌和刷新令�
+        // 浣跨敤鍒锋柊浠ょ墝杞崲鏈哄埗锛堟帹鑽愶級- 鐢熸垚鏂扮殑璁块棶浠ょ墝鍜屽埛鏂颁护锟?
         JwtUtils.TokenPair tokenPair = jwtUtils.refreshTokenWithRotation(
                 refreshToken, roles, permissions, deviceId, ipAddress);
 
@@ -267,7 +267,7 @@ public class SysAuthServiceImpl implements ISysAuthService {
     @Override
     public void forceLogout(UUID userId, String reason) {
         jwtUtils.revokeAllUserTokens(userId);
-        auditLogService.recordLogout(userId, "管理员强制下� " + reason);
+        auditLogService.recordLogout(userId, "绠＄悊鍛樺己鍒朵笅锟?" + reason);
         log.info("User force logout: UserId={}, Reason={}", userId, reason);
     }
 }

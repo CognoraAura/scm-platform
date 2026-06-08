@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * OAuth 第三方登录绑定表
+ * OAuth 绗笁鏂圭櫥褰曠粦瀹氳〃
  *
  * @author Deng
  * @since 2025-12-15
@@ -62,7 +62,7 @@ public class SysUserOauth {
     private Boolean deleted;
 
     /**
-     * OAuth 提供商枚�
+     * OAuth 鎻愪緵鍟嗘灇锟?
      */
     @Getter
     public enum Provider {

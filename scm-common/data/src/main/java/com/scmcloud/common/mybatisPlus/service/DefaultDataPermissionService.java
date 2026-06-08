@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 默认数据权限服务实现
- * 从数据库查询用户的自定义数据权限规则
+ * 榛樿鏁版嵁鏉冮檺鏈嶅姟瀹炵幇
+ * 浠庢暟鎹簱鏌ヨ鐢ㄦ埛鐨勮嚜瀹氫箟鏁版嵁鏉冮檺瑙勫垯
  *
  * @author Deng
  * @since 2025-12-15
@@ -25,8 +25,8 @@ public class DefaultDataPermissionService implements DataPermissionService {
     private final JdbcTemplate jdbcTemplate;
 
     /**
-     * 查询用户的自定义数据权限部门列表
-     * SQL: 通过用户ID -> 用户角色 -> 角色部门关联 获取可访问部�
+     * 鏌ヨ鐢ㄦ埛鐨勮嚜瀹氫箟鏁版嵁鏉冮檺閮ㄩ棬鍒楄〃
+     * SQL: 閫氳繃鐢ㄦ埛ID -> 鐢ㄦ埛瑙掕壊 -> 瑙掕壊閮ㄩ棬鍏宠仈 鑾峰彇鍙闂儴锟?
      */
     @Override
     public List<UUID> findCustomDeptPermissions(UUID userId) {
@@ -60,7 +60,7 @@ public class DefaultDataPermissionService implements DataPermissionService {
     }
 
     /**
-     * 检查用户是否有自定义数据权限配�
+     * 妫€鏌ョ敤鎴锋槸鍚︽湁鑷畾涔夋暟鎹潈闄愰厤锟?
      */
     @Override
     public boolean hasCustomDataPermission(UUID userId) {

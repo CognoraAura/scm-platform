@@ -11,8 +11,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 /**
- * 可重复读取请求体的包装器，用于在过滤器中预读 JSON 内容�
- * 仍允许后续链路正常读取请求体�
+ * 鍙噸澶嶈鍙栬姹備綋鐨勫寘瑁呭櫒锛岀敤浜庡湪杩囨护鍣ㄤ腑棰勮 JSON 鍐呭锟?
+ * 浠嶅厑璁稿悗缁摼璺甯歌鍙栬姹備綋锟?
  */
 public class CachedBodyHttpServletRequest extends HttpServletRequestWrapper {
     private final byte[] cachedBody;

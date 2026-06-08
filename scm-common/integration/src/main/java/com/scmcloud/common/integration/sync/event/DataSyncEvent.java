@@ -10,12 +10,12 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 数据同步事件（全局通用�
+ * 鏁版嵁鍚屾浜嬩欢锛堝叏灞€閫氱敤锟?
  * <p>
- * 设计参考：
- * - 阿里 Canal binlog 事件格式
- * - CloudEvents 规范
- * - 字节跳动数据同步中间�
+ * 璁捐鍙傝€冿細
+ * - 闃块噷 Canal binlog 浜嬩欢鏍煎紡
+ * - CloudEvents 瑙勮寖
+ * - 瀛楄妭璺冲姩鏁版嵁鍚屾涓棿锟?
  *
  * @author Deng
  * @since 2025-12-16
@@ -27,67 +27,67 @@ import java.util.UUID;
 public class DataSyncEvent {
 
     /**
-     * 事件唯一ID（用于幂等处理）
+     * 浜嬩欢鍞竴ID锛堢敤浜庡箓绛夊鐞嗭級
      */
     private String eventId;
 
     /**
-     * 事件类型
+     * 浜嬩欢绫诲瀷
      */
     private DataSyncEventType eventType;
 
     /**
-     * 事件发生时间
+     * 浜嬩欢鍙戠敓鏃堕棿
      */
     private Instant eventTime;
 
     /**
-     * 事件版本（乐观锁�
+     * 浜嬩欢鐗堟湰锛堜箰瑙傞攣锟?
      */
     private Long version;
 
     /**
-     * 源服务名�
+     * 婧愭湇鍔″悕锟?
      */
     private String sourceService;
 
     /**
-     * 源数据库
+     * 婧愭暟鎹簱
      */
     private String sourceDatabase;
 
     /**
-     * 源表�
+     * 婧愯〃锟?
      */
     private String sourceTable;
 
     /**
-     * 聚合类型（User, Dept, Role 等）
+     * 鑱氬悎绫诲瀷锛圲ser, Dept, Role 绛夛級
      */
     private String aggregateType;
 
     /**
-     * 主键 ID
+     * 涓婚敭 ID
      */
     private String primaryId;
 
     /**
-     * 变更前数�
+     * 鍙樻洿鍓嶆暟锟?
      */
     private Map<String, Object> beforeData;
 
     /**
-     * 变更后数�
+     * 鍙樻洿鍚庢暟锟?
      */
     private Map<String, Object> afterData;
 
     /**
-     * 变更字段列表
+     * 鍙樻洿瀛楁鍒楄〃
      */
     private String[] changedFields;
 
     /**
-     * 分布式追�ID
+     * 鍒嗗竷寮忚拷锟絀D
      */
     private String traceId;
 
@@ -97,41 +97,41 @@ public class DataSyncEvent {
     private String spanId;
 
     /**
-     * 操作用户 ID
+     * 鎿嶄綔鐢ㄦ埛 ID
      */
     private String operatorId;
 
     /**
-     * 租户 ID
+     * 绉熸埛 ID
      */
     private String tenantId;
 
     /**
-     * 重试次数
+     * 閲嶈瘯娆℃暟
      */
     @Builder.Default
     private Integer retryCount = 0;
 
     /**
-     * 最大重试次�
+     * 鏈€澶ч噸璇曟锟?
      */
     @Builder.Default
     private Integer maxRetries = 3;
 
     /**
-     * 首次失败时间
+     * 棣栨澶辫触鏃堕棿
      */
     private Instant firstFailureTime;
 
     /**
-     * 最后失败原�
+     * 鏈€鍚庡け璐ュ師锟?
      */
     private String lastFailureReason;
 
-    // ==================== 工厂方法 ====================
+    // ==================== 宸ュ巶鏂规硶 ====================
 
     /**
-     * 创建事件
+     * 鍒涘缓浜嬩欢
      */
     public static DataSyncEvent create(String aggregateType, String primaryId,
                                         DataSyncEventType eventType,
@@ -148,7 +148,7 @@ public class DataSyncEvent {
     }
 
     /**
-     * 创建插入事件
+     * 鍒涘缓鎻掑叆浜嬩欢
      */
     public static DataSyncEvent ofInsert(String aggregateType, String primaryId,
                                           Map<String, Object> data) {
@@ -156,7 +156,7 @@ public class DataSyncEvent {
     }
 
     /**
-     * 创建更新事件
+     * 鍒涘缓鏇存柊浜嬩欢
      */
     public static DataSyncEvent ofUpdate(String aggregateType, String primaryId,
                                           Map<String, Object> beforeData,
@@ -176,16 +176,16 @@ public class DataSyncEvent {
     }
 
     /**
-     * 创建删除事件
+     * 鍒涘缓鍒犻櫎浜嬩欢
      */
     public static DataSyncEvent ofDelete(String aggregateType, String primaryId) {
         return create(aggregateType, primaryId, DataSyncEventType.DELETE, null);
     }
 
-    // ==================== 辅助方法 ====================
+    // ==================== 杈呭姪鏂规硶 ====================
 
     /**
-     * 增加重试次数
+     * 澧炲姞閲嶈瘯娆℃暟
      */
     public void incrementRetry(String failureReason) {
         this.retryCount++;
@@ -196,21 +196,21 @@ public class DataSyncEvent {
     }
 
     /**
-     * 是否可重�
+     * 鏄惁鍙噸锟?
      */
     public boolean canRetry() {
         return this.retryCount < this.maxRetries;
     }
 
     /**
-     * 获取分区键（用于 Kafka 分区�
+     * 鑾峰彇鍒嗗尯閿紙鐢ㄤ簬 Kafka 鍒嗗尯锟?
      */
     public String getPartitionKey() {
         return this.aggregateType + ":" + this.primaryId;
     }
 
     /**
-     * 获取主题名称
+     * 鑾峰彇涓婚鍚嶇О
      */
     public String getTopicName(String prefix) {
         return prefix + "." + this.aggregateType.toLowerCase();

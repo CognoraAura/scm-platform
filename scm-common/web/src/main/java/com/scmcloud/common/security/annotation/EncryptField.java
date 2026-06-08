@@ -15,7 +15,7 @@ import java.lang.annotation.*;
 public @interface EncryptField {
 
     /**
-     * 加密算法（预留，当前仅支持AES�
+     * 鍔犲瘑绠楁硶锛堥鐣欙紝褰撳墠浠呮敮鎸丄ES锟?
      */
     String algorithm() default "AES";
 }

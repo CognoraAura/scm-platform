@@ -6,15 +6,15 @@ import io.seata.rm.tcc.api.LocalTCC;
 import io.seata.rm.tcc.api.TwoPhaseBusinessAction;
 
 /**
- * 库存 TCC 服务接口
+ * 搴撳瓨 TCC 鏈嶅姟鎺ュ彛
  *
- * <p>TCC (Try-Confirm-Cancel) 模式实现库存预留
+ * <p>TCC (Try-Confirm-Cancel) 妯″紡瀹炵幇搴撳瓨棰勭暀
  *
- * <p>三阶段说明：
+ * <p>涓夐樁娈佃鏄庯細
  * <ul>
- *   <li>Try: 预留库存（将可用库存转为锁定库存�/li>
- *   <li>Confirm: 确认扣减（扣减锁定库存）</li>
- *   <li>Cancel: 取消预留（释放锁定库存为可用库存�/li>
+ *   <li>Try: 棰勭暀搴撳瓨锛堝皢鍙敤搴撳瓨杞负閿佸畾搴撳瓨锟?li>
+ *   <li>Confirm: 纭鎵ｅ噺锛堟墸鍑忛攣瀹氬簱瀛橈級</li>
+ *   <li>Cancel: 鍙栨秷棰勭暀锛堥噴鏀鹃攣瀹氬簱瀛樹负鍙敤搴撳瓨锟?li>
  * </ul>
  *
  * @author SCM Platform Team
@@ -24,14 +24,14 @@ import io.seata.rm.tcc.api.TwoPhaseBusinessAction;
 public interface InventoryTccService {
 
     /**
-     * Try 阶段：预留库�
+     * Try 闃舵锛氶鐣欏簱锟?
      *
-     * <p>将可用库存转为锁定库存，但不实际扣减
+     * <p>灏嗗彲鐢ㄥ簱瀛樿浆涓洪攣瀹氬簱瀛橈紝浣嗕笉瀹為檯鎵ｅ噺
      *
      * @param skuId SKU ID
-     * @param quantity 预留数量
-     * @param businessKey 业务键（订单号），用于幂等性控�
-     * @return 预留是否成功
+     * @param quantity 棰勭暀鏁伴噺
+     * @param businessKey 涓氬姟閿紙璁㈠崟鍙凤級锛岀敤浜庡箓绛夋€ф帶锟?
+     * @return 棰勭暀鏄惁鎴愬姛
      */
     @TwoPhaseBusinessAction(
             name = "reserveInventory",
@@ -45,22 +45,22 @@ public interface InventoryTccService {
     );
 
     /**
-     * Confirm 阶段：确认预�
+     * Confirm 闃舵锛氱‘璁ら锟?
      *
-     * <p>扣减锁定库存，完成最终扣�
+     * <p>鎵ｅ噺閿佸畾搴撳瓨锛屽畬鎴愭渶缁堟墸锟?
      *
-     * @param context TCC 上下�
-     * @return 确认是否成功
+     * @param context TCC 涓婁笅锟?
+     * @return 纭鏄惁鎴愬姛
      */
     boolean confirmReserve(BusinessActionContext context);
 
     /**
-     * Cancel 阶段：取消预�
+     * Cancel 闃舵锛氬彇娑堥锟?
      *
-     * <p>释放锁定库存，恢复为可用库存
+     * <p>閲婃斁閿佸畾搴撳瓨锛屾仮澶嶄负鍙敤搴撳瓨
      *
-     * @param context TCC 上下�
-     * @return 取消是否成功
+     * @param context TCC 涓婁笅锟?
+     * @return 鍙栨秷鏄惁鎴愬姛
      */
     boolean cancelReserve(BusinessActionContext context);
 }

@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 角色数据同步处理�
+ * 瑙掕壊鏁版嵁鍚屾澶勭悊锟?
  * <p>
- * 处理角色数据变更，同步更新冗余字段到其他库：
+ * 澶勭悊瑙掕壊鏁版嵁鍙樻洿锛屽悓姝ユ洿鏂板啑浣欏瓧娈靛埌鍏朵粬搴擄細
  * - db_approval.sys_permission_approval (role_names)
  *
  * @author Deng

@@ -28,7 +28,7 @@ public class SysPermissionApprovalServiceImpl extends ServiceImpl<SysPermissionA
     @Override
     @Transactional(rollbackFor = Exception.class)
     public SysPermissionApproval submitApproval(SysPermissionApproval approval) {
-        log.info("提交审批申请: applicantId={}, type={}", approval.getApplicantId(), approval.getApprovalType());
+        log.info("鎻愪氦瀹℃壒鐢宠: applicantId={}, type={}", approval.getApplicantId(), approval.getApprovalType());
 
         approval.setId(UUIDv7Util.generateString());
         approval.setApprovalStatus(STATUS_PENDING);
@@ -37,26 +37,26 @@ public class SysPermissionApprovalServiceImpl extends ServiceImpl<SysPermissionA
 
         boolean success = save(approval);
         if (!success) {
-            throw new RuntimeException("提交审批申请失败");
+            throw new RuntimeException("鎻愪氦瀹℃壒鐢宠澶辫触");
         }
 
-        log.info("审批申请提交成功: id={}", approval.getId());
+        log.info("瀹℃壒鐢宠鎻愪氦鎴愬姛: id={}", approval.getId());
         return approval;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public SysPermissionApproval approve(String approvalId, String approverId, String approverName) {
-        log.info("审批通过: approvalId={}, approverId={}", approvalId, approverId);
+        log.info("瀹℃壒閫氳繃: approvalId={}, approverId={}", approvalId, approverId);
 
         SysPermissionApproval approval = getById(approvalId);
         if (approval == null) {
-            throw new IllegalArgumentException("审批记录不存� " + approvalId);
+            throw new IllegalArgumentException("瀹℃壒璁板綍涓嶅瓨锟?" + approvalId);
         }
 
         if (approval.getApprovalStatus() != STATUS_PENDING
                 && approval.getApprovalStatus() != STATUS_APPROVING) {
-            throw new IllegalStateException("当前状态不允许审批: status=" + approval.getApprovalStatus());
+            throw new IllegalStateException("褰撳墠鐘舵€佷笉鍏佽瀹℃壒: status=" + approval.getApprovalStatus());
         }
 
         approval.setApprovalStatus(STATUS_APPROVED);
@@ -67,26 +67,26 @@ public class SysPermissionApprovalServiceImpl extends ServiceImpl<SysPermissionA
 
         boolean success = updateById(approval);
         if (!success) {
-            throw new RuntimeException("审批操作失败");
+            throw new RuntimeException("瀹℃壒鎿嶄綔澶辫触");
         }
 
-        log.info("审批通过成功: id={}", approvalId);
+        log.info("瀹℃壒閫氳繃鎴愬姛: id={}", approvalId);
         return approval;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public SysPermissionApproval reject(String approvalId, String approverId, String approverName, String rejectReason) {
-        log.info("审批拒绝: approvalId={}, approverId={}", approvalId, approverId);
+        log.info("瀹℃壒鎷掔粷: approvalId={}, approverId={}", approvalId, approverId);
 
         SysPermissionApproval approval = getById(approvalId);
         if (approval == null) {
-            throw new IllegalArgumentException("审批记录不存� " + approvalId);
+            throw new IllegalArgumentException("瀹℃壒璁板綍涓嶅瓨锟?" + approvalId);
         }
 
         if (approval.getApprovalStatus() != STATUS_PENDING
                 && approval.getApprovalStatus() != STATUS_APPROVING) {
-            throw new IllegalStateException("当前状态不允许审批: status=" + approval.getApprovalStatus());
+            throw new IllegalStateException("褰撳墠鐘舵€佷笉鍏佽瀹℃壒: status=" + approval.getApprovalStatus());
         }
 
         approval.setApprovalStatus(STATUS_REJECTED);
@@ -98,16 +98,16 @@ public class SysPermissionApprovalServiceImpl extends ServiceImpl<SysPermissionA
 
         boolean success = updateById(approval);
         if (!success) {
-            throw new RuntimeException("审批拒绝操作失败");
+            throw new RuntimeException("瀹℃壒鎷掔粷鎿嶄綔澶辫触");
         }
 
-        log.info("审批拒绝成功: id={}", approvalId);
+        log.info("瀹℃壒鎷掔粷鎴愬姛: id={}", approvalId);
         return approval;
     }
 
     @Override
     public List<SysPermissionApproval> listByApplicant(String applicantId) {
-        log.debug("查询申请人审批列� applicantId={}", applicantId);
+        log.debug("鏌ヨ鐢宠浜哄鎵瑰垪锟?applicantId={}", applicantId);
 
         LambdaQueryWrapper<SysPermissionApproval> wrapper = Wrappers.lambdaQuery();
         wrapper.eq(SysPermissionApproval::getApplicantId, applicantId)
@@ -118,7 +118,7 @@ public class SysPermissionApprovalServiceImpl extends ServiceImpl<SysPermissionA
 
     @Override
     public List<SysPermissionApproval> listPending(String approverId) {
-        log.debug("查询待审批列� approverId={}", approverId);
+        log.debug("鏌ヨ寰呭鎵瑰垪锟?approverId={}", approverId);
 
         LambdaQueryWrapper<SysPermissionApproval> wrapper = Wrappers.lambdaQuery();
         wrapper.and(w -> w.eq(SysPermissionApproval::getApprovalStatus, STATUS_PENDING)

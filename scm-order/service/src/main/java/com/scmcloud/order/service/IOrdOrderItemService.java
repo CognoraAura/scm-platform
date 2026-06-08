@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * <p>
- * 订单明细�服务�
+ * 璁㈠崟鏄庣粏锟芥湇鍔★拷
  * </p>
  *
  * @author deng

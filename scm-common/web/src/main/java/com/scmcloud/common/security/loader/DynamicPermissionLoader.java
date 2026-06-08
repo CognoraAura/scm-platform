@@ -18,8 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * 动态权限加载服�
- * 支持权限热更新，无需重启应用
+ * 鍔ㄦ€佹潈闄愬姞杞芥湇锟?
+ * 鏀寔鏉冮檺鐑洿鏂帮紝鏃犻渶閲嶅惎搴旂敤
  *
  * @author Deng
  * createData 2025/11/7 10:18
@@ -33,10 +33,10 @@ public class DynamicPermissionLoader {
     private final CacheManager cacheManager;
     private final ApplicationEventPublisher eventPublisher;
 
-    // 内存缓存：URL -> 所需权限列表
+    // 鍐呭瓨缂撳瓨锛歎RL -> 鎵€闇€鏉冮檺鍒楄〃
     private final Map<String, Set<String>> urlPermissionCache = new ConcurrentHashMap<>();
 
-    // 权限版本号（用于检测变更）
+    // 鏉冮檺鐗堟湰鍙凤紙鐢ㄤ簬妫€娴嬪彉鏇达級
     private final AtomicLong permissionVersion = new AtomicLong(0L);
 
     private static final String PERMISSION_CACHE_NAME = "permissionMapping";
@@ -52,7 +52,7 @@ public class DynamicPermissionLoader {
                     urlPermissionCache.clear();
                     urlPermissionCache.putAll(normalizePermissionMap(rawMap));
 
-                    // 初始化版本号
+                    // 鍒濆鍖栫増鏈彿
                     permissionVersion.set(1L);
                     log.info("Initialized dynamic permission cache from TwoLevelCache, size={}",
                             urlPermissionCache.size());
@@ -64,10 +64,10 @@ public class DynamicPermissionLoader {
     }
 
     /**
-     * 将原始缓存数据转换为类型安全的权限映�
+     * 灏嗗師濮嬬紦瀛樻暟鎹浆鎹负绫诲瀷瀹夊叏鐨勬潈闄愭槧锟?
      *
-     * @param rawMap 从缓存获取的原始 Map
-     * @return 类型安全的权限映�(URL -> 权限集合)
+     * @param rawMap 浠庣紦瀛樿幏鍙栫殑鍘熷 Map
+     * @return 绫诲瀷瀹夊叏鐨勬潈闄愭槧锟?URL -> 鏉冮檺闆嗗悎)
      */
     private static Map<String, Set<String>> normalizePermissionMap(Map<?, ?> rawMap) {
         Map<String, Set<String>> normalized = new HashMap<>();
@@ -86,13 +86,13 @@ public class DynamicPermissionLoader {
     }
 
     /**
-     * 初始化加载权限配�
+     * 鍒濆鍖栧姞杞芥潈闄愰厤锟?
      */
     public void loadPermissions() {
         log.info("Loading dynamic permissions...");
 
         try {
-            // 查询所�API类型的权�
+            // 鏌ヨ鎵€锟紸PI绫诲瀷鐨勬潈锟?
             List<ApiPermissionDTO> apiPermissions = permissionServiceClient.findApiPermissions();
 
             Map<String, Set<String>> newCache = new HashMap<>();
@@ -109,11 +109,11 @@ public class DynamicPermissionLoader {
                 }
             }
 
-            // 原子性替换缓�
+            // 鍘熷瓙鎬ф浛鎹㈢紦锟?
             urlPermissionCache.clear();
             urlPermissionCache.putAll(newCache);
 
-            // 持久化到多级缓存（供多实例共享，冷启动加速）
+            // 鎸佷箙鍖栧埌澶氱骇缂撳瓨锛堜緵澶氬疄渚嬪叡浜紝鍐峰惎鍔ㄥ姞閫燂級
             Cache permCache = cacheManager.getCache(PERMISSION_CACHE_NAME);
             if (permCache != null) {
                 permCache.put(PERM_MAPPING_CACHE_KEY, newCache);
@@ -124,7 +124,7 @@ public class DynamicPermissionLoader {
             log.info("Loaded {} API permission mappings, version: {}",
                     newCache.size(), permissionVersion.get());
 
-            // 发布权限更新事件
+            // 鍙戝竷鏉冮檺鏇存柊浜嬩欢
             eventPublisher.publishEvent(new PermissionRefreshEvent(this, permissionVersion.get()));
 
         } catch (Exception e) {
@@ -133,7 +133,7 @@ public class DynamicPermissionLoader {
     }
 
     /**
-     * 定时刷新权限（每5分钟�
+     * 瀹氭椂鍒锋柊鏉冮檺锛堟瘡5鍒嗛挓锟?
      */
     @Scheduled(fixedRate = 300000)
     public void scheduleRefresh() {
@@ -143,7 +143,7 @@ public class DynamicPermissionLoader {
     }
 
     /**
-     * 手动刷新权限
+     * 鎵嬪姩鍒锋柊鏉冮檺
      */
     public void manualRefresh() {
         log.info("Manual permission refresh triggered");
@@ -152,7 +152,7 @@ public class DynamicPermissionLoader {
     }
 
     /**
-     * 检�URL是否需要权�
+     * 妫€锟経RL鏄惁闇€瑕佹潈锟?
      */
     public boolean requiresPermission(String method, String url) {
         String key = buildKey(method, url);
@@ -160,13 +160,13 @@ public class DynamicPermissionLoader {
     }
 
     /**
-     * 获取 URL所需的权�
+     * 鑾峰彇 URL鎵€闇€鐨勬潈锟?
      */
     public Set<String> getRequiredPermissions(String method, String url) {
         String key = buildKey(method, url);
         Set<String> permissions = urlPermissionCache.get(key);
 
-        // 如果没有精确匹配，尝试通配符匹�
+        // 濡傛灉娌℃湁绮剧‘鍖归厤锛屽皾璇曢€氶厤绗﹀尮锟?
         if (permissions == null || permissions.isEmpty()) {
             permissions = matchWildcardPermissions(method, url);
         }
@@ -175,8 +175,8 @@ public class DynamicPermissionLoader {
     }
 
     /**
-     * 通配符匹�
-     * 支持路径参数: /api/users/{id} 匹配 /api/users/123
+     * 閫氶厤绗﹀尮锟?
+     * 鏀寔璺緞鍙傛暟: /api/users/{id} 鍖归厤 /api/users/123
      */
     private Set<String> matchWildcardPermissions(String method, String url) {
         for (Map.Entry<String, Set<String>> entry : urlPermissionCache.entrySet()) {
@@ -190,10 +190,10 @@ public class DynamicPermissionLoader {
     }
 
     /**
-     * 模式匹配
+     * 妯″紡鍖归厤
      */
     private boolean matchesPattern(String pattern, String method, String url) {
-        // 提取方法和路�
+        // 鎻愬彇鏂规硶鍜岃矾锟?
         String[] patternParts = pattern.split(":", 2);
         if (patternParts.length != 2) {
             return false;
@@ -202,50 +202,50 @@ public class DynamicPermissionLoader {
         String patternMethod = patternParts[0];
         String patternPath = patternParts[1];
 
-        // 方法匹配� 表示所有方法）
+        // 鏂规硶鍖归厤锟?琛ㄧず鎵€鏈夋柟娉曪級
         if (!"*".equals(patternMethod) && !method.equals(patternMethod)) {
             return false;
         }
 
-        // 路径匹配
+        // 璺緞鍖归厤
         return matchesPath(patternPath, url);
     }
 
     /**
-     * 路径匹配算法
-     * 支持: /api/users/{id}, /api/users/*, /api/**
+     * 璺緞鍖归厤绠楁硶
+     * 鏀寔: /api/users/{id}, /api/users/*, /api/**
      */
     private boolean matchesPath(String pattern, String path) {
-        // 分割路径�
+        // 鍒嗗壊璺緞锟?
         String[] patternSegments = pattern.split("/");
         String[] pathSegments = path.split("/");
 
-        // ** 通配符：匹配任意层级
+        // ** 閫氶厤绗︼細鍖归厤浠绘剰灞傜骇
         if (pattern.contains("**")) {
             return matchesDeepWildcard(patternSegments, pathSegments);
         }
 
-        // 长度不匹�
+        // 闀垮害涓嶅尮锟?
         if (patternSegments.length != pathSegments.length) {
             return false;
         }
 
-        // 逐段匹配
+        // 閫愭鍖归厤
         for (int i = 0; i < patternSegments.length; i++) {
             String patternSeg = patternSegments[i];
             String pathSeg = pathSegments[i];
 
-            // {xxx} 路径参数
+            // {xxx} 璺緞鍙傛暟
             if (patternSeg.startsWith("{") && patternSeg.endsWith("}")) {
                 continue;
             }
 
-            // * 单层通配�
+            // * 鍗曞眰閫氶厤锟?
             if ("*".equals(patternSeg)) {
                 continue;
             }
 
-            // 精确匹配
+            // 绮剧‘鍖归厤
             if (!patternSeg.equals(pathSeg)) {
                 return false;
             }
@@ -255,7 +255,7 @@ public class DynamicPermissionLoader {
     }
 
     /**
-     * 深度通配符匹�
+     * 娣卞害閫氶厤绗﹀尮锟?
      */
     private boolean matchesDeepWildcard(String[] patternSegments, String[] pathSegments) {
         int patternIdx = 0;
@@ -265,7 +265,7 @@ public class DynamicPermissionLoader {
             String patternSeg = patternSegments[patternIdx];
 
             if ("**".equals(patternSeg)) {
-                // ** 匹配剩余所有路�
+                // ** 鍖归厤鍓╀綑鎵€鏈夎矾锟?
                 return true;
             }
 
@@ -282,18 +282,18 @@ public class DynamicPermissionLoader {
     }
 
     /**
-     * 构建缓存 key
+     * 鏋勫缓缂撳瓨 key
      */
     private String buildKey(String method, String path) {
         return (method != null ? method : "*") + ":" + path;
     }
 
     /**
-     * 清理相关缓存
+     * 娓呯悊鐩稿叧缂撳瓨
      */
     private void clearRelatedCaches() {
         try {
-            // 清理权限相关的所有缓�
+            // 娓呯悊鏉冮檺鐩稿叧鐨勬墍鏈夌紦锟?
             String[] cacheNames = {
                     "userPermissions", "userRoles", "permissionTree",
                     "rolePermissions", "userInfo"
@@ -312,14 +312,14 @@ public class DynamicPermissionLoader {
     }
 
     /**
-     * 获取权限版本�
+     * 鑾峰彇鏉冮檺鐗堟湰锟?
      */
     public long getPermissionVersion() {
         return permissionVersion.get();
     }
 
     /**
-     * 获取缓存统计信息
+     * 鑾峰彇缂撳瓨缁熻淇℃伅
      */
     public Map<String, Object> getCacheStats() {
         Map<String, Object> stats = new HashMap<>();
@@ -330,19 +330,19 @@ public class DynamicPermissionLoader {
     }
 
     /**
-     * 估算内存占用
+     * 浼扮畻鍐呭瓨鍗犵敤
      */
     private long estimateMemorySize() {
         long size = 0;
         for (Map.Entry<String, Set<String>> entry : urlPermissionCache.entrySet()) {
-            size += entry.getKey().length() * 2L; // String 占用
-            size += entry.getValue().size() * 50L; // Set 元素估算
+            size += entry.getKey().length() * 2L; // String 鍗犵敤
+            size += entry.getValue().size() * 50L; // Set 鍏冪礌浼扮畻
         }
         return size;
     }
 
     /**
-     * 权限刷新事件
+     * 鏉冮檺鍒锋柊浜嬩欢
      */
     @Getter
     public static class PermissionRefreshEvent extends ApplicationEvent {

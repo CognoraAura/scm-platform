@@ -4,7 +4,7 @@ import com.scmcloud.order.api.dto.OrderVO;
 import com.scmcloud.order.api.request.CreateOrderRequest;
 
 /**
- * 订单服务 Dubbo 接口
+ * 璁㈠崟鏈嶅姟 Dubbo 鎺ュ彛
  *
  * @author SCM Platform Team
  * @since 2025-12-26
@@ -12,25 +12,25 @@ import com.scmcloud.order.api.request.CreateOrderRequest;
 public interface OrderDubboService {
 
     /**
-     * 创建订单
+     * 鍒涘缓璁㈠崟
      *
-     * @param request 创建订单请求
-     * @return 订单 VO
+     * @param request 鍒涘缓璁㈠崟璇锋眰
+     * @return 璁㈠崟 VO
      */
     OrderVO createOrder(CreateOrderRequest request);
 
     /**
-     * 查询订单
+     * 鏌ヨ璁㈠崟
      *
-     * @param orderNo 订单�
-     * @return 订单 VO
+     * @param orderNo 璁㈠崟锟?
+     * @return 璁㈠崟 VO
      */
     OrderVO queryOrder(String orderNo);
 
     /**
-     * 取消订单
+     * 鍙栨秷璁㈠崟
      *
-     * @param orderNo 订单�
+     * @param orderNo 璁㈠崟锟?
      */
     void cancelOrder(String orderNo);
 }

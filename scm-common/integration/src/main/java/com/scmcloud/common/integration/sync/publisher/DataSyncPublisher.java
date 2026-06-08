@@ -5,42 +5,42 @@ import com.scmcloud.common.integration.sync.event.DataSyncEvent;
 import java.util.List;
 
 /**
- * 数据同步事件发布器接�
+ * 鏁版嵁鍚屾浜嬩欢鍙戝竷鍣ㄦ帴锟?
  *
  * @author Deng
  * @since 2025-12-16
  */
 public interface DataSyncPublisher {
     /**
-     * 同步发布事件
+     * 鍚屾鍙戝竷浜嬩欢
      *
-     * @param event 同步事件
-     * @return 是否发布成功
+     * @param event 鍚屾浜嬩欢
+     * @return 鏄惁鍙戝竷鎴愬姛
      */
     boolean publish(DataSyncEvent event);
 
     /**
-     * 异步发布事件（fire-and-forget�
+     * 寮傛鍙戝竷浜嬩欢锛坒ire-and-forget锟?
      * <p>
-     * 内部使用 CompletableFuture 处理回调，但不暴露给调用�
+     * 鍐呴儴浣跨敤 CompletableFuture 澶勭悊鍥炶皟锛屼絾涓嶆毚闇茬粰璋冪敤锟?
      *
-     * @param event 同步事件
+     * @param event 鍚屾浜嬩欢
      */
     void publishAsync(DataSyncEvent event);
 
     /**
-     * 批量发布事件
+     * 鎵归噺鍙戝竷浜嬩欢
      *
-     * @param events 事件列表
-     * @return 成功数量
+     * @param events 浜嬩欢鍒楄〃
+     * @return 鎴愬姛鏁伴噺
      */
     int publishBatch(List<DataSyncEvent> events);
 
     /**
-     * 发布到死信队�
+     * 鍙戝竷鍒版淇￠槦锟?
      *
-     * @param event 失败事件
-     * @param reason 失败原因
+     * @param event 澶辫触浜嬩欢
+     * @param reason 澶辫触鍘熷洜
      */
     void publishToDeadLetter(DataSyncEvent event, String reason);
 }

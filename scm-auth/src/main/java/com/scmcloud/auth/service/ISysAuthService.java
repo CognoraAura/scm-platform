@@ -6,9 +6,9 @@ import com.scmcloud.common.dto.user.LoginResponse;
 import java.util.UUID;
 
 /**
- * 系统认证服务接口
+ * 绯荤粺璁よ瘉鏈嶅姟鎺ュ彛
  * 
- * <p>提供核心的认证功能，包括用户登录、登出、令牌刷新等操作</p>
+ * <p>鎻愪緵鏍稿績鐨勮璇佸姛鑳斤紝鍖呮嫭鐢ㄦ埛鐧诲綍銆佺櫥鍑恒€佷护鐗屽埛鏂扮瓑鎿嶄綔</p>
  * 
  * @author system
  * @since 2025-11-27
@@ -16,39 +16,39 @@ import java.util.UUID;
 public interface ISysAuthService {
 
     /**
-     * 用户登录
+     * 鐢ㄦ埛鐧诲綍
      * 
-     * @param request 登录请求参数，包含用户名和密码等信息
-     * @param ipAddress 客户�IP地址
-     * @param deviceId 设备 ID
-     * @return 登录响应，包含访问令牌和刷新令牌
+     * @param request 鐧诲綍璇锋眰鍙傛暟锛屽寘鍚敤鎴峰悕鍜屽瘑鐮佺瓑淇℃伅
+     * @param ipAddress 瀹㈡埛锟絀P鍦板潃
+     * @param deviceId 璁惧 ID
+     * @return 鐧诲綍鍝嶅簲锛屽寘鍚闂护鐗屽拰鍒锋柊浠ょ墝
      */
     LoginResponse login(LoginRequest request, String ipAddress, String deviceId);
 
     /**
-     * 用户登出
+     * 鐢ㄦ埛鐧诲嚭
      * 
-     * @param token 访问令牌
-     * @param userId 用户 ID
-     * @param reason 登出原因
+     * @param token 璁块棶浠ょ墝
+     * @param userId 鐢ㄦ埛 ID
+     * @param reason 鐧诲嚭鍘熷洜
      */
     void logout(String token, UUID userId, String reason);
 
     /**
-     * 刷新访问令牌
+     * 鍒锋柊璁块棶浠ょ墝
      * 
-     * @param refreshToken 刷新令牌
-     * @param deviceId 设备 ID
-     * @param ipAddress 客户�IP地址
-     * @return 新的登录响应，包含新的访问令牌和刷新令牌
+     * @param refreshToken 鍒锋柊浠ょ墝
+     * @param deviceId 璁惧 ID
+     * @param ipAddress 瀹㈡埛锟絀P鍦板潃
+     * @return 鏂扮殑鐧诲綍鍝嶅簲锛屽寘鍚柊鐨勮闂护鐗屽拰鍒锋柊浠ょ墝
      */
     LoginResponse refreshToken(String refreshToken, String deviceId, String ipAddress);
 
     /**
-     * 强制用户登出
+     * 寮哄埗鐢ㄦ埛鐧诲嚭
      * 
-     * @param userId 用户 ID
-     * @param reason 强制登出的原�
+     * @param userId 鐢ㄦ埛 ID
+     * @param reason 寮哄埗鐧诲嚭鐨勫師锟?
      */
     void forceLogout(UUID userId, String reason);
 }

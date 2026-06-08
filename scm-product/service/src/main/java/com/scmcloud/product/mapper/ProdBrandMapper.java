@@ -6,7 +6,7 @@ import com.scmcloud.product.domain.entity.ProdBrand;
 
 /**
  * <p>
- * 商品品牌�Mapper 接口
+ * 鍟嗗搧鍝佺墝锟組apper 鎺ュ彛
  * </p>
  *
  * @author author

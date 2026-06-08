@@ -12,7 +12,7 @@ import java.util.UUID;
 
 /**
  * <p>
- * 权限�服务�
+ * 鏉冮檺锟芥湇鍔★拷
  * </p>
  *
  * @author author
@@ -21,91 +21,91 @@ import java.util.UUID;
 public interface ISysPermissionService extends IService<SysPermission> {
 
     /**
-     * 判断用户是否拥有指定权限编码�
+     * 鍒ゆ柇鐢ㄦ埛鏄惁鎷ユ湁鎸囧畾鏉冮檺缂栫爜锟?
      *
-     * @param userId 用户 ID
-     * @param permissionCode 权限编码
-     * @return true 表示拥有该权限；false 表示不拥�
+     * @param userId 鐢ㄦ埛 ID
+     * @param permissionCode 鏉冮檺缂栫爜
+     * @return true 琛ㄧず鎷ユ湁璇ユ潈闄愶紱false 琛ㄧず涓嶆嫢锟?
      */
     boolean hasPermission(UUID userId, String permissionCode);
 
     /**
-     * 判断用户是否对指定资源拥有某项权限�
+     * 鍒ゆ柇鐢ㄦ埛鏄惁瀵规寚瀹氳祫婧愭嫢鏈夋煇椤规潈闄愶拷
      *
-     * @param userId 用户 ID
-     * @param resourceType 资源类型（如：PROJECT、DEPT 等）
-     * @param resourceId 资源ID（可序列化）
-     * @param permission 权限动作（如：READ、WRITE、DELETE 等）
-     * @return true 表示拥有该资源权限；false 表示不拥�
+     * @param userId 鐢ㄦ埛 ID
+     * @param resourceType 璧勬簮绫诲瀷锛堝锛歅ROJECT銆丏EPT 绛夛級
+     * @param resourceId 璧勬簮ID锛堝彲搴忓垪鍖栵級
+     * @param permission 鏉冮檺鍔ㄤ綔锛堝锛歊EAD銆乄RITE銆丏ELETE 绛夛級
+     * @return true 琛ㄧず鎷ユ湁璇ヨ祫婧愭潈闄愶紱false 琛ㄧず涓嶆嫢锟?
      */
     boolean hasResourcePermission(UUID userId, String resourceType, Serializable resourceId, String permission);
 
     /**
-     * 查询用户所拥有的角色编码集合�
+     * 鏌ヨ鐢ㄦ埛鎵€鎷ユ湁鐨勮鑹茬紪鐮侀泦鍚堬拷
      *
-     * @param userId 用户 ID
-     * @return 角色编码集合
+     * @param userId 鐢ㄦ埛 ID
+     * @return 瑙掕壊缂栫爜闆嗗悎
      */
     Set<String> getUserRoles(UUID userId);
 
     /**
-     * 查询用户所拥有的权限编码集合�
+     * 鏌ヨ鐢ㄦ埛鎵€鎷ユ湁鐨勬潈闄愮紪鐮侀泦鍚堬拷
      *
-     * @param userId 用户 ID
-     * @return 权限编码集合
+     * @param userId 鐢ㄦ埛 ID
+     * @return 鏉冮檺缂栫爜闆嗗悎
      */
     Set<String> getUserPermissions(UUID userId);
 
     /**
-     * 获取权限树（树形结构）�
+     * 鑾峰彇鏉冮檺鏍戯紙鏍戝舰缁撴瀯锛夛拷
      *
-     * @return 权限树列�
+     * @return 鏉冮檺鏍戝垪锟?
      */
     List<PermissionDTO> getPermissionTree();
 
     /**
-     * 根据ID获取权限详情�
+     * 鏍规嵁ID鑾峰彇鏉冮檺璇︽儏锟?
      *
-     * @param id 权限 ID
-     * @return 权限详情
+     * @param id 鏉冮檺 ID
+     * @return 鏉冮檺璇︽儏
      */
     PermissionDTO getPermissionById(UUID id);
 
     /**
-     * 根据 API 路径�HTTP 方法匹配所需的权限编码列表�
+     * 鏍规嵁 API 璺緞锟紿TTP 鏂规硶鍖归厤鎵€闇€鐨勬潈闄愮紪鐮佸垪琛拷
      *
-     * @param url 请求路径（Path�
-     * @param method HTTP 方法（如：GET、POST、PUT、DELETE�
-     * @return 访问该接口所需的权限编码列�
+     * @param url 璇锋眰璺緞锛圥ath锟?
+     * @param method HTTP 鏂规硶锛堝锛欸ET銆丳OST銆丳UT銆丏ELETE锟?
+     * @return 璁块棶璇ユ帴鍙ｆ墍闇€鐨勬潈闄愮紪鐮佸垪锟?
      */
     List<String> findPermissionsByUrl(String url, String method);
 
     /**
-     * 查询所�API 类型的权限�
-     * 用于动态权限加载（DynamicPermissionLoader）�
+     * 鏌ヨ鎵€锟紸PI 绫诲瀷鐨勬潈闄愶拷
+     * 鐢ㄤ簬鍔ㄦ€佹潈闄愬姞杞斤紙DynamicPermissionLoader锛夛拷
      *
-     * @return API 权限列表，包含路径、HTTP 方法和权限编�
+     * @return API 鏉冮檺鍒楄〃锛屽寘鍚矾寰勩€丠TTP 鏂规硶鍜屾潈闄愮紪锟?
      */
     List<ApiPermissionDTO> findApiPermissions();
 
     /**
-     * 新增权限�
+     * 鏂板鏉冮檺锟?
      *
-     * @param permissionDTO 权限信息
+     * @param permissionDTO 鏉冮檺淇℃伅
      */
     void addPermission(PermissionDTO permissionDTO);
 
     /**
-     * 修改权限�
+     * 淇敼鏉冮檺锟?
      *
-     * @param permissionDTO 权限信息
+     * @param permissionDTO 鏉冮檺淇℃伅
      */
     void updatePermission(PermissionDTO permissionDTO);
 
     /**
-     * 删除权限�
+     * 鍒犻櫎鏉冮檺锟?
      *
-     * @param id 权限 ID
+     * @param id 鏉冮檺 ID
      */
     void deletePermission(UUID id);
 }

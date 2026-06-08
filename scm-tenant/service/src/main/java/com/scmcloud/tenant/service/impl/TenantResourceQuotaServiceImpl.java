@@ -19,12 +19,12 @@ import java.util.UUID;
 public class TenantResourceQuotaServiceImpl extends ServiceImpl<TenantResourceQuotaMapper, TenantResourceQuota> implements ITenantResourceQuotaService {
 
     public TenantResourceQuota createQuota(TenantResourceQuota entity) {
-        log.info("创建租户资源配额: tenantId={}", entity.getTenantId());
+        log.info("鍒涘缓绉熸埛璧勬簮閰嶉: tenantId={}", entity.getTenantId());
         entity.setId(UUID.randomUUID().toString());
         entity.setCreateTime(LocalDateTime.now());
         entity.setUpdateTime(LocalDateTime.now());
         save(entity);
-        log.info("租户资源配额创建成功: id={}", entity.getId());
+        log.info("绉熸埛璧勬簮閰嶉鍒涘缓鎴愬姛: id={}", entity.getId());
         return entity;
     }
 
@@ -35,26 +35,26 @@ public class TenantResourceQuotaServiceImpl extends ServiceImpl<TenantResourceQu
     }
 
     public TenantResourceQuota updateQuota(TenantResourceQuota entity) {
-        log.info("更新租户资源配额: id={}", entity.getId());
+        log.info("鏇存柊绉熸埛璧勬簮閰嶉: id={}", entity.getId());
         entity.setUpdateTime(LocalDateTime.now());
         updateById(entity);
         return entity;
     }
 
     public boolean deleteById(String id) {
-        log.info("删除租户资源配额: id={}", id);
+        log.info("鍒犻櫎绉熸埛璧勬簮閰嶉: id={}", id);
         return removeById(id);
     }
 
     public boolean checkQuota(String tenantId, String resourceType) {
-        log.debug("检查租户配� tenantId={}, resourceType={}", tenantId, resourceType);
+        log.debug("妫€鏌ョ鎴烽厤锟?tenantId={}, resourceType={}", tenantId, resourceType);
 
         TenantResourceQuota quota = lambdaQuery()
                 .eq(TenantResourceQuota::getTenantId, tenantId)
                 .one();
 
         if (quota == null) {
-            log.warn("租户配额不存� tenantId={}", tenantId);
+            log.warn("绉熸埛閰嶉涓嶅瓨锟?tenantId={}", tenantId);
             return false;
         }
 
@@ -65,7 +65,7 @@ public class TenantResourceQuotaServiceImpl extends ServiceImpl<TenantResourceQu
             case "ORDER" -> quota.getCurrentOrdersToday() < quota.getMaxOrdersPerDay();
             case "API" -> quota.getCurrentApiCallsToday() < quota.getMaxApiCallsPerDay();
             default -> {
-                log.warn("未知资源类型: {}", resourceType);
+                log.warn("鏈煡璧勬簮绫诲瀷: {}", resourceType);
                 yield false;
             }
         };
@@ -78,7 +78,7 @@ public class TenantResourceQuotaServiceImpl extends ServiceImpl<TenantResourceQu
     }
 
     public Page<TenantResourceQuota> pageQuery(int page, int size, String tenantId) {
-        log.debug("分页查询租户资源配额: page={}, size={}, tenantId={}", page, size, tenantId);
+        log.debug("鍒嗛〉鏌ヨ绉熸埛璧勬簮閰嶉: page={}, size={}, tenantId={}", page, size, tenantId);
 
         LambdaQueryWrapper<TenantResourceQuota> wrapper = Wrappers.lambdaQuery();
 

@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 采购计划表（MRP�
+ * 閲囪喘璁″垝琛紙MRP锟?
  * </p>
  *
  * @author deng

@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * <p>
- * 租户套餐�Mapper 接口
+ * 绉熸埛濂楅锟組apper 鎺ュ彛
  * </p>
  *
  * @author deng

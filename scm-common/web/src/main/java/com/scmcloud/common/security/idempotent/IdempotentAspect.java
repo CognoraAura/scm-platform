@@ -23,7 +23,7 @@ import java.time.Duration;
 import java.util.UUID;
 
 /**
- * 幂等性切�
+ * 骞傜瓑鎬у垏锟?
  *
  * @author Deng
  * createData 2025/10/31 10:21
@@ -43,7 +43,7 @@ public class IdempotentAspect {
     public Object around(ProceedingJoinPoint point, Idempotent idempotent) throws Throwable {
         String idempotentKey = buildKey(point, idempotent);
 
-        // 尝试获取�
+        // 灏濊瘯鑾峰彇锟?
         Boolean acquired = redisTemplate.opsForValue()
                 .setIfAbsent(idempotentKey, "1", Duration.ofSeconds(idempotent.expireTime()));
 
@@ -55,7 +55,7 @@ public class IdempotentAspect {
         try {
             return point.proceed();
         } catch (Exception e) {
-            // 如果业务执行失败，删除幂等性key，允许重�
+            // 濡傛灉涓氬姟鎵ц澶辫触锛屽垹闄ゅ箓绛夋€ey锛屽厑璁搁噸锟?
             redisTemplate.delete(idempotentKey);
             throw e;
         }
@@ -89,14 +89,14 @@ public class IdempotentAspect {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
         if (attributes == null) {
-            throw new BusinessException("无法获取请求上下文");
+            throw new BusinessException("鏃犳硶鑾峰彇璇锋眰涓婁笅鏂?);
         }
 
         HttpServletRequest request = attributes.getRequest();
         String token = request.getHeader(TOKEN_HEADER);
 
         if (token == null || token.isEmpty()) {
-            throw new BusinessException("缺少幂等�Token");
+            throw new BusinessException("缂哄皯骞傜瓑锟絋oken");
         }
 
         return token;

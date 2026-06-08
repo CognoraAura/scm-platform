@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 数据同步自动配置
+ * 鏁版嵁鍚屾鑷姩閰嶇疆
  *
  * @author Deng
  * @since 2025-12-16
@@ -84,7 +84,7 @@ public class DataSyncAutoConfiguration {
         RetryableEventProcessor processor = new RetryableEventProcessor(idempotentChecker, publisher, properties,
                 meterRegistry);
 
-        // 自动注册所�DataSyncHandler
+        // 鑷姩娉ㄥ唽鎵€锟紻ataSyncHandler
         List<DataSyncHandler> handlers = handlersProvider.getIfAvailable();
         if (handlers != null) {
             handlers.forEach(processor::registerHandler);

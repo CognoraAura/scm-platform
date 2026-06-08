@@ -27,12 +27,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @NonNull
     public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
-        // 通过 Dubbo 高性能 RPC 获取用户信息（包含密码、角色、权限）
+        // 閫氳繃 Dubbo 楂樻€ц兘 RPC 鑾峰彇鐢ㄦ埛淇℃伅锛堝寘鍚瘑鐮併€佽鑹层€佹潈闄愶級
         SecurityUser user = userDubboService.getUserByUsername(username);
 
         if (user == null) {
             log.warn("User not found: {}", username);
-            throw new UsernameNotFoundException("用户不存� " + username);
+            throw new UsernameNotFoundException("鐢ㄦ埛涓嶅瓨锟?" + username);
         }
 
         log.debug("User loaded: {}, roles: {}, permissions: {}",

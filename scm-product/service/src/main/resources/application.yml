@@ -1,25 +1,25 @@
-﻿server:
+锘縮erver:
   port: 8201
 
 spring:
   application:
     name: scm-product
 
-    Nacos 服务发现与配置中??  cloud:
+    Nacos 鏈嶅姟鍙戠幇涓庨厤缃腑锟?  cloud:
     nacos:
       discovery:
-        server-addr: ${NACOS_SERVER:192.168.80.140:8848}
+        server-addr: ${NACOS_SERVER:localhost:8848}
         namespace: ${NACOS_NAMESPACE:}
         group: DEFAULT_GROUP
       config:
-        server-addr: ${NACOS_SERVER:192.168.80.140:8848}
+        server-addr: ${NACOS_SERVER:localhost:8848}
         namespace: ${NACOS_NAMESPACE:}
         group: DEFAULT_GROUP
         file-extension: yml
 
-    数据源配??  datasource:
+    鏁版嵁婧愰厤锟?  datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${DB_HOST:192.168.80.140}:${DB_PORT:5432}/db_product
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/db_product
     username: ${DB_USERNAME:admin}
     password: ${DB_PASSWORD:admin}
     hikari:
@@ -27,10 +27,10 @@ spring:
       minimum-idle: 5
       connection-timeout: 30000
 
-    Redis 配置
+    Redis 閰嶇疆
   data:
     redis:
-      host: ${REDIS_HOST:192.168.80.140}
+      host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
       database: 2
@@ -42,7 +42,7 @@ spring:
           min-idle: 5
           max-wait: 3000ms
 
-  MyBatis-Plus 配置
+  MyBatis-Plus 閰嶇疆
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
@@ -53,35 +53,35 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
 
-  Seata 分布式事务配??seata:
+  Seata 鍒嗗竷寮忎簨鍔￠厤锟?seata:
   enabled: true
   application-id: ${spring.application.name}
   tx-service-group: ${spring.application.name}-tx-group
 
-    使用 Nacos 作为配置中心
+    浣跨敤 Nacos 浣滀负閰嶇疆涓績
   config:
     type: nacos
     nacos:
-      server-addr: ${NACOS_SERVER:192.168.80.140:8848}
+      server-addr: ${NACOS_SERVER:localhost:8848}
       namespace: ${NACOS_NAMESPACE:}
       group: SEATA_GROUP
       data-id: seataServer.properties
       username: nacos
       password: nacos
 
-    使用 Nacos 作为注册中心
+    浣跨敤 Nacos 浣滀负娉ㄥ唽涓績
   registry:
     type: nacos
     nacos:
       application: seata-server
-      server-addr: ${NACOS_SERVER:192.168.80.140:8848}
+      server-addr: ${NACOS_SERVER:localhost:8848}
       namespace: ${NACOS_NAMESPACE:}
       group: SEATA_GROUP
       cluster: default
       username: nacos
       password: nacos
 
-    客户端配??  client:
+    瀹㈡埛绔厤锟?  client:
     rm:
       async-commit-buffer-limit: 10000
       report-retry-count: 5
@@ -107,7 +107,7 @@ mybatis-plus:
     log:
       exceptionRate: 100
 
-  Actuator 健康检??management:
+  Actuator 鍋ュ悍妫€锟?management:
   endpoints:
     web:
       exposure:
@@ -116,11 +116,11 @@ mybatis-plus:
     health:
       show-details: always
 
-  XXL-Job 配置
+  XXL-Job 閰嶇疆
 xxl:
   job:
     admin:
-      addresses: ${XXL_JOB_ADMIN:http://192.168.80.140:8088/xxl-job-admin}
+      addresses: ${XXL_JOB_ADMIN:http://localhost:8088/xxl-job-admin}
     executor:
       appname: scm-product-executor
       address:
@@ -130,7 +130,7 @@ xxl:
       logretentiondays: 30
     accessToken: default_token
 
-  日志配置
+  鏃ュ織閰嶇疆
 logging:
   level:
     root: INFO

@@ -11,29 +11,29 @@ import java.util.UUID;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
- * 企业�UUID类型处理�
+ * 浼佷笟锟経UID绫诲瀷澶勭悊锟?
  *
- * <p>设计思路参考：
+ * <p>璁捐鎬濊矾鍙傝€冿細
  * <ul>
- *   <li>Google Guava - 高性能原生类型转换，零依赖实现</li>
- *   <li>Facebook MySQL实践 - BINARY(16)存储优化，节省空间和索引性能</li>
- *   <li>Netflix Architecture - 可观测性设计，异常快速失�/li>
- *   <li>MyBatis最佳实�- 无状态线程安全设�/li>
+ *   <li>Google Guava - 楂樻€ц兘鍘熺敓绫诲瀷杞崲锛岄浂渚濊禆瀹炵幇</li>
+ *   <li>Facebook MySQL瀹炶返 - BINARY(16)瀛樺偍浼樺寲锛岃妭鐪佺┖闂村拰绱㈠紩鎬ц兘</li>
+ *   <li>Netflix Architecture - 鍙娴嬫€ц璁★紝寮傚父蹇€熷け锟?li>
+ *   <li>MyBatis鏈€浣冲疄锟? 鏃犵姸鎬佺嚎绋嬪畨鍏ㄨ锟?li>
  * </ul>
  *
- * <p>性能优化�
+ * <p>鎬ц兘浼樺寲锟?
  * <ul>
- *   <li>使用位运算替代ByteBuffer，减少对象分�/li>
- *   <li>采用大端�Big-Endian)，与MySQL BINARY兼容</li>
- *   <li>无状态设计，天然线程安全，无需同步开销</li>
- *   <li>提前校验，Fail-Fast，避免无效计�/li>
+ *   <li>浣跨敤浣嶈繍绠楁浛浠yteBuffer锛屽噺灏戝璞″垎锟?li>
+ *   <li>閲囩敤澶х锟紹ig-Endian)锛屼笌MySQL BINARY鍏煎</li>
+ *   <li>鏃犵姸鎬佽璁★紝澶╃劧绾跨▼瀹夊叏锛屾棤闇€鍚屾寮€閿€</li>
+ *   <li>鎻愬墠鏍￠獙锛孎ail-Fast锛岄伩鍏嶆棤鏁堣锟?li>
  * </ul>
  *
- * <p>可观测性：
+ * <p>鍙娴嬫€э細
  * <ul>
- *   <li>关键路径埋点，支持性能监控</li>
- *   <li>异常详细上下文，便于问题排查</li>
- *   <li>统计转换失败次数，支持告�/li>
+ *   <li>鍏抽敭璺緞鍩嬬偣锛屾敮鎸佹€ц兘鐩戞帶</li>
+ *   <li>寮傚父璇︾粏涓婁笅鏂囷紝渚夸簬闂鎺掓煡</li>
+ *   <li>缁熻杞崲澶辫触娆℃暟锛屾敮鎸佸憡锟?li>
  * </ul>
  *
  * @author Deng
@@ -45,24 +45,24 @@ import java.util.concurrent.atomic.LongAdder;
 @MappedJdbcTypes({JdbcType.BINARY, JdbcType.VARBINARY})
 public class UUIDTypeHandler extends BaseTypeHandler<UUID> {
     /**
-     * UUID标准字节长度 (128 bits = 16 bytes)
+     * UUID鏍囧噯瀛楄妭闀垮害 (128 bits = 16 bytes)
      */
     private static final int UUID_BYTE_LENGTH = 16;
 
     /**
-     * 用于位运算的常量
+     * 鐢ㄤ簬浣嶈繍绠楃殑甯搁噺
      */
     private static final int BITS_PER_BYTE = 8;
     private static final long BYTE_MASK = 0xFF;
 
     /**
-     * 性能监控 - 转换失败计数�
-     * 使用LongAdder替代AtomicLong，在高并发下性能更好（参考Google论文�
+     * 鎬ц兘鐩戞帶 - 杞崲澶辫触璁℃暟锟?
+     * 浣跨敤LongAdder鏇夸唬AtomicLong锛屽湪楂樺苟鍙戜笅鎬ц兘鏇村ソ锛堝弬鑰僄oogle璁烘枃锟?
      */
     private static final LongAdder CONVERSION_FAILURE_COUNTER = new LongAdder();
 
     /**
-     * 错误阈�- 用于熔断告警
+     * 閿欒闃堬拷- 鐢ㄤ簬鐔旀柇鍛婅
      */
     private static final long ERROR_THRESHOLD = 1000L;
 
@@ -94,26 +94,26 @@ public class UUIDTypeHandler extends BaseTypeHandler<UUID> {
     }
 
     /**
-     * UUID转字节数�- 零拷贝高性能实现
+     * UUID杞瓧鑺傛暟锟? 闆舵嫹璐濋珮鎬ц兘瀹炵幇
      *
-     * <p>算法说明�
+     * <p>绠楁硶璇存槑锟?
      * <pre>
-     * UUID结构：xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (128 bits)
-     * 存储格式：BINARY(16) 大端�
+     * UUID缁撴瀯锛歺xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (128 bits)
+     * 瀛樺偍鏍煎紡锛欱INARY(16) 澶х锟?
      *
-     * Most Significant Bits (�4�  |  Least Significant Bits (�4�
+     * Most Significant Bits (锟?锟? |  Least Significant Bits (锟?锟?
      * --------------------------------|--------------------------------
      *   time_low + time_mid + ...     |   clock_seq + node
      * </pre>
      *
-     * <p>性能对比�
+     * <p>鎬ц兘瀵规瘮锟?
      * <ul>
-     *   <li>ByteBuffer方案：~80ns，产�个对象（ByteBuffer + byte[]�/li>
-     *   <li>位运算方案：~25ns，产�个对象（byte[]），性能提升3�/li>
+     *   <li>ByteBuffer鏂规锛殈80ns锛屼骇锟戒釜瀵硅薄锛圔yteBuffer + byte[]锟?li>
+     *   <li>浣嶈繍绠楁柟妗堬細~25ns锛屼骇锟戒釜瀵硅薄锛坆yte[]锛夛紝鎬ц兘鎻愬崌3锟?li>
      * </ul>
      *
-     * @param uuid UUID 对象
-     * @return 16字节数组，大端序
+     * @param uuid UUID 瀵硅薄
+     * @return 16瀛楄妭鏁扮粍锛屽ぇ绔簭
      */
     private static byte[] uuidToBytes(UUID uuid) {
         long mostSigBits = uuid.getMostSignificantBits();
@@ -121,13 +121,13 @@ public class UUIDTypeHandler extends BaseTypeHandler<UUID> {
 
         byte[] bytes = new byte[UUID_BYTE_LENGTH];
 
-        // �4位：从最高字节开始写入（Big-Endian�
-        // 类似于Google Guava�Longs.toByteArray 实现
+        // 锟?浣嶏細浠庢渶楂樺瓧鑺傚紑濮嬪啓鍏ワ紙Big-Endian锟?
+        // 绫讳技浜嶨oogle Guava锟絃ongs.toByteArray 瀹炵幇
         for (int i = 0; i < Long.BYTES; i++) {
             bytes[i] = (byte) (mostSigBits >>> ((Long.BYTES - 1 - i) * BITS_PER_BYTE));
         }
 
-        // �4位：继续写入剩余8个字�
+        // 锟?浣嶏細缁х画鍐欏叆鍓╀綑8涓瓧锟?
         for (int i = 0; i < Long.BYTES; i++) {
             bytes[Long.BYTES + i] = (byte) (leastSigBits >>> ((Long.BYTES - 1 - i) * BITS_PER_BYTE));
         }
@@ -136,18 +136,18 @@ public class UUIDTypeHandler extends BaseTypeHandler<UUID> {
     }
 
     /**
-     * 字节数组转UUID - 防御性编程实�
+     * 瀛楄妭鏁扮粍杞琔UID - 闃插尽鎬х紪绋嬪疄锟?
      *
-     * <p>参考Facebook MySQL实践�
+     * <p>鍙傝€僃acebook MySQL瀹炶返锟?
      * <ul>
-     *   <li>严格校验输入长度，防止数据损�/li>
-     *   <li>使用位运算重建long值，避免ByteBuffer开销</li>
-     *   <li>保持大端序一致�/li>
+     *   <li>涓ユ牸鏍￠獙杈撳叆闀垮害锛岄槻姝㈡暟鎹崯锟?li>
+     *   <li>浣跨敤浣嶈繍绠楅噸寤簂ong鍊硷紝閬垮厤ByteBuffer寮€閿€</li>
+     *   <li>淇濇寔澶х搴忎竴鑷达拷/li>
      * </ul>
      *
-     * @param bytes 16字节数组
-     * @return UUID 对象
-     * @throws IllegalArgumentException 如果字节长度不是16
+     * @param bytes 16瀛楄妭鏁扮粍
+     * @return UUID 瀵硅薄
+     * @throws IllegalArgumentException 濡傛灉瀛楄妭闀垮害涓嶆槸16
      */
     private static UUID bytesToUuid(byte[] bytes) {
         if (bytes.length != UUID_BYTE_LENGTH) {
@@ -160,13 +160,13 @@ public class UUIDTypeHandler extends BaseTypeHandler<UUID> {
         long mostSigBits = 0L;
         long leastSigBits = 0L;
 
-        // 重建�4位（Big-Endian�
-        // 类似于Google Guava�Longs.fromByteArray 实现
+        // 閲嶅缓锟?浣嶏紙Big-Endian锟?
+        // 绫讳技浜嶨oogle Guava锟絃ongs.fromByteArray 瀹炵幇
         for (int i = 0; i < Long.BYTES; i++) {
             mostSigBits = (mostSigBits << BITS_PER_BYTE) | (bytes[i] & BYTE_MASK);
         }
 
-        // 重建�4�
+        // 閲嶅缓锟?锟?
         for (int i = Long.BYTES; i < UUID_BYTE_LENGTH; i++) {
             leastSigBits = (leastSigBits << BITS_PER_BYTE) | (bytes[i] & BYTE_MASK);
         }
@@ -175,20 +175,20 @@ public class UUIDTypeHandler extends BaseTypeHandler<UUID> {
     }
 
     /**
-     * 安全的字节转 UUID包装方法
+     * 瀹夊叏鐨勫瓧鑺傝浆 UUID鍖呰鏂规硶
      *
-     * <p>Netflix SRE实践�
+     * <p>Netflix SRE瀹炶返锟?
      * <ul>
-     *   <li>Null-Safe处理，避免NPE</li>
-     *   <li>统一异常处理和日志记�/li>
-     *   <li>提供详细的错误上下文</li>
-     *   <li>失败计数器支持熔断告�/li>
+     *   <li>Null-Safe澶勭悊锛岄伩鍏峃PE</li>
+     *   <li>缁熶竴寮傚父澶勭悊鍜屾棩蹇楄锟?li>
+     *   <li>鎻愪緵璇︾粏鐨勯敊璇笂涓嬫枃</li>
+     *   <li>澶辫触璁℃暟鍣ㄦ敮鎸佺啍鏂憡锟?li>
      * </ul>
      *
-     * @param bytes 字节数组（可能为null�
-     * @param context 上下文信息，用于日志
-     * @return UUID对象，如果bytes为null则返回null
-     * @throws SQLException 如果转换失败
+     * @param bytes 瀛楄妭鏁扮粍锛堝彲鑳戒负null锟?
+     * @param context 涓婁笅鏂囦俊鎭紝鐢ㄤ簬鏃ュ織
+     * @return UUID瀵硅薄锛屽鏋渂ytes涓簄ull鍒欒繑鍥瀗ull
+     * @throws SQLException 濡傛灉杞崲澶辫触
      */
     private UUID bytesToUuidSafe(byte[] bytes, String context) throws SQLException {
         if (bytes == null) {
@@ -208,28 +208,28 @@ public class UUIDTypeHandler extends BaseTypeHandler<UUID> {
     }
 
     /**
-     * 统一的错误处理逻辑
+     * 缁熶竴鐨勯敊璇鐞嗛€昏緫
      *
-     * <p>设计要点�
+     * <p>璁捐瑕佺偣锟?
      * <ul>
-     *   <li>记录详细的错误信息和堆栈</li>
-     *   <li>增加失败计数器，支持监控告警</li>
-     *   <li>达到阈值时记录WARN日志，触发告�/li>
+     *   <li>璁板綍璇︾粏鐨勯敊璇俊鎭拰鍫嗘爤</li>
+     *   <li>澧炲姞澶辫触璁℃暟鍣紝鏀寔鐩戞帶鍛婅</li>
+     *   <li>杈惧埌闃堝€兼椂璁板綍WARN鏃ュ織锛岃Е鍙戝憡锟?li>
      * </ul>
      *
-     * @param context 错误上下�
-     * @param e 异常对象
-     * @param data 相关数据（UUID或byte[]�
+     * @param context 閿欒涓婁笅锟?
+     * @param e 寮傚父瀵硅薄
+     * @param data 鐩稿叧鏁版嵁锛圲UID鎴朾yte[]锟?
      */
     private void handleConversionError(String context, Exception e, Object data) {
         CONVERSION_FAILURE_COUNTER.increment();
         long failureCount = CONVERSION_FAILURE_COUNTER.sum();
 
-        // 记录详细错误日志
+        // 璁板綍璇︾粏閿欒鏃ュ織
         log.error("UUID conversion failed at [{}], data={}, totalFailures={}",
             context, data, failureCount, e);
 
-        // 达到阈值时触发告警（可集成Prometheus/Grafana�
+        // 杈惧埌闃堝€兼椂瑙﹀彂鍛婅锛堝彲闆嗘垚Prometheus/Grafana锟?
         if (failureCount % ERROR_THRESHOLD == 0) {
             log.warn("UUID conversion failure threshold reached: {} failures detected. " +
                 "Please check database data integrity!", failureCount);
@@ -237,16 +237,16 @@ public class UUIDTypeHandler extends BaseTypeHandler<UUID> {
     }
 
     /**
-     * 获取转换失败总数 - 供监控系统调�
+     * 鑾峰彇杞崲澶辫触鎬绘暟 - 渚涚洃鎺х郴缁熻皟锟?
      *
-     * @return 失败次数
+     * @return 澶辫触娆℃暟
      */
     public static long getConversionFailureCount() {
         return CONVERSION_FAILURE_COUNTER.sum();
     }
 
     /**
-     * 重置失败计数�- 供测试使�
+     * 閲嶇疆澶辫触璁℃暟锟? 渚涙祴璇曚娇锟?
      */
     public static void resetConversionFailureCount() {
         CONVERSION_FAILURE_COUNTER.reset();

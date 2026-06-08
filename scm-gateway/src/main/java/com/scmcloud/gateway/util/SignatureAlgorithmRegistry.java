@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 签名算法版本控制
+ * 绛惧悕绠楁硶鐗堟湰鎺у埗
  *
  * @author Deng
  * createData 2025/11/11 9:18
@@ -25,7 +25,7 @@ public class SignatureAlgorithmRegistry {
 
     @PostConstruct
     public void init() {
-        // 自动注册所有实现类
+        // 鑷姩娉ㄥ唽鎵€鏈夊疄鐜扮被
         for (SignatureAlgorithm algorithm : algorithmList) {
             algorithms.put(algorithm.version(), algorithm);
             log.info("Registered signature algorithm: {}", algorithm.version());
@@ -35,7 +35,7 @@ public class SignatureAlgorithmRegistry {
             throw new IllegalStateException("No signature algorithms registered");
         }
 
-        // 验证默认算法是否存在（启动时快速失败）
+        // 楠岃瘉榛樿绠楁硶鏄惁瀛樺湪锛堝惎鍔ㄦ椂蹇€熷け璐ワ級
         if (!algorithms.containsKey("HMAC-SHA256-V1")) {
             throw new IllegalStateException(
                 "Default signature algorithm 'HMAC-SHA256-V1' not registered. " +
@@ -43,7 +43,7 @@ public class SignatureAlgorithmRegistry {
             );
         }
 
-        log.info("�Default signature algorithm 'HMAC-SHA256-V1' validated successfully");
+        log.info("锟紻efault signature algorithm 'HMAC-SHA256-V1' validated successfully");
     }
 
     public SignatureAlgorithm getAlgorithm(String version) {
@@ -52,7 +52,7 @@ public class SignatureAlgorithmRegistry {
             return algorithm;
         }
 
-        // 回退到默认版�
+        // 鍥為€€鍒伴粯璁ょ増锟?
         SignatureAlgorithm defaultAlgorithm = algorithms.get("HMAC-SHA256-V1");
         if (defaultAlgorithm == null) {
             throw new IllegalStateException("Default signature algorithm 'HMAC-SHA256-V1' not registered");

@@ -3,7 +3,7 @@ package com.scmcloud.common.data.rw.loadbalance;
 import java.util.List;
 
 /**
- * 从库负载均衡器接�
+ * 浠庡簱璐熻浇鍧囪　鍣ㄦ帴锟?
  *
  * @author Deng
  * @since 2025-12-16
@@ -11,15 +11,15 @@ import java.util.List;
 public interface SlaveLoadBalancer {
 
     /**
-     * 选择一个从�
+     * 閫夋嫨涓€涓粠锟?
      *
-     * @param slaves 可用从库列表
-     * @return 选中的从库名�
+     * @param slaves 鍙敤浠庡簱鍒楄〃
+     * @return 閫変腑鐨勪粠搴撳悕锟?
      */
     String select(List<SlaveInfo> slaves);
 
     /**
-     * 从库信息
+     * 浠庡簱淇℃伅
      */
     record SlaveInfo(
             String name,
