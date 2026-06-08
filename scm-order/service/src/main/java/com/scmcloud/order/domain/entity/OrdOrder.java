@@ -12,7 +12,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.Transient;
 import com.baomidou.mybatisplus.annotation.Version;
 import com.scmcloud.common.domain.event.DomainEvent;
 import com.scmcloud.order.domain.event.OrderCancelledEvent;
@@ -132,7 +131,7 @@ public class OrdOrder {
 
     // ─── Domain Events (transient, not persisted) ─────────────────
 
-    @Transient
+    @TableField(exist = false)
     private List<DomainEvent> domainEvents = new ArrayList<>();
 
     /**
