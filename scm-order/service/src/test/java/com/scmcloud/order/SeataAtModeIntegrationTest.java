@@ -5,9 +5,10 @@ import com.scmcloud.inventory.api.InventoryDubboService;
 import com.scmcloud.inventory.domain.entity.Inventory;
 import com.scmcloud.inventory.mapper.InvInventoryMapper;
 import com.scmcloud.order.api.OrderDubboService;
-import com.scmcloud.order.domain.entity.Order;
+import com.scmcloud.order.api.request.CreateOrderRequest;
+import com.scmcloud.order.domain.entity.OrdOrder;
 import com.scmcloud.order.mapper.OrdOrderMapper;
-import com.scmcloud.order.service.impl.OrderDubboServiceImpl;
+import com.scmcloud.order.service.dubbo.OrderDubboServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -46,8 +47,8 @@ public class SeataAtModeIntegrationTest {
         log.info("========================================");
 
         orderMapper.delete(
-                new LambdaQueryWrapper<Order>()
-                        .eq(Order::getUserId, TEST_USER_ID)
+                new LambdaQueryWrapper<OrdOrder>()
+                        .eq(OrdOrder::getUserId, TEST_USER_ID)
         );
         inventoryMapper.delete(
                 new LambdaQueryWrapper<Inventory>()
@@ -72,7 +73,7 @@ public class SeataAtModeIntegrationTest {
         log.info("Test Scenario 1: Order success, global transaction commit");
         log.info("========================================");
 
-        OrderDubboService.CreateOrderRequest request = new OrderDubboService.CreateOrderRequest();
+        CreateOrderRequest request = new CreateOrderRequest();
         request.setUserId(TEST_USER_ID);
         request.setSkuId(TEST_SKU_ID);
         request.setSkuName("TestProduct");
@@ -89,9 +90,9 @@ public class SeataAtModeIntegrationTest {
 
         log.info("Order created successfully: OrderNo={}", orderVO.getOrderNo());
 
-        Order orderInDb = orderMapper.selectOne(
-                new LambdaQueryWrapper<Order>()
-                        .eq(Order::getOrderNo, orderVO.getOrderNo())
+        OrdOrder orderInDb = orderMapper.selectOne(
+                new LambdaQueryWrapper<OrdOrder>()
+                        .eq(OrdOrder::getOrderNo, orderVO.getOrderNo())
         );
         assertNotNull(orderInDb, "Order should exist in database");
         assertEquals(TEST_SKU_ID, orderInDb.getSkuId(), "SKU ID should match");
@@ -121,7 +122,7 @@ public class SeataAtModeIntegrationTest {
         log.info("Test Scenario 2: Insufficient stock, global transaction rollback");
         log.info("========================================");
 
-        OrderDubboService.CreateOrderRequest request = new OrderDubboService.CreateOrderRequest();
+        CreateOrderRequest request = new CreateOrderRequest();
         request.setUserId(TEST_USER_ID);
         request.setSkuId(TEST_SKU_ID);
         request.setSkuName("TestProduct");
@@ -138,8 +139,8 @@ public class SeataAtModeIntegrationTest {
         assertTrue(exception.getMessage().contains("insufficient"), "Exception should contain 'insufficient'");
 
         Long orderCount = orderMapper.selectCount(
-                new LambdaQueryWrapper<Order>()
-                        .eq(Order::getUserId, TEST_USER_ID)
+                new LambdaQueryWrapper<OrdOrder>()
+                        .eq(OrdOrder::getUserId, TEST_USER_ID)
         );
         assertEquals(0L, orderCount, "Database should have no order records (rolled back)");
 
@@ -176,7 +177,7 @@ public class SeataAtModeIntegrationTest {
             final int index = i;
             threads[i] = new Thread(() -> {
                 try {
-                    OrderDubboService.CreateOrderRequest request = new OrderDubboService.CreateOrderRequest();
+                    CreateOrderRequest request = new CreateOrderRequest();
                     request.setUserId(TEST_USER_ID + index);
                     request.setSkuId(TEST_SKU_ID);
                     request.setSkuName("TestProduct");
@@ -226,8 +227,8 @@ public class SeataAtModeIntegrationTest {
         log.info("========================================");
 
         orderMapper.delete(
-                new LambdaQueryWrapper<Order>()
-                        .ge(Order::getUserId, TEST_USER_ID)
+                new LambdaQueryWrapper<OrdOrder>()
+                        .ge(OrdOrder::getUserId, TEST_USER_ID)
         );
 
         inventoryMapper.delete(

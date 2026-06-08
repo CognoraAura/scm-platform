@@ -6,7 +6,8 @@ import com.scmcloud.inventory.domain.entity.Inventory;
 import com.scmcloud.inventory.mapper.InvInventoryMapper;
 import com.scmcloud.inventory.mapper.InvTccReservationMapper;
 import com.scmcloud.order.api.OrderDubboService;
-import com.scmcloud.order.domain.entity.Order;
+import com.scmcloud.order.api.request.CreateOrderRequest;
+import com.scmcloud.order.domain.entity.OrdOrder;
 import com.scmcloud.order.mapper.OrdOrderMapper;
 import com.scmcloud.order.service.impl.OrderTccServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -47,8 +48,8 @@ public class SeataTccModeIntegrationTest {
         log.info("========================================");
 
         orderMapper.delete(
-                new LambdaQueryWrapper<Order>()
-                        .ge(Order::getUserId, TEST_USER_ID)
+                new LambdaQueryWrapper<OrdOrder>()
+                        .ge(OrdOrder::getUserId, TEST_USER_ID)
         );
         inventoryMapper.delete(
                 new LambdaQueryWrapper<Inventory>()
@@ -77,7 +78,7 @@ public class SeataTccModeIntegrationTest {
         log.info("Test Scenario 1: Try-Confirm flow");
         log.info("========================================");
 
-        OrderDubboService.CreateOrderRequest request = new OrderDubboService.CreateOrderRequest();
+        CreateOrderRequest request = new CreateOrderRequest();
         request.setUserId(TEST_USER_ID);
         request.setSkuId(TEST_SKU_ID);
         request.setSkuName("TCC-TestProduct");
@@ -95,9 +96,9 @@ public class SeataTccModeIntegrationTest {
 
         log.info("Order created successfully: OrderNo={}", orderVO.getOrderNo());
 
-        Order orderInDb = orderMapper.selectOne(
-                new LambdaQueryWrapper<Order>()
-                        .eq(Order::getOrderNo, orderVO.getOrderNo())
+        OrdOrder orderInDb = orderMapper.selectOne(
+                new LambdaQueryWrapper<OrdOrder>()
+                        .eq(OrdOrder::getOrderNo, orderVO.getOrderNo())
         );
         assertNotNull(orderInDb, "Order should exist in database");
         assertEquals(TEST_SKU_ID, orderInDb.getSkuId(), "SKU ID should match");
@@ -148,7 +149,7 @@ public class SeataTccModeIntegrationTest {
         log.info("Test Scenario 2: Try-Cancel flow (insufficient stock)");
         log.info("========================================");
 
-        OrderDubboService.CreateOrderRequest request = new OrderDubboService.CreateOrderRequest();
+        CreateOrderRequest request = new CreateOrderRequest();
         request.setUserId(TEST_USER_ID);
         request.setSkuId(TEST_SKU_ID);
         request.setSkuName("TCC-TestProduct");
@@ -165,8 +166,8 @@ public class SeataTccModeIntegrationTest {
         assertTrue(exception.getMessage().contains("stock"), "Exception should contain 'stock'");
 
         Long orderCount = orderMapper.selectCount(
-                new LambdaQueryWrapper<Order>()
-                        .ge(Order::getUserId, TEST_USER_ID)
+                new LambdaQueryWrapper<OrdOrder>()
+                        .ge(OrdOrder::getUserId, TEST_USER_ID)
         );
         assertEquals(0L, orderCount, "Database should have no order records (rolled back)");
 
@@ -206,7 +207,7 @@ public class SeataTccModeIntegrationTest {
         log.info("Test Scenario 3: TCC idempotency test");
         log.info("========================================");
 
-        OrderDubboService.CreateOrderRequest request = new OrderDubboService.CreateOrderRequest();
+        CreateOrderRequest request = new CreateOrderRequest();
         request.setUserId(TEST_USER_ID);
         request.setSkuId(TEST_SKU_ID);
         request.setSkuName("TCC-TestProduct");
@@ -266,7 +267,7 @@ public class SeataTccModeIntegrationTest {
             final int index = i;
             threads[i] = new Thread(() -> {
                 try {
-                    OrderDubboService.CreateOrderRequest request = new OrderDubboService.CreateOrderRequest();
+                    CreateOrderRequest request = new CreateOrderRequest();
                     request.setUserId(TEST_USER_ID + index);
                     request.setSkuId(TEST_SKU_ID);
                     request.setSkuName("TCC-TestProduct");
@@ -316,8 +317,8 @@ public class SeataTccModeIntegrationTest {
         log.info("TCC reservation consistency verified: {} CONFIRMED records", reservationCount);
 
         Long orderCount = orderMapper.selectCount(
-                new LambdaQueryWrapper<Order>()
-                        .ge(Order::getUserId, TEST_USER_ID)
+                new LambdaQueryWrapper<OrdOrder>()
+                        .ge(OrdOrder::getUserId, TEST_USER_ID)
         );
         assertEquals((long) successCount.get(), orderCount,
                 "Order count should equal success count");
@@ -337,7 +338,7 @@ public class SeataTccModeIntegrationTest {
         log.info("Test Scenario 5: TCC state transition verification");
         log.info("========================================");
 
-        OrderDubboService.CreateOrderRequest request = new OrderDubboService.CreateOrderRequest();
+        CreateOrderRequest request = new CreateOrderRequest();
         request.setUserId(TEST_USER_ID);
         request.setSkuId(TEST_SKU_ID);
         request.setSkuName("TCC-TestProduct");
@@ -390,8 +391,8 @@ public class SeataTccModeIntegrationTest {
         log.info("========================================");
 
         orderMapper.delete(
-                new LambdaQueryWrapper<Order>()
-                        .ge(Order::getUserId, TEST_USER_ID)
+                new LambdaQueryWrapper<OrdOrder>()
+                        .ge(OrdOrder::getUserId, TEST_USER_ID)
         );
 
         inventoryMapper.delete(
