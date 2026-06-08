@@ -6,8 +6,8 @@ import com.github.f4b6a3.uuid.util.UuidUtil;
 import java.util.UUID;
 
 /**
- * UUID v7版本工具�
- * 提供基于时间戳的UUID v7生成和解析功�
+ * UUID v7鐗堟湰宸ュ叿锟?
+ * 鎻愪緵鍩轰簬鏃堕棿鎴崇殑UUID v7鐢熸垚鍜岃В鏋愬姛锟?
  *
  * @author Deng
  * createData 2025/10/17 14:35
@@ -15,39 +15,39 @@ import java.util.UUID;
  */
 public class UUIDv7Util {
     /**
-     * 生成UUID
-     * 基于当前时间戳生成有序的UUID，适用于数据库主键等场�
+     * 鐢熸垚UUID
+     * 鍩轰簬褰撳墠鏃堕棿鎴崇敓鎴愭湁搴忕殑UUID锛岄€傜敤浜庢暟鎹簱涓婚敭绛夊満锟?
      * 
-     * @return UUID 实例
+     * @return UUID 瀹炰緥
      */
     public static UUID generate() {
         return UuidCreator.getTimeOrderedEpoch();
     }
 
     /**
-     * 生成UUID 字符�
+     * 鐢熸垚UUID 瀛楃锟?
      * 
-     * @return 标准格式的UUID字符串（包含连字符）
+     * @return 鏍囧噯鏍煎紡鐨刄UID瀛楃涓诧紙鍖呭惈杩炲瓧绗︼級
      */
     public static String generateString() {
         return generate().toString();
     }
 
     /**
-     * 生成UUID字符串（无连字符�
+     * 鐢熸垚UUID瀛楃涓诧紙鏃犺繛瀛楃锟?
      * 
-     * @return 紧凑格式的UUID字符串（不含连字符）
+     * @return 绱у噾鏍煎紡鐨刄UID瀛楃涓诧紙涓嶅惈杩炲瓧绗︼級
      */
     public static String generateCompact() {
         return generateString().replace("-", "");
     }
 
     /**
-     * 从UUID提取时间�
-     * 注意：此方法仅适用于UUID格式，对其他版本UUID可能抛出异常
+     * 浠嶶UID鎻愬彇鏃堕棿锟?
+     * 娉ㄦ剰锛氭鏂规硶浠呴€傜敤浜嶶UID鏍煎紡锛屽鍏朵粬鐗堟湰UUID鍙兘鎶涘嚭寮傚父
      * 
-     * @param uuid UUID 实例
-     * @return 时间戳（毫秒�
+     * @param uuid UUID 瀹炰緥
+     * @return 鏃堕棿鎴筹紙姣锟?
      */
     public static long extractTimestamp(UUID uuid) {
         return UuidUtil.getInstant(uuid).toEpochMilli();

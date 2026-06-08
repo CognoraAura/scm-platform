@@ -63,10 +63,10 @@ public class PurRequestServiceImpl extends ServiceImpl<PurRequestMapper, PurRequ
     public boolean submit(String id) {
         PurRequest request = getById(id);
         if (request == null || request.getDeleted()) {
-            throw new IllegalArgumentException("采购申请不存� " + id);
+            throw new IllegalArgumentException("閲囪喘鐢宠涓嶅瓨锟?" + id);
         }
         if (request.getStatus() != 0) {
-            throw new IllegalStateException("只有草稿状态的申请才能提交");
+            throw new IllegalStateException("鍙湁鑽夌鐘舵€佺殑鐢宠鎵嶈兘鎻愪氦");
         }
         request.setStatus(1);
         request.setSubmittedAt(LocalDateTime.now());
@@ -79,10 +79,10 @@ public class PurRequestServiceImpl extends ServiceImpl<PurRequestMapper, PurRequ
     public boolean approve(String id, String approverId, String approverName) {
         PurRequest request = getById(id);
         if (request == null || request.getDeleted()) {
-            throw new IllegalArgumentException("采购申请不存� " + id);
+            throw new IllegalArgumentException("閲囪喘鐢宠涓嶅瓨锟?" + id);
         }
         if (request.getStatus() != 1) {
-            throw new IllegalStateException("只有待审批状态的申请才能审批");
+            throw new IllegalStateException("鍙湁寰呭鎵圭姸鎬佺殑鐢宠鎵嶈兘瀹℃壒");
         }
         request.setStatus(2);
         request.setCurrentApproverId(approverId);
@@ -97,10 +97,10 @@ public class PurRequestServiceImpl extends ServiceImpl<PurRequestMapper, PurRequ
     public boolean reject(String id, String approverId, String approverName, String reason) {
         PurRequest request = getById(id);
         if (request == null || request.getDeleted()) {
-            throw new IllegalArgumentException("采购申请不存� " + id);
+            throw new IllegalArgumentException("閲囪喘鐢宠涓嶅瓨锟?" + id);
         }
         if (request.getStatus() != 1) {
-            throw new IllegalStateException("只有待审批状态的申请才能驳回");
+            throw new IllegalStateException("鍙湁寰呭鎵圭姸鎬佺殑鐢宠鎵嶈兘椹冲洖");
         }
         request.setStatus(3);
         request.setCurrentApproverId(approverId);
@@ -116,10 +116,10 @@ public class PurRequestServiceImpl extends ServiceImpl<PurRequestMapper, PurRequ
     public boolean close(String id) {
         PurRequest request = getById(id);
         if (request == null || request.getDeleted()) {
-            throw new IllegalArgumentException("采购申请不存� " + id);
+            throw new IllegalArgumentException("閲囪喘鐢宠涓嶅瓨锟?" + id);
         }
         if (request.getStatus() == 4) {
-            throw new IllegalStateException("已转采购单的申请不能关闭");
+            throw new IllegalStateException("宸茶浆閲囪喘鍗曠殑鐢宠涓嶈兘鍏抽棴");
         }
         request.setStatus(5);
         request.setUpdateTime(LocalDateTime.now());
@@ -131,13 +131,13 @@ public class PurRequestServiceImpl extends ServiceImpl<PurRequestMapper, PurRequ
     public boolean convertToOrder(String id, String orderId, String orderNo) {
         PurRequest request = getById(id);
         if (request == null || request.getDeleted()) {
-            throw new IllegalArgumentException("采购申请不存� " + id);
+            throw new IllegalArgumentException("閲囪喘鐢宠涓嶅瓨锟?" + id);
         }
         if (request.getStatus() != 2) {
-            throw new IllegalStateException("只有已审批的申请才能转采购单");
+            throw new IllegalStateException("鍙湁宸插鎵圭殑鐢宠鎵嶈兘杞噰璐崟");
         }
         if (Boolean.TRUE.equals(request.getConverted())) {
-            throw new IllegalStateException("该申请已转采购单");
+            throw new IllegalStateException("璇ョ敵璇峰凡杞噰璐崟");
         }
         request.setStatus(4);
         request.setConverted(true);

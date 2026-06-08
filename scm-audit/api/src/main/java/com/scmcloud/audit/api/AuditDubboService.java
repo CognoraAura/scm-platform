@@ -5,9 +5,9 @@ import com.scmcloud.audit.api.request.AuditLogRequest;
 import com.scmcloud.audit.api.request.AuditQueryRequest;
 
 /**
- * 审计服务 Dubbo 接口
+ * 瀹¤鏈嶅姟 Dubbo 鎺ュ彛
  *
- * <p>提供操作日志记录、日志查询等核心功能，供其他微服务通过 RPC 调用�
+ * <p>鎻愪緵鎿嶄綔鏃ュ織璁板綍銆佹棩蹇楁煡璇㈢瓑鏍稿績鍔熻兘锛屼緵鍏朵粬寰湇鍔￠€氳繃 RPC 璋冪敤锟?
  *
  * @author SCM Platform Team
  * @since 2025-12-26
@@ -15,17 +15,17 @@ import com.scmcloud.audit.api.request.AuditQueryRequest;
 public interface AuditDubboService {
 
     /**
-     * 记录操作日志
+     * 璁板綍鎿嶄綔鏃ュ織
      *
-     * @param request 审计日志请求
+     * @param request 瀹¤鏃ュ織璇锋眰
      */
     void logOperation(AuditLogRequest request);
 
     /**
-     * 查询审计日志
+     * 鏌ヨ瀹¤鏃ュ織
      *
-     * @param request 查询请求
-     * @return 查询结果
+     * @param request 鏌ヨ璇锋眰
+     * @return 鏌ヨ缁撴灉
      */
     AuditQueryResult queryAuditLogs(AuditQueryRequest request);
 }

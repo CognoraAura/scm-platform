@@ -32,10 +32,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 系统认证控制�
- * 提供用户登录、登出、Token刷新等相关接�
+ * 绯荤粺璁よ瘉鎺у埗锟?
+ * 鎻愪緵鐢ㄦ埛鐧诲綍銆佺櫥鍑恒€乀oken鍒锋柊绛夌浉鍏虫帴锟?
  * <p>
- * WebAuthn 相关接口请参�{@link WebAuthnCredentialController}
+ * WebAuthn 鐩稿叧鎺ュ彛璇峰弬锟絳@link WebAuthnCredentialController}
  *
  * @author Deng
  * @version 1.0
@@ -52,11 +52,11 @@ public class SysAuthController {
     private final UserDubboService userDubboService;
 
     /**
-     * 用户登录接口
+     * 鐢ㄦ埛鐧诲綍鎺ュ彛
      *
-     * @param request 登录请求参数
-     * @param httpRequest HTTP 请求对象
-     * @return 登录响应结果
+     * @param request 鐧诲綍璇锋眰鍙傛暟
+     * @param httpRequest HTTP 璇锋眰瀵硅薄
+     * @return 鐧诲綍鍝嶅簲缁撴灉
      */
     @PostMapping("/login")
     @SentinelResource(value = "auth_login")
@@ -75,10 +75,10 @@ public class SysAuthController {
     }
 
     /**
-     * 用户登出接口
+     * 鐢ㄦ埛鐧诲嚭鎺ュ彛
      *
-     * @param request HTTP 请求对象
-     * @return 操作结果
+     * @param request HTTP 璇锋眰瀵硅薄
+     * @return 鎿嶄綔缁撴灉
      */
     @PostMapping("/logout")
     @PreAuthorize("isAuthenticated()")
@@ -90,18 +90,18 @@ public class SysAuthController {
         UUID userId = SecurityUtils.getCurrentUserUuid().orElse(null);
         String traceId = traceId(request);
 
-        authService.logout(token, userId, "用户主动登出");
+        authService.logout(token, userId, "鐢ㄦ埛涓诲姩鐧诲嚭");
         log.info("logout traceId={} userId={}", traceId, userId);
 
         return ApiResponse.success();
     }
 
     /**
-     * 刷新 Token 接口
+     * 鍒锋柊 Token 鎺ュ彛
      *
-     * @param request 刷新 Token 请求
-     * @param httpRequest HTTP 请求对象
-     * @return 登录响应结果
+     * @param request 鍒锋柊 Token 璇锋眰
+     * @param httpRequest HTTP 璇锋眰瀵硅薄
+     * @return 鐧诲綍鍝嶅簲缁撴灉
      */
     @PostMapping("/refresh")
     @RateLimit()
@@ -127,10 +127,10 @@ public class SysAuthController {
     }
 
     /**
-     * 获取当前用户信息接口
+     * 鑾峰彇褰撳墠鐢ㄦ埛淇℃伅鎺ュ彛
      *
-     * @param request HTTP 请求对象
-     * @return 用户信息
+     * @param request HTTP 璇锋眰瀵硅薄
+     * @return 鐢ㄦ埛淇℃伅
      */
     @GetMapping("/userinfo")
     @PreAuthorize("isAuthenticated()")
@@ -140,7 +140,7 @@ public class SysAuthController {
             return ApiResponse.fail(401, "Unauthorized");
         }
 
-        // 如果 Dubbo 不可用，说明系统异常，应该快速失�
+        // 濡傛灉 Dubbo 涓嶅彲鐢紝璇存槑绯荤粺寮傚父锛屽簲璇ュ揩閫熷け锟?
         UserInfo userInfo;
         try {
             userInfo = userDubboService.getUserInfo(userId);
@@ -155,22 +155,22 @@ public class SysAuthController {
     }
 
     /**
-     * 强制用户登出接口
+     * 寮哄埗鐢ㄦ埛鐧诲嚭鎺ュ彛
      *
-     * @param userId 用户 ID
-     * @param reason 登出原因
-     * @return 操作结果
+     * @param userId 鐢ㄦ埛 ID
+     * @param reason 鐧诲嚭鍘熷洜
+     * @return 鎿嶄綔缁撴灉
      */
     @PostMapping("/force-logout/{userId}")
     @PreAuthorize("hasAuthority('system:user:edit')")
     @AuditLog(
-            operation = "强制下线",
+            operation = "寮哄埗涓嬬嚎",
             businessType = "USER",
             riskLevel = 3
     )
     public ApiResponse<Void> forceLogout(
             @PathVariable UUID userId,
-            @RequestParam @NotBlank(message = "登出原因不能为空") String reason) {
+            @RequestParam @NotBlank(message = "鐧诲嚭鍘熷洜涓嶈兘涓虹┖") String reason) {
 
         authService.forceLogout(userId, reason);
         log.info("force logout userId={} reason={}", userId, reason);

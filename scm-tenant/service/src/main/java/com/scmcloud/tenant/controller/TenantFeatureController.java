@@ -18,25 +18,25 @@ public class TenantFeatureController {
 
     @PostMapping
     public TenantFeature create(@RequestBody TenantFeature entity) {
-        log.info("[API] 创建租户功能: tenantId={}, featureCode={}", entity.getTenantId(), entity.getFeatureCode());
+        log.info("[API] 鍒涘缓绉熸埛鍔熻兘: tenantId={}, featureCode={}", entity.getTenantId(), entity.getFeatureCode());
         return tenantFeatureService.createFeature(entity);
     }
 
     @GetMapping("/{id}")
     public TenantFeature getById(@PathVariable String id) {
-        log.info("[API] 查询租户功能: id={}", id);
+        log.info("[API] 鏌ヨ绉熸埛鍔熻兘: id={}", id);
         return tenantFeatureService.getById(id);
     }
 
     @PutMapping
     public TenantFeature update(@RequestBody TenantFeature entity) {
-        log.info("[API] 更新租户功能: id={}", entity.getId());
+        log.info("[API] 鏇存柊绉熸埛鍔熻兘: id={}", entity.getId());
         return tenantFeatureService.updateFeature(entity);
     }
 
     @DeleteMapping("/{id}")
     public boolean deleteById(@PathVariable String id) {
-        log.info("[API] 删除租户功能: id={}", id);
+        log.info("[API] 鍒犻櫎绉熸埛鍔熻兘: id={}", id);
         return tenantFeatureService.deleteById(id);
     }
 
@@ -44,13 +44,13 @@ public class TenantFeatureController {
     public boolean isFeatureEnabled(
             @RequestParam String tenantId,
             @RequestParam String featureCode) {
-        log.info("[API] 检查功能是否启� tenantId={}, featureCode={}", tenantId, featureCode);
+        log.info("[API] 妫€鏌ュ姛鑳芥槸鍚﹀惎锟?tenantId={}, featureCode={}", tenantId, featureCode);
         return tenantFeatureService.isFeatureEnabled(tenantId, featureCode);
     }
 
     @GetMapping("/tenant/{tenantId}")
     public List<TenantFeature> listByTenantId(@PathVariable String tenantId) {
-        log.info("[API] 查询租户功能列表: tenantId={}", tenantId);
+        log.info("[API] 鏌ヨ绉熸埛鍔熻兘鍒楄〃: tenantId={}", tenantId);
         return tenantFeatureService.listByTenantId(tenantId);
     }
 
@@ -61,7 +61,7 @@ public class TenantFeatureController {
             @RequestParam(required = false) String tenantId,
             @RequestParam(required = false) String featureCode,
             @RequestParam(required = false) Boolean enabled) {
-        log.info("[API] 分页查询租户功能: page={}, size={}", page, size);
+        log.info("[API] 鍒嗛〉鏌ヨ绉熸埛鍔熻兘: page={}, size={}", page, size);
         return tenantFeatureService.pageQuery(page, size, tenantId, featureCode, enabled);
     }
 }

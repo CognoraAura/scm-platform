@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 权限跨库查询服务
+ * 鏉冮檺璺ㄥ簱鏌ヨ鏈嶅姟
  * <p>
- * 处理与权限相关的跨库查询操作（db_permission �db_user�
+ * 澶勭悊涓庢潈闄愮浉鍏崇殑璺ㄥ簱鏌ヨ鎿嶄綔锛坉b_permission 锟絛b_user锟?
  *
  * @author Deng
  * @since 2025-01-16
@@ -28,13 +28,13 @@ public class PermissionCrossDatabaseQueryService {
     private final SysPermissionMapper permissionMapper;
 
     /**
-     * 查询用户菜单�
+     * 鏌ヨ鐢ㄦ埛鑿滃崟锟?
      * <p>
-     * 替代 SysPermissionMapper.findMenuTreeByUserId
-     * 跨库查询：db_permission
+     * 鏇夸唬 SysPermissionMapper.findMenuTreeByUserId
+     * 璺ㄥ簱鏌ヨ锛歞b_permission
      *
-     * @param userId 用户 ID
-     * @return 菜单权限 DTO 列表
+     * @param userId 鐢ㄦ埛 ID
+     * @return 鑿滃崟鏉冮檺 DTO 鍒楄〃
      */
     @Slave
     @Timed(value = "cross_db_query", extraTags = {"method", "findMenuTreeByUserId"})

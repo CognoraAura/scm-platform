@@ -12,10 +12,10 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 用户同步执行�
+ * 鐢ㄦ埛鍚屾鎵ц锟?
  * <p>
- * 独立�Bean，用于执行跨库事务操作�
- * 避免 @Transactional 自调用问�
+ * 鐙珛锟紹ean锛岀敤浜庢墽琛岃法搴撲簨鍔℃搷浣滐拷
+ * 閬垮厤 @Transactional 鑷皟鐢ㄩ棶锟?
  *
  * @author Deng
  * @since 2025-12-16
@@ -28,10 +28,10 @@ public class UserSyncExecutor {
     private final SysDeptMapper deptMapper;
 
     /**
-     * 同步用户信息�permission �
+     * 鍚屾鐢ㄦ埛淇℃伅锟絧ermission 锟?
      *
-     * @param userId 用户 ID
-     * @param data   用户数据
+     * @param userId 鐢ㄦ埛 ID
+     * @param data   鐢ㄦ埛鏁版嵁
      */
     @DS("permission")
     @Transactional(rollbackFor = Exception.class)
@@ -45,10 +45,10 @@ public class UserSyncExecutor {
     }
 
     /**
-     * 同步用户信息�org 库（负责人信息）
+     * 鍚屾鐢ㄦ埛淇℃伅锟給rg 搴擄紙璐熻矗浜轰俊鎭級
      *
-     * @param userId 用户 ID
-     * @param data   用户数据
+     * @param userId 鐢ㄦ埛 ID
+     * @param data   鐢ㄦ埛鏁版嵁
      */
     @DS("org")
     @Transactional(rollbackFor = Exception.class)
@@ -61,9 +61,9 @@ public class UserSyncExecutor {
     }
 
     /**
-     * 标记用户�permission 库中已删�
+     * 鏍囪鐢ㄦ埛锟絧ermission 搴撲腑宸插垹锟?
      *
-     * @param userId 用户 ID
+     * @param userId 鐢ㄦ埛 ID
      */
     @DS("permission")
     @Transactional(rollbackFor = Exception.class)

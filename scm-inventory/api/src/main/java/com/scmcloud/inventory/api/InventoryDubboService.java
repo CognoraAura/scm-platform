@@ -4,10 +4,10 @@ import com.scmcloud.inventory.api.exception.InsufficientStockException;
 import com.scmcloud.inventory.api.request.BatchDeductStockRequest;
 
 /**
- * 库存服务 Dubbo 接口
+ * 搴撳瓨鏈嶅姟 Dubbo 鎺ュ彛
  *
- * <p>提供库存查询、扣减、释放等核心功能�
- * <p>所有修改库存的方法都会参与 Seata 分布式事务�
+ * <p>鎻愪緵搴撳瓨鏌ヨ銆佹墸鍑忋€侀噴鏀剧瓑鏍稿績鍔熻兘锟?
+ * <p>鎵€鏈変慨鏀瑰簱瀛樼殑鏂规硶閮戒細鍙備笌 Seata 鍒嗗竷寮忎簨鍔★拷
  *
  * @author SCM Platform Team
  * @since 2025-12-26
@@ -15,40 +15,40 @@ import com.scmcloud.inventory.api.request.BatchDeductStockRequest;
 public interface InventoryDubboService {
 
     /**
-     * 扣减库存
+     * 鎵ｅ噺搴撳瓨
      *
-     * <p>此方法参�Seata 分布式事务，无需添加 @GlobalTransactional 注解�
-     * <p>通过 Dubbo RPC 调用时，会自动加入调用方的全局事务�
+     * <p>姝ゆ柟娉曞弬锟絊eata 鍒嗗竷寮忎簨鍔★紝鏃犻渶娣诲姞 @GlobalTransactional 娉ㄨВ锟?
+     * <p>閫氳繃 Dubbo RPC 璋冪敤鏃讹紝浼氳嚜鍔ㄥ姞鍏ヨ皟鐢ㄦ柟鐨勫叏灞€浜嬪姟锟?
      *
      * @param skuId SKU ID
-     * @param quantity 扣减数量
-     * @param requestId 幂等性请�ID（建议使用订单号�
-     * @throws InsufficientStockException 库存不足异常
-     * @throws IllegalArgumentException 参数非法异常
+     * @param quantity 鎵ｅ噺鏁伴噺
+     * @param requestId 骞傜瓑鎬ц锟絀D锛堝缓璁娇鐢ㄨ鍗曞彿锟?
+     * @throws InsufficientStockException 搴撳瓨涓嶈冻寮傚父
+     * @throws IllegalArgumentException 鍙傛暟闈炴硶寮傚父
      */
     void deductStock(Long skuId, Integer quantity, String requestId);
 
     /**
-     * 批量扣减库存
+     * 鎵归噺鎵ｅ噺搴撳瓨
      *
-     * @param deductRequest 批量扣减请求
+     * @param deductRequest 鎵归噺鎵ｅ噺璇锋眰
      */
     void batchDeductStock(BatchDeductStockRequest deductRequest);
 
     /**
-     * 释放库存（回滚扣减）
+     * 閲婃斁搴撳瓨锛堝洖婊氭墸鍑忥級
      *
      * @param skuId SKU ID
-     * @param quantity 释放数量
-     * @param requestId 幂等性请�ID
+     * @param quantity 閲婃斁鏁伴噺
+     * @param requestId 骞傜瓑鎬ц锟絀D
      */
     void releaseStock(Long skuId, Integer quantity, String requestId);
 
     /**
-     * 查询可用库存
+     * 鏌ヨ鍙敤搴撳瓨
      *
      * @param skuId SKU ID
-     * @return 可用库存数量
+     * @return 鍙敤搴撳瓨鏁伴噺
      */
     Integer queryAvailableStock(Long skuId);
 }

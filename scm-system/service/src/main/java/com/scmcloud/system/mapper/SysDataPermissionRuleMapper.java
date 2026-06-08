@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 数据权限规则 Mapper 接口
+ * 鏁版嵁鏉冮檺瑙勫垯 Mapper 鎺ュ彛
  *
  * @author Deng
  * @since 2025-12-15
@@ -19,7 +19,7 @@ import java.util.UUID;
 public interface SysDataPermissionRuleMapper extends BaseMapper<SysDataPermissionRule> {
 
     /**
-     * 根据规则编码查询
+     * 鏍规嵁瑙勫垯缂栫爜鏌ヨ
      */
     @Select("""
             SELECT * FROM sys_data_permission_rule
@@ -28,7 +28,7 @@ public interface SysDataPermissionRuleMapper extends BaseMapper<SysDataPermissio
     SysDataPermissionRule findByRuleCode(@Param("ruleCode") String ruleCode);
 
     /**
-     * 根据资源类型查询启用的规�
+     * 鏍规嵁璧勬簮绫诲瀷鏌ヨ鍚敤鐨勮锟?
      */
     @Select("""
             SELECT * FROM sys_data_permission_rule
@@ -38,7 +38,7 @@ public interface SysDataPermissionRuleMapper extends BaseMapper<SysDataPermissio
     List<SysDataPermissionRule> findByResourceType(@Param("resourceType") String resourceType);
 
     /**
-     * 根据角色 ID查询关联的规�
+     * 鏍规嵁瑙掕壊 ID鏌ヨ鍏宠仈鐨勮锟?
      */
     @Select("""
             SELECT r.* FROM sys_data_permission_rule r
@@ -49,7 +49,7 @@ public interface SysDataPermissionRuleMapper extends BaseMapper<SysDataPermissio
     List<SysDataPermissionRule> findByRoleId(@Param("roleId") UUID roleId);
 
     /**
-     * 根据用户ID查询关联的规则（通过用户角色�
+     * 鏍规嵁鐢ㄦ埛ID鏌ヨ鍏宠仈鐨勮鍒欙紙閫氳繃鐢ㄦ埛瑙掕壊锟?
      */
     @Select("""
             SELECT DISTINCT r.* FROM sys_data_permission_rule r
@@ -65,7 +65,7 @@ public interface SysDataPermissionRuleMapper extends BaseMapper<SysDataPermissio
     List<SysDataPermissionRule> findByUserId(@Param("userId") UUID userId);
 
     /**
-     * 检查规则编码是否存�
+     * 妫€鏌ヨ鍒欑紪鐮佹槸鍚﹀瓨锟?
      */
     @Select("""
             SELECT COUNT(*) > 0 FROM sys_data_permission_rule

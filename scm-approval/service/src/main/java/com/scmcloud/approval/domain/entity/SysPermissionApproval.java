@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 权限申请审批�
+ * 鏉冮檺鐢宠瀹℃壒锟?
  * </p>
  *
  * @author deng

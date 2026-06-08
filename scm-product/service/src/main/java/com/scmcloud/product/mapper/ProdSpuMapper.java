@@ -6,7 +6,7 @@ import com.scmcloud.product.domain.entity.ProdSpu;
 
 /**
  * <p>
- * SPU标准产品单元�Mapper 接口
+ * SPU鏍囧噯浜у搧鍗曞厓锟組apper 鎺ュ彛
  * </p>
  *
  * @author author

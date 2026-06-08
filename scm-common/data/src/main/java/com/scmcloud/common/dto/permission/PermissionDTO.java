@@ -19,20 +19,20 @@ import java.util.UUID;
 public class PermissionDTO {
     private UUID id;
 
-    @NotNull(message = "父级 ID不能为空")
+    @NotNull(message = "鐖剁骇 ID涓嶈兘涓虹┖")
     private UUID parentId;
 
-    @NotBlank(message = "权限编码不能为空")
-    @Pattern(regexp = "^[a-z][a-z0-9:]*$", message = "权限编码只能包含小写字母、数字和冒号")
+    @NotBlank(message = "鏉冮檺缂栫爜涓嶈兘涓虹┖")
+    @Pattern(regexp = "^[a-z][a-z0-9:]*$", message = "鏉冮檺缂栫爜鍙兘鍖呭惈灏忓啓瀛楁瘝銆佹暟瀛楀拰鍐掑彿")
     private String permissionCode;
 
-    @NotBlank(message = "权限名称不能为空")
-    @Size(max = 64, message = "权限名称长度不能超过64个字符")
+    @NotBlank(message = "鏉冮檺鍚嶇О涓嶈兘涓虹┖")
+    @Size(max = 64, message = "鏉冮檺鍚嶇О闀垮害涓嶈兘瓒呰繃64涓瓧绗?)
     private String permissionName;
 
-    @NotNull(message = "权限类型不能为空")
-    @Min(value = 1, message = "权限类型必须�-5之间")
-    @Max(value = 5, message = "权限类型必须�-5之间")
+    @NotNull(message = "鏉冮檺绫诲瀷涓嶈兘涓虹┖")
+    @Min(value = 1, message = "鏉冮檺绫诲瀷蹇呴』锟?5涔嬮棿")
+    @Max(value = 5, message = "鏉冮檺绫诲瀷蹇呴』锟?5涔嬮棿")
     private Integer permissionType;
 
     private String routePath;
@@ -47,18 +47,18 @@ public class PermissionDTO {
 
     private String httpMethod;
 
-    @NotBlank(message = "权限归属不能为空")
-    @Pattern(regexp = "^(PLATFORM|TENANT)$", message = "权限归属必须是PLATFORM或TENANT")
+    @NotBlank(message = "鏉冮檺褰掑睘涓嶈兘涓虹┖")
+    @Pattern(regexp = "^(PLATFORM|TENANT)$", message = "鏉冮檺褰掑睘蹇呴』鏄疨LATFORM鎴朤ENANT")
     private String permissionScope;
 
-    @NotNull(message = "权限等级不能为空")
-    @Min(value = 1, message = "权限等级必须�-4之间")
-    @Max(value = 4, message = "权限等级必须�-4之间")
+    @NotNull(message = "鏉冮檺绛夌骇涓嶈兘涓虹┖")
+    @Min(value = 1, message = "鏉冮檺绛夌骇蹇呴』锟?4涔嬮棿")
+    @Max(value = 4, message = "鏉冮檺绛夌骇蹇呴』锟?4涔嬮棿")
     private Integer permissionLevel;
 
-    @NotNull(message = "风险等级不能为空")
-    @Min(value = 1, message = "风险等级必须�-4之间")
-    @Max(value = 4, message = "风险等级必须�-4之间")
+    @NotNull(message = "椋庨櫓绛夌骇涓嶈兘涓虹┖")
+    @Min(value = 1, message = "椋庨櫓绛夌骇蹇呴』锟?4涔嬮棿")
+    @Max(value = 4, message = "椋庨櫓绛夌骇蹇呴』锟?4涔嬮棿")
     private Integer riskLevel;
 
     private Boolean needApproval;
@@ -77,6 +77,6 @@ public class PermissionDTO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
-    // 树形结构
+    // 鏍戝舰缁撴瀯
     private List<PermissionDTO> children;
 }

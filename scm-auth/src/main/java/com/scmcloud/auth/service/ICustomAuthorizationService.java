@@ -16,12 +16,12 @@ import java.util.Set;
 public interface ICustomAuthorizationService {
 
     /**
-     * 创建 OAuth2 授权
+     * 鍒涘缓 OAuth2 鎺堟潈
      *
-     * @param client 已注册的客户�
-     * @param principal 认证主体
-     * @param authorizedScopes 已授权的作用域集�
-     * @return OAuth2 授权对象
+     * @param client 宸叉敞鍐岀殑瀹㈡埛锟?
+     * @param principal 璁よ瘉涓讳綋
+     * @param authorizedScopes 宸叉巿鏉冪殑浣滅敤鍩熼泦锟?
+     * @return OAuth2 鎺堟潈瀵硅薄
      */
     OAuth2Authorization createAuthorization(RegisteredClient client,
                                             Authentication principal,

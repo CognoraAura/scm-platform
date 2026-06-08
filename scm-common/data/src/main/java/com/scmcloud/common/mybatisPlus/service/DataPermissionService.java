@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 数据权限服务接口
- * 用于查询用户的自定义数据权限规则
+ * 鏁版嵁鏉冮檺鏈嶅姟鎺ュ彛
+ * 鐢ㄤ簬鏌ヨ鐢ㄦ埛鐨勮嚜瀹氫箟鏁版嵁鏉冮檺瑙勫垯
  *
  * @author Deng
  * @since 2025-12-15
@@ -13,19 +13,19 @@ import java.util.UUID;
 public interface DataPermissionService {
 
     /**
-     * 查询用户的自定义数据权限部门列表
-     * �sys_role_dept 表查询用户通过角色获得的可访问部门
+     * 鏌ヨ鐢ㄦ埛鐨勮嚜瀹氫箟鏁版嵁鏉冮檺閮ㄩ棬鍒楄〃
+     * 锟絪ys_role_dept 琛ㄦ煡璇㈢敤鎴烽€氳繃瑙掕壊鑾峰緱鐨勫彲璁块棶閮ㄩ棬
      *
-     * @param userId 用户 ID
-     * @return 可访问的部门 ID列表
+     * @param userId 鐢ㄦ埛 ID
+     * @return 鍙闂殑閮ㄩ棬 ID鍒楄〃
      */
     List<UUID> findCustomDeptPermissions(UUID userId);
 
     /**
-     * 检查是否存在自定义数据权限配置
+     * 妫€鏌ユ槸鍚﹀瓨鍦ㄨ嚜瀹氫箟鏁版嵁鏉冮檺閰嶇疆
      *
-     * @param userId 用户 ID
-     * @return true 如果有自定义配置
+     * @param userId 鐢ㄦ埛 ID
+     * @return true 濡傛灉鏈夎嚜瀹氫箟閰嶇疆
      */
     boolean hasCustomDataPermission(UUID userId);
 }

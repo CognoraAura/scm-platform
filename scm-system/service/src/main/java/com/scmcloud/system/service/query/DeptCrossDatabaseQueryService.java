@@ -16,9 +16,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * 部门跨库查询服务
+ * 閮ㄩ棬璺ㄥ簱鏌ヨ鏈嶅姟
  * <p>
- * 处理与部门相关的跨库查询操作（db_org �db_user �db_permission�
+ * 澶勭悊涓庨儴闂ㄧ浉鍏崇殑璺ㄥ簱鏌ヨ鎿嶄綔锛坉b_org 锟絛b_user 锟絛b_permission锟?
  *
  * @author Deng
  * @since 2025-01-16
@@ -32,28 +32,28 @@ public class DeptCrossDatabaseQueryService {
     private final SysUserRoleMapper userRoleMapper;
 
     /**
-     * 查询部门树（包含负责人信息）
+     * 鏌ヨ閮ㄩ棬鏍戯紙鍖呭惈璐熻矗浜轰俊鎭級
      * <p>
-     * 替代�SysDeptMapper.selectDeptTree
+     * 鏇夸唬锟絊ysDeptMapper.selectDeptTree
      *
-     * @return 部门 DTO 列表（包含负责人姓名�
+     * @return 閮ㄩ棬 DTO 鍒楄〃锛堝寘鍚礋璐ｄ汉濮撳悕锟?
      */
     @Slave
     @Timed(value = "cross_db_query", extraTags = {"method", "selectDeptTree"})
     public List<DeptDTO> selectDeptTree() {
-        // 1. �org 库查询所有部�
+        // 1. 锟給rg 搴撴煡璇㈡墍鏈夐儴锟?
         List<SysDept> depts = deptMapper.selectDeptList();
         if (depts == null || depts.isEmpty()) {
             return Collections.emptyList();
         }
 
-        // 2. 收集所有负责人 ID
+        // 2. 鏀堕泦鎵€鏈夎礋璐ｄ汉 ID
         Set<UUID> leaderIds = depts.stream()
                 .map(SysDept::getLeaderId)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-        // 3. �user 库批量查询负责人信息
+        // 3. 锟絬ser 搴撴壒閲忔煡璇㈣礋璐ｄ汉淇℃伅
         Map<UUID, String> leaderNameMap = new HashMap<>();
         if (!leaderIds.isEmpty()) {
             List<SysUser> leaders = userMapper.selectBasicInfoByIds(new ArrayList<>(leaderIds));
@@ -61,7 +61,7 @@ public class DeptCrossDatabaseQueryService {
                     .collect(Collectors.toMap(SysUser::getId, SysUser::getRealName, (a, b) -> a));
         }
 
-        // 4. 组装 DTO
+        // 4. 缁勮 DTO
         Map<UUID, String> finalLeaderNameMap = leaderNameMap;
         return depts.stream()
                 .map(dept -> DeptDTO.builder()
@@ -82,13 +82,13 @@ public class DeptCrossDatabaseQueryService {
     }
 
     /**
-     * 获取部门负责�ID
+     * 鑾峰彇閮ㄩ棬璐熻矗锟絀D
      * <p>
-     * 替代 SysDeptMapper.getLeaderId
-     * 跨库查询：db_org
+     * 鏇夸唬 SysDeptMapper.getLeaderId
+     * 璺ㄥ簱鏌ヨ锛歞b_org
      *
-     * @param deptId 部门 ID
-     * @return 负责�ID
+     * @param deptId 閮ㄩ棬 ID
+     * @return 璐熻矗锟絀D
      */
     @Slave
     public UUID getDeptLeaderId(UUID deptId) {
@@ -99,12 +99,12 @@ public class DeptCrossDatabaseQueryService {
     }
 
     /**
-     * 查询用户的部门及其所有子部门 ID
+     * 鏌ヨ鐢ㄦ埛鐨勯儴闂ㄥ強鍏舵墍鏈夊瓙閮ㄩ棬 ID
      * <p>
-     * 替代�SysUserMapper.findUserDeptAndChildren
+     * 鏇夸唬锟絊ysUserMapper.findUserDeptAndChildren
      *
-     * @param userId 用户 ID
-     * @return 部门及子部门 ID 列表
+     * @param userId 鐢ㄦ埛 ID
+     * @return 閮ㄩ棬鍙婂瓙閮ㄩ棬 ID 鍒楄〃
      */
     @Slave
     @Timed(value = "cross_db_query", extraTags = {"method", "findUserDeptAndChildren"})
@@ -113,24 +113,24 @@ public class DeptCrossDatabaseQueryService {
             return Collections.emptyList();
         }
 
-        // 1. �user 库获取用户的部门 ID
+        // 1. 锟絬ser 搴撹幏鍙栫敤鎴风殑閮ㄩ棬 ID
         UUID deptId = userMapper.getUserDeptId(userId);
         if (deptId == null) {
             return Collections.emptyList();
         }
 
-        // 2. �org 库递归查询部门及子部门
+        // 2. 锟給rg 搴撻€掑綊鏌ヨ閮ㄩ棬鍙婂瓙閮ㄩ棬
         return deptMapper.selectDeptAndChildren(deptId);
     }
 
     /**
-     * 检查用户是否有权访问指定部�
+     * 妫€鏌ョ敤鎴锋槸鍚︽湁鏉冭闂寚瀹氶儴锟?
      * <p>
-     * 替代�SysUserMapper.hasAccessToDept
+     * 鏇夸唬锟絊ysUserMapper.hasAccessToDept
      *
-     * @param userId 用户 ID
-     * @param deptId 目标部门 ID
-     * @return 是否有访问权�
+     * @param userId 鐢ㄦ埛 ID
+     * @param deptId 鐩爣閮ㄩ棬 ID
+     * @return 鏄惁鏈夎闂潈锟?
      */
     @Slave
     @Timed(value = "cross_db_query", extraTags = {"method", "hasAccessToDept"})
@@ -139,46 +139,46 @@ public class DeptCrossDatabaseQueryService {
             return false;
         }
 
-        // 1. 获取用户的数据权限范�
+        // 1. 鑾峰彇鐢ㄦ埛鐨勬暟鎹潈闄愯寖锟?
         Integer dataScope = userRoleMapper.getUserDataScope(userId);
         if (dataScope == null) {
             return false;
         }
 
-        // 数据权限�-全部数据
+        // 鏁版嵁鏉冮檺锟?鍏ㄩ儴鏁版嵁
         if (dataScope == 1) {
             return true;
         }
 
-        // 2. 获取用户的部�ID
+        // 2. 鑾峰彇鐢ㄦ埛鐨勯儴锟絀D
         UUID userDeptId = userMapper.getUserDeptId(userId);
         if (userDeptId == null) {
             return false;
         }
 
-        // 数据权限�-本部�
+        // 鏁版嵁鏉冮檺锟?鏈儴锟?
         if (dataScope == 3) {
             return userDeptId.equals(deptId);
         }
 
-        // 数据权限�-本部门及子部�
+        // 鏁版嵁鏉冮檺锟?鏈儴闂ㄥ強瀛愰儴锟?
         if (dataScope == 4) {
             List<UUID> accessibleDepts = deptMapper.selectDeptAndChildren(userDeptId);
             return accessibleDepts.contains(deptId);
         }
 
-        // 数据权限�-仅本人（不能访问其他部门�
+        // 鏁版嵁鏉冮檺锟?浠呮湰浜猴紙涓嶈兘璁块棶鍏朵粬閮ㄩ棬锟?
         return false;
     }
 
     /**
-     * 统计单个部门用户�
+     * 缁熻鍗曚釜閮ㄩ棬鐢ㄦ埛锟?
      * <p>
-     * 替代 SysUserMapper.countUsersByDeptId
-     * 跨库查询：db_user
+     * 鏇夸唬 SysUserMapper.countUsersByDeptId
+     * 璺ㄥ簱鏌ヨ锛歞b_user
      *
-     * @param deptId 部门 ID
-     * @return 用户�
+     * @param deptId 閮ㄩ棬 ID
+     * @return 鐢ㄦ埛锟?
      */
     @Slave
     public int countUsersByDeptId(UUID deptId) {
@@ -189,13 +189,13 @@ public class DeptCrossDatabaseQueryService {
     }
 
     /**
-     * 批量统计部门用户�
+     * 鎵归噺缁熻閮ㄩ棬鐢ㄦ埛锟?
      * <p>
-     * 替代 SysUserMapper.countUsersByDeptIds
-     * 跨库查询：db_user
+     * 鏇夸唬 SysUserMapper.countUsersByDeptIds
+     * 璺ㄥ簱鏌ヨ锛歞b_user
      *
-     * @param deptIds 部门 ID 列表
-     * @return 部门 ID �用户�映射
+     * @param deptIds 閮ㄩ棬 ID 鍒楄〃
+     * @return 閮ㄩ棬 ID 锟界敤鎴凤拷鏄犲皠
      */
     @Slave
     @Timed(value = "cross_db_query", extraTags = {"method", "countUsersByDeptIds"})

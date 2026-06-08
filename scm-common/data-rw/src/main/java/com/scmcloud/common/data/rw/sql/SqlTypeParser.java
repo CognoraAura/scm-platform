@@ -6,9 +6,9 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * SQL 类型解析�
+ * SQL 绫诲瀷瑙ｆ瀽锟?
  * <p>
- * 通过 SQL 语句判断是读操作还是写操�
+ * 閫氳繃 SQL 璇彞鍒ゆ柇鏄鎿嶄綔杩樻槸鍐欐搷锟?
  *
  * @author Deng
  * @since 2025-12-16
@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class SqlTypeParser {
     /**
-     * 写操作关键字
+     * 鍐欐搷浣滃叧閿瓧
      */
     private static final Set<String> WRITE_KEYWORDS = Set.of(
             "INSERT", "UPDATE", "DELETE", "REPLACE",
@@ -26,37 +26,37 @@ public class SqlTypeParser {
     );
 
     /**
-     * SELECT ... FOR UPDATE 模式
+     * SELECT ... FOR UPDATE 妯″紡
      */
     private static final Pattern FOR_UPDATE_PATTERN =
             Pattern.compile(".*\\bFOR\\s+UPDATE\\b.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     /**
-     * SELECT ... LOCK IN SHARE MODE 模式
+     * SELECT ... LOCK IN SHARE MODE 妯″紡
      */
     private static final Pattern LOCK_IN_SHARE_MODE_PATTERN =
             Pattern.compile(".*\\bLOCK\\s+IN\\s+SHARE\\s+MODE\\b.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     /**
-     * Hint: 强制主库
+     * Hint: 寮哄埗涓诲簱
      */
     private static final Pattern MASTER_HINT_PATTERN =
             Pattern.compile("/\\*\\s*MASTER\\s*\\*/", Pattern.CASE_INSENSITIVE);
 
     /**
-     * Hint: 强制从库
+     * Hint: 寮哄埗浠庡簱
      */
     private static final Pattern SLAVE_HINT_PATTERN =
             Pattern.compile("/\\*\\s*SLAVE\\s*\\*/", Pattern.CASE_INSENSITIVE);
 
     /**
-     * Hint: 指定从库名称
+     * Hint: 鎸囧畾浠庡簱鍚嶇О
      */
     private static final Pattern SLAVE_NAME_HINT_PATTERN =
             Pattern.compile("/\\*\\s*SLAVE\\s*\\(\\s*(\\w+)\\s*\\)\\s*\\*/", Pattern.CASE_INSENSITIVE);
 
     /**
-     * SQL 类型
+     * SQL 绫诲瀷
      */
     public enum SqlType {
         READ,
@@ -65,7 +65,7 @@ public class SqlTypeParser {
     }
 
     /**
-     * 路由 Hint
+     * 璺敱 Hint
      */
     public record RoutingHint(
             HintType type,
@@ -79,10 +79,10 @@ public class SqlTypeParser {
     }
 
     /**
-     * 解析 SQL 类型
+     * 瑙ｆ瀽 SQL 绫诲瀷
      *
-     * @param sql SQL 语句
-     * @return SQL 类型
+     * @param sql SQL 璇彞
+     * @return SQL 绫诲瀷
      */
     public static SqlType parse(String sql) {
         if (sql == null || sql.isBlank()) {
@@ -91,23 +91,23 @@ public class SqlTypeParser {
 
         String trimmedSql = sql.trim();
 
-        // 1. 检查是否有 FOR UPDATE / LOCK IN SHARE MODE（需要走主库�
+        // 1. 妫€鏌ユ槸鍚︽湁 FOR UPDATE / LOCK IN SHARE MODE锛堥渶瑕佽蛋涓诲簱锟?
         if (FOR_UPDATE_PATTERN.matcher(trimmedSql).matches() ||
                 LOCK_IN_SHARE_MODE_PATTERN.matcher(trimmedSql).matches()) {
             log.trace("[SQL-Parser] Detected locking SQL, type: WRITE");
             return SqlType.WRITE;
         }
 
-        // 2. 获取第一个关键字
+        // 2. 鑾峰彇绗竴涓叧閿瓧
         String firstKeyword = getFirstKeyword(trimmedSql);
 
-        // 3. 判断是否是写操作
+        // 3. 鍒ゆ柇鏄惁鏄啓鎿嶄綔
         if (WRITE_KEYWORDS.contains(firstKeyword)) {
             log.trace("[SQL-Parser] Detected write keyword [{}], type: WRITE", firstKeyword);
             return SqlType.WRITE;
         }
 
-        // 4. SELECT 开头视为读操作
+        // 4. SELECT 寮€澶磋涓鸿鎿嶄綔
         if ("SELECT".equals(firstKeyword) || "SHOW".equals(firstKeyword) ||
                 "DESCRIBE".equals(firstKeyword) || "EXPLAIN".equals(firstKeyword)) {
             log.trace("[SQL-Parser] Detected read keyword [{}], type: READ", firstKeyword);
@@ -119,28 +119,28 @@ public class SqlTypeParser {
     }
 
     /**
-     * 解析路由 Hint
+     * 瑙ｆ瀽璺敱 Hint
      * <p>
-     * 支持格式�
-     * - /*MASTER* / SELECT ... �强制主库
-     * - /*SLAVE* / SELECT ... �强制从库（负载均衡选择�
-     * - /*SLAVE(slave1)* / SELECT ... �指定从库
+     * 鏀寔鏍煎紡锟?
+     * - /*MASTER* / SELECT ... 锟藉己鍒朵富搴?
+     * - /*SLAVE* / SELECT ... 锟藉己鍒朵粠搴擄紙璐熻浇鍧囪　閫夋嫨锟?
+     * - /*SLAVE(slave1)* / SELECT ... 锟芥寚瀹氫粠搴?
      *
-     * @param sql SQL 语句
-     * @return 路由 Hint
+     * @param sql SQL 璇彞
+     * @return 璺敱 Hint
      */
     public static RoutingHint parseHint(String sql) {
         if (sql == null || sql.isBlank()) {
             return new RoutingHint(RoutingHint.HintType.NONE, null);
         }
 
-        // 检�MASTER Hint
+        // 妫€锟組ASTER Hint
         if (MASTER_HINT_PATTERN.matcher(sql).find()) {
             log.trace("[SQL-Parser] Found MASTER hint");
             return new RoutingHint(RoutingHint.HintType.MASTER, null);
         }
 
-        // 检查带名称�SLAVE Hint
+        // 妫€鏌ュ甫鍚嶇О锟絊LAVE Hint
         var slaveNameMatcher = SLAVE_NAME_HINT_PATTERN.matcher(sql);
         if (slaveNameMatcher.find()) {
             String slaveName = slaveNameMatcher.group(1);
@@ -148,7 +148,7 @@ public class SqlTypeParser {
             return new RoutingHint(RoutingHint.HintType.SLAVE, slaveName);
         }
 
-        // 检�SLAVE Hint
+        // 妫€锟絊LAVE Hint
         if (SLAVE_HINT_PATTERN.matcher(sql).find()) {
             log.trace("[SQL-Parser] Found SLAVE hint");
             return new RoutingHint(RoutingHint.HintType.SLAVE, null);
@@ -158,7 +158,7 @@ public class SqlTypeParser {
     }
 
     /**
-     * 移除 SQL 中的 Hint 注释
+     * 绉婚櫎 SQL 涓殑 Hint 娉ㄩ噴
      */
     public static String removeHint(String sql) {
         if (sql == null) {
@@ -171,16 +171,16 @@ public class SqlTypeParser {
     }
 
     /**
-     * 获取 SQL 的第一个关键字
+     * 鑾峰彇 SQL 鐨勭涓€涓叧閿瓧
      */
     private static String getFirstKeyword(String sql) {
-        // 跳过注释和空�
+        // 璺宠繃娉ㄩ噴鍜岀┖锟?
         String cleanSql = sql
-                .replaceAll("/\\*.*?\\*/", "")  // 移除块注�
-                .replaceAll("--.*$", "")         // 移除行注�
-                .replaceAll("^\\s+", "");        // 移除开头空�
+                .replaceAll("/\\*.*?\\*/", "")  // 绉婚櫎鍧楁敞锟?
+                .replaceAll("--.*$", "")         // 绉婚櫎琛屾敞锟?
+                .replaceAll("^\\s+", "");        // 绉婚櫎寮€澶寸┖锟?
 
-        // 获取第一个词
+        // 鑾峰彇绗竴涓瘝
         int spaceIndex = cleanSql.indexOf(' ');
         int newlineIndex = cleanSql.indexOf('\n');
         int tabIndex = cleanSql.indexOf('\t');
@@ -194,7 +194,7 @@ public class SqlTypeParser {
     }
 
     /**
-     * 判断是否是事务控制语�
+     * 鍒ゆ柇鏄惁鏄簨鍔℃帶鍒惰锟?
      */
     public static boolean isTransactionStatement(String sql) {
         if (sql == null) {

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 读写分离配置属�
+ * 璇诲啓鍒嗙閰嶇疆灞烇拷
  *
  * @author Deng
  * @since 2025-12-16
@@ -20,75 +20,75 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "spring.datasource.rw")
 public class ReadWriteProperties {
     /**
-     * 是否启用读写分离
+     * 鏄惁鍚敤璇诲啓鍒嗙
      */
     private boolean enabled = false;
 
     /**
-     * 数据源组配置
-     * key: 数据源组名称（如 user, permission�
-     * value: 主从配置
+     * 鏁版嵁婧愮粍閰嶇疆
+     * key: 鏁版嵁婧愮粍鍚嶇О锛堝 user, permission锟?
+     * value: 涓讳粠閰嶇疆
      */
     private Map<String, DataSourceGroup> groups = new HashMap<>();
 
     /**
-     * 全局负载均衡策略
+     * 鍏ㄥ眬璐熻浇鍧囪　绛栫暐
      */
     private LoadBalanceType loadBalance = LoadBalanceType.ROUND_ROBIN;
 
     /**
-     * 复制延迟容忍时间（超过此时间强制走主库）
+     * 澶嶅埗寤惰繜瀹瑰繊鏃堕棿锛堣秴杩囨鏃堕棿寮哄埗璧颁富搴擄級
      */
     private Duration replicationLagTolerance = Duration.ofSeconds(1);
 
     /**
-     * 写后读主库持续时间（解决读写一致性）
+     * 鍐欏悗璇讳富搴撴寔缁椂闂达紙瑙ｅ喅璇诲啓涓€鑷存€э級
      */
     private Duration readMasterAfterWrite = Duration.ofSeconds(2);
 
     /**
-     * 是否启用健康检�
+     * 鏄惁鍚敤鍋ュ悍妫€锟?
      */
     private boolean healthCheckEnabled = true;
 
     /**
-     * 健康检查间�
+     * 鍋ュ悍妫€鏌ラ棿锟?
      */
     private Duration healthCheckInterval = Duration.ofSeconds(30);
 
     /**
-     * 连续失败次数后标记为不可�
+     * 杩炵画澶辫触娆℃暟鍚庢爣璁颁负涓嶅彲锟?
      */
     private int failureThreshold = 3;
 
     /**
-     * 数据源组配置
+     * 鏁版嵁婧愮粍閰嶇疆
      */
     @Data
     public static class DataSourceGroup {
         /**
-         * 主库配置
+         * 涓诲簱閰嶇疆
          */
         private DataSourceConfig master;
 
         /**
-         * 从库配置列表
+         * 浠庡簱閰嶇疆鍒楄〃
          */
         private List<SlaveDataSourceConfig> slaves = new ArrayList<>();
 
         /**
-         * 是否启用从库（可临时关闭�
+         * 鏄惁鍚敤浠庡簱锛堝彲涓存椂鍏抽棴锟?
          */
         private boolean slavesEnabled = true;
 
         /**
-         * 负载均衡策略（覆盖全局�
+         * 璐熻浇鍧囪　绛栫暐锛堣鐩栧叏灞€锟?
          */
         private LoadBalanceType loadBalance;
     }
 
     /**
-     * 数据源配�
+     * 鏁版嵁婧愰厤锟?
      */
     @Data
     public static class DataSourceConfig {
@@ -97,7 +97,7 @@ public class ReadWriteProperties {
         private String password;
         private String driverClassName = "org.postgresql.Driver";
 
-        // HikariCP 配置
+        // HikariCP 閰嶇疆
         private int minimumIdle = 5;
         private int maximumPoolSize = 20;
         private Duration connectionTimeout = Duration.ofSeconds(30);
@@ -106,53 +106,53 @@ public class ReadWriteProperties {
     }
 
     /**
-     * 从库数据源配置（带权重）
+     * 浠庡簱鏁版嵁婧愰厤缃紙甯︽潈閲嶏級
      */
     @Data
     @EqualsAndHashCode(callSuper = true)
     public static class SlaveDataSourceConfig extends DataSourceConfig {
         /**
-         * 从库名称（用于日志和监控�
+         * 浠庡簱鍚嶇О锛堢敤浜庢棩蹇楀拰鐩戞帶锟?
          */
         private String name = "slave";
 
         /**
-         * 权重（用于加权轮询）
+         * 鏉冮噸锛堢敤浜庡姞鏉冭疆璇級
          */
         private int weight = 1;
 
         /**
-         * 是否可用
+         * 鏄惁鍙敤
          */
         private boolean available = true;
     }
 
     /**
-     * 负载均衡类型
+     * 璐熻浇鍧囪　绫诲瀷
      */
     public enum LoadBalanceType {
         /**
-         * 轮询
+         * 杞
          */
         ROUND_ROBIN,
 
         /**
-         * 加权轮询
+         * 鍔犳潈杞
          */
         WEIGHTED_ROUND_ROBIN,
 
         /**
-         * 随机
+         * 闅忔満
          */
         RANDOM,
 
         /**
-         * 加权随机
+         * 鍔犳潈闅忔満
          */
         WEIGHTED_RANDOM,
 
         /**
-         * 最少连�
+         * 鏈€灏戣繛锟?
          */
         LEAST_CONNECTIONS
     }

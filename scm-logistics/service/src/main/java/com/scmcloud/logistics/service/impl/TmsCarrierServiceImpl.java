@@ -21,7 +21,7 @@ public class TmsCarrierServiceImpl extends ServiceImpl<TmsCarrierMapper, TmsCarr
 
     @Override
     public Page<TmsCarrier> pageList(int page, int size, String carrierName, Integer carrierType, Boolean enabled) {
-        log.debug("查询物流商列� page={}, size={}, carrierName={}, carrierType={}, enabled={}", page, size, carrierName, carrierType, enabled);
+        log.debug("鏌ヨ鐗╂祦鍟嗗垪锟?page={}, size={}, carrierName={}, carrierType={}, enabled={}", page, size, carrierName, carrierType, enabled);
 
         LambdaQueryWrapper<TmsCarrier> wrapper = Wrappers.lambdaQuery();
         if (StringUtils.hasText(carrierName)) {
@@ -42,7 +42,7 @@ public class TmsCarrierServiceImpl extends ServiceImpl<TmsCarrierMapper, TmsCarr
 
     @Override
     public List<TmsCarrier> listEnabled() {
-        log.debug("查询已启用的物流商列表");
+        log.debug("鏌ヨ宸插惎鐢ㄧ殑鐗╂祦鍟嗗垪琛?);
         return lambdaQuery()
                 .eq(TmsCarrier::getEnabled, true)
                 .eq(TmsCarrier::getDeleted, false)
@@ -52,7 +52,7 @@ public class TmsCarrierServiceImpl extends ServiceImpl<TmsCarrierMapper, TmsCarr
 
     @Override
     public TmsCarrier getByCarrierCode(String carrierCode) {
-        log.debug("根据物流商编码查� carrierCode={}", carrierCode);
+        log.debug("鏍规嵁鐗╂祦鍟嗙紪鐮佹煡锟?carrierCode={}", carrierCode);
         return lambdaQuery()
                 .eq(TmsCarrier::getCarrierCode, carrierCode)
                 .eq(TmsCarrier::getDeleted, false)

@@ -17,25 +17,25 @@ public class TenantResourceQuotaController {
     private final ITenantResourceQuotaService tenantResourceQuotaService;
     @PostMapping
     public TenantResourceQuota create(@RequestBody TenantResourceQuota entity) {
-        log.info("[API] 创建租户资源配额: tenantId={}", entity.getTenantId());
+        log.info("[API] 鍒涘缓绉熸埛璧勬簮閰嶉: tenantId={}", entity.getTenantId());
         return tenantResourceQuotaService.createQuota(entity);
     }
 
     @GetMapping("/{id}")
     public TenantResourceQuota getById(@PathVariable String id) {
-        log.info("[API] 查询租户资源配额: id={}", id);
+        log.info("[API] 鏌ヨ绉熸埛璧勬簮閰嶉: id={}", id);
         return tenantResourceQuotaService.getById(id);
     }
 
     @PutMapping
     public TenantResourceQuota update(@RequestBody TenantResourceQuota entity) {
-        log.info("[API] 更新租户资源配额: id={}", entity.getId());
+        log.info("[API] 鏇存柊绉熸埛璧勬簮閰嶉: id={}", entity.getId());
         return tenantResourceQuotaService.updateQuota(entity);
     }
 
     @DeleteMapping("/{id}")
     public boolean deleteById(@PathVariable String id) {
-        log.info("[API] 删除租户资源配额: id={}", id);
+        log.info("[API] 鍒犻櫎绉熸埛璧勬簮閰嶉: id={}", id);
         return tenantResourceQuotaService.deleteById(id);
     }
 
@@ -43,13 +43,13 @@ public class TenantResourceQuotaController {
     public boolean checkQuota(
             @RequestParam String tenantId,
             @RequestParam String resourceType) {
-        log.info("[API] 检查租户配� tenantId={}, resourceType={}", tenantId, resourceType);
+        log.info("[API] 妫€鏌ョ鎴烽厤锟?tenantId={}, resourceType={}", tenantId, resourceType);
         return tenantResourceQuotaService.checkQuota(tenantId, resourceType);
     }
 
     @GetMapping("/tenant/{tenantId}")
     public List<TenantResourceQuota> listByTenantId(@PathVariable String tenantId) {
-        log.info("[API] 查询租户资源配额: tenantId={}", tenantId);
+        log.info("[API] 鏌ヨ绉熸埛璧勬簮閰嶉: tenantId={}", tenantId);
         return tenantResourceQuotaService.listByTenantId(tenantId);
     }
 
@@ -58,7 +58,7 @@ public class TenantResourceQuotaController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String tenantId) {
-        log.info("[API] 分页查询租户资源配额: page={}, size={}", page, size);
+        log.info("[API] 鍒嗛〉鏌ヨ绉熸埛璧勬簮閰嶉: page={}, size={}", page, size);
         return tenantResourceQuotaService.pageQuery(page, size, tenantId);
     }
 }

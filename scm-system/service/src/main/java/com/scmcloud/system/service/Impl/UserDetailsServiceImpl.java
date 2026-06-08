@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 /**
- * UserDetailsService 实现
+ * UserDetailsService 瀹炵幇
  *
  * @author Deng
  * createData 2025/10/14 14:54
@@ -36,17 +36,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     )
     @NonNull
     public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
-        // 1. �db_user 库查询用户基本信�
+        // 1. 锟絛b_user 搴撴煡璇㈢敤鎴峰熀鏈俊锟?
         var user = sysUserMapper.findByUsername(username);
         if (user == null || user.getDeleted()) {
             log.warn("User not found: {}", username);
-            throw new UsernameNotFoundException("用户不存在或已删� " + username);
+            throw new UsernameNotFoundException("鐢ㄦ埛涓嶅瓨鍦ㄦ垨宸插垹锟?" + username);
         }
 
-        // 2. �db_permission 库查询用户角色（跨库查询�
+        // 2. 锟絛b_permission 搴撴煡璇㈢敤鎴疯鑹诧紙璺ㄥ簱鏌ヨ锟?
         Set<String> roles = sysUserRoleMapper.findRoleCodesByUserId(user.getId());
 
-        // 3. �db_permission 库查询用户权限（跨库查询�
+        // 3. 锟絛b_permission 搴撴煡璇㈢敤鎴锋潈闄愶紙璺ㄥ簱鏌ヨ锟?
         Set<String> permissions = sysUserRoleMapper.findPermissionCodesByUserId(user.getId());
 
         SecurityUser securityUser = SecurityUser.builder()

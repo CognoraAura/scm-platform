@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * 角色部门关联� 用于自定义数据权限范�
+ * 瑙掕壊閮ㄩ棬鍏宠仈锟?鐢ㄤ簬鑷畾涔夋暟鎹潈闄愯寖锟?
  *
  * @author Deng
  * @since 2025-12-15

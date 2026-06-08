@@ -22,30 +22,30 @@ public class RoleDTO {
 
     private UUID tenantId;
 
-    @NotBlank(message = "角色编码不能为空")
-    @Pattern(regexp = "^ROLE_[A-Z_]+$", message = "角色编码必须以ROLE_开头，只能包含大写字母和下划线")
+    @NotBlank(message = "瑙掕壊缂栫爜涓嶈兘涓虹┖")
+    @Pattern(regexp = "^ROLE_[A-Z_]+$", message = "瑙掕壊缂栫爜蹇呴』浠OLE_寮€澶达紝鍙兘鍖呭惈澶у啓瀛楁瘝鍜屼笅鍒掔嚎")
     private String roleCode;
 
-    @NotBlank(message = "角色名称不能为空")
-    @Size(max = 64, message = "角色名称长度不能超过64个字符")
+    @NotBlank(message = "瑙掕壊鍚嶇О涓嶈兘涓虹┖")
+    @Size(max = 64, message = "瑙掕壊鍚嶇О闀垮害涓嶈兘瓒呰繃64涓瓧绗?)
     private String roleName;
 
-    @Size(max = 255, message = "角色描述长度不能超过255个字符")
+    @Size(max = 255, message = "瑙掕壊鎻忚堪闀垮害涓嶈兘瓒呰繃255涓瓧绗?)
     private String roleDesc;
 
     private String roleType;
 
     private String roleCategory;
 
-    @NotNull(message = "角色级别不能为空")
-    @Min(value = 0, message = "角色级别不能小于0")
-    @Max(value = 999, message = "角色级别不能大于999")
+    @NotNull(message = "瑙掕壊绾у埆涓嶈兘涓虹┖")
+    @Min(value = 0, message = "瑙掕壊绾у埆涓嶈兘灏忎簬0")
+    @Max(value = 999, message = "瑙掕壊绾у埆涓嶈兘澶т簬999")
     private Integer roleLevel;
 
-    @NotNull(message = "数据权限不能为空")
+    @NotNull(message = "鏁版嵁鏉冮檺涓嶈兘涓虹┖")
     private Integer dataScope;
 
-    @DecimalMin(value = "0.00", message = "最大审批金额不能为负数")
+    @DecimalMin(value = "0.00", message = "鏈€澶у鎵归噾棰濅笉鑳戒负璐熸暟")
     private BigDecimal maxApprovalAmount;
 
     private String businessScope;
@@ -62,8 +62,8 @@ public class RoleDTO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime updateTime;
 
-    // 关联数据
+    // 鍏宠仈鏁版嵁
     private List<UUID> permissionIds;
     private List<UUID> deptIds;
-    private Integer userCount; // 拥有该角色的用户�
+    private Integer userCount; // 鎷ユ湁璇ヨ鑹茬殑鐢ㄦ埛锟?
 }

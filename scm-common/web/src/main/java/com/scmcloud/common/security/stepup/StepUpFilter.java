@@ -26,9 +26,9 @@ import java.util.Collections;
 import java.util.UUID;
 
 /**
- * Step-Up 认证过滤器：基于 Sentinel 熔断保护的敏感操作二次认证校�
+ * Step-Up 璁よ瘉杩囨护鍣細鍩轰簬 Sentinel 鐔旀柇淇濇姢鐨勬晱鎰熸搷浣滀簩娆¤璇佹牎锟?
  *
- * <p>使用 Sentinel 进行熔断降级保护，替代原有的 SimpleCircuitBreaker
+ * <p>浣跨敤 Sentinel 杩涜鐔旀柇闄嶇骇淇濇姢锛屾浛浠ｅ師鏈夌殑 SimpleCircuitBreaker
  *
  * <p>Sentinel Resource: "step-up:evaluate"
  *

@@ -128,7 +128,7 @@
         </dependency>
         <!-- jwt end -->
 
-        <!-- 工具�?start -->
+        <!-- 宸ュ叿锟?start -->
         <!-- guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -178,7 +178,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
-        <!-- 工具 end -->
+        <!-- 宸ュ叿 end -->
 
         <!-- validation -->
         <dependency>

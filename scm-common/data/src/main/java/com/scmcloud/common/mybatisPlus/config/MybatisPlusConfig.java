@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.UUID;
 
 /**
- * MybatisPlus 配置�
+ * MybatisPlus 閰嶇疆锟?
  *
  * @author Deng
  * createData 2025/10/15 13:35
@@ -29,37 +29,37 @@ import java.util.UUID;
 public class MybatisPlusConfig {
 
     /**
-     * 添加分页插件
+     * 娣诲姞鍒嗛〉鎻掍欢
      */
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor(MybatisPlusProperties properties) {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
 
-        // 分页插件
+        // 鍒嗛〉鎻掍欢
         PaginationInnerInterceptor paginationInterceptor = new PaginationInnerInterceptor(DbType.POSTGRE_SQL);
-        paginationInterceptor.setMaxLimit(properties.getPaginationMaxLimit()); // 最大单页限制数�
-        paginationInterceptor.setOverflow(false); // 溢出总页数后是否进行处理
+        paginationInterceptor.setMaxLimit(properties.getPaginationMaxLimit()); // 鏈€澶у崟椤甸檺鍒舵暟锟?
+        paginationInterceptor.setOverflow(false); // 婧㈠嚭鎬婚〉鏁板悗鏄惁杩涜澶勭悊
         interceptor.addInnerInterceptor(paginationInterceptor);
 
-        // 乐观锁插�
+        // 涔愯閿佹彃锟?
         interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
 
-        // 防止全表更新与删除插�
+        // 闃叉鍏ㄨ〃鏇存柊涓庡垹闄ゆ彃锟?
         interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
 
         return interceptor;
     }
     
     /**
-     * 注册自定义类型处理器
+     * 娉ㄥ唽鑷畾涔夌被鍨嬪鐞嗗櫒
      */
     @Bean
     public ConfigurationCustomizer configurationCustomizer() {
         return configuration -> {
             TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
-            // 注册 UUID类型处理�
+            // 娉ㄥ唽 UUID绫诲瀷澶勭悊锟?
             typeHandlerRegistry.register(UUID.class, UUIDTypeHandler.class);
-            // 注册值对象类型处理器
+            // 娉ㄥ唽鍊煎璞＄被鍨嬪鐞嗗櫒
             typeHandlerRegistry.register(Money.class, MoneyTypeHandler.class);
             typeHandlerRegistry.register(Quantity.class, QuantityTypeHandler.class);
         };

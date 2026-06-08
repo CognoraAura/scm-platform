@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * 临时权限� 用于临时授权
+ * 涓存椂鏉冮檺锟?鐢ㄤ簬涓存椂鎺堟潈
  *
  * @author Deng
  * @since 2025-12-17
@@ -48,7 +48,7 @@ public class SysTempPermission {
     private UUID createBy;
 
     /**
-     * 判断是否在有效期�
+     * 鍒ゆ柇鏄惁鍦ㄦ湁鏁堟湡锟?
      */
     public boolean isEffective() {
         if (status == null || status != 1) {

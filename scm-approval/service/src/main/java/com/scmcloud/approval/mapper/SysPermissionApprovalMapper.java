@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * <p>
- * 权限申请审批�Mapper 接口
+ * 鏉冮檺鐢宠瀹℃壒锟組apper 鎺ュ彛
  * </p>
  *
  * @author deng

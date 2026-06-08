@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 /**
  * Resolves the canonical client IP based on trusted proxy configuration.
- * 根据可信代理配置解析出规范的客户�IP 地址�
+ * 鏍规嵁鍙俊浠ｇ悊閰嶇疆瑙ｆ瀽鍑鸿鑼冪殑瀹㈡埛锟絀P 鍦板潃锟?
  */
 public final class ClientIpResolver {
     private final List<IpSubnet> trustedProxies;

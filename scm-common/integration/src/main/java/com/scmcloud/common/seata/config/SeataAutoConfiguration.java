@@ -7,15 +7,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Seata 自动配置�
+ * Seata 鑷姩閰嶇疆锟?
  *
- * <p>为微服务提供分布式事务能力。支�AT、TCC、SAGA、XA 模式�
+ * <p>涓哄井鏈嶅姟鎻愪緵鍒嗗竷寮忎簨鍔¤兘鍔涖€傛敮锟紸T銆乀CC銆丼AGA銆乆A 妯″紡锟?
  *
- * <p>使用方式�
+ * <p>浣跨敤鏂瑰紡锟?
  * <pre>
  * &#64;GlobalTransactional(name = "create-order", rollbackFor = Exception.class)
  * public Order createOrder(OrderDTO dto) {
- *     // 业务逻辑
+ *     // 涓氬姟閫昏緫
  * }
  * </pre>
  *
@@ -33,7 +33,7 @@ public class SeataAutoConfiguration {
     private String txServiceGroup;
 
     /**
-     * 全局事务扫描�
+     * 鍏ㄥ眬浜嬪姟鎵弿锟?
      *
      * @return GlobalTransactionScanner
      */

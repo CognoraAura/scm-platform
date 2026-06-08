@@ -6,7 +6,7 @@ import com.scmcloud.product.domain.entity.ProdSku;
 
 /**
  * <p>
- * SKU库存单位�Mapper 接口
+ * SKU搴撳瓨鍗曚綅锟組apper 鎺ュ彛
  * </p>
  *
  * @author author

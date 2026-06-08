@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 会话管理服务
+ * 浼氳瘽绠＄悊鏈嶅姟
  */
 @Service
 @RequiredArgsConstructor
@@ -26,7 +26,7 @@ public class SessionManager {
     private static final String ONLINE_USERS_KEY = "online:users";
 
     /**
-     * 创建会话
+     * 鍒涘缓浼氳瘽
      */
     public String createSession(UUID userId, String username, String deviceId, String ipAddress,
                                 Duration sessionTimeout) {
@@ -57,7 +57,7 @@ public class SessionManager {
     }
 
     /**
-     * 更新会话活动时间
+     * 鏇存柊浼氳瘽娲诲姩鏃堕棿
      */
     public void updateActivity(String sessionId) {
         String sessionKey = SESSION_PREFIX + sessionId;
@@ -65,7 +65,7 @@ public class SessionManager {
         if (redisTemplate.hasKey(sessionKey)) {
             redisTemplate.opsForHash().put(sessionKey, "lastActivityTime", LocalDateTime.now().toString());
 
-            // 续长当前 TTL，如�TTL 则回退 30 分钟
+            // 缁暱褰撳墠 TTL锛屽锟絋TL 鍒欏洖閫€ 30 鍒嗛挓
             Long ttlSeconds = redisTemplate.getExpire(sessionKey);
             if (ttlSeconds != null && ttlSeconds > 0) {
                 redisTemplate.expire(sessionKey, Duration.ofSeconds(ttlSeconds));
@@ -76,7 +76,7 @@ public class SessionManager {
     }
 
     /**
-     * 关闭会话
+     * 鍏抽棴浼氳瘽
      */
     public void destroySession(String sessionId) {
         String sessionKey = SESSION_PREFIX + sessionId;
@@ -100,7 +100,7 @@ public class SessionManager {
     }
 
     /**
-     * 关闭用户的所有会�
+     * 鍏抽棴鐢ㄦ埛鐨勬墍鏈変細锟?
      */
     public void destroyAllUserSessions(UUID userId) {
         String userSessionsKey = USER_SESSIONS_PREFIX + userId;
@@ -118,7 +118,7 @@ public class SessionManager {
     }
 
     /**
-     * 获取用户的所有会�
+     * 鑾峰彇鐢ㄦ埛鐨勬墍鏈変細锟?
      */
     public List<Map<String, Object>> getUserSessions(UUID userId) {
         String userSessionsKey = USER_SESSIONS_PREFIX + userId;
@@ -143,7 +143,7 @@ public class SessionManager {
     }
 
     /**
-     * 获取在线用户列表
+     * 鑾峰彇鍦ㄧ嚎鐢ㄦ埛鍒楄〃
      */
     public List<String> getOnlineUsers() {
         Set<Object> userIds = redisTemplate.opsForZSet().range(ONLINE_USERS_KEY, 0, -1);
@@ -152,14 +152,14 @@ public class SessionManager {
     }
 
     /**
-     * 获取在线用户数量
+     * 鑾峰彇鍦ㄧ嚎鐢ㄦ埛鏁伴噺
      */
     public Long getOnlineUserCount() {
         return redisTemplate.opsForZSet().size(ONLINE_USERS_KEY);
     }
 
     /**
-     * 检查用户是否在�
+     * 妫€鏌ョ敤鎴锋槸鍚﹀湪锟?
      */
     public boolean isUserOnline(UUID userId) {
         Double score = redisTemplate.opsForZSet().score(ONLINE_USERS_KEY, userId.toString());
@@ -168,7 +168,7 @@ public class SessionManager {
     }
 
     /**
-     * 清理过期会话（定时任务调用）
+     * 娓呯悊杩囨湡浼氳瘽锛堝畾鏃朵换鍔¤皟鐢級
      */
     public void cleanupExpiredSessions() {
         log.info("Starting expired sessions cleanup");
@@ -203,7 +203,7 @@ public class SessionManager {
     }
 
     /**
-     * 获取用户的会话统计信�
+     * 鑾峰彇鐢ㄦ埛鐨勪細璇濈粺璁′俊锟?
      */
     public Map<String, Object> getUserSessionStats(UUID userId) {
         Map<String, Object> stats = new HashMap<>();
@@ -229,7 +229,7 @@ public class SessionManager {
     }
 
     /**
-     * 限制用户的并发会话数
+     * 闄愬埗鐢ㄦ埛鐨勫苟鍙戜細璇濇暟
      */
     public boolean checkConcurrentSessions(UUID userId, int maxSessions) {
         List<Map<String, Object>> sessions = getUserSessions(userId);

@@ -16,20 +16,20 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * WebAuthn 凭证实体�
+ * WebAuthn 鍑瘉瀹炰綋锟?
  * <p>
- * 参考标准：
+ * 鍙傝€冩爣鍑嗭細
  * - W3C Web Authentication API Level 2
  * - FIDO2 CTAP2 Protocol
  * - Google Passkey Implementation
 
- * 安全特性：
- * - 凭证ID全局唯一，防止凭证碰�
- * - 签名计数器防重放攻击
- * - 公钥隔离存储，降低泄露风�
- * - 支持多设备绑定，提升用户体验
+ * 瀹夊叏鐗规€э細
+ * - 鍑瘉ID鍏ㄥ眬鍞竴锛岄槻姝㈠嚟璇佺锟?
+ * - 绛惧悕璁℃暟鍣ㄩ槻閲嶆斁鏀诲嚮
+ * - 鍏挜闅旂瀛樺偍锛岄檷浣庢硠闇查锟?
+ * - 鏀寔澶氳澶囩粦瀹氾紝鎻愬崌鐢ㄦ埛浣撻獙
 
- * 业务外键: user_id -> sys_user.user_id (应用层保证完整�
+ * 涓氬姟澶栭敭: user_id -> sys_user.user_id (搴旂敤灞備繚璇佸畬鏁达拷
  *
  * @author system
  * @since 2025-11-27
@@ -49,126 +49,126 @@ public class WebauthnCredential implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键 ID
+     * 涓婚敭 ID
      */
     @TableId(value = "id", type = IdType.ASSIGN_ID)
     private UUID id;
 
     /**
-     * WebAuthn凭证ID (Credential ID)
-     * Base64URL编码的凭证标识符，由认证器生成，全局唯一
-     * 用于客户端查找对应的私钥进行签名
+     * WebAuthn鍑瘉ID (Credential ID)
+     * Base64URL缂栫爜鐨勫嚟璇佹爣璇嗙锛岀敱璁よ瘉鍣ㄧ敓鎴愶紝鍏ㄥ眬鍞竴
+     * 鐢ㄤ簬瀹㈡埛绔煡鎵惧搴旂殑绉侀挜杩涜绛惧悕
      */
     @TableField(value = "credential_id")
-    @NotBlank(message = "凭证 ID不能为空")
-    @Size(min = 16, max = 1024, message = "凭证ID长度必须�6-1024之间")
+    @NotBlank(message = "鍑瘉 ID涓嶈兘涓虹┖")
+    @Size(min = 16, max = 1024, message = "鍑瘉ID闀垮害蹇呴』锟?-1024涔嬮棿")
     private String credentialId;
 
     /**
-     * 用户ID
-     * 业务外键，关联到sys_user�
+     * 鐢ㄦ埛ID
+     * 涓氬姟澶栭敭锛屽叧鑱斿埌sys_user锟?
      */
     @TableField(value = "user_id")
-    @NotBlank(message = "用户 ID不能为空")
-    @Size(max = 64, message = "用户ID长度不能超过64")
+    @NotBlank(message = "鐢ㄦ埛 ID涓嶈兘涓虹┖")
+    @Size(max = 64, message = "鐢ㄦ埛ID闀垮害涓嶈兘瓒呰繃64")
     private UUID userId;
 
     /**
-     * 公钥 (Public Key)
-     * 存储PEM格式的公钥，用于验证认证器签�
-     * 建议：生产环境应加密存储或使用HSM
+     * 鍏挜 (Public Key)
+     * 瀛樺偍PEM鏍煎紡鐨勫叕閽ワ紝鐢ㄤ簬楠岃瘉璁よ瘉鍣ㄧ锟?
+     * 寤鸿锛氱敓浜х幆澧冨簲鍔犲瘑瀛樺偍鎴栦娇鐢℉SM
      */
     @TableField(value = "public_key_pem")
-    @JsonIgnore // 敏感信息，不在JSON响应中暴�
-    @NotBlank(message = "公钥不能为空")
-    @Size(max = 2048, message = "公钥长度不能超过2048")
+    @JsonIgnore // 鏁忔劅淇℃伅锛屼笉鍦↗SON鍝嶅簲涓毚锟?
+    @NotBlank(message = "鍏挜涓嶈兘涓虹┖")
+    @Size(max = 2048, message = "鍏挜闀垮害涓嶈兘瓒呰繃2048")
     private String publicKeyPem;
 
     /**
-     * 签名算法 (COSE Algorithm)
-     * 常见值：
+     * 绛惧悕绠楁硶 (COSE Algorithm)
+     * 甯歌鍊硷細
      * - ES256 (-7): ECDSA with SHA-256
      * - RS256 (-257): RSASSA-PKCS1-v1_5 with SHA-256
      * - EdDSA (-8): EdDSA
      */
     @TableField(value = "alg")
-    @NotBlank(message = "签名算法不能为空")
+    @NotBlank(message = "绛惧悕绠楁硶涓嶈兘涓虹┖")
     @Pattern(regexp = "^(ES256|ES384|ES512|RS256|RS384|RS512|PS256|PS384|PS512|EdDSA)$",
-             message = "不支持的签名算法")
+             message = "涓嶆敮鎸佺殑绛惧悕绠楁硶")
     private String alg;
 
     /**
-     * 签名计数�(Signature Counter)
-     * 防重放攻击的关键机制
-     * - 每次认证后必须递增
-     * - 如果计数器不递增或回退，说明可能存在克隆攻�
-     * - 初始值通常�0
+     * 绛惧悕璁℃暟锟?Signature Counter)
+     * 闃查噸鏀炬敾鍑荤殑鍏抽敭鏈哄埗
+     * - 姣忔璁よ瘉鍚庡繀椤婚€掑
+     * - 濡傛灉璁℃暟鍣ㄤ笉閫掑鎴栧洖閫€锛岃鏄庡彲鑳藉瓨鍦ㄥ厠闅嗘敾锟?
+     * - 鍒濆鍊奸€氬父锟?
      */
     @TableField(value = "sign_count")
-    @NotNull(message = "签名计数器不能为空")
-    @Min(value = 0, message = "签名计数器不能为负数")
+    @NotNull(message = "绛惧悕璁℃暟鍣ㄤ笉鑳戒负绌?)
+    @Min(value = 0, message = "绛惧悕璁℃暟鍣ㄤ笉鑳戒负璐熸暟")
     private Long signCount;
 
     /**
-     * 设备名称 (用户自定�
-     * 帮助用户识别不同的认证器
+     * 璁惧鍚嶇О (鐢ㄦ埛鑷畾锟?
+     * 甯姪鐢ㄦ埛璇嗗埆涓嶅悓鐨勮璇佸櫒
      */
     @TableField(value = "device_name")
-    @Size(max = 100, message = "设备名称长度不能超过100")
+    @Size(max = 100, message = "璁惧鍚嶇О闀垮害涓嶈兘瓒呰繃100")
     private String deviceName;
 
     /**
      * aaGUID (Authenticator Attestation GUID)
-     * 识别认证器型号的唯一标识�
-     * 格式：UUID (例如: 08987058-cadc-4b81-b6e1-30de50dcbe96)
+     * 璇嗗埆璁よ瘉鍣ㄥ瀷鍙风殑鍞竴鏍囪瘑锟?
+     * 鏍煎紡锛歎UID (渚嬪: 08987058-cadc-4b81-b6e1-30de50dcbe96)
      */
     @TableField(value = "aaguid")
     private UUID aaguid;
 
     /**
-     * 传输方式 (Transports)
-     * 认证器支持的通信协议
-     * 可选值：usb, nfc, ble, internal, hybrid
-     * 存储格式：PostgreSQL TEXT[] 数组
+     * 浼犺緭鏂瑰紡 (Transports)
+     * 璁よ瘉鍣ㄦ敮鎸佺殑閫氫俊鍗忚
+     * 鍙€夊€硷細usb, nfc, ble, internal, hybrid
+     * 瀛樺偍鏍煎紡锛歅ostgreSQL TEXT[] 鏁扮粍
      */
     @TableField(value = "transports", typeHandler = com.scmcloud.common.mybatisPlus.handler.StringArrayTypeHandler.class)
     private String[] transports;
 
     /**
-     * 凭证状�
-     * - true: 激活，可用于认�
-     * - false: 停用，用户主动禁用或系统检测到异常
+     * 鍑瘉鐘讹拷
+     * - true: 婵€娲伙紝鍙敤浜庤锟?
+     * - false: 鍋滅敤锛岀敤鎴蜂富鍔ㄧ鐢ㄦ垨绯荤粺妫€娴嬪埌寮傚父
      */
     @TableField(value = "is_active")
-    @NotNull(message = "启用状态不能为空")
+    @NotNull(message = "鍚敤鐘舵€佷笉鑳戒负绌?)
     private Boolean isActive;
 
     /**
-     * 最后使用时�
-     * 用于:
-     * - 清理长期未使用的凭证
-     * - 检测异常登录模�
-     * - 生成用户活跃度报�
+     * 鏈€鍚庝娇鐢ㄦ椂锟?
+     * 鐢ㄤ簬:
+     * - 娓呯悊闀挎湡鏈娇鐢ㄧ殑鍑瘉
+     * - 妫€娴嬪紓甯哥櫥褰曟ā锟?
+     * - 鐢熸垚鐢ㄦ埛娲昏穬搴︽姤锟?
      */
     @TableField(value = "last_used_at")
     private LocalDateTime lastUsedAt;
 
     /**
-     * 创建时间
-     * 自动填充，用于审计和统计
+     * 鍒涘缓鏃堕棿
+     * 鑷姩濉厖锛岀敤浜庡璁″拰缁熻
      */
     @TableField(value = "created_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     /**
-     * 更新时间
-     * 自动填充，记录最后修改时�
+     * 鏇存柊鏃堕棿
+     * 鑷姩濉厖锛岃褰曟渶鍚庝慨鏀规椂锟?
      */
     @TableField(value = "updated_time", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
     /**
-     * 检查凭证是否可�
+     * 妫€鏌ュ嚟璇佹槸鍚﹀彲锟?
      *
      * @return true if credential is active and not expired
      */
@@ -177,24 +177,24 @@ public class WebauthnCredential implements Serializable {
     }
 
     /**
-     * 检查签名计数器是否有效
-     * 用于检测克隆攻�
+     * 妫€鏌ョ鍚嶈鏁板櫒鏄惁鏈夋晥
+     * 鐢ㄤ簬妫€娴嬪厠闅嗘敾锟?
      *
-     * @param newCounter 新的计数器�
+     * @param newCounter 鏂扮殑璁℃暟鍣拷
      * @return true if counter is valid (increasing)
      */
     public boolean isCounterValid(Long newCounter) {
         if (newCounter == null || this.signCount == null) {
             return false;
         }
-        // 计数器必须严格递增 (除非设备不支持计数器，此时始终为0)
+        // 璁℃暟鍣ㄥ繀椤讳弗鏍奸€掑 (闄ら潪璁惧涓嶆敮鎸佽鏁板櫒锛屾鏃跺缁堜负0)
         return newCounter > this.signCount || (newCounter == 0 && this.signCount == 0);
     }
 
     /**
-     * 更新最后使用时间和签名计数�
+     * 鏇存柊鏈€鍚庝娇鐢ㄦ椂闂村拰绛惧悕璁℃暟锟?
      *
-     * @param newCounter 新的签名计数器�
+     * @param newCounter 鏂扮殑绛惧悕璁℃暟鍣拷
      */
     public void updateUsage(Long newCounter) {
         this.lastUsedAt = LocalDateTime.now();
@@ -202,8 +202,8 @@ public class WebauthnCredential implements Serializable {
     }
 
     /**
-     * 停用凭证
-     * 用于用户主动删除或系统检测到异常
+     * 鍋滅敤鍑瘉
+     * 鐢ㄤ簬鐢ㄦ埛涓诲姩鍒犻櫎鎴栫郴缁熸娴嬪埌寮傚父
      */
     public void deactivate() {
         this.isActive = false;

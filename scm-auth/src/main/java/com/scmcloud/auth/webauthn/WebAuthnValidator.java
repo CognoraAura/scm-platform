@@ -29,8 +29,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * WebAuthn 验证�
- * 使用 WebAuthn4J 库实�W3C WebAuthn 标准验证
+ * WebAuthn 楠岃瘉锟?
+ * 浣跨敤 WebAuthn4J 搴撳疄锟絎3C WebAuthn 鏍囧噯楠岃瘉
  *
  * @author Deng
  * @since 2025-12-15
@@ -53,12 +53,12 @@ public class WebAuthnValidator {
     }
 
     /**
-     * 验证注册响应
+     * 楠岃瘉娉ㄥ唽鍝嶅簲
      *
-     * @param clientDataJSON    客户端数�JSON (Base64URL)
-     * @param attestationObject 证明对象 (Base64URL)
-     * @param expectedChallenge 预期的挑战�
-     * @return 验证后的凭证数据
+     * @param clientDataJSON    瀹㈡埛绔暟锟絁SON (Base64URL)
+     * @param attestationObject 璇佹槑瀵硅薄 (Base64URL)
+     * @param expectedChallenge 棰勬湡鐨勬寫鎴橈拷
+     * @return 楠岃瘉鍚庣殑鍑瘉鏁版嵁
      */
     public RegistrationResult validateRegistration(
             String clientDataJSON,
@@ -76,24 +76,24 @@ public class WebAuthnValidator {
             return result;
         } catch (VerificationException e) {
             log.warn("WebAuthn registration validation failed: {}", e.getMessage());
-            throw new IllegalStateException("WebAuthn 注册验证失败", e);
+            throw new IllegalStateException("WebAuthn 娉ㄥ唽楠岃瘉澶辫触", e);
         } catch (RuntimeException e) {
             log.error("WebAuthn registration processing error", e);
-            throw new IllegalStateException("WebAuthn 注册处理错误", e);
+            throw new IllegalStateException("WebAuthn 娉ㄥ唽澶勭悊閿欒", e);
         }
     }
 
     /**
-     * 验证认证响应
+     * 楠岃瘉璁よ瘉鍝嶅簲
      *
-     * @param credentialId      凭证ID (Base64URL)
-     * @param clientDataJSON    客户端数�JSON (Base64URL)
-     * @param authenticatorData 认证器数�(Base64URL)
-     * @param signature         签名 (Base64URL)
-     * @param expectedChallenge 预期的挑战�
-     * @param storedPublicKey   存储的公�(COSE 格式)
-     * @param storedSignCount   存储的签名计�
-     * @return 新的签名计数
+     * @param credentialId      鍑瘉ID (Base64URL)
+     * @param clientDataJSON    瀹㈡埛绔暟锟絁SON (Base64URL)
+     * @param authenticatorData 璁よ瘉鍣ㄦ暟锟?Base64URL)
+     * @param signature         绛惧悕 (Base64URL)
+     * @param expectedChallenge 棰勬湡鐨勬寫鎴橈拷
+     * @param storedPublicKey   瀛樺偍鐨勫叕锟?COSE 鏍煎紡)
+     * @param storedSignCount   瀛樺偍鐨勭鍚嶈锟?
+     * @return 鏂扮殑绛惧悕璁℃暟
      */
     public AuthenticationResult validateAuthentication(
             String credentialId,
@@ -124,18 +124,18 @@ public class WebAuthnValidator {
             return new AuthenticationResult(newSignCount, true);
         } catch (VerificationException e) {
             log.warn("WebAuthn authentication validation failed: {}", e.getMessage());
-            throw new IllegalStateException("WebAuthn 认证验证失败", e);
+            throw new IllegalStateException("WebAuthn 璁よ瘉楠岃瘉澶辫触", e);
         } catch (RuntimeException e) {
             log.error("WebAuthn authentication processing error", e);
-            throw new IllegalStateException("WebAuthn 认证处理错误", e);
+            throw new IllegalStateException("WebAuthn 璁よ瘉澶勭悊閿欒", e);
         }
     }
 
     /**
-     * �COSE 公钥序列化为字节数组
+     * 锟紺OSE 鍏挜搴忓垪鍖栦负瀛楄妭鏁扮粍
      *
-     * @param coseKey COSE 公钥，不能为 null
-     * @return 序列化后的字节数�
+     * @param coseKey COSE 鍏挜锛屼笉鑳戒负 null
+     * @return 搴忓垪鍖栧悗鐨勫瓧鑺傛暟锟?
      */
     public byte[] serializeCOSEKey(COSEKey coseKey) {
         Objects.requireNonNull(coseKey, "coseKey must not be null");
@@ -254,7 +254,7 @@ public class WebAuthnValidator {
         return coseKey;
     }
 
-    @SuppressWarnings("deprecation") // ServerProperty 构造器已废弃，但无替代 API
+    @SuppressWarnings("deprecation") // ServerProperty 鏋勯€犲櫒宸插簾寮冿紝浣嗘棤鏇夸唬 API
     private ServerProperty buildServerProperty(String expectedChallenge) {
         String rpOrigin = requireNonBlank(webAuthnConfig.getOrigin(), "webauthn.rp.origin");
         String rpId = requireNonBlank(webAuthnConfig.getId(), "webauthn.rp.id");
@@ -283,7 +283,7 @@ public class WebAuthnValidator {
     }
 
     /**
-     * 注册结果
+     * 娉ㄥ唽缁撴灉
      */
     public record RegistrationResult(
             byte[] credentialId,
@@ -304,7 +304,7 @@ public class WebAuthnValidator {
         }
 
         /**
-         * 获取 AAGUID 作为 java.util.UUID
+         * 鑾峰彇 AAGUID 浣滀负 java.util.UUID
          */
         public UUID getAaguid() {
             if (aaguid == null || aaguid.equals(new AAGUID(new byte[16]))) {
@@ -315,7 +315,7 @@ public class WebAuthnValidator {
     }
 
     /**
-     * 认证结果
+     * 璁よ瘉缁撴灉
      */
     public record AuthenticationResult(
             long newSignCount,

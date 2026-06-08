@@ -72,30 +72,30 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
     public WebauthnCredentialDTO registerCredential(UUID userId, WebauthnRegistrationRequest request) {
         log.info("Registering WebAuthn credential for user={}, credentialId={}", userId, request.getCredentialId());
 
-        // 检查凭证是否已存在
+        // 妫€鏌ュ嚟璇佹槸鍚﹀凡瀛樺湪
         WebauthnCredential existing = credentialMapper.findByUserIdAndCredId(userId, request.getCredentialId());
         if (existing != null) {
-            throw new IllegalStateException("凭证 ID已存在");
+            throw new IllegalStateException("鍑瘉 ID宸插瓨鍦?);
         }
 
-        // 获取并验证挑�
+        // 鑾峰彇骞堕獙璇佹寫锟?
         String challengeKey = WA_REG_CHALLENGE_PREFIX + userId + ":" + request.getDeviceId();
         Object expectedChallenge = redisTemplate.opsForValue().get(challengeKey);
         if (expectedChallenge == null) {
-            throw new IllegalStateException("注册挑战已过期或不存在");
+            throw new IllegalStateException("娉ㄥ唽鎸戞垬宸茶繃鏈熸垨涓嶅瓨鍦?);
         }
 
-        // 使用 WebAuthn4J 验证注册响应
+        // 浣跨敤 WebAuthn4J 楠岃瘉娉ㄥ唽鍝嶅簲
         WebAuthnValidator.RegistrationResult validationResult = webAuthnValidator.validateRegistration(
                 request.getClientDataJSON(),
                 request.getAttestationObject(),
                 expectedChallenge.toString()
         );
 
-        // 删除已使用的挑战
+        // 鍒犻櫎宸蹭娇鐢ㄧ殑鎸戞垬
         redisTemplate.delete(challengeKey);
 
-        // 构建并保存凭�
+        // 鏋勫缓骞朵繚瀛樺嚟锟?
         WebauthnCredential credential = WebauthnCredential.builder()
                 .id(UUID.randomUUID())
                 .credentialId(validationResult.getCredentialIdBase64())
@@ -118,12 +118,12 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
     }
 
     /**
-     * 获取 COSE 公钥算法名称
-     * COSE Algorithm 参� https://www.iana.org/assignments/cose/cose.xhtml#algorithms
+     * 鑾峰彇 COSE 鍏挜绠楁硶鍚嶇О
+     * COSE Algorithm 鍙傦拷 https://www.iana.org/assignments/cose/cose.xhtml#algorithms
      */
     private String getAlgorithmName(com.webauthn4j.data.attestation.authenticator.COSEKey coseKey) {
         if (coseKey == null || coseKey.getAlgorithm() == null) {
-            return "ES256"; // 默认
+            return "ES256"; // 榛樿
         }
         long algValue = coseKey.getAlgorithm().getValue();
         if (algValue == -7L) {
@@ -155,7 +155,7 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
         long challengeExpiry = webAuthnConfig.getChallengeExpirySeconds();
         redisTemplate.opsForValue().set(key, challenge, challengeExpiry, TimeUnit.SECONDS);
 
-        // 获取用户所有活跃凭�
+        // 鑾峰彇鐢ㄦ埛鎵€鏈夋椿璺冨嚟锟?
         List<WebauthnCredential> creds = credentialMapper.findByUserId(userId);
         List<Map<String, Object>> allowCredentials = creds.stream()
                 .map(c -> {
@@ -185,27 +185,27 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
             String deviceId, String ipAddress) {
         log.info("Authenticating WebAuthn for user={}, credentialId={}", userId, request.getCredentialId());
 
-        // 验证挑战
+        // 楠岃瘉鎸戞垬
         String key = WA_CHALLENGE_PREFIX + userId + ":" + deviceId;
         Object expectedChallenge = redisTemplate.opsForValue().get(key);
         if (expectedChallenge == null) {
-            throw new IllegalStateException("WebAuthn 挑战已过期或不存在");
+            throw new IllegalStateException("WebAuthn 鎸戞垬宸茶繃鏈熸垨涓嶅瓨鍦?);
         }
 
-        // 获取凭证
+        // 鑾峰彇鍑瘉
         WebauthnCredential credential = credentialMapper.findByUserIdAndCredId(userId, request.getCredentialId());
         if (credential == null || !credential.isAvailable()) {
-            throw new IllegalStateException("凭证不存在或已停用");
+            throw new IllegalStateException("鍑瘉涓嶅瓨鍦ㄦ垨宸插仠鐢?);
         }
 
-        // 验证签名计数器（防克隆攻击）- 预检�
+        // 楠岃瘉绛惧悕璁℃暟鍣紙闃插厠闅嗘敾鍑伙級- 棰勬锟?
         if (!credential.isCounterValid(request.getSignCount())) {
             log.warn("Invalid signature counter for user={}, credentialId={}, expected>{}, got={}",
                     userId, request.getCredentialId(), credential.getSignCount(), request.getSignCount());
-            throw new IllegalStateException("签名计数器异常，可能存在克隆攻击");
+            throw new IllegalStateException("绛惧悕璁℃暟鍣ㄥ紓甯革紝鍙兘瀛樺湪鍏嬮殕鏀诲嚮");
         }
 
-        // 使用 WebAuthn4J 验证断言签名
+        // 浣跨敤 WebAuthn4J 楠岃瘉鏂█绛惧悕
         byte[] storedPublicKey = Base64.getDecoder().decode(credential.getPublicKeyPem());
         WebAuthnValidator.AuthenticationResult authResult = webAuthnValidator.validateAuthentication(
                 request.getCredentialId(),
@@ -217,17 +217,17 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
                 credential.getSignCount()
         );
 
-        // 更新凭证使用信息（使用验证后返回的新签名计数�
+        // 鏇存柊鍑瘉浣跨敤淇℃伅锛堜娇鐢ㄩ獙璇佸悗杩斿洖鐨勬柊绛惧悕璁℃暟锟?
         credentialMapper.updateSignCount(userId, request.getCredentialId(), authResult.newSignCount());
 
-        // 删除已使用的挑战
+        // 鍒犻櫎宸蹭娇鐢ㄧ殑鎸戞垬
         redisTemplate.delete(key);
 
-        // 获取用户权限
+        // 鑾峰彇鐢ㄦ埛鏉冮檺
         Set<String> roles = userServiceClient.findRolesByUserId(userId).data();
         Set<String> permissions = userServiceClient.findPermissionsByUserId(userId).data();
 
-        // 签发�AMR的访问令�
+        // 绛惧彂锟紸MR鐨勮闂护锟?
         List<String> amr = Arrays.asList("pwd", "webauthn");
         String accessToken = jwtUtils.generateAccessToken(
                 userId, username, roles, permissions, deviceId, ipAddress, amr);
@@ -255,7 +255,7 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
 
         int updated = credentialMapper.updateDeviceName(userId, credentialId, deviceName);
         if (updated == 0) {
-            throw new IllegalStateException("凭证不存在或更新失败");
+            throw new IllegalStateException("鍑瘉涓嶅瓨鍦ㄦ垨鏇存柊澶辫触");
         }
 
         WebauthnCredential credential = credentialMapper.findByUserIdAndCredId(userId, credentialId);
@@ -269,10 +269,10 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
 
         int updated = credentialMapper.disableCredential(userId, credentialId);
         if (updated == 0) {
-            throw new IllegalStateException("凭证不存在或停用失败");
+            throw new IllegalStateException("鍑瘉涓嶅瓨鍦ㄦ垨鍋滅敤澶辫触");
         }
 
-        // 清理 Redis缓存
+        // 娓呯悊 Redis缂撳瓨
         String cacheKey = WA_CREDENTIAL_PREFIX + userId + ":" + credentialId;
         redisTemplate.delete(cacheKey);
     }
@@ -284,10 +284,10 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
 
         int deleted = credentialMapper.deleteByUserIdAndCredId(userId, credentialId);
         if (deleted == 0) {
-            throw new IllegalStateException("凭证不存在或删除失败");
+            throw new IllegalStateException("鍑瘉涓嶅瓨鍦ㄦ垨鍒犻櫎澶辫触");
         }
 
-        // 清理 Redis缓存
+        // 娓呯悊 Redis缂撳瓨
         String cacheKey = WA_CREDENTIAL_PREFIX + userId + ":" + credentialId;
         redisTemplate.delete(cacheKey);
     }
@@ -305,7 +305,7 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
         for (WebauthnCredential credential : credentials) {
             boolean isUnhealthy = false;
 
-            // 检查长期未使用
+            // 妫€鏌ラ暱鏈熸湭浣跨敤
             if (credential.getLastUsedAt() != null &&
                 credential.getLastUsedAt().isBefore(inactiveThreshold)) {
                 log.warn("Credential {} for user {} has been inactive for over {} days",
@@ -313,9 +313,9 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
                 isUnhealthy = true;
             }
 
-            // TODO: 添加更多健康检�
-            // - 签名计数器异常检�
-            // - 异常认证模式检�
+            // TODO: 娣诲姞鏇村鍋ュ悍妫€锟?
+            // - 绛惧悕璁℃暟鍣ㄥ紓甯告锟?
+            // - 寮傚父璁よ瘉妯″紡妫€锟?
 
             if (isUnhealthy) {
                 unhealthy.add(credential);

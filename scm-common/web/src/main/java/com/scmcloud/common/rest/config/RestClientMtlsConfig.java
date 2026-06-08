@@ -24,15 +24,15 @@ import java.time.Instant;
 import java.util.Date;
 
 /**
- * RestClient mTLS 配置 - 使用 Spring Boot 3.1+ SSL Bundles
- * 替代 OpenFeign �FeignMtlsConfig
+ * RestClient mTLS 閰嶇疆 - 浣跨敤 Spring Boot 3.1+ SSL Bundles
+ * 鏇夸唬 OpenFeign 锟紽eignMtlsConfig
  *
- * <p>特性：
+ * <p>鐗规€э細
  * <ul>
- *   <li>基于 Spring Boot 4.0+ SSL Bundle 机制</li>
- *   <li>支持 mTLS 双向认证</li>
- *   <li>支持证书有效期监控和告警</li>
- *   <li>零停机证书热更新（通过 CertificateReloaderRestClient�/li>
+ *   <li>鍩轰簬 Spring Boot 4.0+ SSL Bundle 鏈哄埗</li>
+ *   <li>鏀寔 mTLS 鍙屽悜璁よ瘉</li>
+ *   <li>鏀寔璇佷功鏈夋晥鏈熺洃鎺у拰鍛婅</li>
+ *   <li>闆跺仠鏈鸿瘉涔︾儹鏇存柊锛堥€氳繃 CertificateReloaderRestClient锟?li>
  * </ul>
  *
  * @author Claude
@@ -68,24 +68,24 @@ public class RestClientMtlsConfig {
     private int readTimeout;
 
     /**
-     * 配置 SSL Bundle（推荐方式）
-     * <p>使用 Spring Boot 4.0 �SSL Bundle 机制，支持证书热更新</p>
+     * 閰嶇疆 SSL Bundle锛堟帹鑽愭柟寮忥級
+     * <p>浣跨敤 Spring Boot 4.0 锟絊SL Bundle 鏈哄埗锛屾敮鎸佽瘉涔︾儹鏇存柊</p>
      */
     @Bean
     public SslBundle sslBundle() throws Exception {
         log.info("Initializing SSL Bundle for mTLS...");
 
-        // 加载 KeyStore �TrustStore
+        // 鍔犺浇 KeyStore 锟絋rustStore
         JksSslStoreDetails keystoreDetails = createStoreDetails(keystoreResource, keystorePassword);
         JksSslStoreDetails truststoreDetails = createStoreDetails(truststoreResource, truststorePassword);
 
-        // 创建 SSL Store Bundle
+        // 鍒涘缓 SSL Store Bundle
         JksSslStoreBundle storeBundle = new JksSslStoreBundle(keystoreDetails, truststoreDetails);
 
-        // 创建 SSL Bundle Key
+        // 鍒涘缓 SSL Bundle Key
         SslBundleKey key = SslBundleKey.of(keystorePassword, null);
 
-        // 构建 SSL Bundle
+        // 鏋勫缓 SSL Bundle
         SslBundle bundle = SslBundle.of(storeBundle, key);
 
         log.info("SSL Bundle initialized successfully");
@@ -93,7 +93,7 @@ public class RestClientMtlsConfig {
     }
 
     /**
-     * 创建 JKS Store Details
+     * 鍒涘缓 JKS Store Details
      */
     private JksSslStoreDetails createStoreDetails(Resource resource, String password) throws Exception {
         JksSslStoreDetails details = JksSslStoreDetails.forLocation(resource.getURL().toString());
@@ -106,23 +106,23 @@ public class RestClientMtlsConfig {
     }
 
     /**
-     * 配置 ClientHttpRequestFactory（RestClient 使用�
-     * <p>使用 JDK HttpClient (Java 21+) 配合 SSL Bundle</p>
+     * 閰嶇疆 ClientHttpRequestFactory锛圧estClient 浣跨敤锟?
+     * <p>浣跨敤 JDK HttpClient (Java 21+) 閰嶅悎 SSL Bundle</p>
      */
     @Bean
     public ClientHttpRequestFactory clientHttpRequestFactory(SslBundle sslBundle) {
         log.info("Creating ClientHttpRequestFactory with mTLS support...");
 
-        // �SSL Bundle 创建 SSLContext
+        // 锟絊SL Bundle 鍒涘缓 SSLContext
         SSLContext sslContext = sslBundle.createSslContext();
 
-        // 使用 JDK 21 �HttpClient（支持虚拟线程）
+        // 浣跨敤 JDK 21 锟紿ttpClient锛堟敮鎸佽櫄鎷熺嚎绋嬶級
         HttpClient httpClient = HttpClient.newBuilder()
             .sslContext(sslContext)
             .connectTimeout(Duration.ofMillis(connectTimeout))
             .build();
 
-        // 创建 JdkClientHttpRequestFactory
+        // 鍒涘缓 JdkClientHttpRequestFactory
         JdkClientHttpRequestFactory factory = new JdkClientHttpRequestFactory(httpClient);
         factory.setReadTimeout(Duration.ofMillis(readTimeout));
 
@@ -132,18 +132,18 @@ public class RestClientMtlsConfig {
     }
 
     /**
-     * 定时检查证书有效期（每天凌�2 点）
-     * <p>SECURITY: 提前 30 天告警证书即将过�/p>
+     * 瀹氭椂妫€鏌ヨ瘉涔︽湁鏁堟湡锛堟瘡澶╁噷锟? 鐐癸級
+     * <p>SECURITY: 鎻愬墠 30 澶╁憡璀﹁瘉涔﹀嵆灏嗚繃锟?p>
      */
     @Scheduled(cron = "0 0 2 * * ?")
     public void checkCertificateExpiry() {
         try {
             log.debug("Checking certificate expiry...");
 
-            // 加载 KeyStore
+            // 鍔犺浇 KeyStore
             KeyStore keyStore = loadKeyStore(keystoreResource, keystorePassword);
 
-            // 检查所有证�
+            // 妫€鏌ユ墍鏈夎瘉锟?
             var aliases = keyStore.aliases();
             while (aliases.hasMoreElements()) {
                 String alias = aliases.nextElement();
@@ -162,7 +162,7 @@ public class RestClientMtlsConfig {
     }
 
     /**
-     * 检查单个证书有效期
+     * 妫€鏌ュ崟涓瘉涔︽湁鏁堟湡
      */
     private void checkSingleCertificate(String alias, X509Certificate cert) {
         Date notAfter = cert.getNotAfter();
@@ -184,7 +184,7 @@ public class RestClientMtlsConfig {
     }
 
     /**
-     * 加载 KeyStore
+     * 鍔犺浇 KeyStore
      */
     private KeyStore loadKeyStore(Resource resource, String password) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("PKCS12");

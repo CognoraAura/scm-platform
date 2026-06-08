@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 角色权限关联�Mapper 接口
+ * 瑙掕壊鏉冮檺鍏宠仈锟組apper 鎺ュ彛
  *
  * @author Deng
  * @since 2025-12-17
@@ -19,7 +19,7 @@ import java.util.UUID;
 public interface SysRolePermissionMapper extends BaseMapper<SysRolePermission> {
 
     /**
-     * 根据角色 ID 查询权限 ID 列表
+     * 鏍规嵁瑙掕壊 ID 鏌ヨ鏉冮檺 ID 鍒楄〃
      */
     @Select("""
             SELECT permission_id FROM sys_role_permission
@@ -28,7 +28,7 @@ public interface SysRolePermissionMapper extends BaseMapper<SysRolePermission> {
     List<UUID> findPermissionIdsByRoleId(@Param("roleId") UUID roleId);
 
     /**
-     * 根据权限 ID 查询角色 ID 列表
+     * 鏍规嵁鏉冮檺 ID 鏌ヨ瑙掕壊 ID 鍒楄〃
      */
     @Select("""
             SELECT role_id FROM sys_role_permission
@@ -37,7 +37,7 @@ public interface SysRolePermissionMapper extends BaseMapper<SysRolePermission> {
     List<UUID> findRoleIdsByPermissionId(@Param("permissionId") UUID permissionId);
 
     /**
-     * 删除角色的所有权限关�
+     * 鍒犻櫎瑙掕壊鐨勬墍鏈夋潈闄愬叧锟?
      */
     @Delete("""
             DELETE FROM sys_role_permission
@@ -46,7 +46,7 @@ public interface SysRolePermissionMapper extends BaseMapper<SysRolePermission> {
     int deleteByRoleId(@Param("roleId") UUID roleId);
 
     /**
-     * 删除权限的所有角色关�
+     * 鍒犻櫎鏉冮檺鐨勬墍鏈夎鑹插叧锟?
      */
     @Delete("""
             DELETE FROM sys_role_permission
@@ -55,7 +55,7 @@ public interface SysRolePermissionMapper extends BaseMapper<SysRolePermission> {
     int deleteByPermissionId(@Param("permissionId") UUID permissionId);
 
     /**
-     * 检查角色是否拥有指定权�
+     * 妫€鏌ヨ鑹叉槸鍚︽嫢鏈夋寚瀹氭潈锟?
      */
     @Select("""
             SELECT COUNT(*) > 0 FROM sys_role_permission
@@ -65,7 +65,7 @@ public interface SysRolePermissionMapper extends BaseMapper<SysRolePermission> {
                                           @Param("permissionId") UUID permissionId);
 
     /**
-     * 删除角色权限关联
+     * 鍒犻櫎瑙掕壊鏉冮檺鍏宠仈
      */
     @Delete("""
             DELETE FROM sys_role_permission
@@ -74,7 +74,7 @@ public interface SysRolePermissionMapper extends BaseMapper<SysRolePermission> {
     void deleteRolePermissions(@Param("roleId") UUID roleId);
 
     /**
-     * 批量插入角色权限
+     * 鎵归噺鎻掑叆瑙掕壊鏉冮檺
      */
     @Insert("""
             <script>
@@ -89,7 +89,7 @@ public interface SysRolePermissionMapper extends BaseMapper<SysRolePermission> {
                                     @Param("createBy") UUID createBy);
 
     /**
-     * 统计使用该权限的角色�
+     * 缁熻浣跨敤璇ユ潈闄愮殑瑙掕壊锟?
      */
     @Select("""
             SELECT COUNT(*) FROM sys_role_permission WHERE permission_id = #{permissionId}

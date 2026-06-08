@@ -16,24 +16,24 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * 基于 RestClient �PermissionService 回退实现�
+ * 鍩轰簬 RestClient 锟絇ermissionService 鍥為€€瀹炵幇锟?
  *
- * <p>已迁移：�Feign 更改�RestClient + @HttpExchange�025-12-29�
+ * <p>宸茶縼绉伙細锟紽eign 鏇存敼锟絉estClient + @HttpExchange锟?25-12-29锟?
  *
- * <p>已重构：现在实现 PermissionService 接口（common/core），
- * 而不�PermissionAccessPort。这解耦了 common/web �system/api�
+ * <p>宸查噸鏋勶細鐜板湪瀹炵幇 PermissionService 鎺ュ彛锛坈ommon/core锛夛紝
+ * 鑰屼笉锟絇ermissionAccessPort銆傝繖瑙ｈ€︿簡 common/web 锟絪ystem/api锟?
  *
- * <p>安全性：使用 Sentinel 断路器实现故障关闭模�
- * - 使用 Sentinel SphU 进行手动资源保护
- * - 服务失败或断路器打开时抛出异�
- * - 跟踪成功/失败率指�
+ * <p>瀹夊叏鎬э細浣跨敤 Sentinel 鏂矾鍣ㄥ疄鐜版晠闅滃叧闂ā锟?
+ * - 浣跨敤 Sentinel SphU 杩涜鎵嬪姩璧勬簮淇濇姢
+ * - 鏈嶅姟澶辫触鎴栨柇璺櫒鎵撳紑鏃舵姏鍑哄紓锟?
+ * - 璺熻釜鎴愬姛/澶辫触鐜囨寚锟?
  *
- * <p>Sentinel 资源�
- * - "permission:findByUrl" - �URL 查找权限
- * - "permission:findByUserId" - 按用�ID 查找权限
+ * <p>Sentinel 璧勬簮锟?
+ * - "permission:findByUrl" - 锟経RL 鏌ユ壘鏉冮檺
+ * - "permission:findByUserId" - 鎸夌敤锟絀D 鏌ユ壘鏉冮檺
  *
- * <p>�Dubbo 不可用时，此实现用作回退方案�
- * 仅当不存在其�PermissionService bean 时才会创建此实现�
+ * <p>锟紻ubbo 涓嶅彲鐢ㄦ椂锛屾瀹炵幇鐢ㄤ綔鍥為€€鏂规锟?
+ * 浠呭綋涓嶅瓨鍦ㄥ叾锟絇ermissionService bean 鏃舵墠浼氬垱寤烘瀹炵幇锟?
  *
  * @author deng
  * @version 3.0

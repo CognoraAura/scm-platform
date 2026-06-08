@@ -27,10 +27,10 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * WebAuthn 凭证管理控制�
+ * WebAuthn 鍑瘉绠＄悊鎺у埗锟?
  * <p>
- * 提供WebAuthn凭证的注册、认证和管理功能
- * 参考Google Passkey和FIDO2最佳实�
+ * 鎻愪緵WebAuthn鍑瘉鐨勬敞鍐屻€佽璇佸拰绠＄悊鍔熻兘
+ * 鍙傝€僄oogle Passkey鍜孎IDO2鏈€浣冲疄锟?
  *
  * @author system
  * @since 2025-11-27
@@ -42,7 +42,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class WebAuthnCredentialController {
     /**
-     * 默认 RP ID，生产环境应通过配置文件设置
+     * 榛樿 RP ID锛岀敓浜х幆澧冨簲閫氳繃閰嶇疆鏂囦欢璁剧疆
      */
     private static final String DEFAULT_RP_ID = "localhost";
 
@@ -125,14 +125,14 @@ public class WebAuthnCredentialController {
             TokenUpgradeResponse response = credentialService.authenticateAndUpgradeToken(
                     userId, username, request, deviceId, ipAddress);
 
-            // 记录成功的认证尝�
+            // 璁板綍鎴愬姛鐨勮璇佸皾锟?
             credentialService.logAuthenticationAttempt(
                     userId, request.getCredentialId(), true, ipAddress, userAgent);
 
             return ApiResponse.success(response);
 
         } catch (AuthenticationException | BusinessException e) {
-            // 记录失败的认证尝�
+            // 璁板綍澶辫触鐨勮璇佸皾锟?
             credentialService.logAuthenticationAttempt(
                     userId, request.getCredentialId(), false, ipAddress, userAgent);
             throw e;
@@ -157,7 +157,7 @@ public class WebAuthnCredentialController {
     @PreAuthorize("isAuthenticated()")
     public ApiResponse<WebauthnCredentialDTO> updateDeviceName(
             @PathVariable String credentialId,
-            @NotBlank(message = "设备名称不能为空")
+            @NotBlank(message = "璁惧鍚嶇О涓嶈兘涓虹┖")
             @RequestParam String deviceName,
             @AuthenticationPrincipal SecurityUser user) {
 

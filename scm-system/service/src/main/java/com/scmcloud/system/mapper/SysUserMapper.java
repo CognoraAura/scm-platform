@@ -11,10 +11,10 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 用户�Mapper 接口
+ * 鐢ㄦ埛锟組apper 鎺ュ彛
  * <p>
- * 注意：此 Mapper 只处�db_user 库中�sys_user �
- * 涉及角色、权限的查询请使用对应的 Mapper �Service 层聚�
+ * 娉ㄦ剰锛氭 Mapper 鍙锟絛b_user 搴撲腑锟絪ys_user 锟?
+ * 娑夊強瑙掕壊銆佹潈闄愮殑鏌ヨ璇蜂娇鐢ㄥ搴旂殑 Mapper 锟絊ervice 灞傝仛锟?
  *
  * @author Deng
  * @since 2025-11-03
@@ -24,7 +24,7 @@ import java.util.UUID;
 public interface SysUserMapper extends BaseMapper<SysUser> {
 
     /**
-     * 根据用户名查询用�
+     * 鏍规嵁鐢ㄦ埛鍚嶆煡璇㈢敤锟?
      */
     @Select("""
             SELECT * FROM sys_user
@@ -33,7 +33,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     SysUser findByUsername(@Param("username") String username);
 
     /**
-     * 检查用户名是否存在
+     * 妫€鏌ョ敤鎴峰悕鏄惁瀛樺湪
      */
     @Select("""
             SELECT COUNT(*) > 0 FROM sys_user
@@ -42,7 +42,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     boolean existsByUsername(@Param("username") String username);
 
     /**
-     * 更新最后登录信�
+     * 鏇存柊鏈€鍚庣櫥褰曚俊锟?
      */
     @Update("""
             UPDATE sys_user SET
@@ -56,7 +56,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
                          @Param("loginTime") LocalDateTime loginTime);
 
     /**
-     * 增加登录尝试次数
+     * 澧炲姞鐧诲綍灏濊瘯娆℃暟
      */
     @Update("""
             UPDATE sys_user SET login_attempts = login_attempts + 1
@@ -65,7 +65,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     void incrementLoginAttempts(@Param("username") String username);
 
     /**
-     * 锁定账户
+     * 閿佸畾璐︽埛
      */
     @Update("""
             UPDATE sys_user
@@ -77,7 +77,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
                      @Param("lockedUntil") LocalDateTime lockedUntil);
 
     /**
-     * 根据用户 ID列表批量查询用户基本信息
+     * 鏍规嵁鐢ㄦ埛 ID鍒楄〃鎵归噺鏌ヨ鐢ㄦ埛鍩烘湰淇℃伅
      */
     @Select("""
             <script>
@@ -92,7 +92,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     List<SysUser> selectBasicInfoByIds(@Param("userIds") List<UUID> userIds);
 
     /**
-     * 根据部门 ID查询用户ID列表
+     * 鏍规嵁閮ㄩ棬 ID鏌ヨ鐢ㄦ埛ID鍒楄〃
      */
     @Select("""
             SELECT id FROM sys_user
@@ -101,7 +101,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     List<UUID> findUserIdsByDeptId(@Param("deptId") UUID deptId);
 
     /**
-     * 获取用户的部�ID
+     * 鑾峰彇鐢ㄦ埛鐨勯儴锟絀D
      */
     @Select("""
             SELECT dept_id FROM sys_user
@@ -110,9 +110,9 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     UUID getUserDeptId(@Param("userId") UUID userId);
 
     /**
-     * 批量统计多个部门的用户数�
+     * 鎵归噺缁熻澶氫釜閮ㄩ棬鐨勭敤鎴锋暟锟?
      * <p>
-     * 用于优化 getDeptTree 等需要统计多个部门用户数的场�
+     * 鐢ㄤ簬浼樺寲 getDeptTree 绛夐渶瑕佺粺璁″涓儴闂ㄧ敤鎴锋暟鐨勫満锟?
      */
     @Select("""
             <script>
@@ -129,7 +129,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     Map<UUID, Map<String, Object>> countUsersByDeptIds(@Param("deptIds") List<UUID> deptIds);
 
     /**
-     * 统计单个部门的用户数
+     * 缁熻鍗曚釜閮ㄩ棬鐨勭敤鎴锋暟
      */
     @Select("""
             SELECT COUNT(*) FROM sys_user

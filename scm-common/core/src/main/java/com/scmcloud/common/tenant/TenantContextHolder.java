@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.UUID;
 
 /**
- * 租户上下文持有�
- * 使用 ThreadLocal 存储当前线程的租户ID
+ * 绉熸埛涓婁笅鏂囨寔鏈夛拷
+ * 浣跨敤 ThreadLocal 瀛樺偍褰撳墠绾跨▼鐨勭鎴稩D
  *
  * @author Claude Code
  * @since 2025-01-24
@@ -16,7 +16,7 @@ public class TenantContextHolder {
     private static final ThreadLocal<UUID> TENANT_ID_HOLDER = new ThreadLocal<>();
 
     /**
-     * 设置当前租户 ID
+     * 璁剧疆褰撳墠绉熸埛 ID
      */
     public static void setTenantId(UUID tenantId) {
         if (tenantId == null) {
@@ -27,7 +27,7 @@ public class TenantContextHolder {
     }
 
     /**
-     * 获取当前租户 ID
+     * 鑾峰彇褰撳墠绉熸埛 ID
      */
     public static UUID getTenantId() {
         UUID tenantId = TENANT_ID_HOLDER.get();
@@ -38,7 +38,7 @@ public class TenantContextHolder {
     }
 
     /**
-     * 获取当前租户ID（必须存在，否则抛异常）
+     * 鑾峰彇褰撳墠绉熸埛ID锛堝繀椤诲瓨鍦紝鍚﹀垯鎶涘紓甯革級
      */
     public static UUID getRequiredTenantId() {
         UUID tenantId = getTenantId();
@@ -49,7 +49,7 @@ public class TenantContextHolder {
     }
 
     /**
-     * 清除当前租户 ID
+     * 娓呴櫎褰撳墠绉熸埛 ID
      */
     public static void clear() {
         UUID tenantId = TENANT_ID_HOLDER.get();
@@ -58,7 +58,7 @@ public class TenantContextHolder {
     }
 
     /**
-     * 在指定租户上下文中执行操�
+     * 鍦ㄦ寚瀹氱鎴蜂笂涓嬫枃涓墽琛屾搷锟?
      */
     public static <T> T executeInTenantContext(UUID tenantId, TenantContextCallback<T> callback) {
         UUID originalTenantId = getTenantId();
@@ -75,7 +75,7 @@ public class TenantContextHolder {
     }
 
     /**
-     * 租户上下文回调接�
+     * 绉熸埛涓婁笅鏂囧洖璋冩帴锟?
      */
     @FunctionalInterface
     public interface TenantContextCallback<T> {
@@ -83,7 +83,7 @@ public class TenantContextHolder {
     }
 
     /**
-     * 租户未找到异�
+     * 绉熸埛鏈壘鍒板紓锟?
      */
     public static class TenantNotFoundException extends RuntimeException {
         public TenantNotFoundException(String message) {

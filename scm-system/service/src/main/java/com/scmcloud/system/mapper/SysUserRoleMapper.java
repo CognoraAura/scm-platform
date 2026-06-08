@@ -13,9 +13,9 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * 用户角色关联 Mapper 接口
+ * 鐢ㄦ埛瑙掕壊鍏宠仈 Mapper 鎺ュ彛
  * <p>
- * 处理 db_permission 库中�sys_user_role、sys_role、sys_permission 等表
+ * 澶勭悊 db_permission 搴撲腑锟絪ys_user_role銆乻ys_role銆乻ys_permission 绛夎〃
  *
  * @author Deng
  * @since 2025-12-15
@@ -25,7 +25,7 @@ import java.util.UUID;
 public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
 
     /**
-     * 查询用户的有效角�ID 列表
+     * 鏌ヨ鐢ㄦ埛鐨勬湁鏁堣锟絀D 鍒楄〃
      */
     @Select("""
             SELECT role_id FROM sys_user_role
@@ -36,7 +36,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     List<UUID> findEffectiveRoleIds(@Param("userId") UUID userId);
 
     /**
-     * 查询用户的有效角色编码列�
+     * 鏌ヨ鐢ㄦ埛鐨勬湁鏁堣鑹茬紪鐮佸垪锟?
      */
     @Select("""
             SELECT r.role_code FROM sys_role r
@@ -49,7 +49,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     Set<String> findRoleCodesByUserId(@Param("userId") UUID userId);
 
     /**
-     * 查询用户的有效角色（包含 ID 和名称）
+     * 鏌ヨ鐢ㄦ埛鐨勬湁鏁堣鑹诧紙鍖呭惈 ID 鍜屽悕绉帮級
      */
     @Select("""
             SELECT ur.role_id as id, r.role_code as code, r.role_name as name
@@ -63,7 +63,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     List<Map<String, Object>> findUserRolesWithNames(@Param("userId") UUID userId);
 
     /**
-     * 查询用户的所有角色关联（包括过期和待审批的）
+     * 鏌ヨ鐢ㄦ埛鐨勬墍鏈夎鑹插叧鑱旓紙鍖呮嫭杩囨湡鍜屽緟瀹℃壒鐨勶級
      */
     @Select("""
             SELECT * FROM sys_user_role
@@ -72,7 +72,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     List<SysUserRole> findByUserId(@Param("userId") UUID userId);
 
     /**
-     * 查询拥有指定角色的用�ID 列表
+     * 鏌ヨ鎷ユ湁鎸囧畾瑙掕壊鐨勭敤锟絀D 鍒楄〃
      */
     @Select("""
             SELECT user_id FROM sys_user_role
@@ -83,7 +83,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     List<UUID> findUserIdsByRoleId(@Param("roleId") UUID roleId);
 
     /**
-     * 检查用户是否拥有指定角色（有效的）
+     * 妫€鏌ョ敤鎴锋槸鍚︽嫢鏈夋寚瀹氳鑹诧紙鏈夋晥鐨勶級
      */
     @Select("""
             SELECT COUNT(*) > 0 FROM sys_user_role
@@ -95,7 +95,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     boolean hasRole(@Param("userId") UUID userId, @Param("roleId") UUID roleId);
 
     /**
-     * 查询用户的有效权限编码列�
+     * 鏌ヨ鐢ㄦ埛鐨勬湁鏁堟潈闄愮紪鐮佸垪锟?
      */
     @Select("""
             SELECT DISTINCT p.permission_code FROM sys_permission p
@@ -109,7 +109,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     Set<String> findPermissionCodesByUserId(@Param("userId") UUID userId);
 
     /**
-     * 获取用户的数据权限范围（取最小值，即最大权限）
+     * 鑾峰彇鐢ㄦ埛鐨勬暟鎹潈闄愯寖鍥达紙鍙栨渶灏忓€硷紝鍗虫渶澶ф潈闄愶級
      */
     @Select("""
             SELECT MIN(r.data_scope) FROM sys_role r
@@ -122,7 +122,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     Integer getUserDataScope(@Param("userId") UUID userId);
 
     /**
-     * 获取用户的最大审批金�
+     * 鑾峰彇鐢ㄦ埛鐨勬渶澶у鎵归噾锟?
      */
     @Select("""
             SELECT MAX(r.max_approval_amount) FROM sys_role r
@@ -135,7 +135,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     BigDecimal getMaxApprovalAmount(@Param("userId") UUID userId);
 
     /**
-     * 查询用户即将过期的角色（7天内�
+     * 鏌ヨ鐢ㄦ埛鍗冲皢杩囨湡鐨勮鑹诧紙7澶╁唴锟?
      */
     @Select("""
             SELECT * FROM sys_user_role
@@ -147,7 +147,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     List<SysUserRole> findExpiringRolesByUserId(@Param("userId") UUID userId);
 
     /**
-     * 查询所有已过期的角色关�
+     * 鏌ヨ鎵€鏈夊凡杩囨湡鐨勮鑹插叧锟?
      */
     @Select("""
             SELECT * FROM sys_user_role
@@ -158,7 +158,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     List<SysUserRole> findAllExpiredRoles();
 
     /**
-     * 查询用户的临时授权列表（包含角色名称�
+     * 鏌ヨ鐢ㄦ埛鐨勪复鏃舵巿鏉冨垪琛紙鍖呭惈瑙掕壊鍚嶇О锟?
      */
     @Select("""
             SELECT ur.id, ur.role_id, r.role_name,
@@ -173,7 +173,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     List<Map<String, Object>> findTemporaryRolesByUserId(@Param("userId") UUID userId);
 
     /**
-     * 检查用户是否有特定的临时角�
+     * 妫€鏌ョ敤鎴锋槸鍚︽湁鐗瑰畾鐨勪复鏃惰锟?
      */
     @Select("""
             SELECT COUNT(*) > 0 FROM sys_user_role
@@ -186,7 +186,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     boolean hasTemporaryRole(@Param("userId") UUID userId, @Param("roleId") UUID roleId);
 
     /**
-     * 延长临时角色的过期时�
+     * 寤堕暱涓存椂瑙掕壊鐨勮繃鏈熸椂锟?
      */
     @Update("""
             UPDATE sys_user_role
@@ -201,7 +201,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
                             @Param("newExpireTime") LocalDateTime newExpireTime);
 
     /**
-     * 提前终止临时授权
+     * 鎻愬墠缁堟涓存椂鎺堟潈
      */
     @Update("""
             UPDATE sys_user_role
@@ -215,7 +215,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     int terminateTemporaryRole(@Param("userId") UUID userId, @Param("roleId") UUID roleId);
 
     /**
-     * 查询即将过期的角色（用于提醒，返回用户和角色信息�
+     * 鏌ヨ鍗冲皢杩囨湡鐨勮鑹诧紙鐢ㄤ簬鎻愰啋锛岃繑鍥炵敤鎴峰拰瑙掕壊淇℃伅锟?
      */
     @Select("""
             SELECT DISTINCT ur.user_id, ur.username, ur.role_id, r.role_name, ur.expire_time
@@ -228,7 +228,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     List<Map<String, Object>> findExpiringRolesForNotification(@Param("days") Integer days);
 
     /**
-     * 查询已过期的角色（用于清理，包含用户信息�
+     * 鏌ヨ宸茶繃鏈熺殑瑙掕壊锛堢敤浜庢竻鐞嗭紝鍖呭惈鐢ㄦ埛淇℃伅锟?
      */
     @Select("""
             SELECT DISTINCT ur.user_id, ur.username, ur.role_id, r.role_name, ur.expire_time
@@ -240,7 +240,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     List<Map<String, Object>> findExpiredRolesForCleanup();
 
     /**
-     * 查询用户待审批的角色申请
+     * 鏌ヨ鐢ㄦ埛寰呭鎵圭殑瑙掕壊鐢宠
      */
     @Select("""
             SELECT ur.id, ur.role_id, r.role_name,
@@ -255,7 +255,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     List<Map<String, Object>> findPendingRoleApprovals(@Param("userId") UUID userId);
 
     /**
-     * 更新审批状�
+     * 鏇存柊瀹℃壒鐘讹拷
      */
     @Update("""
             UPDATE sys_user_role
@@ -269,7 +269,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
                              @Param("approvedBy") UUID approvedBy);
 
     /**
-     * 删除用户的所有角色关�
+     * 鍒犻櫎鐢ㄦ埛鐨勬墍鏈夎鑹插叧锟?
      */
     @Delete("""
             DELETE FROM sys_user_role
@@ -278,7 +278,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     int deleteByUserId(@Param("userId") UUID userId);
 
     /**
-     * 删除角色的所有用户关�
+     * 鍒犻櫎瑙掕壊鐨勬墍鏈夌敤鎴峰叧锟?
      */
     @Delete("""
             DELETE FROM sys_user_role
@@ -287,7 +287,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     int deleteByRoleId(@Param("roleId") UUID roleId);
 
     /**
-     * 删除指定的用户角色关�
+     * 鍒犻櫎鎸囧畾鐨勭敤鎴疯鑹插叧锟?
      */
     @Delete("""
             DELETE FROM sys_user_role
@@ -296,7 +296,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     int deleteByUserIdAndRoleId(@Param("userId") UUID userId, @Param("roleId") UUID roleId);
 
     /**
-     * 批量插入用户角色关联（永久授权）
+     * 鎵归噺鎻掑叆鐢ㄦ埛瑙掕壊鍏宠仈锛堟案涔呮巿鏉冿級
      */
     @Insert("""
             <script>
@@ -311,7 +311,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
                     @Param("createBy") UUID createBy);
 
     /**
-     * 批量插入临时用户角色关联
+     * 鎵归噺鎻掑叆涓存椂鐢ㄦ埛瑙掕壊鍏宠仈
      */
     @Insert("""
             <script>
@@ -330,7 +330,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
                              @Param("createBy") UUID createBy);
 
     /**
-     * 插入临时角色授权
+     * 鎻掑叆涓存椂瑙掕壊鎺堟潈
      */
     @Insert("""
             INSERT INTO sys_user_role (id, user_id, role_id, effective_time, expire_time, approval_status, approved_by, approved_time, create_by, create_time)
@@ -338,10 +338,10 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
             """)
     int insertTemporary(SysUserRole userRole);
 
-    // ==================== 过期清理 ====================
+    // ==================== 杩囨湡娓呯悊 ====================
 
     /**
-     * 删除已过期的角色关联
+     * 鍒犻櫎宸茶繃鏈熺殑瑙掕壊鍏宠仈
      */
     @Delete("""
             DELETE FROM sys_user_role
@@ -351,7 +351,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     int deleteExpiredRoles();
 
     /**
-     * 更新过期角色状态为已拒�
+     * 鏇存柊杩囨湡瑙掕壊鐘舵€佷负宸叉嫆锟?
      */
     @Update("""
             UPDATE sys_user_role
@@ -361,10 +361,10 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
             """)
     int updateExpiredRolesStatus();
 
-    // ==================== 统计查询 ====================
+    // ==================== 缁熻鏌ヨ ====================
 
     /**
-     * 统计用户的有效角色数�
+     * 缁熻鐢ㄦ埛鐨勬湁鏁堣鑹叉暟锟?
      */
     @Select("""
             SELECT COUNT(*) FROM sys_user_role
@@ -375,7 +375,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     Integer countUserRoles(@Param("userId") UUID userId);
 
     /**
-     * 统计用户的临时角色数�
+     * 缁熻鐢ㄦ埛鐨勪复鏃惰鑹叉暟锟?
      */
     @Select("""
             SELECT COUNT(*) FROM sys_user_role
@@ -387,7 +387,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     Integer countTemporaryRoles(@Param("userId") UUID userId);
 
     /**
-     * 统计即将过期的临时角色数�
+     * 缁熻鍗冲皢杩囨湡鐨勪复鏃惰鑹叉暟锟?
      */
     @Select("""
             SELECT COUNT(*) FROM sys_user_role
@@ -398,11 +398,11 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
             """)
     Integer countExpiringRoles(@Param("userId") UUID userId, @Param("days") Integer days);
 
-    // ==================== 冗余字段同步（数据一致性） ====================
+    // ==================== 鍐椾綑瀛楁鍚屾锛堟暟鎹竴鑷存€э級 ====================
 
     /**
-     * 更新用户冗余信息
-     * �db_user.sys_user 变更时调�
+     * 鏇存柊鐢ㄦ埛鍐椾綑淇℃伅
+     * 锟絛b_user.sys_user 鍙樻洿鏃惰皟锟?
      */
     @Update("""
             UPDATE sys_user_role
@@ -417,7 +417,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
                              @Param("status") Integer status);
 
     /**
-     * 更新用户状态冗余字�
+     * 鏇存柊鐢ㄦ埛鐘舵€佸啑浣欏瓧锟?
      */
     @Update("""
             UPDATE sys_user_role
@@ -427,7 +427,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     int updateUserStatus(@Param("userId") UUID userId, @Param("status") Integer status);
 
     /**
-     * 获取所有不重复的用户ID（用于初始化同步�
+     * 鑾峰彇鎵€鏈変笉閲嶅鐨勭敤鎴稩D锛堢敤浜庡垵濮嬪寲鍚屾锟?
      */
     @Select("""
             SELECT DISTINCT user_id FROM sys_user_role
@@ -435,7 +435,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     List<UUID> findAllDistinctUserIds();
 
     /**
-     * 根据用户名查询用户角色（利用冗余字段，无需跨库�
+     * 鏍规嵁鐢ㄦ埛鍚嶆煡璇㈢敤鎴疯鑹诧紙鍒╃敤鍐椾綑瀛楁锛屾棤闇€璺ㄥ簱锟?
      */
     @Select("""
             SELECT ur.*, r.role_code, r.role_name
@@ -450,7 +450,7 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     List<Map<String, Object>> findRolesByUsername(@Param("username") String username);
 
     /**
-     * 统计拥有该角色的用户�
+     * 缁熻鎷ユ湁璇ヨ鑹茬殑鐢ㄦ埛锟?
      */
     @Select("""
             SELECT COUNT(*) FROM sys_user_role
@@ -459,13 +459,13 @@ public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
     Integer countUsersByRoleId(@Param("roleId") UUID roleId);
 
     /**
-     * 获取用户的最大角色等�
+     * 鑾峰彇鐢ㄦ埛鐨勬渶澶ц鑹茬瓑锟?
      * <p>
-     * role_level 字段值越小，权限越高
-     * 返回用户所有有效角色中 role_level 的最小�
+     * role_level 瀛楁鍊艰秺灏忥紝鏉冮檺瓒婇珮
+     * 杩斿洖鐢ㄦ埛鎵€鏈夋湁鏁堣鑹蹭腑 role_level 鐨勬渶灏忥拷
      *
-     * @param userId 用户 ID
-     * @return 最大角色等级（最小的 role_level 值），如果用户没有角色则返回 null
+     * @param userId 鐢ㄦ埛 ID
+     * @return 鏈€澶ц鑹茬瓑绾э紙鏈€灏忕殑 role_level 鍊硷級锛屽鏋滅敤鎴锋病鏈夎鑹插垯杩斿洖 null
      */
     @Select("""
             SELECT MIN(r.role_level) FROM sys_role r

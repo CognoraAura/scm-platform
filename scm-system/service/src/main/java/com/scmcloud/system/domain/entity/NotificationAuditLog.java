@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 通知发送审计表
+ * 閫氱煡鍙戦€佸璁¤〃
  *
  * @author Deng
  * @since 2025-12-15
@@ -79,22 +79,22 @@ public class NotificationAuditLog {
     @TableField(value = "created_at", fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 
-    // ==================== 冗余字段 ====================
+    // ==================== 鍐椾綑瀛楁 ====================
 
     @TableField("real_name")
     private String realName;
 
     /**
-     * 通知渠道枚举
+     * 閫氱煡娓犻亾鏋氫妇
      */
     @Getter
     public enum Channel {
-        EMAIL("EMAIL", "邮件"),
-        SMS("SMS", "短信"),
-        WECHAT("WECHAT", "微信"),
-        DINGTALK("DINGTALK", "钉钉"),
-        FEISHU("FEISHU", "飞书"),
-        PUSH("PUSH", "推送");
+        EMAIL("EMAIL", "閭欢"),
+        SMS("SMS", "鐭俊"),
+        WECHAT("WECHAT", "寰俊"),
+        DINGTALK("DINGTALK", "閽夐拤"),
+        FEISHU("FEISHU", "椋炰功"),
+        PUSH("PUSH", "鎺ㄩ€?);
     
         private final String code;
         private final String desc;
@@ -106,14 +106,14 @@ public class NotificationAuditLog {
     }
 
     /**
-     * 发送状态枚�
+     * 鍙戦€佺姸鎬佹灇锟?
      */
     @Getter
     public enum Status {
-        PENDING("PENDING", "待发送"),
-        SENT("SENT", "已发送"),
-        FAILED("FAILED", "发送失败"),
-        CANCELLED("CANCELLED", "已取消");
+        PENDING("PENDING", "寰呭彂閫?),
+        SENT("SENT", "宸插彂閫?),
+        FAILED("FAILED", "鍙戦€佸け璐?),
+        CANCELLED("CANCELLED", "宸插彇娑?);
 
         private final String code;
         private final String desc;

@@ -16,12 +16,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 从库健康检查器
+ * 浠庡簱鍋ュ悍妫€鏌ュ櫒
  * <p>
- * 功能�
- * - 定期检查从库连�
- * - 检测复制延�
- * - 自动摘除/恢复不可用节�
+ * 鍔熻兘锟?
+ * - 瀹氭湡妫€鏌ヤ粠搴撹繛锟?
+ * - 妫€娴嬪鍒跺欢锟?
+ * - 鑷姩鎽橀櫎/鎭㈠涓嶅彲鐢ㄨ妭锟?
  *
  * @author Deng
  * @since 2025-12-16
@@ -33,12 +33,12 @@ public class SlaveHealthChecker {
     private final ReadWriteProperties properties;
 
     /**
-     * 连续失败计数
+     * 杩炵画澶辫触璁℃暟
      */
     private final Map<String, AtomicInteger> failureCounters = new ConcurrentHashMap<>();
 
     /**
-     * 复制延迟（毫秒）
+     * 澶嶅埗寤惰繜锛堟绉掞級
      */
     private final Map<String, Long> replicationLags = new ConcurrentHashMap<>();
 
@@ -50,14 +50,14 @@ public class SlaveHealthChecker {
         this.slaveDataSources = slaveDataSources;
         this.properties = properties;
 
-        // 注册指标
+        // 娉ㄥ唽鎸囨爣
         if (meterRegistry != null) {
             registerMetrics(meterRegistry);
         }
     }
 
     private void registerMetrics(MeterRegistry meterRegistry) {
-        // 复制延迟指标
+        // 澶嶅埗寤惰繜鎸囨爣
         for (String groupName : slaveDataSources.keySet()) {
             for (String slaveName : slaveDataSources.get(groupName).keySet()) {
                 String fullName = groupName + "." + slaveName;
@@ -73,7 +73,7 @@ public class SlaveHealthChecker {
     }
 
     /**
-     * 定期健康检�
+     * 瀹氭湡鍋ュ悍妫€锟?
      */
     @Scheduled(fixedDelayString = "${spring.datasource.rw.health-check-interval:30000}")
     public void healthCheck() {
@@ -104,13 +104,13 @@ public class SlaveHealthChecker {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
 
-            // 1. 连接检�
+            // 1. 杩炴帴妫€锟?
             if (!connection.isValid(5)) {
                 handleFailure(groupName, slaveName, failureCounter, "Connection invalid");
                 return;
             }
 
-            // 2. 复制延迟检查（PostgreSQL�
+            // 2. 澶嶅埗寤惰繜妫€鏌ワ紙PostgreSQL锟?
             Long lagMs = checkReplicationLag(statement);
             replicationLags.put(fullName, lagMs != null ? lagMs : 0L);
 
@@ -121,7 +121,7 @@ public class SlaveHealthChecker {
                 return;
             }
 
-            // 健康检查通过，重置计数器
+            // 鍋ュ悍妫€鏌ラ€氳繃锛岄噸缃鏁板櫒
             if (failureCounter.get() > 0) {
                 failureCounter.set(0);
                 markSlaveAvailable(groupName, slaveName);
@@ -135,11 +135,11 @@ public class SlaveHealthChecker {
     }
 
     /**
-     * 检查复制延迟（PostgreSQL�
+     * 妫€鏌ュ鍒跺欢杩燂紙PostgreSQL锟?
      */
     private Long checkReplicationLag(Statement statement) {
         try {
-            // PostgreSQL 复制延迟查询
+            // PostgreSQL 澶嶅埗寤惰繜鏌ヨ
             ResultSet rs = statement.executeQuery("""
                     SELECT CASE
                         WHEN pg_last_wal_receive_lsn() = pg_last_wal_replay_lsn() THEN 0
@@ -151,7 +151,7 @@ public class SlaveHealthChecker {
                 return rs.getLong("lag_ms");
             }
         } catch (Exception e) {
-            // 可能不是从库，或者版本不支持
+            // 鍙兘涓嶆槸浠庡簱锛屾垨鑰呯増鏈笉鏀寔
             log.trace("[Health] Could not check replication lag: {}", e.getMessage());
         }
         return null;
@@ -189,7 +189,7 @@ public class SlaveHealthChecker {
     }
 
     /**
-     * 获取所有从库的健康状�
+     * 鑾峰彇鎵€鏈変粠搴撶殑鍋ュ悍鐘讹拷
      */
     public Map<String, HealthStatus> getAllHealthStatus() {
         Map<String, HealthStatus> result = new ConcurrentHashMap<>();
@@ -214,7 +214,7 @@ public class SlaveHealthChecker {
     }
 
     /**
-     * 健康状�
+     * 鍋ュ悍鐘讹拷
      */
     public record HealthStatus(
             boolean available,

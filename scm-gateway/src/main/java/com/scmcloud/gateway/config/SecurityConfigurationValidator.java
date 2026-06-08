@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 安全配置验证�
- * 确保在应用程序启动前所有关键安全配置都已正确设置�
- * 遵循 Google/Netflix 的最佳实践：如果安全配置缺失，则快速失败�
+ * 瀹夊叏閰嶇疆楠岃瘉锟?
+ * 纭繚鍦ㄥ簲鐢ㄧ▼搴忓惎鍔ㄥ墠鎵€鏈夊叧閿畨鍏ㄩ厤缃兘宸叉纭缃拷
+ * 閬靛惊 Google/Netflix 鐨勬渶浣冲疄璺碉細濡傛灉瀹夊叏閰嶇疆缂哄け锛屽垯蹇€熷け璐ワ拷
  */
 @Slf4j
 @Component
@@ -42,8 +42,8 @@ public class SecurityConfigurationValidator {
     private String activeProfile;
 
     /**
-     * 在启动时验证所有关键安全配置�
-     * 如果在生产环境中缺少任何必需的配置，应用程序将无法启动�
+     * 鍦ㄥ惎鍔ㄦ椂楠岃瘉鎵€鏈夊叧閿畨鍏ㄩ厤缃拷
+     * 濡傛灉鍦ㄧ敓浜х幆澧冧腑缂哄皯浠讳綍蹇呴渶鐨勯厤缃紝搴旂敤绋嬪簭灏嗘棤娉曞惎鍔拷
      */
     @PostConstruct
     public void validateSecurityConfiguration() {
@@ -97,7 +97,7 @@ public class SecurityConfigurationValidator {
                 log.warn(warningMessage, errorMessage);
             }
         } else {
-            log.info("�All critical security configurations are properly set");
+            log.info("锟紸ll critical security configurations are properly set");
 
             if (isProductionLike) {
                 validateSecretStrength();
@@ -109,7 +109,7 @@ public class SecurityConfigurationValidator {
     }
 
     /**
-     * 验证密码强度是否符合要求�
+     * 楠岃瘉瀵嗙爜寮哄害鏄惁绗﹀悎瑕佹眰锟?
      */
     private void validateSecretStrength() {
         List<String> weakSecrets = new ArrayList<>();
@@ -133,7 +133,7 @@ public class SecurityConfigurationValidator {
     }
 
     /**
-     * 确定当前环境是否需要严格的安全验证�
+     * 纭畾褰撳墠鐜鏄惁闇€瑕佷弗鏍肩殑瀹夊叏楠岃瘉锟?
      */
     private boolean isProductionLikeEnvironment() {
         return activeProfile != null &&
@@ -144,8 +144,8 @@ public class SecurityConfigurationValidator {
     }
 
     /**
-     * 验证时钟偏移配置的一致性�
-     * nonceTtl 必须 >= allowedClockSkew，否则可能导致重放攻击�
+     * 楠岃瘉鏃堕挓鍋忕Щ閰嶇疆鐨勪竴鑷存€э拷
+     * nonceTtl 蹇呴』 >= allowedClockSkew锛屽惁鍒欏彲鑳藉鑷撮噸鏀炬敾鍑伙拷
      */
     private void validateClockSkewConfiguration() {
         Duration nonceTtl = signatureProperties.getNonceTtl();
@@ -163,16 +163,16 @@ public class SecurityConfigurationValidator {
                 log.error(errorMessage);
                 throw new IllegalStateException(errorMessage);
             } else {
-                log.warn("⚠️  {}", errorMessage);
+                log.warn("鈿狅笍  {}", errorMessage);
             }
         } else {
-            log.info("�Clock skew configuration validated: nonceTtl={}, allowedClockSkew={}",
+            log.info("锟紺lock skew configuration validated: nonceTtl={}, allowedClockSkew={}",
                     nonceTtl, allowedClockSkew);
         }
     }
 
     /**
-     * 生成针对配置缺失的详细错误消息�
+     * 鐢熸垚閽堝閰嶇疆缂哄け鐨勮缁嗛敊璇秷鎭拷
      */
     private String buildErrorMessage(List<String> missingConfigs) {
         return """

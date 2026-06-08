@@ -13,18 +13,18 @@ import java.util.UUID;
 public interface NotificationService {
 
     /**
-     * 发送通知（完整命令）
+     * 鍙戦€侀€氱煡锛堝畬鏁村懡浠わ級
      */
     void send(NotificationCommand command);
 
     /**
-     * 发送通知（便捷方法）
+     * 鍙戦€侀€氱煡锛堜究鎹锋柟娉曪級
      *
-     * @param username     用户名（用于站内消息�
-     * @param email        邮箱（用于邮件通知�
-     * @param templateCode 模板编码
-     * @param subject      主题
-     * @param variables    模板变量
+     * @param username     鐢ㄦ埛鍚嶏紙鐢ㄤ簬绔欏唴娑堟伅锟?
+     * @param email        閭锛堢敤浜庨偖浠堕€氱煡锟?
+     * @param templateCode 妯℃澘缂栫爜
+     * @param subject      涓婚
+     * @param variables    妯℃澘鍙橀噺
      */
     default void sendNotification(String username, String email, String templateCode,
                                   String subject, Map<String, Object> variables) {
@@ -39,7 +39,7 @@ public interface NotificationService {
             variables.forEach(builder::variable);
         }
 
-        // 默认发送站内消息和邮件
+        // 榛樿鍙戦€佺珯鍐呮秷鎭拰閭欢
         builder.channel(NotificationChannel.SYSTEM_MESSAGE);
         if (email != null && !email.isEmpty()) {
             builder.channel(NotificationChannel.EMAIL);
@@ -49,7 +49,7 @@ public interface NotificationService {
     }
 
     /**
-     * 发送通知到指定渠�
+     * 鍙戦€侀€氱煡鍒版寚瀹氭笭锟?
      */
     default void sendNotification(String username, String email, String templateCode,
                                   String subject, Map<String, Object> variables,

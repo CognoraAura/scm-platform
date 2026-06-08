@@ -9,11 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 读写分离健康指示�
+ * 璇诲啓鍒嗙鍋ュ悍鎸囩ず锟?
  * <p>
- * 用于 Spring Boot Actuator 健康端点
+ * 鐢ㄤ簬 Spring Boot Actuator 鍋ュ悍绔偣
  * <p>
- * 注意：需�spring-boot-starter-actuator 依赖
+ * 娉ㄦ剰锛氶渶锟絪pring-boot-starter-actuator 渚濊禆
  *
  * @author Deng
  * @since 2025-12-16

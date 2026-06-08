@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 import cn.hutool.core.util.StrUtil;
 
 /**
- * SQL/XSS 轻量告警过滤器：默认仅告警，依赖持久层参数化防护�
+ * SQL/XSS 杞婚噺鍛婅杩囨护鍣細榛樿浠呭憡璀︼紝渚濊禆鎸佷箙灞傚弬鏁板寲闃叉姢锟?
  */
 @Component
 @Slf4j
@@ -140,7 +140,7 @@ public class SqlInjectionFilter implements Filter {
                         return null;
                     }
                 } catch (Exception ignored) {
-                    // 非严�JSON 或解析失败，跳过 JSON 体扫�
+                    // 闈炰弗锟絁SON 鎴栬В鏋愬け璐ワ紝璺宠繃 JSON 浣撴壂锟?
                 }
             }
         }
@@ -163,7 +163,7 @@ public class SqlInjectionFilter implements Filter {
                             request.getHeader("X-Request-ID"), paramName, preview,
                             IpUtils.getClientIp(request), uri);
                     DetectionState state = handleDetection(request, response,
-                            "SQL_INJECTION", "检测到疑似 SQL 注入", monitorOnly, true);
+                            "SQL_INJECTION", "妫€娴嬪埌鐤戜技 SQL 娉ㄥ叆", monitorOnly, true);
                     if (state == DetectionState.BLOCKED) return state;
                     return state;
                 }
@@ -174,7 +174,7 @@ public class SqlInjectionFilter implements Filter {
                             request.getHeader("X-Request-ID"), paramName, preview,
                             IpUtils.getClientIp(request), uri);
                     DetectionState state = handleDetection(request, response,
-                            "XSS_ATTACK", "检测到疑似 XSS 攻击", monitorOnly, false);
+                            "XSS_ATTACK", "妫€娴嬪埌鐤戜技 XSS 鏀诲嚮", monitorOnly, false);
                     if (state == DetectionState.BLOCKED) return state;
                     return state;
                 }
@@ -215,7 +215,7 @@ public class SqlInjectionFilter implements Filter {
                 }
             }
             default -> {
-                // 其他类型不处�
+                // 鍏朵粬绫诲瀷涓嶅锟?
             }
         }
         return DetectionState.NONE;
@@ -230,7 +230,7 @@ public class SqlInjectionFilter implements Filter {
             log.warn("SQL injection detected in JSON! mode={}, traceId={}, field={}, preview={}, ip={}, uri={}",
                     monitorOnly ? "ALERT" : "BLOCK",
                     req.getHeader("X-Request-ID"), field, preview, IpUtils.getClientIp(req), uri);
-            return handleDetection(req, resp, "SQL_INJECTION", "检测到疑似 SQL 注入", monitorOnly, true);
+            return handleDetection(req, resp, "SQL_INJECTION", "妫€娴嬪埌鐤戜技 SQL 娉ㄥ叆", monitorOnly, true);
         }
 
         if ((properties == null || properties.isXssEnabled()) && XSS_PATTERN.matcher(value).find()) {
@@ -238,7 +238,7 @@ public class SqlInjectionFilter implements Filter {
             log.warn("XSS attack detected in JSON! mode={}, traceId={}, field={}, preview={}, ip={}, uri={}",
                     monitorOnly ? "ALERT" : "BLOCK",
                     req.getHeader("X-Request-ID"), field, preview, IpUtils.getClientIp(req), uri);
-            return handleDetection(req, resp, "XSS_ATTACK", "检测到疑似 XSS 攻击", monitorOnly, false);
+            return handleDetection(req, resp, "XSS_ATTACK", "妫€娴嬪埌鐤戜技 XSS 鏀诲嚮", monitorOnly, false);
         }
 
         return DetectionState.NONE;

@@ -18,15 +18,15 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import java.net.URI;
 
 /**
- * RestClient + HttpExchange 核心配置
- * <p>替代 OpenFeign 配置</p>
+ * RestClient + HttpExchange 鏍稿績閰嶇疆
+ * <p>鏇夸唬 OpenFeign 閰嶇疆</p>
  *
- * <p>功能�
+ * <p>鍔熻兘锟?
  * <ul>
- *   <li>创建 RestClient Bean（包�mTLS + 签名拦截器）</li>
- *   <li>创建 HttpServiceProxyFactory（用�{@code @HttpExchange} 代理�/li>
- *   <li>集成 Nacos 服务发现（动态解析服务地址�/li>
- *   <li>注册 3 个客户端 Bean（UserServiceClient、AuthServiceClient、PermissionServiceClient�/li>
+ *   <li>鍒涘缓 RestClient Bean锛堝寘锟絤TLS + 绛惧悕鎷︽埅鍣級</li>
+ *   <li>鍒涘缓 HttpServiceProxyFactory锛堢敤锟絳@code @HttpExchange} 浠ｇ悊锟?li>
+ *   <li>闆嗘垚 Nacos 鏈嶅姟鍙戠幇锛堝姩鎬佽В鏋愭湇鍔″湴鍧€锟?li>
+ *   <li>娉ㄥ唽 3 涓鎴风 Bean锛圲serServiceClient銆丄uthServiceClient銆丳ermissionServiceClient锟?li>
  * </ul>
  *
  * @author Claude
@@ -41,8 +41,8 @@ public class RestClientHttpExchangeConfig {
     private final LoadBalancerClient loadBalancerClient;
 
     /**
-     * 创建基础 RestClient Bean
-     * <p>包含 mTLS + 签名拦截�/p>
+     * 鍒涘缓鍩虹 RestClient Bean
+     * <p>鍖呭惈 mTLS + 绛惧悕鎷︽埅锟?p>
      */
     @Bean
     public RestClient.Builder restClientBuilder() {
@@ -52,7 +52,7 @@ public class RestClientHttpExchangeConfig {
     }
 
     /**
-     * 创建 SysUserServiceClient Bean
+     * 鍒涘缓 SysUserServiceClient Bean
      */
     @Bean
     public SysUserServiceClient sysUserServiceClient(RestClient.Builder restClientBuilder) {
@@ -71,7 +71,7 @@ public class RestClientHttpExchangeConfig {
     }
 
     /**
-     * 创建 SysAuthServiceClient Bean
+     * 鍒涘缓 SysAuthServiceClient Bean
      */
     @Bean
     public SysAuthServiceClient sysAuthServiceClient(RestClient.Builder restClientBuilder) {
@@ -90,7 +90,7 @@ public class RestClientHttpExchangeConfig {
     }
 
     /**
-     * 创建 SysPermissionServiceClient Bean
+     * 鍒涘缓 SysPermissionServiceClient Bean
      */
     @Bean
     public SysPermissionServiceClient sysPermissionServiceClient(RestClient.Builder restClientBuilder) {
@@ -109,26 +109,26 @@ public class RestClientHttpExchangeConfig {
     }
 
     /**
-     * �Nacos 服务发现解析服务 URL（支持负载均衡）
+     * 锟絅acos 鏈嶅姟鍙戠幇瑙ｆ瀽鏈嶅姟 URL锛堟敮鎸佽礋杞藉潎琛★級
      *
-     * <p>解析策略�
+     * <p>瑙ｆ瀽绛栫暐锟?
      * <ol>
-     *   <li>使用 Spring Cloud LoadBalancer 选择服务实例</li>
-     *   <li>支持多种负载均衡策略（Round Robin、Random、Weighted 等）</li>
-     *   <li>根据实例�secure 标志选择 https/http</li>
-     *   <li>如果解析失败，使用默�URL（{@code http://serviceName}�/li>
+     *   <li>浣跨敤 Spring Cloud LoadBalancer 閫夋嫨鏈嶅姟瀹炰緥</li>
+     *   <li>鏀寔澶氱璐熻浇鍧囪　绛栫暐锛圧ound Robin銆丷andom銆乄eighted 绛夛級</li>
+     *   <li>鏍规嵁瀹炰緥锟絪ecure 鏍囧織閫夋嫨 https/http</li>
+     *   <li>濡傛灉瑙ｆ瀽澶辫触锛屼娇鐢ㄩ粯锟経RL锛坽@code http://serviceName}锟?li>
      * </ol>
      *
-     * <p>负载均衡策略�Spring Cloud LoadBalancer 配置决定，默认为 Round Robin�
-     * 可通过配置类自定义策略（如 RandomLoadBalancer、WeightedServiceInstanceListSupplier 等）�
+     * <p>璐熻浇鍧囪　绛栫暐锟絊pring Cloud LoadBalancer 閰嶇疆鍐冲畾锛岄粯璁や负 Round Robin锟?
+     * 鍙€氳繃閰嶇疆绫昏嚜瀹氫箟绛栫暐锛堝 RandomLoadBalancer銆乄eightedServiceInstanceListSupplier 绛夛級锟?
      *
-     * @param serviceName 服务名称（如 "user-service"�
-     * @return 服务基础 URL（如 {@code https://192.168.1.100:8081}�
+     * @param serviceName 鏈嶅姟鍚嶇О锛堝 "user-service"锟?
+     * @return 鏈嶅姟鍩虹 URL锛堝 {@code https://192.168.1.100:8081}锟?
      */
     private String resolveServiceUrl(String serviceName) {
         try {
-            // 使用 LoadBalancerClient 选择实例（自动负载均衡）
-            // Note: 虽然当前版本不返�null，但保留检查作为防御性编�
+            // 浣跨敤 LoadBalancerClient 閫夋嫨瀹炰緥锛堣嚜鍔ㄨ礋杞藉潎琛★級
+            // Note: 铏界劧褰撳墠鐗堟湰涓嶈繑锟絥ull锛屼絾淇濈暀妫€鏌ヤ綔涓洪槻寰℃€х紪锟?
             ServiceInstance instance = loadBalancerClient.choose(serviceName);
 
             if (instance == null) {

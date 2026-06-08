@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 租户操作日志表（分区�* </p>
+ * 绉熸埛鎿嶄綔鏃ュ織琛紙鍒嗗尯锟? </p>
  *
  * @author deng
  * @since 2025-12-25

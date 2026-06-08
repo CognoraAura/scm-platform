@@ -14,21 +14,21 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * 基于 Dubbo �PermissionService 接口实现�
+ * 鍩轰簬 Dubbo 锟絇ermissionService 鎺ュ彛瀹炵幇锟?
  *
- * <p>重构：已�common/web 模块迁移�system/service 模块�
- * 这符合正确的架构分层——业务模块提供实现，
- * 基础设施模块 (common/web) 依赖于接口�
+ * <p>閲嶆瀯锛氬凡锟絚ommon/web 妯″潡杩佺Щ锟絪ystem/service 妯″潡锟?
+ * 杩欑鍚堟纭殑鏋舵瀯鍒嗗眰鈥斺€斾笟鍔℃ā鍧楁彁渚涘疄鐜帮紝
+ * 鍩虹璁炬柦妯″潡 (common/web) 渚濊禆浜庢帴鍙ｏ拷
  *
- * <p>安全性：实现了故障关闭模式——在服务失败时抛出异常，
- * 以防止由于权限检查失败而导致未经授权的访问�
+ * <p>瀹夊叏鎬э細瀹炵幇浜嗘晠闅滃叧闂ā寮忊€斺€斿湪鏈嶅姟澶辫触鏃舵姏鍑哄紓甯革紝
+ * 浠ラ槻姝㈢敱浜庢潈闄愭鏌ュけ璐ヨ€屽鑷存湭缁忔巿鏉冪殑璁块棶锟?
  *
- * <p>架构优势�
- * - 通用模块不再依赖于业务模�
- * - 遵循依赖倒置原则 (DIP)
- * - 允许每个项目使用不同�PermissionService 实现
+ * <p>鏋舵瀯浼樺娍锟?
+ * - 閫氱敤妯″潡涓嶅啀渚濊禆浜庝笟鍔℃ā锟?
+ * - 閬靛惊渚濊禆鍊掔疆鍘熷垯 (DIP)
+ * - 鍏佽姣忎釜椤圭洰浣跨敤涓嶅悓锟絇ermissionService 瀹炵幇
  *
- * @author 重构�DubboPermissionAccess
+ * @author 閲嶆瀯锟紻ubboPermissionAccess
  * @version 2.0
  * @since 2025-12-12
  */

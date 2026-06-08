@@ -8,23 +8,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 安全过滤相关配置
+ * 瀹夊叏杩囨护鐩稿叧閰嶇疆
  */
 @Component
 @ConfigurationProperties(prefix = "frog.security.sql-filter")
 @Data
 public class SecurityFilterProperties {
 
-    /** 是否启用 SQL/XSS 过滤 */
+    /** 鏄惁鍚敤 SQL/XSS 杩囨护 */
     private boolean enabled = true;
 
-    /** SQL/XSS 过滤动作：ALERT 仅告警，BLOCK 拦截 */
+    /** SQL/XSS 杩囨护鍔ㄤ綔锛欰LERT 浠呭憡璀︼紝BLOCK 鎷︽埅 */
     private SqlFilterMode mode = SqlFilterMode.ALERT;
 
-    /** 是否启用 XSS 简单检测（建议主要依赖 CSP/输出编码�*/
+    /** 鏄惁鍚敤 XSS 绠€鍗曟娴嬶紙寤鸿涓昏渚濊禆 CSP/杈撳嚭缂栫爜锟?/
     private boolean xssEnabled = true;
 
-    /** 按路径排除（Ant 表达式），例如：/api/public/** */
+    /** 鎸夎矾寰勬帓闄わ紙Ant 琛ㄨ揪寮忥級锛屼緥濡傦細/api/public/** */
     private List<String> excludePaths = new ArrayList<>();
 
     public enum SqlFilterMode {

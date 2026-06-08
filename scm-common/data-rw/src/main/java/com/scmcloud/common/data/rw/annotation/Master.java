@@ -3,12 +3,12 @@ package com.scmcloud.common.data.rw.annotation;
 import java.lang.annotation.*;
 
 /**
- * 强制走主�
+ * 寮哄埗璧颁富锟?
  * <p>
- * 用于需要读取最新数据的场景，如�
- * - 写后立即�
- * - 关键业务查询
- * - 事务中的读操�
+ * 鐢ㄤ簬闇€瑕佽鍙栨渶鏂版暟鎹殑鍦烘櫙锛屽锟?
+ * - 鍐欏悗绔嬪嵆锟?
+ * - 鍏抽敭涓氬姟鏌ヨ
+ * - 浜嬪姟涓殑璇绘搷锟?
  *
  * @author Deng
  * @since 2025-12-16
@@ -19,7 +19,7 @@ import java.lang.annotation.*;
 public @interface Master {
 
     /**
-     * 原因说明（用于日志和监控�
+     * 鍘熷洜璇存槑锛堢敤浜庢棩蹇楀拰鐩戞帶锟?
      */
     String reason() default "";
 }

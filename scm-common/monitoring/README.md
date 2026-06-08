@@ -4,9 +4,9 @@ This module now exposes a lightweight observability starter that configures Open
 
 ## Key capabilities
 
-- **OpenTelemetry Tracing** ¨C ObservabilityAutoConfiguration boots an OpenTelemetrySdk with OTLP exporter and W3C/B3 propagators. A Tracer bean is available everywhere, and the @BusinessTrace aspect now emits spans automatically.
-- **Micrometer Observation Registry** ¨C a shared ObservationRegistry is registered so components can publish timers/counters through Micrometer¡¯s Observation API.
-- **Dynamic Sentinel Rules** ¨C SentinelAutoConfiguration loads flow/degrade rules from configuration and reloads when Spring Cloud EnvironmentChangeEvent fires while wiring a customizable BlockExceptionHandler.
+- **OpenTelemetry Tracing** â€“ ObservabilityAutoConfiguration boots an OpenTelemetrySdk with OTLP exporter and W3C/B3 propagators. A Tracer bean is available everywhere, and the @BusinessTrace aspect now emits spans automatically.
+- **Micrometer Observation Registry** â€“ a shared ObservationRegistry is registered so components can publish timers/counters through Micrometerâ€™s Observation API.
+- **Dynamic Sentinel Rules** â€“ SentinelAutoConfiguration loads flow/degrade rules from configuration and reloads when Spring Cloud EnvironmentChangeEvent fires while wiring a customizable BlockExceptionHandler.
 
 ## Configuration
 
@@ -40,7 +40,7 @@ Any change to monitoring.sentinel.* published through Spring Cloud Config / Naco
 ## Integration points
 
 - Add the dependency to a service module and the auto-configuration registers itself via META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports.
-- Use @BusinessTrace or TraceUtils.wrapRunnable ¨C both now rely on OpenTelemetry (no SkyWalking toolkit dependency).
+- Use @BusinessTrace or TraceUtils.wrapRunnable â€“ both now rely on OpenTelemetry (no SkyWalking toolkit dependency).
 - Annotate controllers/services with @RateLimit to guard endpoints. Sentinel rules stay centralized; unused annotations (@CircuitBreaker, @ParamFlow) were removed to keep the API minimal.
 - DistributedLock/other infrastructure can inject ObservationRegistry and Tracer directly if deeper instrumentation is needed.
 

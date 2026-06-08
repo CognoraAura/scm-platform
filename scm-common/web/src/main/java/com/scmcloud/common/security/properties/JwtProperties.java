@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
- * Jwt 配置�
+ * Jwt 閰嶇疆锟?
  *
  * @author Deng
  * createData 2025/10/11 11:05
@@ -17,84 +17,84 @@ import org.springframework.stereotype.Component;
 public class JwtProperties {
 
     /**
-     * JWT签名密钥（至�12位）
+     * JWT绛惧悕瀵嗛挜锛堣嚦锟?2浣嶏級
      */
     private String secret;
 
     /**
-     * Access Token过期时间（毫秒）
-     * 默认: 2小时
+     * Access Token杩囨湡鏃堕棿锛堟绉掞級
+     * 榛樿: 2灏忔椂
      */
     private Long expiration = 7200000L;
 
     /**
-     * Refresh Token过期时间（毫秒）
-     * 默认: 7�
+     * Refresh Token杩囨湡鏃堕棿锛堟绉掞級
+     * 榛樿: 7锟?
      */
     private Long refreshExpiration = 604800000L;
 
     /**
-     * Token 签发�
+     * Token 绛惧彂锟?
      */
     private String issuer = "nearsync-auth-service";
 
     /**
-     * Token 请求头名�
+     * Token 璇锋眰澶村悕锟?
      */
     private String header = "Authorization";
 
     /**
-     * Token 前缀
+     * Token 鍓嶇紑
      */
     private String prefix = "Bearer ";
 
     /**
-     * 是否启用严格的IP检�
-     * true: Token只能在签发的IP上使�
-     * false: 允许IP变更
+     * 鏄惁鍚敤涓ユ牸鐨処P妫€锟?
+     * true: Token鍙兘鍦ㄧ鍙戠殑IP涓婁娇锟?
+     * false: 鍏佽IP鍙樻洿
      */
     private boolean strictIpCheck = false;
 
     /**
-     * 是否启用设备指纹验证
+     * 鏄惁鍚敤璁惧鎸囩汗楠岃瘉
      */
     private boolean deviceFingerprintEnabled = true;
 
     /**
-     * Token自动续期阈值（毫秒�
-     * 当Token剩余时间小于此值时，自动续�
-     * 默认: 30分钟
+     * Token鑷姩缁湡闃堝€硷紙姣锟?
+     * 褰揟oken鍓╀綑鏃堕棿灏忎簬姝ゅ€兼椂锛岃嚜鍔ㄧ画锟?
+     * 榛樿: 30鍒嗛挓
      */
     private Long autoRenewThreshold = 1800000L;
 
     /**
-     * 是否启用 Token自动续期
+     * 鏄惁鍚敤 Token鑷姩缁湡
      */
     private boolean autoRenewEnabled = false;
 
     /**
-     * 同一用户最大并发会话数
-     * 0表示不限�
+     * 鍚屼竴鐢ㄦ埛鏈€澶у苟鍙戜細璇濇暟
+     * 0琛ㄧず涓嶉檺锟?
      */
     private Integer maxConcurrentSessions = 0;
 
     /**
-     * 会话互斥策略
-     * ALLOW_ALL: 允许所有会�
-     * REPLACE_OLD: 新会话替换旧会话
-     * REJECT_NEW: 拒绝新会�
+     * 浼氳瘽浜掓枼绛栫暐
+     * ALLOW_ALL: 鍏佽鎵€鏈変細锟?
+     * REPLACE_OLD: 鏂颁細璇濇浛鎹㈡棫浼氳瘽
+     * REJECT_NEW: 鎷掔粷鏂颁細锟?
      */
     private SessionPolicy sessionPolicy = SessionPolicy.ALLOW_ALL;
 
     /**
-     * Token黑名单清理策�
-     * LAZY: 懒清理（过期时自动删除）
-     * SCHEDULED: 定时清理
+     * Token榛戝悕鍗曟竻鐞嗙瓥锟?
+     * LAZY: 鎳掓竻鐞嗭紙杩囨湡鏃惰嚜鍔ㄥ垹闄わ級
+     * SCHEDULED: 瀹氭椂娓呯悊
      */
     private CleanupStrategy blacklistCleanupStrategy = CleanupStrategy.LAZY;
 
     /**
-     * 黑名单定时清理间隔（小时�
+     * 榛戝悕鍗曞畾鏃舵竻鐞嗛棿闅旓紙灏忔椂锟?
      */
     private Integer blacklistCleanupInterval = 24;
 

@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * JWT 认证入口�
+ * JWT 璁よ瘉鍏ュ彛锟?
  *
  * @author Deng
  * createData 2025/10/14 14:58
@@ -37,7 +37,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         Map<String, Object> result = new HashMap<>();
         result.put("code", 401);
-        result.put("message", "未授权访问，请先登录");
+        result.put("message", "鏈巿鏉冭闂紝璇峰厛鐧诲綍");
         result.put("error", authException.getMessage());
         result.put("path", request.getRequestURI());
         result.put("timestamp", System.currentTimeMillis());

@@ -26,7 +26,7 @@ public class TenantConfigDubboServiceImpl implements TenantConfigDubboService {
 
     @Override
     public List<TenantConfigDTO> listConfigs(String tenantId) {
-        log.debug("Dubbo查询租户配置列表: tenantId={}", tenantId);
+        log.debug("Dubbo鏌ヨ绉熸埛閰嶇疆鍒楄〃: tenantId={}", tenantId);
         List<TenantConfig> configs = configService.lambdaQuery()
                 .eq(TenantConfig::getTenantId, tenantId)
                 .orderByAsc(TenantConfig::getConfigCategory)
@@ -36,7 +36,7 @@ public class TenantConfigDubboServiceImpl implements TenantConfigDubboService {
 
     @Override
     public String getConfigValue(String tenantId, String configKey) {
-        log.debug("Dubbo查询配置� tenantId={}, configKey={}", tenantId, configKey);
+        log.debug("Dubbo鏌ヨ閰嶇疆锟?tenantId={}, configKey={}", tenantId, configKey);
         TenantConfig config = configService.lambdaQuery()
                 .eq(TenantConfig::getTenantId, tenantId)
                 .eq(TenantConfig::getConfigKey, configKey)
@@ -46,7 +46,7 @@ public class TenantConfigDubboServiceImpl implements TenantConfigDubboService {
 
     @Override
     public void updateConfig(String tenantId, TenantConfigUpdateCommand command) {
-        log.info("Dubbo更新租户配置: tenantId={}, configKey={}", tenantId, command.getConfigKey());
+        log.info("Dubbo鏇存柊绉熸埛閰嶇疆: tenantId={}, configKey={}", tenantId, command.getConfigKey());
 
         TenantConfig existing = configService.lambdaQuery()
                 .eq(TenantConfig::getTenantId, tenantId)
@@ -71,7 +71,7 @@ public class TenantConfigDubboServiceImpl implements TenantConfigDubboService {
 
     @Override
     public Map<String, String> getFeatureFlags(String tenantId) {
-        log.debug("Dubbo查询功能开� tenantId={}", tenantId);
+        log.debug("Dubbo鏌ヨ鍔熻兘寮€锟?tenantId={}", tenantId);
         List<TenantConfig> configs = configService.lambdaQuery()
                 .eq(TenantConfig::getTenantId, tenantId)
                 .eq(TenantConfig::getConfigCategory, "FEATURE")

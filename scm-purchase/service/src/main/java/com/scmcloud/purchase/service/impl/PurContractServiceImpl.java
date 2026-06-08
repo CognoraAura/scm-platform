@@ -80,7 +80,7 @@ public class PurContractServiceImpl extends ServiceImpl<PurContractMapper, PurCo
     public boolean sign(String id, String signedBy, String signedByName) {
         PurContract contract = getById(id);
         if (contract == null || contract.getDeleted()) {
-            throw new IllegalArgumentException("合同不存� " + id);
+            throw new IllegalArgumentException("鍚堝悓涓嶅瓨锟?" + id);
         }
         statusValidator.validateTransition("PURCHASE", "PENDING_APPROVAL", "APPROVED");
         contract.setStatus(2); // APPROVED
@@ -96,7 +96,7 @@ public class PurContractServiceImpl extends ServiceImpl<PurContractMapper, PurCo
     public boolean terminate(String id) {
         PurContract contract = getById(id);
         if (contract == null || contract.getDeleted()) {
-            throw new IllegalArgumentException("合同不存� " + id);
+            throw new IllegalArgumentException("鍚堝悓涓嶅瓨锟?" + id);
         }
         String fromStatus;
         switch (contract.getStatus()) {
@@ -105,7 +105,7 @@ public class PurContractServiceImpl extends ServiceImpl<PurContractMapper, PurCo
             case 2: fromStatus = "APPROVED"; break;
             case 3: fromStatus = "REJECTED"; break;
             case 4: fromStatus = "CANCELLED"; break;
-            default: throw new IllegalStateException("未知状态: " + contract.getStatus());
+            default: throw new IllegalStateException("鏈煡鐘舵€? " + contract.getStatus());
         }
         statusValidator.validateTransition("PURCHASE", fromStatus, "CANCELLED");
         contract.setStatus(4); // CANCELLED

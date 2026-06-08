@@ -17,18 +17,18 @@ import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeoutException;
 
 /**
- * @HttpExchange 降级处理 AOP 切面
- * <p>替代 OpenFeign �FallbackFactory</p>
+ * @HttpExchange 闄嶇骇澶勭悊 AOP 鍒囬潰
+ * <p>鏇夸唬 OpenFeign 锟紽allbackFactory</p>
  *
- * <p>功能�
+ * <p>鍔熻兘锟?
  * <ul>
- *   <li>拦截所�@SentinelResource 注解的方�/li>
- *   <li>异常分类：BlockException（限流）、TimeoutException（超时）、其他异�/li>
- *   <li>自动调用接口�default 降级方法</li>
- *   <li>Micrometer 指标跟踪</li>
+ *   <li>鎷︽埅鎵€锟紷SentinelResource 娉ㄨВ鐨勬柟锟?li>
+ *   <li>寮傚父鍒嗙被锛欱lockException锛堥檺娴侊級銆乀imeoutException锛堣秴鏃讹級銆佸叾浠栧紓锟?li>
+ *   <li>鑷姩璋冪敤鎺ュ彛锟絛efault 闄嶇骇鏂规硶</li>
+ *   <li>Micrometer 鎸囨爣璺熻釜</li>
  * </ul>
  *
- * <p>使用示例�
+ * <p>浣跨敤绀轰緥锟?
  * <pre>
  * {@code
  * @HttpExchange("/api/users")
@@ -37,7 +37,7 @@ import java.util.concurrent.TimeoutException;
  *     @SentinelResource(value = "user-service:getById", fallback = "getByIdFallback")
  *     ApiResponse<User> getById(@PathVariable Long id);
  *
- *     // 降级方法（default�
+ *     // 闄嶇骇鏂规硶锛坉efault锟?
  *     default ApiResponse<User> getByIdFallback(Long id, Throwable ex) {
  *         log.warn("User service fallback: id={}", id);
  *         return ApiResponse.fail(503, "Service unavailable");
@@ -57,7 +57,7 @@ public class HttpExchangeFallbackAspect {
     private final MeterRegistry meterRegistry;
 
     /**
-     * 拦截所�@SentinelResource 注解的方�
+     * 鎷︽埅鎵€锟紷SentinelResource 娉ㄨВ鐨勬柟锟?
      */
     @Around("@annotation(sentinelResource)")
     public Object handleSentinelResource(
@@ -68,17 +68,17 @@ public class HttpExchangeFallbackAspect {
         String fallbackMethod = sentinelResource.fallback();
 
         try {
-            // 执行原方�
+            // 鎵ц鍘熸柟锟?
             Object result = joinPoint.proceed();
 
-            // 记录成功指标
+            // 璁板綍鎴愬姛鎸囨爣
             meterRegistry.counter("http.exchange.success",
                                   "resource", resourceName).increment();
 
             return result;
 
         } catch (BlockException ex) {
-            // Sentinel 限流/降级
+            // Sentinel 闄愭祦/闄嶇骇
             meterRegistry.counter("http.exchange.blocked",
                                   "resource", resourceName).increment();
             log.warn("HTTP Exchange blocked by Sentinel: resource={}, reason={}",
@@ -87,7 +87,7 @@ public class HttpExchangeFallbackAspect {
             return invokeFallback(joinPoint, fallbackMethod, ex);
 
         } catch (ResourceAccessException | SocketTimeoutException | TimeoutException ex) {
-            // 超时异常
+            // 瓒呮椂寮傚父
             meterRegistry.counter("http.exchange.timeout",
                                   "resource", resourceName).increment();
             log.error("HTTP Exchange timeout: resource={}, error={}",
@@ -96,7 +96,7 @@ public class HttpExchangeFallbackAspect {
             return invokeFallback(joinPoint, fallbackMethod, ex);
 
         } catch (Exception ex) {
-            // 其他异常
+            // 鍏朵粬寮傚父
             meterRegistry.counter("http.exchange.failure",
                                   "resource", resourceName,
                                   "exception", ex.getClass().getSimpleName()).increment();
@@ -108,19 +108,19 @@ public class HttpExchangeFallbackAspect {
     }
 
     /**
-     * 调用降级方法
+     * 璋冪敤闄嶇骇鏂规硶
      *
-     * <p>降级方法签名�
+     * <p>闄嶇骇鏂规硶绛惧悕锟?
      * <ul>
-     *   <li>参数：与原方法相�+ Throwable ex</li>
-     *   <li>返回值：与原方法相同</li>
-     *   <li>修饰符：default（接口默认方法）</li>
+     *   <li>鍙傛暟锛氫笌鍘熸柟娉曠浉锟? Throwable ex</li>
+     *   <li>杩斿洖鍊硷細涓庡師鏂规硶鐩稿悓</li>
+     *   <li>淇グ绗︼細default锛堟帴鍙ｉ粯璁ゆ柟娉曪級</li>
      * </ul>
      *
-     * @param joinPoint 切点
-     * @param fallbackMethodName 降级方法�
-     * @param cause 异常
-     * @return 降级结果
+     * @param joinPoint 鍒囩偣
+     * @param fallbackMethodName 闄嶇骇鏂规硶锟?
+     * @param cause 寮傚父
+     * @return 闄嶇骇缁撴灉
      */
     private Object invokeFallback(
         ProceedingJoinPoint joinPoint,
@@ -128,7 +128,7 @@ public class HttpExchangeFallbackAspect {
         Throwable cause) throws Throwable {
 
         if (fallbackMethodName == null || fallbackMethodName.isEmpty()) {
-            // 无降级方法，直接抛出异常
+            // 鏃犻檷绾ф柟娉曪紝鐩存帴鎶涘嚭寮傚父
             throw cause;
         }
 
@@ -136,7 +136,7 @@ public class HttpExchangeFallbackAspect {
         Object[] args = joinPoint.getArgs();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 
-        // 查找降级方法
+        // 鏌ユ壘闄嶇骇鏂规硶
         Method fallbackMethod = findFallbackMethod(
             signature.getDeclaringType(),
             fallbackMethodName,
@@ -145,7 +145,7 @@ public class HttpExchangeFallbackAspect {
 
         if (fallbackMethod != null) {
             try {
-                // 调用降级方法（添�Throwable 参数�
+                // 璋冪敤闄嶇骇鏂规硶锛堟坊锟絋hrowable 鍙傛暟锟?
                 Object[] fallbackArgs = buildFallbackArgs(args, cause);
                 fallbackMethod.setAccessible(true);
                 return fallbackMethod.invoke(target, fallbackArgs);
@@ -161,18 +161,18 @@ public class HttpExchangeFallbackAspect {
     }
 
     /**
-     * 查找降级方法
+     * 鏌ユ壘闄嶇骇鏂规硶
      *
-     * <p>查找策略�
+     * <p>鏌ユ壘绛栫暐锟?
      * <ol>
-     *   <li>查找接口�default 方法</li>
-     *   <li>参数签名：原方法参数 + Throwable</li>
+     *   <li>鏌ユ壘鎺ュ彛锟絛efault 鏂规硶</li>
+     *   <li>鍙傛暟绛惧悕锛氬師鏂规硶鍙傛暟 + Throwable</li>
      * </ol>
      *
-     * @param declaringType 声明类型
-     * @param methodName 方法�
-     * @param originalArgs 原始参数
-     * @return 降级方法，未找到则返�null
+     * @param declaringType 澹版槑绫诲瀷
+     * @param methodName 鏂规硶锟?
+     * @param originalArgs 鍘熷鍙傛暟
+     * @return 闄嶇骇鏂规硶锛屾湭鎵惧埌鍒欒繑锟絥ull
      */
     private Method findFallbackMethod(
         Class<?> declaringType,
@@ -180,7 +180,7 @@ public class HttpExchangeFallbackAspect {
         Object[] originalArgs) {
 
         try {
-            // 构建参数类型数组（原参数 + Throwable�
+            // 鏋勫缓鍙傛暟绫诲瀷鏁扮粍锛堝師鍙傛暟 + Throwable锟?
             Class<?>[] paramTypes = new Class[originalArgs.length + 1];
             for (int i = 0; i < originalArgs.length; i++) {
                 paramTypes[i] = originalArgs[i] != null ?
@@ -188,17 +188,17 @@ public class HttpExchangeFallbackAspect {
             }
             paramTypes[originalArgs.length] = Throwable.class;
 
-            // 在声明接口中查找 default 方法
+            // 鍦ㄥ０鏄庢帴鍙ｄ腑鏌ユ壘 default 鏂规硶
             return declaringType.getDeclaredMethod(methodName, paramTypes);
 
         } catch (NoSuchMethodException e) {
-            // 尝试松散匹配（参数类型可能不完全匹配�
+            // 灏濊瘯鏉炬暎鍖归厤锛堝弬鏁扮被鍨嬪彲鑳戒笉瀹屽叏鍖归厤锟?
             for (Method method : declaringType.getDeclaredMethods()) {
                 if (method.getName().equals(methodName) &&
                     method.isDefault() &&
                     method.getParameterCount() == originalArgs.length + 1) {
 
-                    // 检查最后一个参数是否为 Throwable
+                    // 妫€鏌ユ渶鍚庝竴涓弬鏁版槸鍚︿负 Throwable
                     Class<?>[] types = method.getParameterTypes();
                     if (Throwable.class.isAssignableFrom(types[types.length - 1])) {
                         return method;
@@ -212,11 +212,11 @@ public class HttpExchangeFallbackAspect {
     }
 
     /**
-     * 构建降级方法参数（添�Throwable�
+     * 鏋勫缓闄嶇骇鏂规硶鍙傛暟锛堟坊锟絋hrowable锟?
      *
-     * @param originalArgs 原始参数
-     * @param cause 异常
-     * @return 降级方法参数数组
+     * @param originalArgs 鍘熷鍙傛暟
+     * @param cause 寮傚父
+     * @return 闄嶇骇鏂规硶鍙傛暟鏁扮粍
      */
     private Object[] buildFallbackArgs(Object[] originalArgs, Throwable cause) {
         Object[] fallbackArgs = new Object[originalArgs.length + 1];

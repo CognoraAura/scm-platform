@@ -4,7 +4,7 @@ import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.scmcloud.common.response.ApiResponse;
 
 /**
- * Sentinel 异常处理器策略接�
+ * Sentinel 寮傚父澶勭悊鍣ㄧ瓥鐣ユ帴锟?
  *
  * @author Deng
  * createData 2025/10/20 10:39
@@ -12,16 +12,16 @@ import com.scmcloud.common.response.ApiResponse;
  */
 public interface SentinelExceptionHandlerStrategy {
     /**
-     * 判断是否支持处理该异�
-     * @param ex 异常
-     * @return 是否支持
+     * 鍒ゆ柇鏄惁鏀寔澶勭悊璇ュ紓锟?
+     * @param ex 寮傚父
+     * @return 鏄惁鏀寔
      */
     boolean supports(BlockException ex);
     
     /**
-     * 处理异常
-     * @param ex 异常
-     * @return 响应结果
+     * 澶勭悊寮傚父
+     * @param ex 寮傚父
+     * @return 鍝嶅簲缁撴灉
      */
     ApiResponse<Void> handle(BlockException ex);
 }

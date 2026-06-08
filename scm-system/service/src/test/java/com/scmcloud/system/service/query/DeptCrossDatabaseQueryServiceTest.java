@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
 
 /**
- * DeptCrossDatabaseQueryService 单元测试
+ * DeptCrossDatabaseQueryService 鍗曞厓娴嬭瘯
  *
  * @author Deng
  * @since 2025-01-16
@@ -71,7 +71,7 @@ class DeptCrossDatabaseQueryServiceTest {
     }
 
     // ========================================
-    // 部门树查询测�
+    // 閮ㄩ棬鏍戞煡璇㈡祴锟?
     // ========================================
 
     @Test
@@ -199,7 +199,7 @@ class DeptCrossDatabaseQueryServiceTest {
     }
 
     // ========================================
-    // 部门基本信息查询测试
+    // 閮ㄩ棬鍩烘湰淇℃伅鏌ヨ娴嬭瘯
     // ========================================
 
     @Test
@@ -240,7 +240,7 @@ class DeptCrossDatabaseQueryServiceTest {
     }
 
     // ========================================
-    // 部门层级关系查询测试
+    // 閮ㄩ棬灞傜骇鍏崇郴鏌ヨ娴嬭瘯
     // ========================================
 
     @Test
@@ -293,7 +293,7 @@ class DeptCrossDatabaseQueryServiceTest {
     @Test
     void hasAccessToDept_WithDataScopeAll_ReturnsTrue() {
         // Arrange
-        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(1); // 全部数据
+        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(1); // 鍏ㄩ儴鏁版嵁
 
         // Act
         boolean result = service.hasAccessToDept(testUserId, testDeptId);
@@ -307,7 +307,7 @@ class DeptCrossDatabaseQueryServiceTest {
     @Test
     void hasAccessToDept_WithDataScopeSameDept_AndSameDept_ReturnsTrue() {
         // Arrange
-        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(3); // 本部�
+        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(3); // 鏈儴锟?
         when(userMapper.getUserDeptId(testUserId)).thenReturn(testDeptId);
 
         // Act
@@ -323,7 +323,7 @@ class DeptCrossDatabaseQueryServiceTest {
     void hasAccessToDept_WithDataScopeSameDept_AndDifferentDept_ReturnsFalse() {
         // Arrange
         UUID otherDeptId = UUID.randomUUID();
-        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(3); // 本部�
+        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(3); // 鏈儴锟?
         when(userMapper.getUserDeptId(testUserId)).thenReturn(testDeptId);
 
         // Act
@@ -340,7 +340,7 @@ class DeptCrossDatabaseQueryServiceTest {
         UUID childDeptId = UUID.randomUUID();
         List<UUID> accessibleDepts = Arrays.asList(testDeptId, childDeptId);
 
-        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(4); // 本部门及子部�
+        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(4); // 鏈儴闂ㄥ強瀛愰儴锟?
         when(userMapper.getUserDeptId(testUserId)).thenReturn(testDeptId);
         when(deptMapper.selectDeptAndChildren(testDeptId)).thenReturn(accessibleDepts);
 
@@ -358,7 +358,7 @@ class DeptCrossDatabaseQueryServiceTest {
         UUID otherDeptId = UUID.randomUUID();
         List<UUID> accessibleDepts = Collections.singletonList(testDeptId);
 
-        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(4); // 本部门及子部�
+        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(4); // 鏈儴闂ㄥ強瀛愰儴锟?
         when(userMapper.getUserDeptId(testUserId)).thenReturn(testDeptId);
         when(deptMapper.selectDeptAndChildren(testDeptId)).thenReturn(accessibleDepts);
 
@@ -373,7 +373,7 @@ class DeptCrossDatabaseQueryServiceTest {
     @Test
     void hasAccessToDept_WithDataScopeSelfOnly_ReturnsFalse() {
         // Arrange
-        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(5); // 仅本�
+        when(userRoleMapper.getUserDataScope(testUserId)).thenReturn(5); // 浠呮湰锟?
 
         // Act
         boolean result = service.hasAccessToDept(testUserId, testDeptId);
@@ -431,7 +431,7 @@ class DeptCrossDatabaseQueryServiceTest {
     }
 
     // ========================================
-    // 部门用户统计测试
+    // 閮ㄩ棬鐢ㄦ埛缁熻娴嬭瘯
     // ========================================
 
     @Test

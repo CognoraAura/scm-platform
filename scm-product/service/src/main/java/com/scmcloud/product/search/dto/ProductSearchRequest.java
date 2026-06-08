@@ -5,9 +5,9 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 /**
- * 商品搜索请求 DTO
+ * 鍟嗗搧鎼滅储璇锋眰 DTO
  *
- * <p>支持多条件组合搜�
+ * <p>鏀寔澶氭潯浠剁粍鍚堟悳锟?
  *
  * @author SCM Platform Team
  * @since 2025-12-26

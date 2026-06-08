@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 采购合同�
+ * 閲囪喘鍚堝悓锟?
  * </p>
  *
  * @author deng

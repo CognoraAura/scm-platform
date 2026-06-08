@@ -10,7 +10,7 @@ import java.util.Optional;
 
 /**
  * Minimal CIDR matcher supporting IPv4 and IPv6.
- * 支持 IPv4 �IPv6 的极简 CIDR 匹配器�
+ * 鏀寔 IPv4 锟絀Pv6 鐨勬瀬绠€ CIDR 鍖归厤鍣拷
  */
 @Slf4j
 public record IpSubnet(boolean matchAll, InetAddress networkAddress, int prefixLength) {

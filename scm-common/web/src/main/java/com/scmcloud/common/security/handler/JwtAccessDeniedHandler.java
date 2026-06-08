@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Jwt 拒绝处理�
+ * Jwt 鎷掔粷澶勭悊锟?
  *
  * @author Deng
  * createData 2025/10/11 13:55
@@ -39,7 +39,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
         Map<String, Object> result = new HashMap<>();
         result.put("code", 403);
-        result.put("message", "权限不足，拒绝访问");
+        result.put("message", "鏉冮檺涓嶈冻锛屾嫆缁濊闂?);
         result.put("error", accessDeniedException.getMessage());
         result.put("path", request.getRequestURI());
         result.put("timestamp", System.currentTimeMillis());

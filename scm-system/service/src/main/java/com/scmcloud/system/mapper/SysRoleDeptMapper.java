@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 角色部门关联 Mapper 接口
+ * 瑙掕壊閮ㄩ棬鍏宠仈 Mapper 鎺ュ彛
  *
  * @author Deng
  * @since 2025-12-15
@@ -19,7 +19,7 @@ import java.util.UUID;
 public interface SysRoleDeptMapper extends BaseMapper<SysRoleDept> {
 
     /**
-     * 根据角色 ID查询部门ID列表
+     * 鏍规嵁瑙掕壊 ID鏌ヨ閮ㄩ棬ID鍒楄〃
      */
     @Select("""
             SELECT dept_id FROM sys_role_dept
@@ -28,7 +28,7 @@ public interface SysRoleDeptMapper extends BaseMapper<SysRoleDept> {
     List<UUID> findDeptIdsByRoleId(@Param("roleId") UUID roleId);
 
     /**
-     * 根据角色ID查询关联信息（包含子部门标记�
+     * 鏍规嵁瑙掕壊ID鏌ヨ鍏宠仈淇℃伅锛堝寘鍚瓙閮ㄩ棬鏍囪锟?
      */
     @Select("""
             SELECT * FROM sys_role_dept
@@ -36,14 +36,14 @@ public interface SysRoleDeptMapper extends BaseMapper<SysRoleDept> {
             """)
     List<SysRoleDept> findByRoleId(@Param("roleId") UUID roleId);
 
-    // 注意：findAccessibleDeptIds 方法已移�Service 层实�
-    // 该方法涉及跨库查询（permission + org），需要通过 Service 层聚合：
-    // 1. 先通过 findByRoleId 查询角色部门关联（包�include_children 标记�
-    // 2. 对于 include_children=true 的部门，通过 SysDeptMapper.selectDeptAndChildren 递归查询
-    // 3. 合并所有部�ID
+    // 娉ㄦ剰锛歠indAccessibleDeptIds 鏂规硶宸茬Щ锟絊ervice 灞傚疄锟?
+    // 璇ユ柟娉曟秹鍙婅法搴撴煡璇紙permission + org锛夛紝闇€瑕侀€氳繃 Service 灞傝仛鍚堬細
+    // 1. 鍏堥€氳繃 findByRoleId 鏌ヨ瑙掕壊閮ㄩ棬鍏宠仈锛堝寘锟絠nclude_children 鏍囪锟?
+    // 2. 瀵逛簬 include_children=true 鐨勯儴闂紝閫氳繃 SysDeptMapper.selectDeptAndChildren 閫掑綊鏌ヨ
+    // 3. 鍚堝苟鎵€鏈夐儴锟絀D
 
     /**
-     * 查询需要递归子部门的部门 ID 列表
+     * 鏌ヨ闇€瑕侀€掑綊瀛愰儴闂ㄧ殑閮ㄩ棬 ID 鍒楄〃
      */
     @Select("""
             SELECT dept_id FROM sys_role_dept
@@ -52,7 +52,7 @@ public interface SysRoleDeptMapper extends BaseMapper<SysRoleDept> {
     List<UUID> findDeptIdsWithChildren(@Param("roleId") UUID roleId);
 
     /**
-     * 查询不需要递归子部门的部门 ID 列表
+     * 鏌ヨ涓嶉渶瑕侀€掑綊瀛愰儴闂ㄧ殑閮ㄩ棬 ID 鍒楄〃
      */
     @Select("""
             SELECT dept_id FROM sys_role_dept
@@ -61,7 +61,7 @@ public interface SysRoleDeptMapper extends BaseMapper<SysRoleDept> {
     List<UUID> findDeptIdsWithoutChildren(@Param("roleId") UUID roleId);
 
     /**
-     * 删除角色的所有部门关�
+     * 鍒犻櫎瑙掕壊鐨勬墍鏈夐儴闂ㄥ叧锟?
      */
     @Delete("""
             DELETE FROM sys_role_dept
@@ -70,9 +70,9 @@ public interface SysRoleDeptMapper extends BaseMapper<SysRoleDept> {
     int deleteByRoleId(@Param("roleId") UUID roleId);
 
     /**
-     * 删除部门的所有角色关�
+     * 鍒犻櫎閮ㄩ棬鐨勬墍鏈夎鑹插叧锟?
      * <p>
-     * 用于部门删除时清理关联数�
+     * 鐢ㄤ簬閮ㄩ棬鍒犻櫎鏃舵竻鐞嗗叧鑱旀暟锟?
      */
     @Delete("""
             DELETE FROM sys_role_dept
@@ -81,7 +81,7 @@ public interface SysRoleDeptMapper extends BaseMapper<SysRoleDept> {
     int deleteByDeptId(@Param("deptId") UUID deptId);
 
     /**
-     * 批量插入角色部门关联
+     * 鎵归噺鎻掑叆瑙掕壊閮ㄩ棬鍏宠仈
      */
     @Insert("""
             <script>
@@ -97,9 +97,9 @@ public interface SysRoleDeptMapper extends BaseMapper<SysRoleDept> {
                     @Param("createBy") UUID createBy);
 
     /**
-     * 删除角色部门关联
+     * 鍒犻櫎瑙掕壊閮ㄩ棬鍏宠仈
      * <p>
-     * 用于删除角色时清理自定义数据权限关联
+     * 鐢ㄤ簬鍒犻櫎瑙掕壊鏃舵竻鐞嗚嚜瀹氫箟鏁版嵁鏉冮檺鍏宠仈
      */
     @Delete("""
             DELETE FROM sys_role_dept

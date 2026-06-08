@@ -3,7 +3,7 @@ package com.scmcloud.common.sentinel.annotation;
 import java.lang.annotation.*;
 
 /**
- * 接口限流注解
+ * 鎺ュ彛闄愭祦娉ㄨВ
  *
  * @author Deng
  * createData 2025/10/20 11:00
@@ -15,22 +15,22 @@ import java.lang.annotation.*;
 public @interface RateLimit {
 
     /**
-     * 资源名称（默认使用方法签名）
+     * 璧勬簮鍚嶇О锛堥粯璁や娇鐢ㄦ柟娉曠鍚嶏級
      */
     String value() default "";
 
     /**
-     * QPS 阈�
+     * QPS 闃堬拷
      */
     int qps() default 100;
 
     /**
-     * 限流类型�-QPS 2-线程�
+     * 闄愭祦绫诲瀷锟?QPS 2-绾跨▼锟?
      */
     int grade() default 1;
 
     /**
-     * 是否开启集群限�
+     * 鏄惁寮€鍚泦缇ら檺锟?
      */
     boolean clusterMode() default false;
 }

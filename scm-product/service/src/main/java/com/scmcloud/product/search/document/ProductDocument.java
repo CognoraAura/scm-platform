@@ -11,15 +11,15 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 商品搜索文档
+ * 鍟嗗搧鎼滅储鏂囨。
  *
- * <p>用于 Elasticsearch 全文搜索的商品文�
+ * <p>鐢ㄤ簬 Elasticsearch 鍏ㄦ枃鎼滅储鐨勫晢鍝佹枃锟?
  *
- * <p>索引设计�
- * - 使用 IK 分词器进行中文分�
- * - ik_max_word: 最细粒度分词，用于搜索字段
- * - ik_smart: 粗粒度分词，用于聚合字段
- * - 5 分片� 副本，支持水平扩�
+ * <p>绱㈠紩璁捐锟?
+ * - 浣跨敤 IK 鍒嗚瘝鍣ㄨ繘琛屼腑鏂囧垎锟?
+ * - ik_max_word: 鏈€缁嗙矑搴﹀垎璇嶏紝鐢ㄤ簬鎼滅储瀛楁
+ * - ik_smart: 绮楃矑搴﹀垎璇嶏紝鐢ㄤ簬鑱氬悎瀛楁
+ * - 5 鍒嗙墖锟?鍓湰锛屾敮鎸佹按骞虫墿锟?
  *
  * @author SCM Platform Team
  * @since 2025-12-26
@@ -30,127 +30,127 @@ import java.time.LocalDateTime;
 public class ProductDocument {
 
     /**
-     * SPU ID（主键）
+     * SPU ID锛堜富閿級
      */
     @Id
     private String id;
 
     /**
-     * SPU 编码
+     * SPU 缂栫爜
      */
     @Field(type = FieldType.Keyword)
     private String spuCode;
 
     /**
-     * SPU 名称（使�IK 分词器，支持全文搜索�
+     * SPU 鍚嶇О锛堜娇锟絀K 鍒嗚瘝鍣紝鏀寔鍏ㄦ枃鎼滅储锟?
      */
     @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_max_word")
     private String spuName;
 
     /**
-     * 分类 ID
+     * 鍒嗙被 ID
      */
     @Field(type = FieldType.Keyword)
     private String categoryId;
 
     /**
-     * 分类名称（用于显示）
+     * 鍒嗙被鍚嶇О锛堢敤浜庢樉绀猴級
      */
     @Field(type = FieldType.Keyword)
     private String categoryName;
 
     /**
-     * 品牌 ID
+     * 鍝佺墝 ID
      */
     @Field(type = FieldType.Keyword)
     private String brandId;
 
     /**
-     * 品牌名称（用于显示和过滤�
+     * 鍝佺墝鍚嶇О锛堢敤浜庢樉绀哄拰杩囨护锟?
      */
     @Field(type = FieldType.Keyword)
     private String brandName;
 
     /**
-     * 商品描述（支持全文搜索）
+     * 鍟嗗搧鎻忚堪锛堟敮鎸佸叏鏂囨悳绱級
      */
     @Field(type = FieldType.Text, analyzer = "ik_max_word")
     private String description;
 
     /**
-     * 主图 URL
+     * 涓诲浘 URL
      */
     @Field(type = FieldType.Keyword, index = false)
     private String mainImage;
 
     /**
-     * 最低价�
+     * 鏈€浣庝环锟?
      */
     @Field(type = FieldType.Double)
     private BigDecimal minPrice;
 
     /**
-     * 最高价�
+     * 鏈€楂樹环锟?
      */
     @Field(type = FieldType.Double)
     private BigDecimal maxPrice;
 
     /**
-     * 总库�
+     * 鎬诲簱锟?
      */
     @Field(type = FieldType.Integer)
     private Integer totalStock;
 
     /**
-     * 总销量（用于排序�
+     * 鎬婚攢閲忥紙鐢ㄤ簬鎺掑簭锟?
      */
     @Field(type = FieldType.Integer)
     private Integer totalSales;
 
     /**
-     * 排序权重
+     * 鎺掑簭鏉冮噸
      */
     @Field(type = FieldType.Integer)
     private Integer sortOrder;
 
     /**
-     * SEO 标题
+     * SEO 鏍囬
      */
     @Field(type = FieldType.Text, analyzer = "ik_max_word")
     private String seoTitle;
 
     /**
-     * SEO 关键�
+     * SEO 鍏抽敭锟?
      */
     @Field(type = FieldType.Text, analyzer = "ik_max_word")
     private String seoKeywords;
 
     /**
-     * SEO 描述
+     * SEO 鎻忚堪
      */
     @Field(type = FieldType.Text, analyzer = "ik_max_word")
     private String seoDescription;
 
     /**
-     * 状� 0-草稿, 1-上架, 2-下架, 3-删除
+     * 鐘讹拷 0-鑽夌, 1-涓婃灦, 2-涓嬫灦, 3-鍒犻櫎
      */
     @Field(type = FieldType.Integer)
     private Integer status;
 
     /**
-     * 发布时间
+     * 鍙戝竷鏃堕棿
      */
     @Field(type = FieldType.Date)
     private LocalDateTime publishedAt;
 
     /**
-     * 创建时间
+     * 鍒涘缓鏃堕棿
      */
     @Field(type = FieldType.Date)
     private LocalDateTime createTime;
 
     /**
-     * 更新时间（用于排序）
+     * 鏇存柊鏃堕棿锛堢敤浜庢帓搴忥級
      */
     @Field(type = FieldType.Date)
     private LocalDateTime updateTime;

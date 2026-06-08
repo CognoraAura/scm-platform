@@ -6,9 +6,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * 库存调整请求
+ * 搴撳瓨璋冩暣璇锋眰
  *
- * <p>用于各种库存操作：入库、出库、盘点调整等
+ * <p>鐢ㄤ簬鍚勭搴撳瓨鎿嶄綔锛氬叆搴撱€佸嚭搴撱€佺洏鐐硅皟鏁寸瓑
  *
  * @author SCM Platform Team
  * @since 2025-12-26
@@ -19,49 +19,49 @@ public class InventoryAdjustRequest {
   /**
    * SKU ID
    */
-  @NotBlank(message = "SKU ID 不能为空")
+  @NotBlank(message = "SKU ID 涓嶈兘涓虹┖")
   private String skuId;
 
   /**
-   * 仓库 ID
+   * 浠撳簱 ID
    */
-  @NotBlank(message = "仓库 ID 不能为空")
+  @NotBlank(message = "浠撳簱 ID 涓嶈兘涓虹┖")
   private String warehouseId;
 
   /**
-   * 调整数量（正数为增加，负数为减少�
+   * 璋冩暣鏁伴噺锛堟鏁颁负澧炲姞锛岃礋鏁颁负鍑忓皯锟?
    */
-  @NotNull(message = "调整数量不能为空")
+  @NotNull(message = "璋冩暣鏁伴噺涓嶈兘涓虹┖")
   private Integer quantity;
 
   /**
-   * 调整类型�-入库, 2-出库, 6-盘点调整, 7-调拨�
+   * 璋冩暣绫诲瀷锟?鍏ュ簱, 2-鍑哄簱, 6-鐩樼偣璋冩暣, 7-璋冩嫧锟?
    */
-  @NotNull(message = "调整类型不能为空")
+  @NotNull(message = "璋冩暣绫诲瀷涓嶈兘涓虹┖")
   private Integer adjustType;
 
   /**
-   * 关联业务单号（采购单号、销售单号等�
+   * 鍏宠仈涓氬姟鍗曞彿锛堥噰璐崟鍙枫€侀攢鍞崟鍙风瓑锟?
    */
   private String referenceNo;
 
   /**
-   * 关联业务 ID
+   * 鍏宠仈涓氬姟 ID
    */
   private String referenceId;
 
   /**
-   * 操作�ID
+   * 鎿嶄綔锟絀D
    */
   private String operatorId;
 
   /**
-   * 操作人姓�
+   * 鎿嶄綔浜哄锟?
    */
   private String operatorName;
 
   /**
-   * 备注
+   * 澶囨敞
    */
   private String remark;
 }

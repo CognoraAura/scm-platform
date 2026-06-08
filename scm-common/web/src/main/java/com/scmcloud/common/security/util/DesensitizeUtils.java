@@ -1,7 +1,7 @@
 package com.scmcloud.common.security.util;
 
 /**
- * 数据脱敏工具�
+ * 鏁版嵁鑴辨晱宸ュ叿锟?
  *
  * @author Deng
  * createData 2025/10/15 14:42
@@ -10,7 +10,7 @@ package com.scmcloud.common.security.util;
 public class DesensitizeUtils {
 
     /**
-     * 手机号脱�
+     * 鎵嬫満鍙疯劚锟?
      * 138****1234
      */
     public static String maskPhone(String phone) {
@@ -21,7 +21,7 @@ public class DesensitizeUtils {
     }
 
     /**
-     * 身份证脱�
+     * 韬唤璇佽劚锟?
      * 110101********1234
      */
     public static String maskIdCard(String idCard) {
@@ -32,7 +32,7 @@ public class DesensitizeUtils {
     }
 
     /**
-     * 邮箱脱敏
+     * 閭鑴辨晱
      * abc****@example.com
      */
     public static String maskEmail(String email) {
@@ -48,7 +48,7 @@ public class DesensitizeUtils {
     }
 
     /**
-     * 银行卡脱�
+     * 閾惰鍗¤劚锟?
      * 6222 **** **** 1234
      */
     public static String maskBankCard(String bankCard) {
@@ -59,8 +59,8 @@ public class DesensitizeUtils {
     }
 
     /**
-     * 姓名脱敏
-     * �*
+     * 濮撳悕鑴辨晱
+     * 锟?
      */
     public static String maskName(String name) {
         if (name == null || name.isEmpty()) {
@@ -76,8 +76,8 @@ public class DesensitizeUtils {
     }
 
     /**
-     * 地址脱敏
-     * 保留省市，详细地址脱敏
+     * 鍦板潃鑴辨晱
+     * 淇濈暀鐪佸競锛岃缁嗗湴鍧€鑴辨晱
      */
     public static String maskAddress(String address) {
         if (address == null || address.length() <= 6) {
@@ -87,16 +87,16 @@ public class DesensitizeUtils {
     }
 
     /**
-     * 敏感信息脱敏
+     * 鏁忔劅淇℃伅鑴辨晱
      */
     public static String desensitize(String content) {
         if (content == null) return null;
 
-        // 脱敏密码字段
+        // 鑴辨晱瀵嗙爜瀛楁
         content = content.replaceAll("(\"password\"\\s*:\\s*\")([^\"]+)(\")", "$1******$3");
-        // 脱敏身份�
+        // 鑴辨晱韬唤锟?
         content = content.replaceAll("(\"idCard\"\\s*:\\s*\")([^\"]+)(\")", "$1****$3");
-        // 脱敏手机�
+        // 鑴辨晱鎵嬫満锟?
         content = content.replaceAll("(\"phone\"\\s*:\\s*\")([^\"]+)(\")", "$1****$3");
 
         return content;

@@ -12,7 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * 基础测试类示�
+ * 鍩虹娴嬭瘯绫荤ず锟?
  *
  * @author Deng
  * createData 2025/11/3 10:07
@@ -29,13 +29,13 @@ public class FrogTest {
         System.out.println("passwordEncoder = " +
                 passwordEncoder.matches("D123456", "$2a$10$IksNdaP/LeACZS9H/FATbOOvHVSieAuYurijkhZhJl1r.b14.IUDC"));
 
-        // 查看加密后的数据
+        // 鏌ョ湅鍔犲瘑鍚庣殑鏁版嵁
         String rawPassword = "Greenplate3$$!";
         String encodedPassword = passwordEncoder.encode(rawPassword);
         System.out.println("Raw password: " + rawPassword);
         System.out.println("Encoded password: " + encodedPassword);
         
-        // 验证加密后的密码是否能正确匹配原始密�
+        // 楠岃瘉鍔犲瘑鍚庣殑瀵嗙爜鏄惁鑳芥纭尮閰嶅師濮嬪瘑锟?
         boolean isMatch = passwordEncoder.matches(rawPassword, encodedPassword);
         System.out.println("Password match result: " + isMatch);
     }

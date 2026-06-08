@@ -4,7 +4,7 @@ import java.security.SecureRandom;
 import java.util.regex.Pattern;
 
 /**
- * 密码工具�
+ * 瀵嗙爜宸ュ叿锟?
  *
  * @author Deng
  * createData 2025/10/15 14:41
@@ -22,7 +22,7 @@ public class PasswordUtils {
     private static final SecureRandom RANDOM = new SecureRandom();
 
     /**
-     * 生成随机密码
+     * 鐢熸垚闅忔満瀵嗙爜
      */
     public static String generateRandomPassword(int length) {
         if (length < 8) {
@@ -32,23 +32,23 @@ public class PasswordUtils {
         StringBuilder password = new StringBuilder(length);
         String allChars = UPPER_CASE + LOWER_CASE + DIGITS + SPECIAL_CHARS;
 
-        // 确保至少包含每种类型的字�
+        // 纭繚鑷冲皯鍖呭惈姣忕绫诲瀷鐨勫瓧锟?
         password.append(UPPER_CASE.charAt(RANDOM.nextInt(UPPER_CASE.length())));
         password.append(LOWER_CASE.charAt(RANDOM.nextInt(LOWER_CASE.length())));
         password.append(DIGITS.charAt(RANDOM.nextInt(DIGITS.length())));
         password.append(SPECIAL_CHARS.charAt(RANDOM.nextInt(SPECIAL_CHARS.length())));
 
-        // 填充剩余长度
+        // 濉厖鍓╀綑闀垮害
         for (int i = 4; i < length; i++) {
             password.append(allChars.charAt(RANDOM.nextInt(allChars.length())));
         }
 
-        // 打乱顺序
+        // 鎵撲贡椤哄簭
         return shuffleString(password.toString());
     }
 
     /**
-     * 验证密码强度
+     * 楠岃瘉瀵嗙爜寮哄害
      */
     public static boolean isStrongPassword(String password) {
         if (password == null || password.isEmpty()) {
@@ -58,12 +58,12 @@ public class PasswordUtils {
     }
 
     /**
-     * 获取密码强度等级 (0-4)
-     * 0: 很弱
-     * 1: �
-     * 2: 中等
-     * 3: �
-     * 4: 很强
+     * 鑾峰彇瀵嗙爜寮哄害绛夌骇 (0-4)
+     * 0: 寰堝急
+     * 1: 锟?
+     * 2: 涓瓑
+     * 3: 锟?
+     * 4: 寰堝己
      */
     public static int getPasswordStrength(String password) {
         if (password == null || password.isEmpty()) {
@@ -72,20 +72,20 @@ public class PasswordUtils {
 
         int strength = 0;
 
-        // 长度检�
+        // 闀垮害妫€锟?
         if (password.length() >= 8) strength++;
         if (password.length() >= 12) strength++;
 
-        // 包含小写字母
+        // 鍖呭惈灏忓啓瀛楁瘝
         if (password.matches(".*[a-z].*")) strength++;
 
-        // 包含大写字母
+        // 鍖呭惈澶у啓瀛楁瘝
         if (password.matches(".*[A-Z].*")) strength++;
 
-        // 包含数字
+        // 鍖呭惈鏁板瓧
         if (password.matches(".*\\d.*")) strength++;
 
-        // 包含特殊字符
+        // 鍖呭惈鐗规畩瀛楃
         if (password.matches(".*[@#$%^&+=!].*")) strength++;
 
         return Math.min(strength / 2, 4);

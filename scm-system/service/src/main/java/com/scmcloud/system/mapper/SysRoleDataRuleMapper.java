@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 角色数据权限规则关联 Mapper 接口
+ * 瑙掕壊鏁版嵁鏉冮檺瑙勫垯鍏宠仈 Mapper 鎺ュ彛
  *
  * @author Deng
  * @since 2025-12-15
@@ -19,7 +19,7 @@ import java.util.UUID;
 public interface SysRoleDataRuleMapper extends BaseMapper<SysRoleDataRule> {
 
     /**
-     * 根据角色 ID查询规则ID列表
+     * 鏍规嵁瑙掕壊 ID鏌ヨ瑙勫垯ID鍒楄〃
      */
     @Select("""
             SELECT rule_id FROM sys_role_data_rule
@@ -28,7 +28,7 @@ public interface SysRoleDataRuleMapper extends BaseMapper<SysRoleDataRule> {
     List<UUID> findRuleIdsByRoleId(@Param("roleId") UUID roleId);
 
     /**
-     * 删除角色的所有规则关�
+     * 鍒犻櫎瑙掕壊鐨勬墍鏈夎鍒欏叧锟?
      */
     @Delete("""
             DELETE FROM sys_role_data_rule
@@ -37,7 +37,7 @@ public interface SysRoleDataRuleMapper extends BaseMapper<SysRoleDataRule> {
     int deleteByRoleId(@Param("roleId") UUID roleId);
 
     /**
-     * 删除规则的所有角色关�
+     * 鍒犻櫎瑙勫垯鐨勬墍鏈夎鑹插叧锟?
      */
     @Delete("""
             DELETE FROM sys_role_data_rule
@@ -46,7 +46,7 @@ public interface SysRoleDataRuleMapper extends BaseMapper<SysRoleDataRule> {
     int deleteByRuleId(@Param("ruleId") UUID ruleId);
 
     /**
-     * 批量插入角色规则关联
+     * 鎵归噺鎻掑叆瑙掕壊瑙勫垯鍏宠仈
      */
     @Insert("""
             <script>
@@ -61,7 +61,7 @@ public interface SysRoleDataRuleMapper extends BaseMapper<SysRoleDataRule> {
                     @Param("createBy") UUID createBy);
 
     /**
-     * 检查角色是否已关联规则
+     * 妫€鏌ヨ鑹叉槸鍚﹀凡鍏宠仈瑙勫垯
      */
     @Select("""
             SELECT COUNT(*) > 0 FROM sys_role_data_rule
@@ -70,9 +70,9 @@ public interface SysRoleDataRuleMapper extends BaseMapper<SysRoleDataRule> {
     boolean exists(@Param("roleId") UUID roleId, @Param("ruleId") UUID ruleId);
 
     /**
-     * 删除角色数据权限规则关联
+     * 鍒犻櫎瑙掕壊鏁版嵁鏉冮檺瑙勫垯鍏宠仈
      * <p>
-     * 用于删除角色时清理数据权限规则关�
+     * 鐢ㄤ簬鍒犻櫎瑙掕壊鏃舵竻鐞嗘暟鎹潈闄愯鍒欏叧锟?
      */
     @Delete("""
             DELETE FROM sys_role_data_rule

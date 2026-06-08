@@ -3,7 +3,7 @@ package com.scmcloud.common.exception;
 import lombok.Getter;
 
 /**
- * 业务异常�
+ * 涓氬姟寮傚父锟?
  *
  * @author Deng
  * createData 2025/10/16 15:38

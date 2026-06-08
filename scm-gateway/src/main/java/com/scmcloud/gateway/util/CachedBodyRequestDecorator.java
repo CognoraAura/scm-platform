@@ -11,7 +11,7 @@ import reactor.core.publisher.Flux;
 
 /**
  * Simple request decorator that keeps a copy of the request body for multiple reads.
- * 简单的请求装饰器，保留请求正文的副本以供多次读取�
+ * 绠€鍗曠殑璇锋眰瑁呴グ鍣紝淇濈暀璇锋眰姝ｆ枃鐨勫壇鏈互渚涘娆¤鍙栵拷
  *
  * <p>Performance optimization: Uses read-only mode by default to avoid unnecessary defensive copies.
  * For scenarios requiring mutable buffers, use {@code readOnly = false}.

@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- *敏感字段加密拦截�
+ *鏁忔劅瀛楁鍔犲瘑鎷︽埅锟?
  *
  * @author Deng
  * createData 2025/10/24 15:09
@@ -48,7 +48,7 @@ public class EncryptionInterceptor implements Interceptor {
     public Object intercept(Invocation invocation) throws Throwable {
         Object target = invocation.getTarget();
 
-        // 插入/更新时加�
+        // 鎻掑叆/鏇存柊鏃跺姞锟?
         if (target instanceof StatementHandler handler) {
             BoundSql boundSql = handler.getBoundSql();
             Object parameterObject = boundSql.getParameterObject();
@@ -65,7 +65,7 @@ public class EncryptionInterceptor implements Interceptor {
             }
         }
 
-        // 查询时解�
+        // 鏌ヨ鏃惰В锟?
         if (target instanceof ResultSetHandler ) {
             Object result = invocation.proceed();
             if (result instanceof List<?> list) {
@@ -82,7 +82,7 @@ public class EncryptionInterceptor implements Interceptor {
     }
 
     /**
-     * 加密字段
+     * 鍔犲瘑瀛楁
      */
     private void encryptFields(Object obj) throws IllegalAccessException {
         if (obj == null) return;
@@ -102,7 +102,7 @@ public class EncryptionInterceptor implements Interceptor {
     }
 
     /**
-     * 解密字段
+     * 瑙ｅ瘑瀛楁
      */
     private void decryptFields(Object obj) throws IllegalAccessException {
         if (obj == null) return;

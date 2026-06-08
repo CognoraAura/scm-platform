@@ -22,7 +22,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
 
     @Override
     public List<Invoice> listByPartyId(String partyId) {
-        log.debug("按往来方查询发票: partyId={}", partyId);
+        log.debug("鎸夊線鏉ユ柟鏌ヨ鍙戠エ: partyId={}", partyId);
         LambdaQueryWrapper<Invoice> wrapper = Wrappers.lambdaQuery();
         wrapper.eq(StringUtils.hasText(partyId), Invoice::getPartyId, partyId)
                 .eq(Invoice::getDeleted, false)
@@ -33,14 +33,14 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Invoice issueInvoice(String id, String issuerName) {
-        log.info("开具发� id={}, issuer={}", id, issuerName);
+        log.info("寮€鍏峰彂锟?id={}, issuer={}", id, issuerName);
 
         Invoice invoice = getById(id);
         if (invoice == null || Boolean.TRUE.equals(invoice.getDeleted())) {
-            throw new IllegalArgumentException("发票不存� " + id);
+            throw new IllegalArgumentException("鍙戠エ涓嶅瓨锟?" + id);
         }
         if (invoice.getStatus() != 0) {
-            throw new IllegalStateException("只有草稿状态的发票才能开� 当前状� " + invoice.getStatus());
+            throw new IllegalStateException("鍙湁鑽夌鐘舵€佺殑鍙戠エ鎵嶈兘寮€锟?褰撳墠鐘讹拷 " + invoice.getStatus());
         }
 
         invoice.setStatus(1);
@@ -50,49 +50,49 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         invoice.setUpdateBy(issuerName);
 
         updateById(invoice);
-        log.info("发票开具成� id={}, invoiceNo={}", id, invoice.getInvoiceNo());
+        log.info("鍙戠エ寮€鍏锋垚锟?id={}, invoiceNo={}", id, invoice.getInvoiceNo());
         return invoice;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Invoice voidInvoice(String id) {
-        log.info("作废发票: id={}", id);
+        log.info("浣滃簾鍙戠エ: id={}", id);
 
         Invoice invoice = getById(id);
         if (invoice == null || Boolean.TRUE.equals(invoice.getDeleted())) {
-            throw new IllegalArgumentException("发票不存� " + id);
+            throw new IllegalArgumentException("鍙戠エ涓嶅瓨锟?" + id);
         }
         if (invoice.getStatus() == 3 || invoice.getStatus() == 4) {
-            throw new IllegalStateException("发票已作废或已红� 不能再次作废");
+            throw new IllegalStateException("鍙戠エ宸蹭綔搴熸垨宸茬孩锟?涓嶈兘鍐嶆浣滃簾");
         }
 
         invoice.setStatus(3);
         invoice.setUpdateTime(LocalDateTime.now());
 
         updateById(invoice);
-        log.info("发票作废成功: id={}", id);
+        log.info("鍙戠エ浣滃簾鎴愬姛: id={}", id);
         return invoice;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Invoice redFlushInvoice(String id) {
-        log.info("红冲发票: id={}", id);
+        log.info("绾㈠啿鍙戠エ: id={}", id);
 
         Invoice invoice = getById(id);
         if (invoice == null || Boolean.TRUE.equals(invoice.getDeleted())) {
-            throw new IllegalArgumentException("发票不存� " + id);
+            throw new IllegalArgumentException("鍙戠エ涓嶅瓨锟?" + id);
         }
         if (invoice.getStatus() != 1 && invoice.getStatus() != 2) {
-            throw new IllegalStateException("只有已开具或已邮寄的发票才能红冲, 当前状� " + invoice.getStatus());
+            throw new IllegalStateException("鍙湁宸插紑鍏锋垨宸查偖瀵勭殑鍙戠エ鎵嶈兘绾㈠啿, 褰撳墠鐘讹拷 " + invoice.getStatus());
         }
 
         invoice.setStatus(4);
         invoice.setUpdateTime(LocalDateTime.now());
 
         updateById(invoice);
-        log.info("发票红冲成功: id={}", id);
+        log.info("鍙戠エ绾㈠啿鎴愬姛: id={}", id);
         return invoice;
     }
 }

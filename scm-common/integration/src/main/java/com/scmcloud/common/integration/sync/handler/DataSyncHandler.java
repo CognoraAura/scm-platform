@@ -4,40 +4,40 @@ import com.scmcloud.common.integration.sync.event.DataSyncEvent;
 import lombok.Getter;
 
 /**
- * 数据同步处理器接�
+ * 鏁版嵁鍚屾澶勭悊鍣ㄦ帴锟?
  * <p>
- * 每个聚合类型实现自己的处理器
+ * 姣忎釜鑱氬悎绫诲瀷瀹炵幇鑷繁鐨勫鐞嗗櫒
  *
  * @author Deng
  * @since 2025-12-16
  */
 public interface DataSyncHandler {
     /**
-     * 获取处理的聚合类�
+     * 鑾峰彇澶勭悊鐨勮仛鍚堢被锟?
      *
-     * @return 聚合类型（如 User, Dept, Role�
+     * @return 鑱氬悎绫诲瀷锛堝 User, Dept, Role锟?
      */
     String getAggregateType();
 
     /**
-     * 处理同步事件
+     * 澶勭悊鍚屾浜嬩欢
      *
-     * @param event 同步事件
-     * @throws DataSyncException 处理失败时抛�
+     * @param event 鍚屾浜嬩欢
+     * @throws DataSyncException 澶勭悊澶辫触鏃舵姏锟?
      */
     void handle(DataSyncEvent event) throws DataSyncException;
 
     /**
-     * 全量同步（对账修复时调用�
+     * 鍏ㄩ噺鍚屾锛堝璐︿慨澶嶆椂璋冪敤锟?
      *
-     * @param primaryId 主键 ID
+     * @param primaryId 涓婚敭 ID
      */
     default void fullSync(String primaryId) {
-        // 默认空实�
+        // 榛樿绌哄疄锟?
     }
 
     /**
-     * 数据同步异常
+     * 鏁版嵁鍚屾寮傚父
      */
     @Getter
     class DataSyncException extends RuntimeException {

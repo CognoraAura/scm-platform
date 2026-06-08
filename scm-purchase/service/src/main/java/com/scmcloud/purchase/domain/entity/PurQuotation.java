@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 供应商报价单�
+ * 渚涘簲鍟嗘姤浠峰崟锟?
  * </p>
  *
  * @author deng

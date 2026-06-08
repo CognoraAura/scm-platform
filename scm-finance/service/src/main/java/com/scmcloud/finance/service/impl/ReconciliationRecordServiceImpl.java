@@ -20,7 +20,7 @@ public class ReconciliationRecordServiceImpl extends ServiceImpl<ReconciliationR
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ReconciliationRecord createReconciliation(ReconciliationRecord record) {
-        log.info("创建对账记录: partyName={}, period={}", record.getPartyName(), record.getReconciliationPeriod());
+        log.info("鍒涘缓瀵硅处璁板綍: partyName={}, period={}", record.getPartyName(), record.getReconciliationPeriod());
 
         record.setId(UUIDv7Util.generateString());
         record.setReconciliationNo(generateReconciliationNo());
@@ -40,24 +40,24 @@ public class ReconciliationRecordServiceImpl extends ServiceImpl<ReconciliationR
 
         boolean success = save(record);
         if (!success) {
-            throw new RuntimeException("创建对账记录失败");
+            throw new RuntimeException("鍒涘缓瀵硅处璁板綍澶辫触");
         }
 
-        log.info("对账记录创建成功: id={}, reconciliationNo={}", record.getId(), record.getReconciliationNo());
+        log.info("瀵硅处璁板綍鍒涘缓鎴愬姛: id={}, reconciliationNo={}", record.getId(), record.getReconciliationNo());
         return record;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ReconciliationRecord reconcile(String id, String reconcilerId, String reconcilerName) {
-        log.info("执行对账: id={}, reconciler={}", id, reconcilerName);
+        log.info("鎵ц瀵硅处: id={}, reconciler={}", id, reconcilerName);
 
         ReconciliationRecord record = getById(id);
         if (record == null || Boolean.TRUE.equals(record.getDeleted())) {
-            throw new IllegalArgumentException("对账记录不存� " + id);
+            throw new IllegalArgumentException("瀵硅处璁板綍涓嶅瓨锟?" + id);
         }
         if (record.getStatus() != 0) {
-            throw new IllegalStateException("只有待对账状态的记录才能对账, 当前状� " + record.getStatus());
+            throw new IllegalStateException("鍙湁寰呭璐︾姸鎬佺殑璁板綍鎵嶈兘瀵硅处, 褰撳墠鐘讹拷 " + record.getStatus());
         }
 
         record.setStatus(1);
@@ -68,25 +68,25 @@ public class ReconciliationRecordServiceImpl extends ServiceImpl<ReconciliationR
 
         if (Boolean.TRUE.equals(record.getHasDiff())) {
             record.setStatus(3);
-            log.warn("对账存在差异: id={}, diffAmount={}", id, record.getDiffAmount());
+            log.warn("瀵硅处瀛樺湪宸紓: id={}, diffAmount={}", id, record.getDiffAmount());
         }
 
         updateById(record);
-        log.info("对账完成: id={}, status={}", id, record.getStatus());
+        log.info("瀵硅处瀹屾垚: id={}, status={}", id, record.getStatus());
         return record;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ReconciliationRecord confirm(String id, String confirmerId, String confirmerName) {
-        log.info("确认对账: id={}, confirmer={}", id, confirmerName);
+        log.info("纭瀵硅处: id={}, confirmer={}", id, confirmerName);
 
         ReconciliationRecord record = getById(id);
         if (record == null || Boolean.TRUE.equals(record.getDeleted())) {
-            throw new IllegalArgumentException("对账记录不存� " + id);
+            throw new IllegalArgumentException("瀵硅处璁板綍涓嶅瓨锟?" + id);
         }
         if (record.getStatus() != 1 && record.getStatus() != 3) {
-            throw new IllegalStateException("只有已对账或有差异状态的记录才能确认, 当前状� " + record.getStatus());
+            throw new IllegalStateException("鍙湁宸插璐︽垨鏈夊樊寮傜姸鎬佺殑璁板綍鎵嶈兘纭, 褰撳墠鐘讹拷 " + record.getStatus());
         }
 
         record.setStatus(2);
@@ -96,18 +96,18 @@ public class ReconciliationRecordServiceImpl extends ServiceImpl<ReconciliationR
         record.setUpdateTime(LocalDateTime.now());
 
         updateById(record);
-        log.info("对账确认成功: id={}", id);
+        log.info("瀵硅处纭鎴愬姛: id={}", id);
         return record;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ReconciliationRecord markAsDiff(String id, String diffReason) {
-        log.info("标记对账差异: id={}, reason={}", id, diffReason);
+        log.info("鏍囪瀵硅处宸紓: id={}, reason={}", id, diffReason);
 
         ReconciliationRecord record = getById(id);
         if (record == null || Boolean.TRUE.equals(record.getDeleted())) {
-            throw new IllegalArgumentException("对账记录不存� " + id);
+            throw new IllegalArgumentException("瀵硅处璁板綍涓嶅瓨锟?" + id);
         }
 
         record.setStatus(3);
@@ -116,7 +116,7 @@ public class ReconciliationRecordServiceImpl extends ServiceImpl<ReconciliationR
         record.setUpdateTime(LocalDateTime.now());
 
         updateById(record);
-        log.info("对账差异标记成功: id={}", id);
+        log.info("瀵硅处宸紓鏍囪鎴愬姛: id={}", id);
         return record;
     }
 

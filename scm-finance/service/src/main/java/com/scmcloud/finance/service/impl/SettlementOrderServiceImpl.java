@@ -28,7 +28,7 @@ public class SettlementOrderServiceImpl extends ServiceImpl<SettlementOrderMappe
     @Override
     @Transactional(rollbackFor = Exception.class)
     public SettlementOrder createSettlement(SettlementOrder order) {
-        log.info("创建结算� partnerName={}, settlementType={}", order.getPartnerName(), order.getSettlementType());
+        log.info("鍒涘缓缁撶畻锟?partnerName={}, settlementType={}", order.getPartnerName(), order.getSettlementType());
 
         order.setId(UUIDv7Util.generateString());
         order.setSettlementNo(generateSettlementNo());
@@ -41,21 +41,21 @@ public class SettlementOrderServiceImpl extends ServiceImpl<SettlementOrderMappe
 
         boolean success = save(order);
         if (!success) {
-            throw new RuntimeException("创建结算单失败");
+            throw new RuntimeException("鍒涘缓缁撶畻鍗曞け璐?);
         }
 
-        log.info("结算单创建成功 id={}, settlementNo={}", order.getId(), order.getSettlementNo());
+        log.info("缁撶畻鍗曞垱寤烘垚鍔?id={}, settlementNo={}", order.getId(), order.getSettlementNo());
         return order;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public SettlementOrder confirmSettlement(String id, String approverId, String approverName) {
-        log.info("确认结算� id={}, approver={}", id, approverName);
+        log.info("纭缁撶畻锟?id={}, approver={}", id, approverName);
 
         SettlementOrder order = getById(id);
         if (order == null || Boolean.TRUE.equals(order.getDeleted())) {
-            throw new IllegalArgumentException("结算单不存在: " + id);
+            throw new IllegalArgumentException("缁撶畻鍗曚笉瀛樺湪: " + id);
         }
         statusValidator.validateTransition("SETTLEMENT", "DRAFT", "CONFIRMED");
 
@@ -66,27 +66,27 @@ public class SettlementOrderServiceImpl extends ServiceImpl<SettlementOrderMappe
         order.setUpdateTime(LocalDateTime.now());
 
         updateById(order);
-        log.info("结算单确认成� id={}", id);
+        log.info("缁撶畻鍗曠‘璁ゆ垚锟?id={}", id);
         return order;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public SettlementOrder recordPayment(String id, BigDecimal amount) {
-        log.info("记录结算单付� id={}, amount={}", id, amount);
+        log.info("璁板綍缁撶畻鍗曚粯锟?id={}, amount={}", id, amount);
 
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("付款金额必须大于0");
+            throw new IllegalArgumentException("浠樻閲戦蹇呴』澶т簬0");
         }
 
         SettlementOrder order = getById(id);
         if (order == null || Boolean.TRUE.equals(order.getDeleted())) {
-            throw new IllegalArgumentException("结算单不存在: " + id);
+            throw new IllegalArgumentException("缁撶畻鍗曚笉瀛樺湪: " + id);
         }
         BigDecimal newPaidAmount = order.getPaidAmount().add(amount);
         if (newPaidAmount.compareTo(order.getActualAmount()) > 0) {
             throw new IllegalArgumentException(
-                    String.format("付款金额超出应付金额: 已付=%s, 本次=%s, 应付=%s",
+                    String.format("浠樻閲戦瓒呭嚭搴斾粯閲戦: 宸蹭粯=%s, 鏈=%s, 搴斾粯=%s",
                             order.getPaidAmount(), amount, order.getActualAmount()));
         }
 
@@ -99,10 +99,10 @@ public class SettlementOrderServiceImpl extends ServiceImpl<SettlementOrderMappe
 
         if (order.getUnpaidAmount().compareTo(BigDecimal.ZERO) == 0) {
             order.setStatus(4);
-            log.info("结算单已全额付款: id={}", id);
+            log.info("缁撶畻鍗曞凡鍏ㄩ浠樻: id={}", id);
         } else {
             order.setStatus(3);
-            log.info("结算单部分付� id={}, paid={}, unpaid={}", id, newPaidAmount, order.getUnpaidAmount());
+            log.info("缁撶畻鍗曢儴鍒嗕粯锟?id={}, paid={}, unpaid={}", id, newPaidAmount, order.getUnpaidAmount());
         }
 
         updateById(order);
@@ -111,7 +111,7 @@ public class SettlementOrderServiceImpl extends ServiceImpl<SettlementOrderMappe
 
     @Override
     public Page<SettlementOrder> listByStatus(Integer status, int page, int size) {
-        log.debug("按状态查询结算单: status={}, page={}, size={}", status, page, size);
+        log.debug("鎸夌姸鎬佹煡璇㈢粨绠楀崟: status={}, page={}, size={}", status, page, size);
         LambdaQueryWrapper<SettlementOrder> wrapper = Wrappers.lambdaQuery();
         if (status != null) {
             wrapper.eq(SettlementOrder::getStatus, status);
@@ -132,7 +132,7 @@ public class SettlementOrderServiceImpl extends ServiceImpl<SettlementOrderMappe
             case 2 -> "PARTIAL_PAID";
             case 3 -> "FULLY_PAID";
             case 4 -> "CLOSED";
-            default -> throw new IllegalStateException("未知的结算单状态: " + status);
+            default -> throw new IllegalStateException("鏈煡鐨勭粨绠楀崟鐘舵€? " + status);
         };
     }
 }

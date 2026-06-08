@@ -8,17 +8,17 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * 库存服务启动�
+ * 搴撳瓨鏈嶅姟鍚姩锟?
  *
- * <p>库存服务负责�
+ * <p>搴撳瓨鏈嶅姟璐熻矗锟?
  * <ul>
- *     <li>库存管理（查询、调整、转移）</li>
- *     <li>库存预占与释放（订单场景�/li>
- *     <li>库存告警（低库存、缺货）</li>
- *     <li>库存快照（每日统计）</li>
- *     <li>库存日志（审计追踪）</li>
- *     <li>Redis 缓存�Lua 脚本防超�/li>
- *     <li>分布式锁（库存并发控制）</li>
+ *     <li>搴撳瓨绠＄悊锛堟煡璇€佽皟鏁淬€佽浆绉伙級</li>
+ *     <li>搴撳瓨棰勫崰涓庨噴鏀撅紙璁㈠崟鍦烘櫙锟?li>
+ *     <li>搴撳瓨鍛婅锛堜綆搴撳瓨銆佺己璐э級</li>
+ *     <li>搴撳瓨蹇収锛堟瘡鏃ョ粺璁★級</li>
+ *     <li>搴撳瓨鏃ュ織锛堝璁¤拷韪級</li>
+ *     <li>Redis 缂撳瓨锟絃ua 鑴氭湰闃茶秴锟?li>
+ *     <li>鍒嗗竷寮忛攣锛堝簱瀛樺苟鍙戞帶鍒讹級</li>
  * </ul>
  *
  * @author SCM Platform Team
@@ -36,18 +36,18 @@ public class InventoryServiceApplication {
     System.out.println("""
 
         ========================================
-        �库存服务启动成功 (Inventory Service)
+        锟藉簱瀛樻湇鍔″惎鍔ㄦ垚鍔?(Inventory Service)
         ========================================
-        服务端口: 8202
-        API 文档: http://localhost:8202/doc.html
-        健康检� http://localhost:8202/actuator/health
+        鏈嶅姟绔彛: 8202
+        API 鏂囨。: http://localhost:8202/doc.html
+        鍋ュ悍妫€锟?http://localhost:8202/actuator/health
         ========================================
-        功能特�
-        - 库存 CRUD 与分页查�
-        - 库存调整与仓库间调拨
-        - Redis 缓存 + Lua 脚本防超�
-        - 分布式锁（并发控制）
-        - TCC 分布式事务支�
+        鍔熻兘鐗癸拷
+        - 搴撳瓨 CRUD 涓庡垎椤垫煡锟?
+        - 搴撳瓨璋冩暣涓庝粨搴撻棿璋冩嫧
+        - Redis 缂撳瓨 + Lua 鑴氭湰闃茶秴锟?
+        - 鍒嗗竷寮忛攣锛堝苟鍙戞帶鍒讹級
+        - TCC 鍒嗗竷寮忎簨鍔℃敮锟?
         ========================================
         """);
   }

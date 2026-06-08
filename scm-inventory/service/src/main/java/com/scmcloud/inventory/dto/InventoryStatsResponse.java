@@ -5,9 +5,9 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 /**
- * 库存统计响应
+ * 搴撳瓨缁熻鍝嶅簲
  *
- * <p>提供全局库存统计信息
+ * <p>鎻愪緵鍏ㄥ眬搴撳瓨缁熻淇℃伅
  *
  * @author SCM Platform Team
  * @since 2025-12-26
@@ -16,52 +16,52 @@ import java.math.BigDecimal;
 public class InventoryStatsResponse {
 
   /**
-   * SKU 总数
+   * SKU 鎬绘暟
    */
   private Long totalSkuCount;
 
   /**
-   * 仓库总数
+   * 浠撳簱鎬绘暟
    */
   private Long totalWarehouseCount;
 
   /**
-   * 总库存数�
+   * 鎬诲簱瀛樻暟锟?
    */
   private Long totalStockQuantity;
 
   /**
-   * 可用库存数量
+   * 鍙敤搴撳瓨鏁伴噺
    */
   private Long availableStockQuantity;
 
   /**
-   * 锁定库存数量
+   * 閿佸畾搴撳瓨鏁伴噺
    */
   private Long lockedStockQuantity;
 
   /**
-   * 损坏库存数量
+   * 鎹熷潖搴撳瓨鏁伴噺
    */
   private Long damagedStockQuantity;
 
   /**
-   * 库存总价�
+   * 搴撳瓨鎬讳环锟?
    */
   private BigDecimal totalStockValue;
 
   /**
-   * 缺货 SKU 数量
+   * 缂鸿揣 SKU 鏁伴噺
    */
   private Long outOfStockCount;
 
   /**
-   * 低库�SKU 数量
+   * 浣庡簱锟絊KU 鏁伴噺
    */
   private Long lowStockCount;
 
   /**
-   * 正常库存 SKU 数量
+   * 姝ｅ父搴撳瓨 SKU 鏁伴噺
    */
   private Long normalStockCount;
 }

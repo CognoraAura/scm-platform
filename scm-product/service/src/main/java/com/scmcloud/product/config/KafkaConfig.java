@@ -15,9 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Kafka 配置�
+ * Kafka 閰嶇疆锟?
  *
- * <p>配置 Kafka Consumer 用于接收 Debezium 变更事件
+ * <p>閰嶇疆 Kafka Consumer 鐢ㄤ簬鎺ユ敹 Debezium 鍙樻洿浜嬩欢
  *
  * @author SCM Platform Team
  * @since 2025-12-26
@@ -39,44 +39,44 @@ public class KafkaConfig {
     private Boolean enableAutoCommit;
 
     /**
-     * Kafka Consumer 工厂
+     * Kafka Consumer 宸ュ巶
      */
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
 
-        // Kafka 集群地址
+        // Kafka 闆嗙兢鍦板潃
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 
-        // 消费者组 ID
+        // 娑堣垂鑰呯粍 ID
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
 
-        // 自动提交偏移量（设置�false，手动提交）
+        // 鑷姩鎻愪氦鍋忕Щ閲忥紙璁剧疆锟絝alse锛屾墜鍔ㄦ彁浜わ級
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, enableAutoCommit);
 
-        // 偏移量重置策略（earliest: 从最早的消息开始消费）
+        // 鍋忕Щ閲忛噸缃瓥鐣ワ紙earliest: 浠庢渶鏃╃殑娑堟伅寮€濮嬫秷璐癸級
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset);
 
-        // Key 反序列化�
+        // Key 鍙嶅簭鍒楀寲锟?
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
-        // Value 反序列化�
+        // Value 鍙嶅簭鍒楀寲锟?
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
-        // 单次拉取最大消息数
+        // 鍗曟鎷夊彇鏈€澶ф秷鎭暟
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100);
 
-        // 会话超时时间�0 秒）
+        // 浼氳瘽瓒呮椂鏃堕棿锟? 绉掞級
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10000);
 
-        // 心跳间隔� 秒）
+        // 蹇冭烦闂撮殧锟?绉掞級
         props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 3000);
 
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
     /**
-     * Kafka Listener 容器工厂
+     * Kafka Listener 瀹瑰櫒宸ュ巶
      */
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
@@ -85,13 +85,13 @@ public class KafkaConfig {
 
         factory.setConsumerFactory(consumerFactory());
 
-        // 设置并发级别（线程数�
+        // 璁剧疆骞跺彂绾у埆锛堢嚎绋嬫暟锟?
         factory.setConcurrency(3);
 
-        // 设置手动提交模式
+        // 璁剧疆鎵嬪姩鎻愪氦妯″紡
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
 
-        // 设置批量监听（可选）
+        // 璁剧疆鎵归噺鐩戝惉锛堝彲閫夛級
         // factory.setBatchListener(true);
 
         return factory;

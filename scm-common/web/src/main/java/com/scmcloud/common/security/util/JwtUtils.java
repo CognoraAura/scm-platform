@@ -21,7 +21,7 @@ import java.time.Duration;
 import java.util.*;
 
 /**
- * Jwt 工具�
+ * Jwt 宸ュ叿锟?
  *
  * @author Deng
  * createData 2025/10/11 11:08
@@ -82,7 +82,7 @@ public class JwtUtils {
     }
 
     /**
-     * 生成访问令牌
+     * 鐢熸垚璁块棶浠ょ墝
      */
     public String generateAccessToken(UUID userId, String username, Set<String> roles, Set<String> permissions,
                                       String deviceId, String ipAddress) {
@@ -90,7 +90,7 @@ public class JwtUtils {
     }
 
     /**
-     * 生成访问令牌（可指定 AMR�
+     * 鐢熸垚璁块棶浠ょ墝锛堝彲鎸囧畾 AMR锟?
      */
     public String generateAccessToken(UUID userId, String username, Set<String> roles, Set<String> permissions,
                                       String deviceId, String ipAddress, List<String> amr) {
@@ -107,14 +107,14 @@ public class JwtUtils {
 
         String token = createToken(claims, userId.toString(), jwtProperties.getExpiration());
 
-        // 存储 Token元数�
+        // 瀛樺偍 Token鍏冩暟锟?
         storeTokenMetadata(userId, deviceId, token, jti, ipAddress, jwtProperties.getExpiration());
 
         return token;
     }
 
     /**
-     * 生成刷新令牌
+     * 鐢熸垚鍒锋柊浠ょ墝
      */
     public String generateRefreshToken(UUID userId, String username, String deviceId) {
         String jti = UUIDv7Util.generateString();
@@ -130,47 +130,47 @@ public class JwtUtils {
     }
 
     /**
-     * 验证Token - 拆分为多个小方法
+     * 楠岃瘉Token - 鎷嗗垎涓哄涓皬鏂规硶
      */
     public boolean validateToken(String token, String currentIp, String currentDeviceId) {
-        // 1. 解析Token
+        // 1. 瑙ｆ瀽Token
         Claims claims = parseToken(token);
         if (claims == null) {
             log.debug("Failed to parse token");
             return false;
         }
 
-        // 2. 基础验证
+        // 2. 鍩虹楠岃瘉
         if (!validateBasicClaims(claims)) {
             return false;
         }
 
-        // 3. 黑名单检�
+        // 3. 榛戝悕鍗曟锟?
         if (isTokenBlacklisted(getJti(claims))) {
             log.warn("Token is blacklisted");
             return false;
         }
 
-        // 4. 设备验证
+        // 4. 璁惧楠岃瘉
         if (!validateDevice(claims, currentDeviceId)) {
             return false;
         }
 
-        // 5. IP验证（可配置�
+        // 5. IP楠岃瘉锛堝彲閰嶇疆锟?
         if (jwtProperties.isStrictIpCheck() &&
                 !validateIpAddress(claims, currentIp)) {
             return false;
         }
 
-        // 6. 指纹验证
+        // 6. 鎸囩汗楠岃瘉
         return validateFingerprint(claims);
     }
 
     /**
-     * 检查刷新令牌是否无�
+     * 妫€鏌ュ埛鏂颁护鐗屾槸鍚︽棤锟?
      *
-     * @param token 刷新令牌
-     * @return true 如果令牌无效，false 如果令牌有效
+     * @param token 鍒锋柊浠ょ墝
+     * @return true 濡傛灉浠ょ墝鏃犳晥锛宖alse 濡傛灉浠ょ墝鏈夋晥
      */
     public boolean isRefreshTokenInvalid(String token) {
         Claims claims = parseToken(token);
@@ -185,7 +185,7 @@ public class JwtUtils {
     }
 
     /**
-     * 刷新Token - 添加并发控制
+     * 鍒锋柊Token - 娣诲姞骞跺彂鎺у埗
      */
     public String refreshToken(String refreshToken, Set<String> roles, Set<String> permissions, String deviceId,
                                String ipAddress) {
@@ -197,7 +197,7 @@ public class JwtUtils {
         String lockKey = REFRESH_LOCK_PREFIX + userId;
 
         try {
-            // 分布式锁，防止并发刷�
+            // 鍒嗗竷寮忛攣锛岄槻姝㈠苟鍙戝埛锟?
             Boolean acquired = redisTemplate.opsForValue().setIfAbsent(lockKey, "1", Duration.ofSeconds(5));
 
             if (Boolean.FALSE.equals(acquired)) {
@@ -206,10 +206,10 @@ public class JwtUtils {
 
             String username = getUsernameFromToken(refreshToken);
 
-            // 撤销旧的访问令牌
+            // 鎾ら攢鏃х殑璁块棶浠ょ墝
             revokeUserAccessTokens(userId, deviceId);
 
-            // 生成新的访问令牌
+            // 鐢熸垚鏂扮殑璁块棶浠ょ墝
             return generateAccessToken(userId, username, roles, permissions, deviceId, ipAddress);
         } finally {
             redisTemplate.delete(lockKey);
@@ -217,7 +217,7 @@ public class JwtUtils {
     }
 
     /**
-     * 撤销 Token
+     * 鎾ら攢 Token
      * @throws UnauthorizedException if token is invalid or revocation fails
      */
     public void revokeToken(String token, String reason) {
@@ -231,13 +231,13 @@ public class JwtUtils {
         long ttl = expiration.getTime() - System.currentTimeMillis();
         if (ttl > 0) {
             try {
-                // 加入黑名�
+                // 鍔犲叆榛戝悕锟?
                 addToBlacklist(jti, userId, reason, ttl);
 
-                // 删除 Token缓存
+                // 鍒犻櫎 Token缂撳瓨
                 deleteTokenCache(userId, deviceId);
 
-                // 删除指纹
+                // 鍒犻櫎鎸囩汗
                 deleteFingerprint(jti);
 
                 log.info("Token revoked: userId={}, reason={}", userId, reason);
@@ -285,7 +285,7 @@ public class JwtUtils {
     }
 
     /**
-     * �Token中提取角�
+     * 锟絋oken涓彁鍙栬锟?
      */
     @SuppressWarnings("unchecked")
     public Set<String> getRolesFromToken(String token) {
@@ -297,7 +297,7 @@ public class JwtUtils {
     }
 
     /**
-     * �Token中提取权�
+     * 锟絋oken涓彁鍙栨潈锟?
      */
     @SuppressWarnings("unchecked")
     public Set<String> getPermissionsFromToken(String token) {
@@ -332,7 +332,7 @@ public class JwtUtils {
     }
 
     /**
-     * 从Token中提�AMR（认证方法引用）
+     * 浠嶵oken涓彁锟紸MR锛堣璇佹柟娉曞紩鐢級
      */
     @SuppressWarnings("unchecked")
     public Set<String> getAmrFromToken(String token) {
@@ -343,17 +343,17 @@ public class JwtUtils {
         return amr != null ? new HashSet<>(amr) : Collections.emptySet();
     }
 
-    // ==================== 私有方法 ====================
+    // ==================== 绉佹湁鏂规硶 ====================
 
     /**
-     * 清理ThreadLocal缓存（应在请求结束时调用�
+     * 娓呯悊ThreadLocal缂撳瓨锛堝簲鍦ㄨ姹傜粨鏉熸椂璋冪敤锟?
      */
     public static void clearTokenCache() {
         TOKEN_CACHE.remove();
     }
 
     /**
-     * 解析Token（不抛出异常，带缓存�
+     * 瑙ｆ瀽Token锛堜笉鎶涘嚭寮傚父锛屽甫缂撳瓨锟?
      * @return Claims or null if parsing fails
      */
     private Claims parseToken(String token) {
@@ -385,7 +385,7 @@ public class JwtUtils {
     }
 
     /**
-     * 解析Token（抛出异常）
+     * 瑙ｆ瀽Token锛堟姏鍑哄紓甯革級
      * @throws UnauthorizedException if parsing fails
      */
     private Claims parseTokenOrThrow(String token) {
@@ -585,8 +585,8 @@ public class JwtUtils {
     }
 
     /**
-     * 刷新Token并轮换刷新令牌（推荐使用�
-     * 实现刷新令牌轮换机制，每次刷新时生成新的访问令牌和刷新令�
+     * 鍒锋柊Token骞惰疆鎹㈠埛鏂颁护鐗岋紙鎺ㄨ崘浣跨敤锟?
+     * 瀹炵幇鍒锋柊浠ょ墝杞崲鏈哄埗锛屾瘡娆″埛鏂版椂鐢熸垚鏂扮殑璁块棶浠ょ墝鍜屽埛鏂颁护锟?
      *
      * @return TokenPair containing new access token and new refresh token
      */
@@ -601,7 +601,7 @@ public class JwtUtils {
         String lockKey = REFRESH_LOCK_PREFIX + userId;
 
         try {
-            // 分布式锁，防止并发刷�
+            // 鍒嗗竷寮忛攣锛岄槻姝㈠苟鍙戝埛锟?
             Boolean acquired = redisTemplate.opsForValue()
                     .setIfAbsent(lockKey, "1", Duration.ofSeconds(5));
 
@@ -609,13 +609,13 @@ public class JwtUtils {
                 throw new UnauthorizedException("Token refresh in progress");
             }
 
-            // 撤销旧的刷新令牌
+            // 鎾ら攢鏃х殑鍒锋柊浠ょ墝
             revokeToken(oldRefreshToken, "Refresh token rotated");
 
-            // 撤销旧的访问令牌
+            // 鎾ら攢鏃х殑璁块棶浠ょ墝
             revokeUserAccessTokens(userId, deviceId);
 
-            // 生成新的访问令牌和刷新令�
+            // 鐢熸垚鏂扮殑璁块棶浠ょ墝鍜屽埛鏂颁护锟?
             String newAccessToken = generateAccessToken(userId, username, roles, permissions, deviceId, ipAddress);
             String newRefreshToken = generateRefreshToken(userId, username, deviceId);
 

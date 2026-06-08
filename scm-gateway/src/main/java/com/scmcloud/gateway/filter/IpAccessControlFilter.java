@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Hardened IP access control filter that validates trusted proxies, uses redis-backed ACLs and
  * responds with structured payloads.
- * 强化版IP访问控制过滤器，可验证受信任的代理，使用基于Redis的访问控制列表（ACL），并返回结构化数据�
+ * 寮哄寲鐗圛P璁块棶鎺у埗杩囨护鍣紝鍙獙璇佸彈淇′换鐨勪唬鐞嗭紝浣跨敤鍩轰簬Redis鐨勮闂帶鍒跺垪琛紙ACL锛夛紝骞惰繑鍥炵粨鏋勫寲鏁版嵁锟?
  */
 @Component
 @Slf4j

@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * 权限管理控制�
+ * 鏉冮檺绠＄悊鎺у埗锟?
  *
  * @author Deng
  * createData 2025/10/14 17:47
@@ -28,7 +28,7 @@ public class SysPermissionController {
     private final ISysPermissionService permissionService;
 
     /**
-     * 查询权限�
+     * 鏌ヨ鏉冮檺锟?
      */
     @GetMapping("/tree")
     @PreAuthorize("hasAuthority('system:permission:list')")
@@ -39,12 +39,12 @@ public class SysPermissionController {
     }
 
     /**
-     * 新增权限
+     * 鏂板鏉冮檺
      */
     @PostMapping
     @PreAuthorize("hasAuthority('system:permission:add')")
     @AuditLog(
-            operation = "新增权限",
+            operation = "鏂板鏉冮檺",
             businessType = "PERMISSION",
             riskLevel = 4
     )
@@ -55,12 +55,12 @@ public class SysPermissionController {
     }
 
     /**
-     * 修改权限
+     * 淇敼鏉冮檺
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('system:permission:edit')")
     @AuditLog(
-            operation = "修改权限",
+            operation = "淇敼鏉冮檺",
             businessType = "PERMISSION",
             riskLevel = 4
     )
@@ -73,12 +73,12 @@ public class SysPermissionController {
     }
 
     /**
-     * 删除权限
+     * 鍒犻櫎鏉冮檺
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('system:permission:delete')")
     @AuditLog(
-            operation = "删除权限",
+            operation = "鍒犻櫎鏉冮檺",
             businessType = "PERMISSION",
             riskLevel = 4
     )
@@ -89,7 +89,7 @@ public class SysPermissionController {
     }
 
     /**
-     * 根据 id查询权限
+     * 鏍规嵁 id鏌ヨ鏉冮檺
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('system:permission:list')")
@@ -100,8 +100,8 @@ public class SysPermissionController {
     }
 
     /**
-     * 查询用户权限（用�Feign 调用�
-     * 对应 Dubbo: PermissionDubboService.findAllPermissionsByUserId
+     * 鏌ヨ鐢ㄦ埛鏉冮檺锛堢敤锟紽eign 璋冪敤锟?
+     * 瀵瑰簲 Dubbo: PermissionDubboService.findAllPermissionsByUserId
      */
     @GetMapping("/user/{userId}")
     public ApiResponse<Set<String>> getUserPermissions(@PathVariable UUID userId) {
@@ -111,8 +111,8 @@ public class SysPermissionController {
     }
 
     /**
-     * 根据 URL �HTTP 方法查询权限（用�Feign 调用�
-     * 对应 Dubbo: PermissionDubboService.findPermissionsByUrl
+     * 鏍规嵁 URL 锟紿TTP 鏂规硶鏌ヨ鏉冮檺锛堢敤锟紽eign 璋冪敤锟?
+     * 瀵瑰簲 Dubbo: PermissionDubboService.findPermissionsByUrl
      */
     @GetMapping("/find-by-url")
     public List<String> findPermissionsByUrl(@RequestParam("url") String url,
@@ -121,8 +121,8 @@ public class SysPermissionController {
     }
 
     /**
-     * 查询所�API 权限（用于动态权限加载）
-     * 用于 DynamicPermissionLoader 加载权限映射
+     * 鏌ヨ鎵€锟紸PI 鏉冮檺锛堢敤浜庡姩鎬佹潈闄愬姞杞斤級
+     * 鐢ㄤ簬 DynamicPermissionLoader 鍔犺浇鏉冮檺鏄犲皠
      */
     @GetMapping("/api")
     public List<ApiPermissionDTO> findApiPermissions() {

@@ -17,7 +17,7 @@ import java.util.Base64;
 import java.util.Set;
 
 /**
- * 实现自定义授权服�
+ * 瀹炵幇鑷畾涔夋巿鏉冩湇锟?
  *
  * @author Deng
  * createData 2025/11/10 10:30
@@ -37,11 +37,11 @@ public class CustomAuthorizationServiceImpl implements ICustomAuthorizationServi
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizedScopes(authorizedScopes);
 
-        // 生成授权�
+        // 鐢熸垚鎺堟潈锟?
         OAuth2AuthorizationCode authorizationCode = new OAuth2AuthorizationCode(
                 generateAuthorizationCode(),
                 Instant.now(),
-                Instant.now().plusSeconds(300) // 5分钟过期
+                Instant.now().plusSeconds(300) // 5鍒嗛挓杩囨湡
         );
 
         builder.token(authorizationCode);

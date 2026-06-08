@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * SpringSecurity 配置�
+ * SpringSecurity 閰嶇疆锟?
  *
  * @author Deng
  * createData 2025/10/11 10:37
@@ -49,31 +49,31 @@ public class SecurityConfig {
     private final SecurityHeadersProperties securityHeadersProperties;
 
     /**
-     * Spring Security 主过滤器�
+     * Spring Security 涓昏繃婊ゅ櫒锟?
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager)
             throws Exception {
         http
-                // 1️⃣ 禁用 CSRF（使�JWT�
+                // 1锔忊儯 绂佺敤 CSRF锛堜娇锟絁WT锟?
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // 2️⃣ CORS 配置
+                // 2锔忊儯 CORS 閰嶇疆
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                // 3️⃣ 无状�Session 管理
+                // 3锔忊儯 鏃犵姸锟絊ession 绠＄悊
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                         .maximumSessions(1)
                         .maxSessionsPreventsLogin(true))
 
-                // 4️⃣ 异常处理（认证与授权�
+                // 4锔忊儯 寮傚父澶勭悊锛堣璇佷笌鎺堟潈锟?
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(jwtAccessDeniedHandler))
 
-                // 5️⃣ 安全头配�
-                // 安全头配�
+                // 5锔忊儯 瀹夊叏澶撮厤锟?
+                // 瀹夊叏澶撮厤锟?
                 .headers(headers -> {
                     if (!securityHeadersProperties.isEnabled()) {
                         return;
@@ -113,7 +113,7 @@ public class SecurityConfig {
                     }
                 })
 
-                // 6️⃣ 授权规则
+                // 6锔忊儯 鎺堟潈瑙勫垯
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/auth/login",
@@ -125,10 +125,10 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                         .anyRequest().authenticated())
 
-                // 7️⃣ 指定认证管理器（替代 DaoAuthenticationProvider�
+                // 7锔忊儯 鎸囧畾璁よ瘉绠＄悊鍣紙鏇夸唬 DaoAuthenticationProvider锟?
                 .authenticationManager(authenticationManager)
 
-                // 8️⃣ 添加自定义过滤器
+                // 8锔忊儯 娣诲姞鑷畾涔夎繃婊ゅ櫒
                 .addFilterBefore(sqlInjectionFilter, LogoutFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(stepUpFilter, JwtAuthenticationFilter.class);

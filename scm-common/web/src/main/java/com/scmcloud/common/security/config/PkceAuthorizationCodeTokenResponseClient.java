@@ -26,14 +26,14 @@ import java.util.Base64;
 public class PkceAuthorizationCodeTokenResponseClient
         implements OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> {
     private final OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> delegate;
-    private final PkceChallengeStore pkceChallengeStore; // 自定义接口，用于存储/读取 code_challenge
+    private final PkceChallengeStore pkceChallengeStore; // 鑷畾涔夋帴鍙ｏ紝鐢ㄤ簬瀛樺偍/璇诲彇 code_challenge
 
     @Override
     public OAuth2AccessTokenResponse getTokenResponse(OAuth2AuthorizationCodeGrantRequest grantRequest) {
         var registration = grantRequest.getClientRegistration();
         var authRequest = grantRequest.getAuthorizationExchange().getAuthorizationRequest();
 
-        // 1️⃣ 读取 code_verifier
+        // 1锔忊儯 璇诲彇 code_verifier
         String codeVerifier = authRequest.getAttribute("code_verifier");
 
         if (registration.getClientSettings().isRequireProofKey() && codeVerifier == null) {
@@ -42,7 +42,7 @@ public class PkceAuthorizationCodeTokenResponseClient
             );
         }
 
-        // 2️⃣ 校验 PKCE 挑战�
+        // 2锔忊儯 鏍￠獙 PKCE 鎸戞垬锟?
         String storedChallenge = pkceChallengeStore.load(authRequest.getAuthorizationRequestUri());
         if (storedChallenge == null) {
             throw new OAuth2AuthorizationException(
@@ -58,12 +58,12 @@ public class PkceAuthorizationCodeTokenResponseClient
             );
         }
 
-        // 3️⃣ 验证通过，交由默认客户端发放 Token
+        // 3锔忊儯 楠岃瘉閫氳繃锛屼氦鐢遍粯璁ゅ鎴风鍙戞斁 Token
         return delegate.getTokenResponse(grantRequest);
     }
 
     /**
-     * 计算 PKCE �SHA-256 challenge 值（Base64Url 编码�
+     * 璁＄畻 PKCE 锟絊HA-256 challenge 鍊硷紙Base64Url 缂栫爜锟?
      */
     private String calculateCodeChallenge(String verifier) {
         try {

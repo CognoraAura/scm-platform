@@ -15,9 +15,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * 用户跨库查询服务
+ * 鐢ㄦ埛璺ㄥ簱鏌ヨ鏈嶅姟
  * <p>
- * 处理与用户相关的跨库查询操作（db_user �db_permission �db_org�
+ * 澶勭悊涓庣敤鎴风浉鍏崇殑璺ㄥ簱鏌ヨ鎿嶄綔锛坉b_user 锟絛b_permission 锟絛b_org锟?
  *
  * @author Deng
  * @since 2025-01-16
@@ -30,13 +30,13 @@ public class UserCrossDatabaseQueryService {
     private final SysUserRoleMapper userRoleMapper;
 
     /**
-     * 获取用户基本信息
+     * 鑾峰彇鐢ㄦ埛鍩烘湰淇℃伅
      * <p>
-     * 替代 SysUserMapper.selectById
-     * 跨库查询：db_user
+     * 鏇夸唬 SysUserMapper.selectById
+     * 璺ㄥ簱鏌ヨ锛歞b_user
      *
-     * @param userId 用户 ID
-     * @return 用户实体
+     * @param userId 鐢ㄦ埛 ID
+     * @return 鐢ㄦ埛瀹炰綋
      */
     @Slave
     @Timed(value = "cross_db_query", extraTags = {"method", "getUserBasicInfo"})
@@ -48,13 +48,13 @@ public class UserCrossDatabaseQueryService {
     }
 
     /**
-     * 批量获取用户基本信息
+     * 鎵归噺鑾峰彇鐢ㄦ埛鍩烘湰淇℃伅
      * <p>
-     * 替代 SysUserMapper.selectBasicInfoByIds
-     * 跨库查询：db_user
+     * 鏇夸唬 SysUserMapper.selectBasicInfoByIds
+     * 璺ㄥ簱鏌ヨ锛歞b_user
      *
-     * @param userIds 用户 ID 列表
-     * @return 用户实体列表
+     * @param userIds 鐢ㄦ埛 ID 鍒楄〃
+     * @return 鐢ㄦ埛瀹炰綋鍒楄〃
      */
     @Slave
     @Timed(value = "cross_db_query", extraTags = {"method", "getUserBasicInfoBatch"})
@@ -66,10 +66,10 @@ public class UserCrossDatabaseQueryService {
     }
 
     /**
-     * 批量获取用户基本信息（Map 形式�
+     * 鎵归噺鑾峰彇鐢ㄦ埛鍩烘湰淇℃伅锛圡ap 褰㈠紡锟?
      *
-     * @param userIds 用户 ID 列表
-     * @return 用户 ID �用户实体 映射
+     * @param userIds 鐢ㄦ埛 ID 鍒楄〃
+     * @return 鐢ㄦ埛 ID 锟界敤鎴峰疄浣?鏄犲皠
      */
     @Slave
     public Map<UUID, SysUser> getUserBasicInfoMap(List<UUID> userIds) {
@@ -79,13 +79,13 @@ public class UserCrossDatabaseQueryService {
     }
 
     /**
-     * 查询用户角色（带角色名称�
+     * 鏌ヨ鐢ㄦ埛瑙掕壊锛堝甫瑙掕壊鍚嶇О锟?
      * <p>
-     * 替代 SysUserRoleMapper.findUserRolesWithNames
-     * 跨库查询：db_permission
+     * 鏇夸唬 SysUserRoleMapper.findUserRolesWithNames
+     * 璺ㄥ簱鏌ヨ锛歞b_permission
      *
-     * @param userId 用户 ID
-     * @return 角色列表（包�id, name 字段�
+     * @param userId 鐢ㄦ埛 ID
+     * @return 瑙掕壊鍒楄〃锛堝寘锟絠d, name 瀛楁锟?
      */
     @Slave
     @Timed(value = "cross_db_query", extraTags = {"method", "findUserRolesWithNames"})
@@ -98,13 +98,13 @@ public class UserCrossDatabaseQueryService {
     }
 
     /**
-     * 查询用户角色编码集合
+     * 鏌ヨ鐢ㄦ埛瑙掕壊缂栫爜闆嗗悎
      * <p>
-     * 替代 SysUserRoleMapper.findRoleCodesByUserId
-     * 跨库查询：db_permission
+     * 鏇夸唬 SysUserRoleMapper.findRoleCodesByUserId
+     * 璺ㄥ簱鏌ヨ锛歞b_permission
      *
-     * @param userId 用户 ID
-     * @return 角色编码集合
+     * @param userId 鐢ㄦ埛 ID
+     * @return 瑙掕壊缂栫爜闆嗗悎
      */
     @Slave
     @Timed(value = "cross_db_query", extraTags = {"method", "findRoleCodesByUserId"})
@@ -117,13 +117,13 @@ public class UserCrossDatabaseQueryService {
     }
 
     /**
-     * 获取用户的最大角色等�
+     * 鑾峰彇鐢ㄦ埛鐨勬渶澶ц鑹茬瓑锟?
      * <p>
-     * 用于角色授权时的权限检查（只能分配不高于自己的角色�
-     * 跨库查询：db_permission
+     * 鐢ㄤ簬瑙掕壊鎺堟潈鏃剁殑鏉冮檺妫€鏌ワ紙鍙兘鍒嗛厤涓嶉珮浜庤嚜宸辩殑瑙掕壊锟?
+     * 璺ㄥ簱鏌ヨ锛歞b_permission
      *
-     * @param userId 用户 ID
-     * @return 最大角色等级（role_level 最小值，因为等级越小权限越高），如果用户没有角色则返�null
+     * @param userId 鐢ㄦ埛 ID
+     * @return 鏈€澶ц鑹茬瓑绾э紙role_level 鏈€灏忓€硷紝鍥犱负绛夌骇瓒婂皬鏉冮檺瓒婇珮锛夛紝濡傛灉鐢ㄦ埛娌℃湁瑙掕壊鍒欒繑锟絥ull
      */
     @Slave
     @Timed(value = "cross_db_query", extraTags = {"method", "getUserMaxRoleLevel"})
@@ -135,13 +135,13 @@ public class UserCrossDatabaseQueryService {
     }
 
     /**
-     * 统计用户有效角色�
+     * 缁熻鐢ㄦ埛鏈夋晥瑙掕壊锟?
      * <p>
-     * 替代 SysUserRoleMapper.countUserRoles
-     * 跨库查询：db_permission
+     * 鏇夸唬 SysUserRoleMapper.countUserRoles
+     * 璺ㄥ簱鏌ヨ锛歞b_permission
      *
-     * @param userId 用户 ID
-     * @return 有效角色�
+     * @param userId 鐢ㄦ埛 ID
+     * @return 鏈夋晥瑙掕壊锟?
      */
     @Slave
     public Integer countUserRoles(UUID userId) {
@@ -149,13 +149,13 @@ public class UserCrossDatabaseQueryService {
     }
 
     /**
-     * 查询用户权限编码集合
+     * 鏌ヨ鐢ㄦ埛鏉冮檺缂栫爜闆嗗悎
      * <p>
-     * 替代 SysUserRoleMapper.findPermissionCodesByUserId
-     * 跨库查询：db_permission
+     * 鏇夸唬 SysUserRoleMapper.findPermissionCodesByUserId
+     * 璺ㄥ簱鏌ヨ锛歞b_permission
      *
-     * @param userId 用户 ID
-     * @return 权限编码集合
+     * @param userId 鐢ㄦ埛 ID
+     * @return 鏉冮檺缂栫爜闆嗗悎
      */
     @Slave
     @Timed(value = "cross_db_query", extraTags = {"method", "findPermissionCodesByUserId"})
@@ -168,33 +168,33 @@ public class UserCrossDatabaseQueryService {
     }
 
     /**
-     * 获取用户数据权限范围
+     * 鑾峰彇鐢ㄦ埛鏁版嵁鏉冮檺鑼冨洿
      * <p>
-     * 替代 SysUserRoleMapper.getUserDataScope
-     * 跨库查询：db_permission
+     * 鏇夸唬 SysUserRoleMapper.getUserDataScope
+     * 璺ㄥ簱鏌ヨ锛歞b_permission
      *
-     * @param userId 用户 ID
-     * @return 数据权限范围�-全部, 2-自定� 3-本部� 4-本部门及子部� 5-仅本人）
+     * @param userId 鐢ㄦ埛 ID
+     * @return 鏁版嵁鏉冮檺鑼冨洿锟?鍏ㄩ儴, 2-鑷畾锟?3-鏈儴锟?4-鏈儴闂ㄥ強瀛愰儴锟?5-浠呮湰浜猴級
      */
     @Slave
     @Timed(value = "cross_db_query", extraTags = {"method", "getUserDataScope"})
     @Cacheable(value = "userDataScope", key = "#userId")
     public Integer getUserDataScope(UUID userId) {
         if (userId == null) {
-            return 5; // 默认仅本�
+            return 5; // 榛樿浠呮湰锟?
         }
         Integer dataScope = userRoleMapper.getUserDataScope(userId);
         return dataScope != null ? dataScope : 5;
     }
 
     /**
-     * 获取用户最大审批金�
+     * 鑾峰彇鐢ㄦ埛鏈€澶у鎵归噾锟?
      * <p>
-     * 替代 SysUserRoleMapper.getMaxApprovalAmount
-     * 跨库查询：db_permission
+     * 鏇夸唬 SysUserRoleMapper.getMaxApprovalAmount
+     * 璺ㄥ簱鏌ヨ锛歞b_permission
      *
-     * @param userId 用户 ID
-     * @return 最大审批金�
+     * @param userId 鐢ㄦ埛 ID
+     * @return 鏈€澶у鎵归噾锟?
      */
     @Slave
     public BigDecimal getMaxApprovalAmount(UUID userId) {
@@ -205,14 +205,14 @@ public class UserCrossDatabaseQueryService {
     }
 
     /**
-     * 检查用户是否拥有指定的临时角色
+     * 妫€鏌ョ敤鎴锋槸鍚︽嫢鏈夋寚瀹氱殑涓存椂瑙掕壊
      * <p>
-     * 替代 SysUserRoleMapper.hasTemporaryRole
-     * 跨库查询：db_permission
+     * 鏇夸唬 SysUserRoleMapper.hasTemporaryRole
+     * 璺ㄥ簱鏌ヨ锛歞b_permission
      *
-     * @param userId 用户 ID
-     * @param roleId 角色 ID
-     * @return 是否拥有该临时角�
+     * @param userId 鐢ㄦ埛 ID
+     * @param roleId 瑙掕壊 ID
+     * @return 鏄惁鎷ユ湁璇ヤ复鏃惰锟?
      */
     @Slave
     public boolean hasTemporaryRole(UUID userId, UUID roleId) {
@@ -223,13 +223,13 @@ public class UserCrossDatabaseQueryService {
     }
 
     /**
-     * 查询用户的临时角色列�
+     * 鏌ヨ鐢ㄦ埛鐨勪复鏃惰鑹插垪锟?
      * <p>
-     * 替代 SysUserRoleMapper.findTemporaryRolesByUserId
-     * 跨库查询：db_permission
+     * 鏇夸唬 SysUserRoleMapper.findTemporaryRolesByUserId
+     * 璺ㄥ簱鏌ヨ锛歞b_permission
      *
-     * @param userId 用户 ID
-     * @return 临时角色列表
+     * @param userId 鐢ㄦ埛 ID
+     * @return 涓存椂瑙掕壊鍒楄〃
      */
     @Slave
     @Cacheable(value = "userTemporaryRoles", key = "#userId", unless = "#result.isEmpty()")
@@ -241,13 +241,13 @@ public class UserCrossDatabaseQueryService {
     }
 
     /**
-     * 统计用户临时角色�
+     * 缁熻鐢ㄦ埛涓存椂瑙掕壊锟?
      * <p>
-     * 替代 SysUserRoleMapper.countTemporaryRoles
-     * 跨库查询：db_permission
+     * 鏇夸唬 SysUserRoleMapper.countTemporaryRoles
+     * 璺ㄥ簱鏌ヨ锛歞b_permission
      *
-     * @param userId 用户 ID
-     * @return 临时角色�
+     * @param userId 鐢ㄦ埛 ID
+     * @return 涓存椂瑙掕壊锟?
      */
     @Slave
     public Integer countTemporaryRoles(UUID userId) {
@@ -255,14 +255,14 @@ public class UserCrossDatabaseQueryService {
     }
 
     /**
-     * 统计用户即将过期的角色数
+     * 缁熻鐢ㄦ埛鍗冲皢杩囨湡鐨勮鑹叉暟
      * <p>
-     * 替代 SysUserRoleMapper.countExpiringRoles
-     * 跨库查询：db_permission
+     * 鏇夸唬 SysUserRoleMapper.countExpiringRoles
+     * 璺ㄥ簱鏌ヨ锛歞b_permission
      *
-     * @param userId 用户 ID
-     * @param days   天数
-     * @return 即将过期的角色数
+     * @param userId 鐢ㄦ埛 ID
+     * @param days   澶╂暟
+     * @return 鍗冲皢杩囨湡鐨勮鑹叉暟
      */
     @Slave
     public Integer countExpiringRoles(UUID userId, Integer days) {
@@ -270,10 +270,10 @@ public class UserCrossDatabaseQueryService {
     }
 
     /**
-     * 统计指定部门的用户数
+     * 缁熻鎸囧畾閮ㄩ棬鐨勭敤鎴锋暟
      *
-     * @param deptId 部门 ID
-     * @return 用户数
+     * @param deptId 閮ㄩ棬 ID
+     * @return 鐢ㄦ埛鏁?
      */
     @Slave
     public int countUsersByDeptId(UUID deptId) {
@@ -285,10 +285,10 @@ public class UserCrossDatabaseQueryService {
     }
 
     /**
-     * 批量统计指定部门的用户数
+     * 鎵归噺缁熻鎸囧畾閮ㄩ棬鐨勭敤鎴锋暟
      *
-     * @param deptIds 部门 ID 列表
-     * @return 部门 ID -> 用户数 映射
+     * @param deptIds 閮ㄩ棬 ID 鍒楄〃
+     * @return 閮ㄩ棬 ID -> 鐢ㄦ埛鏁?鏄犲皠
      */
     @Slave
     public Map<UUID, Integer> countUsersByDeptIds(List<UUID> deptIds) {
@@ -307,14 +307,14 @@ public class UserCrossDatabaseQueryService {
         return result;
     }
 
-    // ==================== 私有辅助方法 ====================
+    // ==================== 绉佹湁杈呭姪鏂规硶 ====================
 
     /**
-     * 通用的计数查询方法，处理null检查和默认�
+     * 閫氱敤鐨勮鏁版煡璇㈡柟娉曪紝澶勭悊null妫€鏌ュ拰榛樿锟?
      *
-     * @param userId 用户ID
-     * @param countFunction 计数函数
-     * @return 计数结果，null时返�
+     * @param userId 鐢ㄦ埛ID
+     * @param countFunction 璁℃暟鍑芥暟
+     * @return 璁℃暟缁撴灉锛宯ull鏃惰繑锟?
      */
     private Integer getCountOrDefault(UUID userId, java.util.function.Function<UUID, Integer> countFunction) {
         if (userId == null) {

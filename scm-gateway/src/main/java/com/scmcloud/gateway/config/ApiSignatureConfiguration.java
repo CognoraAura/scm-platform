@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 用于 API 签名设置的配置绑定，并包含安全验证功能�
- * 遵循快速失败原则：如果缺少关键密钥，应用程序将无法启动�
+ * 鐢ㄤ簬 API 绛惧悕璁剧疆鐨勯厤缃粦瀹氾紝骞跺寘鍚畨鍏ㄩ獙璇佸姛鑳斤拷
+ * 閬靛惊蹇€熷け璐ュ師鍒欙細濡傛灉缂哄皯鍏抽敭瀵嗛挜锛屽簲鐢ㄧ▼搴忓皢鏃犳硶鍚姩锟?
  */
 @Slf4j
 @Configuration
@@ -83,7 +83,7 @@ public class ApiSignatureConfiguration {
                 log.warn("\n{}\n", message);
             }
         } else {
-            log.info("�API signature configuration validated ({} app(s) configured)",
+            log.info("锟紸PI signature configuration validated ({} app(s) configured)",
                      appSecrets.size());
         }
     }

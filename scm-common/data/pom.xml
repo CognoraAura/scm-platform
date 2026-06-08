@@ -99,7 +99,7 @@
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
         </dependency>
-        <!-- 动态多数据�?-->
+        <!-- 鍔ㄦ€佸鏁版嵁锟?-->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-jsqlparser</artifactId>
@@ -124,17 +124,17 @@
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-core</artifactId>
         </dependency>
-        <!-- Sentinel 核心依赖 -->
+        <!-- Sentinel 鏍稿績渚濊禆 -->
         <dependency>
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-core</artifactId>
         </dependency>
-        <!-- Sentinel 注解支持 -->
+        <!-- Sentinel 娉ㄨВ鏀寔 -->
         <dependency>
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-annotation-aspectj</artifactId>
         </dependency>
-        <!-- Sentinel 规则数据源支�?-->
+        <!-- Sentinel 瑙勫垯鏁版嵁婧愭敮锟?-->
         <dependency>
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-datasource-extension</artifactId>

@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 租户�
+ * 绉熸埛锟?
  * </p>
  *
  * @author deng

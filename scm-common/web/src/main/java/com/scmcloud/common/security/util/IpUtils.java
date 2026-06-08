@@ -7,7 +7,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
- * IP 工具�
+ * IP 宸ュ叿锟?
  *
  * @author Deng
  * createData 2025/10/15 14:39
@@ -20,7 +20,7 @@ public class IpUtils {
     private static final String LOCALHOST_IP_16 = "0:0:0:0:0:0:0:1";
 
     /**
-     * 获取客户端真�IP
+     * 鑾峰彇瀹㈡埛绔湡锟絀P
      */
     public static String getClientIp(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
@@ -58,7 +58,7 @@ public class IpUtils {
         if (ip == null || ip.isEmpty() || UNKNOWN.equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
             if (LOCALHOST_IP.equals(ip) || LOCALHOST_IP_16.equals(ip)) {
-                // 根据网卡取本机配置的 IP
+                // 鏍规嵁缃戝崱鍙栨湰鏈洪厤缃殑 IP
                 try {
                     InetAddress inet = InetAddress.getLocalHost();
                     ip = inet.getHostAddress();
@@ -68,7 +68,7 @@ public class IpUtils {
             }
         }
 
-        // 对于通过多个代理的情况，第一个IP为客户端真实IP，多个IP按照','分割
+        // 瀵逛簬閫氳繃澶氫釜浠ｇ悊鐨勬儏鍐碉紝绗竴涓狪P涓哄鎴风鐪熷疄IP锛屽涓狪P鎸夌収','鍒嗗壊
         if (ip != null && ip.length() > 15 && ip.indexOf(",") > 0) {
             ip = ip.substring(0, ip.indexOf(","));
         }
@@ -77,7 +77,7 @@ public class IpUtils {
     }
 
     /**
-     * 判断是否为内�IP
+     * 鍒ゆ柇鏄惁涓哄唴锟絀P
      */
     public static boolean isInternalIp(String ip) {
         if (ip == null || ip.isEmpty()) {

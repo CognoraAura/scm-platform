@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * <p>
- * 权限申请审批�服务�
+ * 鏉冮檺鐢宠瀹℃壒锟芥湇鍔★拷
  * </p>
  *
  * @author deng

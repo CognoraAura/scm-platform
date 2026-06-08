@@ -14,7 +14,7 @@ import java.util.UUID;
 
 /**
  * <p>
- * 权限�Mapper 接口
+ * 鏉冮檺锟組apper 鎺ュ彛
  * </p>
  *
  * @author author
@@ -25,7 +25,7 @@ import java.util.UUID;
 public interface SysPermissionMapper extends BaseMapper<SysPermission> {
 
     /**
-     * 查询用户权限
+     * 鏌ヨ鐢ㄦ埛鏉冮檺
      */
     @Select("""
             SELECT DISTINCT p.permission_code FROM sys_permission p
@@ -39,7 +39,7 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
     Set<String> findAllPermissionsByUserId(@Param("userId") UUID userId);
 
     /**
-     * 查询用户角色
+     * 鏌ヨ鐢ㄦ埛瑙掕壊
      */
     @Select("""
             SELECT DISTINCT r.role_code FROM sys_role r
@@ -52,7 +52,7 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
     Set<String> findRolesByUserId(@Param("userId") UUID userId);
 
     /**
-     * 查询角色权限�
+     * 鏌ヨ瑙掕壊鏉冮檺锟?
      */
     @Select("""
             SELECT * FROM sys_permission WHERE status = 1 AND NOT deleted
@@ -61,7 +61,7 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
     List<SysPermission> findPermissionTree();
 
     /**
-     * 根据角色 ID查询权限
+     * 鏍规嵁瑙掕壊 ID鏌ヨ鏉冮檺
      */
     @Select("""
             SELECT p.* FROM sys_permission p
@@ -71,7 +71,7 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
     List<Permission> findPermissionsByRoleId(@Param("roleId") UUID roleId);
 
     /**
-     * 检查资源权�
+     * 妫€鏌ヨ祫婧愭潈锟?
      */
     @Select("""
             <script>
@@ -89,7 +89,7 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
                                     @Param("permission") String permission);
 
     /**
-     * 查询用户菜单�
+     * 鏌ヨ鐢ㄦ埛鑿滃崟锟?
      */
     @Select("""
             SELECT DISTINCT p.* FROM sys_permission p
@@ -111,7 +111,7 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
     List<PermissionDTO> findMenuTreeByUserId(@Param("userId") UUID userId);
 
     /**
-     * 查询子权�
+     * 鏌ヨ瀛愭潈锟?
      */
     @Select("""
             SELECT * FROM sys_permission
@@ -123,7 +123,7 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
     List<PermissionDTO> findChildrenPermissions(@Param("parentId") UUID parentId);
 
     /**
-     * 根据 URL和方法查询需要的权限
+     * 鏍规嵁 URL鍜屾柟娉曟煡璇㈤渶瑕佺殑鏉冮檺
      */
     @Select("""
             SELECT permission_code FROM sys_permission
@@ -135,7 +135,7 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
                                       @Param("method") String method);
 
     /**
-     * 检查权限编码是否存�
+     * 妫€鏌ユ潈闄愮紪鐮佹槸鍚﹀瓨锟?
      */
     @Select("""
             SELECT COUNT(*) > 0 FROM sys_permission

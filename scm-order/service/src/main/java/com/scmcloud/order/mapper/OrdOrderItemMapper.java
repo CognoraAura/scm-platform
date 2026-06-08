@@ -5,7 +5,7 @@ import com.scmcloud.order.domain.entity.OrdOrderItem;
 
 /**
  * <p>
- * 订单明细�Mapper 接口
+ * 璁㈠崟鏄庣粏锟組apper 鎺ュ彛
  * </p>
  *
  * @author deng

@@ -6,35 +6,35 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 加权轮询负载均衡�
+ * 鍔犳潈杞璐熻浇鍧囪　锟?
  * <p>
- * 实现平滑加权轮询算法（Nginx 同款�
+ * 瀹炵幇骞虫粦鍔犳潈杞绠楁硶锛圢ginx 鍚屾锟?
  *
  * @author Deng
  * @since 2025-12-16
  */
 public class WeightedRoundRobinLoadBalancer extends AbstractLoadBalancer {
     /**
-     * 当前权重
+     * 褰撳墠鏉冮噸
      */
     private final Map<String, AtomicInteger> currentWeights = new ConcurrentHashMap<>();
 
     @Override
     protected String doSelect(List<SlaveInfo> available) {
-        // 计算总权�
+        // 璁＄畻鎬绘潈锟?
         int totalWeight = available.stream()
                 .mapToInt(SlaveInfo::weight)
                 .sum();
 
-        // 平滑加权轮询
+        // 骞虫粦鍔犳潈杞
         SlaveInfo selected = null;
         int maxCurrentWeight = Integer.MIN_VALUE;
 
         for (SlaveInfo slave : available) {
-            // 初始化当前权�
+            // 鍒濆鍖栧綋鍓嶆潈锟?
             currentWeights.computeIfAbsent(slave.name(), k -> new AtomicInteger(0));
 
-            // 增加当前权重
+            // 澧炲姞褰撳墠鏉冮噸
             int current = currentWeights.get(slave.name()).addAndGet(slave.weight());
 
             if (current > maxCurrentWeight) {
@@ -44,7 +44,7 @@ public class WeightedRoundRobinLoadBalancer extends AbstractLoadBalancer {
         }
 
         if (selected != null) {
-            // 选中的节点减去总权�
+            // 閫変腑鐨勮妭鐐瑰噺鍘绘€绘潈锟?
             currentWeights.get(selected.name()).addAndGet(-totalWeight);
             return selected.name();
         }

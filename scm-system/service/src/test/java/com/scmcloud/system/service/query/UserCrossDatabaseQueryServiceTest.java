@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
 
 /**
- * UserCrossDatabaseQueryService 单元测试
+ * UserCrossDatabaseQueryService 鍗曞厓娴嬭瘯
  *
  * @author Deng
  * @since 2025-01-16
@@ -58,7 +58,7 @@ class UserCrossDatabaseQueryServiceTest {
     }
 
     // ========================================
-    // 用户基本信息查询测试
+    // 鐢ㄦ埛鍩烘湰淇℃伅鏌ヨ娴嬭瘯
     // ========================================
 
     @Test
@@ -187,7 +187,7 @@ class UserCrossDatabaseQueryServiceTest {
     }
 
     // ========================================
-    // 用户角色查询测试
+    // 鐢ㄦ埛瑙掕壊鏌ヨ娴嬭瘯
     // ========================================
 
     @Test
@@ -323,7 +323,7 @@ class UserCrossDatabaseQueryServiceTest {
     }
 
     // ========================================
-    // 用户权限查询测试
+    // 鐢ㄦ埛鏉冮檺鏌ヨ娴嬭瘯
     // ========================================
 
     @Test
@@ -373,7 +373,7 @@ class UserCrossDatabaseQueryServiceTest {
         Integer result = service.getUserDataScope(null);
 
         // Assert
-        assertEquals(5, result); // Default: 仅本�
+        assertEquals(5, result); // Default: 浠呮湰锟?
         verify(userRoleMapper, never()).getUserDataScope(any());
     }
 
@@ -386,7 +386,7 @@ class UserCrossDatabaseQueryServiceTest {
         Integer result = service.getUserDataScope(testUserId);
 
         // Assert
-        assertEquals(5, result); // Default: 仅本�
+        assertEquals(5, result); // Default: 浠呮湰锟?
         verify(userRoleMapper).getUserDataScope(testUserId);
     }
 
@@ -416,7 +416,7 @@ class UserCrossDatabaseQueryServiceTest {
     }
 
     // ========================================
-    // 临时角色查询测试
+    // 涓存椂瑙掕壊鏌ヨ娴嬭瘯
     // ========================================
 
     @Test
@@ -558,7 +558,7 @@ class UserCrossDatabaseQueryServiceTest {
     }
 
     // ========================================
-    // 部门用户统计测试
+    // 閮ㄩ棬鐢ㄦ埛缁熻娴嬭瘯
     // ========================================
 
     @Test

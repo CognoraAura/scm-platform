@@ -22,7 +22,7 @@ public class TmsTrackingServiceImpl extends ServiceImpl<TmsTrackingMapper, TmsTr
 
     @Override
     public List<TmsTracking> listByWaybillId(String waybillId) {
-        log.debug("根据运单ID查询物流轨迹: waybillId={}", waybillId);
+        log.debug("鏍规嵁杩愬崟ID鏌ヨ鐗╂祦杞ㄨ抗: waybillId={}", waybillId);
         return lambdaQuery()
                 .eq(TmsTracking::getWaybillId, waybillId)
                 .orderByDesc(TmsTracking::getTrackTime)
@@ -31,7 +31,7 @@ public class TmsTrackingServiceImpl extends ServiceImpl<TmsTrackingMapper, TmsTr
 
     @Override
     public List<TmsTracking> listByWaybillNo(String waybillNo) {
-        log.debug("根据运单号查询物流轨� waybillNo={}", waybillNo);
+        log.debug("鏍规嵁杩愬崟鍙锋煡璇㈢墿娴佽建锟?waybillNo={}", waybillNo);
         return lambdaQuery()
                 .eq(TmsTracking::getWaybillNo, waybillNo)
                 .orderByDesc(TmsTracking::getTrackTime)
@@ -40,7 +40,7 @@ public class TmsTrackingServiceImpl extends ServiceImpl<TmsTrackingMapper, TmsTr
 
     @Override
     public Page<TmsTracking> pageList(int page, int size, String waybillNo, String trackStatus) {
-        log.debug("分页查询物流轨迹: page={}, size={}, waybillNo={}, trackStatus={}", page, size, waybillNo, trackStatus);
+        log.debug("鍒嗛〉鏌ヨ鐗╂祦杞ㄨ抗: page={}, size={}, waybillNo={}, trackStatus={}", page, size, waybillNo, trackStatus);
 
         LambdaQueryWrapper<TmsTracking> wrapper = Wrappers.lambdaQuery();
         if (StringUtils.hasText(waybillNo)) {
@@ -57,7 +57,7 @@ public class TmsTrackingServiceImpl extends ServiceImpl<TmsTrackingMapper, TmsTr
     @Override
     @Transactional(rollbackFor = Exception.class)
     public TmsTracking addTracking(TmsTracking tracking) {
-        log.info("添加物流轨迹: waybillNo={}, location={}, status={}", tracking.getWaybillNo(), tracking.getLocation(), tracking.getTrackStatus());
+        log.info("娣诲姞鐗╂祦杞ㄨ抗: waybillNo={}, location={}, status={}", tracking.getWaybillNo(), tracking.getLocation(), tracking.getTrackStatus());
 
         if (tracking.getId() == null) {
             tracking.setId(UUID.randomUUID().toString());
@@ -71,10 +71,10 @@ public class TmsTrackingServiceImpl extends ServiceImpl<TmsTrackingMapper, TmsTr
 
         boolean success = save(tracking);
         if (!success) {
-            throw new RuntimeException("添加物流轨迹失败");
+            throw new RuntimeException("娣诲姞鐗╂祦杞ㄨ抗澶辫触");
         }
 
-        log.info("物流轨迹添加成功: id={}, waybillNo={}", tracking.getId(), tracking.getWaybillNo());
+        log.info("鐗╂祦杞ㄨ抗娣诲姞鎴愬姛: id={}, waybillNo={}", tracking.getId(), tracking.getWaybillNo());
         return tracking;
     }
 }

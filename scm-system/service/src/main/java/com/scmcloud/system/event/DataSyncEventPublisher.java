@@ -15,10 +15,10 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 数据同步事件发布�
+ * 鏁版嵁鍚屾浜嬩欢鍙戝竷锟?
  * <p>
- * 封装业务实体�DataSyncEvent 的转换，
- * 委托给全局 DataSyncPublisher 发布�Kafka
+ * 灏佽涓氬姟瀹炰綋锟紻ataSyncEvent 鐨勮浆鎹紝
+ * 濮旀墭缁欏叏灞€ DataSyncPublisher 鍙戝竷锟終afka
  *
  * @author Deng
  * @since 2025-12-16

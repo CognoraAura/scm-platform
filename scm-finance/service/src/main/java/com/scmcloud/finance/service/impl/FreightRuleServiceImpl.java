@@ -21,7 +21,7 @@ public class FreightRuleServiceImpl extends ServiceImpl<FreightRuleMapper, Freig
 
     @Override
     public List<FreightRule> listActiveRules() {
-        log.debug("查询生效中的运费规则");
+        log.debug("鏌ヨ鐢熸晥涓殑杩愯垂瑙勫垯");
         LocalDate today = LocalDate.now();
         LambdaQueryWrapper<FreightRule> wrapper = Wrappers.lambdaQuery();
         wrapper.eq(FreightRule::getEnabled, true)
@@ -35,21 +35,21 @@ public class FreightRuleServiceImpl extends ServiceImpl<FreightRuleMapper, Freig
     @Override
     public BigDecimal calculateFreight(String ruleId, BigDecimal weight, Integer quantity,
                                        BigDecimal volume, BigDecimal orderAmount) {
-        log.info("计算运费: ruleId={}, weight={}, quantity={}, volume={}, orderAmount={}",
+        log.info("璁＄畻杩愯垂: ruleId={}, weight={}, quantity={}, volume={}, orderAmount={}",
                 ruleId, weight, quantity, volume, orderAmount);
 
         FreightRule rule = getById(ruleId);
         if (rule == null || Boolean.TRUE.equals(rule.getDeleted())) {
-            throw new IllegalArgumentException("运费规则不存� " + ruleId);
+            throw new IllegalArgumentException("杩愯垂瑙勫垯涓嶅瓨锟?" + ruleId);
         }
 
         if (!Boolean.TRUE.equals(rule.getEnabled())) {
-            throw new IllegalArgumentException("运费规则已禁� " + ruleId);
+            throw new IllegalArgumentException("杩愯垂瑙勫垯宸茬锟?" + ruleId);
         }
 
         if (rule.getFreeThreshold() != null && orderAmount != null
                 && orderAmount.compareTo(rule.getFreeThreshold()) >= 0) {
-            log.info("订单金额满足免运费阈� 免运� orderAmount={}, threshold={}",
+            log.info("璁㈠崟閲戦婊¤冻鍏嶈繍璐归槇锟?鍏嶈繍锟?orderAmount={}, threshold={}",
                     orderAmount, rule.getFreeThreshold());
             return BigDecimal.ZERO;
         }
@@ -60,7 +60,7 @@ public class FreightRuleServiceImpl extends ServiceImpl<FreightRuleMapper, Freig
             case 2 -> freight = calculateByQuantity(rule, quantity);
             case 3 -> freight = calculateByVolume(rule, volume);
             case 4 -> freight = rule.getFixedFreight() != null ? rule.getFixedFreight() : BigDecimal.ZERO;
-            default -> throw new IllegalArgumentException("不支持的计费类型: " + rule.getBillingType());
+            default -> throw new IllegalArgumentException("涓嶆敮鎸佺殑璁¤垂绫诲瀷: " + rule.getBillingType());
         }
 
         if (rule.getRemoteAreaFee() != null) {
@@ -71,7 +71,7 @@ public class FreightRuleServiceImpl extends ServiceImpl<FreightRuleMapper, Freig
         }
 
         freight = freight.setScale(2, RoundingMode.HALF_UP);
-        log.info("运费计算结果: ruleId={}, freight={}", ruleId, freight);
+        log.info("杩愯垂璁＄畻缁撴灉: ruleId={}, freight={}", ruleId, freight);
         return freight;
     }
 

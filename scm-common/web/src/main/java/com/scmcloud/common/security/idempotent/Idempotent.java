@@ -3,8 +3,8 @@ package com.scmcloud.common.security.idempotent;
 import java.lang.annotation.*;
 
 /**
- * 幂等性注�
- * 用于防止接口重复提交
+ * 骞傜瓑鎬ф敞锟?
+ * 鐢ㄤ簬闃叉鎺ュ彛閲嶅鎻愪氦
  *
  * @author Deng
  * createData 2025/10/31 10:19
@@ -16,44 +16,44 @@ import java.lang.annotation.*;
 public @interface Idempotent {
 
     /**
-     * 幂等�key的前缀
+     * 骞傜瓑锟絢ey鐨勫墠缂€
      */
     String prefix() default "idempotent:";
 
     /**
-     * 幂等性key的SpEL表达�
-     * 例如: #userId �#request.orderId
+     * 骞傜瓑鎬ey鐨凷pEL琛ㄨ揪锟?
+     * 渚嬪: #userId 锟?request.orderId
      */
     String key() default "";
 
     /**
-     * 过期时间（秒�
+     * 杩囨湡鏃堕棿锛堢锟?
      */
     int expireTime() default 300;
 
     /**
-     * 提示信息
+     * 鎻愮ず淇℃伅
      */
-    String message() default "请勿重复提交";
+    String message() default "璇峰嬁閲嶅鎻愪氦";
 
     /**
-     * 幂等性类�
+     * 骞傜瓑鎬х被锟?
      */
     Type type() default Type.TOKEN;
 
     enum Type {
         /**
-         * Token模式：客户端先获取token，提交时验证
+         * Token妯″紡锛氬鎴风鍏堣幏鍙杢oken锛屾彁浜ゆ椂楠岃瘉
          */
         TOKEN,
 
         /**
-         * 参数模式：根据参数生成唯一key
+         * 鍙傛暟妯″紡锛氭牴鎹弬鏁扮敓鎴愬敮涓€key
          */
         PARAM,
 
         /**
-         * 请求路径模式：根据请求路�用户ID
+         * 璇锋眰璺緞妯″紡锛氭牴鎹姹傝矾锟界敤鎴稩D
          */
         PATH
     }

@@ -10,10 +10,10 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 部门�Mapper 接口
+ * 閮ㄩ棬锟組apper 鎺ュ彛
  * <p>
- * 注意：此 Mapper 只处�db_org 库中�sys_dept �
- * 需要获取部门负责人信息时，请在 Service 层聚合查�
+ * 娉ㄦ剰锛氭 Mapper 鍙锟絛b_org 搴撲腑锟絪ys_dept 锟?
+ * 闇€瑕佽幏鍙栭儴闂ㄨ礋璐ｄ汉淇℃伅鏃讹紝璇峰湪 Service 灞傝仛鍚堟煡锟?
  *
  * @author author
  * @since 2025-11-07
@@ -23,8 +23,8 @@ import java.util.UUID;
 public interface SysDeptMapper extends BaseMapper<SysDept> {
 
     /**
-     * 查询所有部门列表（不包含负责人信息�
-     * 负责人信息需要在 Service 层通过 SysUserMapper 聚合
+     * 鏌ヨ鎵€鏈夐儴闂ㄥ垪琛紙涓嶅寘鍚礋璐ｄ汉淇℃伅锟?
+     * 璐熻矗浜轰俊鎭渶瑕佸湪 Service 灞傞€氳繃 SysUserMapper 鑱氬悎
      */
     @Select("""
             SELECT * FROM sys_dept
@@ -34,7 +34,7 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
     List<SysDept> selectDeptList();
 
     /**
-     * 递归查询部门及其所有子部门 ID
+     * 閫掑綊鏌ヨ閮ㄩ棬鍙婂叾鎵€鏈夊瓙閮ㄩ棬 ID
      */
     @Select("""
             WITH RECURSIVE dept_tree AS (
@@ -50,7 +50,7 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
     List<UUID> selectDeptAndChildren(@Param("deptId") UUID deptId);
 
     /**
-     * 递归查询多个部门及其所有子部门 ID
+     * 閫掑綊鏌ヨ澶氫釜閮ㄩ棬鍙婂叾鎵€鏈夊瓙閮ㄩ棬 ID
      */
     @Select("""
             <script>
@@ -72,7 +72,7 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
     List<UUID> selectDeptsAndChildren(@Param("deptIds") List<UUID> deptIds);
 
     /**
-     * 统计子部门数
+     * 缁熻瀛愰儴闂ㄦ暟
      */
     @Select("""
             SELECT COUNT(*) FROM sys_dept
@@ -81,9 +81,9 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
     Integer countChildren(@Param("deptId") UUID deptId);
 
     /**
-     * 批量统计多个部门的子部门数量
+     * 鎵归噺缁熻澶氫釜閮ㄩ棬鐨勫瓙閮ㄩ棬鏁伴噺
      * <p>
-     * 用于优化 getDeptTree 等需要统计多个部门子部门数的场景，避�N+1 查询
+     * 鐢ㄤ簬浼樺寲 getDeptTree 绛夐渶瑕佺粺璁″涓儴闂ㄥ瓙閮ㄩ棬鏁扮殑鍦烘櫙锛岄伩锟絅+1 鏌ヨ
      */
     @Select("""
             <script>
@@ -100,7 +100,7 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
     Map<UUID, Map<String, Object>> countChildrenByDeptIds(@Param("deptIds") List<UUID> deptIds);
 
     /**
-     * 检查部门编码是否存�
+     * 妫€鏌ラ儴闂ㄧ紪鐮佹槸鍚﹀瓨锟?
      */
     @Select("""
             <script>
@@ -120,7 +120,7 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
     }
 
     /**
-     * 查询部门负责�ID
+     * 鏌ヨ閮ㄩ棬璐熻矗锟絀D
      */
     @Select("""
             SELECT leader_id FROM sys_dept
@@ -129,7 +129,7 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
     UUID getLeaderId(@Param("deptId") UUID deptId);
 
     /**
-     * 批量查询部门名称
+     * 鎵归噺鏌ヨ閮ㄩ棬鍚嶇О
      */
     @Select("""
             <script>
@@ -144,7 +144,7 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
     List<Map<String, Object>> selectDeptNames(@Param("deptIds") List<UUID> deptIds);
 
     /**
-     * 根据部门 ID查询部门信息
+     * 鏍规嵁閮ㄩ棬 ID鏌ヨ閮ㄩ棬淇℃伅
      */
     @Select("""
             SELECT * FROM sys_dept
@@ -153,7 +153,7 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
     SysDept selectByDeptId(@Param("deptId") UUID deptId);
 
     /**
-     * 查询顶级部门列表
+     * 鏌ヨ椤剁骇閮ㄩ棬鍒楄〃
      */
     @Select("""
             SELECT * FROM sys_dept
@@ -163,7 +163,7 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
     List<SysDept> selectTopDepts();
 
     /**
-     * 查询指定部门的直接子部门
+     * 鏌ヨ鎸囧畾閮ㄩ棬鐨勭洿鎺ュ瓙閮ㄩ棬
      */
     @Select("""
             SELECT * FROM sys_dept
@@ -173,7 +173,7 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
     List<SysDept> selectChildDepts(@Param("parentId") UUID parentId);
 
     /**
-     * 批量查询部门负责�ID 映射
+     * 鎵归噺鏌ヨ閮ㄩ棬璐熻矗锟絀D 鏄犲皠
      */
     @Select("""
             <script>
@@ -187,11 +187,11 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
             """)
     List<Map<String, Object>> selectLeaderIds(@Param("deptIds") List<UUID> deptIds);
 
-    // ==================== 冗余字段同步（数据一致性） ====================
+    // ==================== 鍐椾綑瀛楁鍚屾锛堟暟鎹竴鑷存€э級 ====================
 
     /**
-     * 更新负责人冗余信�
-     * �db_user.sys_user 变更时调用（更新该用户作为负责人的所有部门）
+     * 鏇存柊璐熻矗浜哄啑浣欎俊锟?
+     * 锟絛b_user.sys_user 鍙樻洿鏃惰皟鐢紙鏇存柊璇ョ敤鎴蜂綔涓鸿礋璐ｄ汉鐨勬墍鏈夐儴闂級
      */
     @Update("""
             UPDATE sys_dept
@@ -204,7 +204,7 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
                                @Param("leaderPhone") String leaderPhone);
 
     /**
-     * 查询部门树（包含冗余的负责人信息，无需跨库�
+     * 鏌ヨ閮ㄩ棬鏍戯紙鍖呭惈鍐椾綑鐨勮礋璐ｄ汉淇℃伅锛屾棤闇€璺ㄥ簱锟?
      */
     @Select("""
             SELECT id, parent_id, dept_code, dept_name, dept_type,
@@ -217,7 +217,7 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
     List<SysDept> selectDeptTreeWithLeader();
 
     /**
-     * 查询所有有负责人的部门（用于初始化同步�
+     * 鏌ヨ鎵€鏈夋湁璐熻矗浜虹殑閮ㄩ棬锛堢敤浜庡垵濮嬪寲鍚屾锟?
      */
     @Select("""
             SELECT id as dept_id, leader_id FROM sys_dept
