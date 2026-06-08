@@ -25,32 +25,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Seata 分布式事务性能测试
- *
- * <p>测试场景�
- * 1. AT 模式性能基准测试（单线程�
- * 2. AT 模式并发性能测试（多线程�
- * 3. TCC 模式性能基准测试（单线程�
- * 4. TCC 模式并发性能测试（多线程�
- * 5. AT vs TCC 性能对比
- *
- * <p>性能指标�
- * - TPS (Transactions Per Second)
- * - 平均响应时间
- * - P50 / P95 / P99 响应时间
- * - 成功�
- * - 错误�
- *
- * @author SCM Platform Team
- * @since 2025-12-26
- */
 @RequiredArgsConstructor
 @Slf4j
 @SpringBootTest
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@DisplayName("Seata 分布式事务性能测试")
+@DisplayName("Seata Distributed Transaction Performance Test")
 public class PerformanceTest {
 
     private final OrderDubboServiceImpl orderAtService;
@@ -63,18 +43,14 @@ public class PerformanceTest {
 
     private static final Long PERF_TEST_SKU_ID = 8888L;
     private static final Long PERF_TEST_USER_ID = 10000L;
-    private static final int INITIAL_STOCK = 1000000;  // 100 万库存用于性能测试
+    private static final int INITIAL_STOCK = 1000000;
 
-    /**
-     * 准备测试数据
-     */
     @BeforeEach
     public void setup() {
         log.info("========================================");
-        log.info("准备性能测试环境");
+        log.info("Prepare performance test environment");
         log.info("========================================");
 
-        // 清理测试数据
         orderMapper.delete(
                 new LambdaQueryWrapper<Order>()
                         .ge(Order::getUserId, PERF_TEST_USER_ID)
@@ -84,7 +60,6 @@ public class PerformanceTest {
                         .eq(Inventory::getSkuId, PERF_TEST_SKU_ID)
         );
 
-        // 初始化大量库存用于性能测试
         Inventory inventory = new Inventory();
         inventory.setSkuId(PERF_TEST_SKU_ID);
         inventory.setAvailableStock(INITIAL_STOCK);
@@ -92,21 +67,18 @@ public class PerformanceTest {
         inventory.setWarehouseId(1L);
         inventoryMapper.insert(inventory);
 
-        log.info("�性能测试环境准备完成: SKU={}, 初始库存={}", PERF_TEST_SKU_ID, INITIAL_STOCK);
+        log.info("Perf test environment ready: SKU={}, initialStock={}", PERF_TEST_SKU_ID, INITIAL_STOCK);
     }
 
-    /**
-     * 场景 1: AT 模式性能基准测试（单线程�
-     */
     @Test
     @org.junit.jupiter.api.Order(1)
-    @DisplayName("场景1: AT 模式性能基准测试（单线程�)
+    @DisplayName("Scenario 1: AT mode baseline performance (single thread)")
     public void testAtModeBaselinePerformance() throws Exception {
         log.info("========================================");
-        log.info("场景 1: AT 模式性能基准测试（单线程�);
+        log.info("Scenario 1: AT mode baseline performance (single thread)");
         log.info("========================================");
 
-        int iterations = 100;  // 执行 100 �
+        int iterations = 100;
         List<Long> responseTimes = new ArrayList<>();
         AtomicInteger successCount = new AtomicInteger(0);
         AtomicInteger failCount = new AtomicInteger(0);
@@ -122,42 +94,37 @@ public class PerformanceTest {
                 orderAtService.createOrder(request);
 
                 long reqEndTime = System.nanoTime();
-                responseTimes.add((reqEndTime - reqStartTime) / 1_000_000);  // Convert to ms
+                responseTimes.add((reqEndTime - reqStartTime) / 1_000_000);
                 successCount.incrementAndGet();
             } catch (Exception e) {
                 failCount.incrementAndGet();
-                log.error("请求失败: {}", e.getMessage());
+                log.error("Request failed: {}", e.getMessage());
             }
         }
 
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
 
-        // 计算性能指标
         PerformanceMetrics metrics = calculateMetrics(responseTimes, totalTime, successCount.get(), failCount.get());
-        printMetrics("AT 模式（单线程�, metrics);
+        printMetrics("AT mode (single thread)", metrics);
 
-        // 验证成功�
-        assertTrue(metrics.getSuccessRate() >= 99.0, "成功率应�>= 99%");
+        assertTrue(metrics.getSuccessRate() >= 99.0, "Success rate should be >= 99%");
 
         log.info("========================================");
-        log.info("场景 1 测试完成 �);
+        log.info("Scenario 1 completed");
         log.info("========================================");
     }
 
-    /**
-     * 场景 2: AT 模式并发性能测试（多线程�
-     */
     @Test
     @org.junit.jupiter.api.Order(2)
-    @DisplayName("场景2: AT 模式并发性能测试�0 并发�)
+    @DisplayName("Scenario 2: AT mode concurrent performance (50 concurrency)")
     public void testAtModeConcurrentPerformance() throws Exception {
         log.info("========================================");
-        log.info("场景 2: AT 模式并发性能测试�0 并发�);
+        log.info("Scenario 2: AT mode concurrent performance (50 concurrency)");
         log.info("========================================");
 
         int threadCount = 50;
-        int requestsPerThread = 20;  // 每个线程执行 20 �
+        int requestsPerThread = 20;
         int totalRequests = threadCount * requestsPerThread;
 
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
@@ -169,7 +136,6 @@ public class PerformanceTest {
 
         long startTime = System.currentTimeMillis();
 
-        // 提交任务
         for (int i = 0; i < totalRequests; i++) {
             executor.submit(() -> {
                 try {
@@ -191,36 +157,30 @@ public class PerformanceTest {
             });
         }
 
-        // 等待所有任务完�
         latch.await();
         executor.shutdown();
 
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
 
-        // 计算性能指标
         List<Long> responseTimeList = new ArrayList<>(responseTimes);
         PerformanceMetrics metrics = calculateMetrics(responseTimeList, totalTime,
                                                        successCount.get(), failCount.get());
-        printMetrics("AT 模式�0 并发�, metrics);
+        printMetrics("AT mode (50 concurrency)", metrics);
 
-        // 验证成功�
-        assertTrue(metrics.getSuccessRate() >= 98.0, "成功率应�>= 98%");
+        assertTrue(metrics.getSuccessRate() >= 98.0, "Success rate should be >= 98%");
 
         log.info("========================================");
-        log.info("场景 2 测试完成 �);
+        log.info("Scenario 2 completed");
         log.info("========================================");
     }
 
-    /**
-     * 场景 3: TCC 模式性能基准测试（单线程�
-     */
     @Test
     @org.junit.jupiter.api.Order(3)
-    @DisplayName("场景3: TCC 模式性能基准测试（单线程�)
+    @DisplayName("Scenario 3: TCC mode baseline performance (single thread)")
     public void testTccModeBaselinePerformance() throws Exception {
         log.info("========================================");
-        log.info("场景 3: TCC 模式性能基准测试（单线程�);
+        log.info("Scenario 3: TCC mode baseline performance (single thread)");
         log.info("========================================");
 
         int iterations = 100;
@@ -243,35 +203,30 @@ public class PerformanceTest {
                 successCount.incrementAndGet();
             } catch (Exception e) {
                 failCount.incrementAndGet();
-                log.error("请求失败: {}", e.getMessage());
+                log.error("Request failed: {}", e.getMessage());
             }
         }
 
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
 
-        // 计算性能指标
         PerformanceMetrics metrics = calculateMetrics(responseTimes, totalTime,
                                                        successCount.get(), failCount.get());
-        printMetrics("TCC 模式（单线程�, metrics);
+        printMetrics("TCC mode (single thread)", metrics);
 
-        // 验证成功�
-        assertTrue(metrics.getSuccessRate() >= 99.0, "成功率应�>= 99%");
+        assertTrue(metrics.getSuccessRate() >= 99.0, "Success rate should be >= 99%");
 
         log.info("========================================");
-        log.info("场景 3 测试完成 �);
+        log.info("Scenario 3 completed");
         log.info("========================================");
     }
 
-    /**
-     * 场景 4: TCC 模式并发性能测试（多线程�
-     */
     @Test
     @org.junit.jupiter.api.Order(4)
-    @DisplayName("场景4: TCC 模式并发性能测试�0 并发�)
+    @DisplayName("Scenario 4: TCC mode concurrent performance (50 concurrency)")
     public void testTccModeConcurrentPerformance() throws Exception {
         log.info("========================================");
-        log.info("场景 4: TCC 模式并发性能测试�0 并发�);
+        log.info("Scenario 4: TCC mode concurrent performance (50 concurrency)");
         log.info("========================================");
 
         int threadCount = 50;
@@ -287,7 +242,6 @@ public class PerformanceTest {
 
         long startTime = System.currentTimeMillis();
 
-        // 提交任务
         for (int i = 0; i < totalRequests; i++) {
             executor.submit(() -> {
                 try {
@@ -309,122 +263,98 @@ public class PerformanceTest {
             });
         }
 
-        // 等待所有任务完�
         latch.await();
         executor.shutdown();
 
         long endTime = System.currentTimeMillis();
         long totalTime = endTime - startTime;
 
-        // 计算性能指标
         List<Long> responseTimeList = new ArrayList<>(responseTimes);
         PerformanceMetrics metrics = calculateMetrics(responseTimeList, totalTime,
                                                        successCount.get(), failCount.get());
-        printMetrics("TCC 模式�0 并发�, metrics);
+        printMetrics("TCC mode (50 concurrency)", metrics);
 
-        // 验证成功�
-        assertTrue(metrics.getSuccessRate() >= 98.0, "成功率应�>= 98%");
+        assertTrue(metrics.getSuccessRate() >= 98.0, "Success rate should be >= 98%");
 
         log.info("========================================");
-        log.info("场景 4 测试完成 �);
+        log.info("Scenario 4 completed");
         log.info("========================================");
     }
 
-    /**
-     * 场景 5: AT vs TCC 性能对比总结
-     */
     @Test
     @org.junit.jupiter.api.Order(5)
-    @DisplayName("场景5: AT vs TCC 性能对比总结")
+    @DisplayName("Scenario 5: AT vs TCC performance comparison summary")
     public void testPerformanceComparison() {
         log.info("========================================");
-        log.info("场景 5: AT vs TCC 性能对比总结");
+        log.info("Scenario 5: AT vs TCC performance comparison summary");
         log.info("========================================");
 
         log.info("\n");
-        log.info("╔════════════════════════════════════════════════════════════════╗");
-        log.info("�          Seata AT vs TCC 性能对比总结                         �);
-        log.info("╠════════════════════════════════════════════════════════════════╣");
-        log.info("�                                                               �);
-        log.info("� 测试结论�                                                    �);
-        log.info("� 1. AT 模式 TPS 更高（约�TCC 模式�1.5-2 倍）                �);
-        log.info("� 2. AT 模式响应时间更短（P95 约为 TCC 模式�60-70%�          �);
-        log.info("� 3. AT 模式对业务代码无侵入，开发成本低                         �);
-        log.info("� 4. TCC 模式控制更灵活，适合资源预留场景                        �);
-        log.info("�                                                               �);
-        log.info("� 适用场景建议�                                                �);
-        log.info("� - 简�CRUD 操作 �使用 AT 模式                                �);
-        log.info("� - 需要资源预留（库存、座位）�使用 TCC 模式                    �);
-        log.info("� - 对性能要求极高 �使用 AT 模式                                �);
-        log.info("� - 需要业务级补偿逻辑 �使用 TCC 模式                           �);
-        log.info("�                                                               �);
-        log.info("╚════════════════════════════════════════════════════════════════╝");
+        log.info("+===============================================================+");
+        log.info("|           Seata AT vs TCC Performance Comparison             |");
+        log.info("+===============================================================+");
+        log.info("| Conclusions:                                                  |");
+        log.info("| 1. AT mode has higher TPS (about 1.5-2x of TCC)              |");
+        log.info("| 2. AT mode has shorter response time (P95 ~60-70% of TCC)    |");
+        log.info("| 3. AT mode has no business code intrusion, low dev cost      |");
+        log.info("| 4. TCC mode has more flexible control, good for reservation  |");
+        log.info("|                                                               |");
+        log.info("| Scenario recommendations:                                     |");
+        log.info("| - Simple CRUD operations -> use AT mode                      |");
+        log.info("| - Resource reservation (stock, seats) -> use TCC mode        |");
+        log.info("| - High performance requirements -> use AT mode               |");
+        log.info("| - Business-level compensation logic -> use TCC mode          |");
+        log.info("|                                                               |");
+        log.info("+===============================================================+");
         log.info("\n");
 
         log.info("========================================");
-        log.info("场景 5 测试完成 �);
+        log.info("Scenario 5 completed");
         log.info("========================================");
     }
 
-    /**
-     * 清理测试数据
-     */
     @AfterEach
     public void cleanup() {
-        log.info("清理性能测试数据...");
+        log.info("Cleaning up performance test data...");
 
-        // 清理订单
         orderMapper.delete(
                 new LambdaQueryWrapper<Order>()
                         .ge(Order::getUserId, PERF_TEST_USER_ID)
         );
 
-        // 清理库存
         inventoryMapper.delete(
                 new LambdaQueryWrapper<Inventory>()
                         .eq(Inventory::getSkuId, PERF_TEST_SKU_ID)
         );
 
-        log.info("�性能测试数据清理完成");
+        log.info("Perf test data cleanup completed");
     }
 
-    // ==================== Helper Methods ====================
-
-    /**
-     * 创建测试请求
-     */
     private OrderDubboService.CreateOrderRequest createRequest(Long userId, Long skuId, Integer quantity) {
         OrderDubboService.CreateOrderRequest request = new OrderDubboService.CreateOrderRequest();
         request.setUserId(userId);
         request.setSkuId(skuId);
-        request.setSkuName("性能测试商品");
+        request.setSkuName("PerfTest-Product");
         request.setQuantity(quantity);
         request.setUnitPrice(new BigDecimal("99.00"));
         request.setTotalAmount(new BigDecimal("99.00").multiply(new BigDecimal(quantity)));
-        request.setRemark("性能测试");
+        request.setRemark("PerformanceTest");
         return request;
     }
 
-    /**
-     * 计算性能指标
-     */
     private PerformanceMetrics calculateMetrics(List<Long> responseTimes, long totalTime,
                                                   int successCount, int failCount) {
         PerformanceMetrics metrics = new PerformanceMetrics();
 
-        // 排序响应时间
         responseTimes.sort(Long::compareTo);
 
-        // 计算统计信息
         LongSummaryStatistics stats = responseTimes.stream()
                 .mapToLong(Long::longValue)
                 .summaryStatistics();
 
-        // TPS
         int totalRequests = successCount + failCount;
         double tps = (double) totalRequests / (totalTime / 1000.0);
 
-        // 百分位数
         int p50Index = (int) (responseTimes.size() * 0.50);
         int p95Index = (int) (responseTimes.size() * 0.95);
         int p99Index = (int) (responseTimes.size() * 0.99);
@@ -445,35 +375,29 @@ public class PerformanceTest {
         return metrics;
     }
 
-    /**
-     * 打印性能指标
-     */
     private void printMetrics(String scenario, PerformanceMetrics metrics) {
         log.info("\n");
-        log.info("╔════════════════════════════════════════════════════════════════╗");
-        log.info("� 性能测试结果: {}                                     ", String.format("%-35s", scenario));
-        log.info("╠════════════════════════════════════════════════════════════════╣");
-        log.info("� 总请求数:      {:>10}                                    �, metrics.getTotalRequests());
-        log.info("� 成功�        {:>10}                                    �, metrics.getSuccessCount());
-        log.info("� 失败�        {:>10}                                    �, metrics.getFailCount());
-        log.info("� 成功�        {:>9.2f}%                                  �, metrics.getSuccessRate());
-        log.info("╠════════════════════════════════════════════════════════════════╣");
-        log.info("� TPS:           {:>10.2f} req/s                            �, metrics.getTps());
-        log.info("� 总耗时:        {:>10} ms                                 �, metrics.getTotalTime());
-        log.info("╠════════════════════════════════════════════════════════════════╣");
-        log.info("� 平均响应时间:  {:>10.2f} ms                              �, metrics.getAvgResponseTime());
-        log.info("� 最小响应时�  {:>10} ms                                 �, metrics.getMinResponseTime());
-        log.info("� 最大响应时�  {:>10} ms                                 �, metrics.getMaxResponseTime());
-        log.info("� P50 响应时间:  {:>10} ms                                 �, metrics.getP50ResponseTime());
-        log.info("� P95 响应时间:  {:>10} ms                                 �, metrics.getP95ResponseTime());
-        log.info("� P99 响应时间:  {:>10} ms                                 �, metrics.getP99ResponseTime());
-        log.info("╚════════════════════════════════════════════════════════════════╝");
+        log.info("+===============================================================+");
+        log.info("| Performance Test Results: {}                ", String.format("%-35s", scenario));
+        log.info("+===============================================================+");
+        log.info("| Total Requests:  {:>10}                                |", metrics.getTotalRequests());
+        log.info("| Success Count:   {:>10}                                |", metrics.getSuccessCount());
+        log.info("| Fail Count:      {:>10}                                |", metrics.getFailCount());
+        log.info("| Success Rate:    {:>9.2f}%                              |", metrics.getSuccessRate());
+        log.info("+---------------------------------------------------------------+");
+        log.info("| TPS:            {:>10.2f} req/s                        |", metrics.getTps());
+        log.info("| Total Time:     {:>10} ms                             |", metrics.getTotalTime());
+        log.info("+---------------------------------------------------------------+");
+        log.info("| Avg Resp Time:  {:>10.2f} ms                          |", metrics.getAvgResponseTime());
+        log.info("| Min Resp Time:  {:>10} ms                             |", metrics.getMinResponseTime());
+        log.info("| Max Resp Time:  {:>10} ms                             |", metrics.getMaxResponseTime());
+        log.info("| P50 Resp Time:  {:>10} ms                             |", metrics.getP50ResponseTime());
+        log.info("| P95 Resp Time:  {:>10} ms                             |", metrics.getP95ResponseTime());
+        log.info("| P99 Resp Time:  {:>10} ms                             |", metrics.getP99ResponseTime());
+        log.info("+===============================================================+");
         log.info("\n");
     }
 
-    /**
-     * 性能指标 DTO
-     */
     @Data
     static class PerformanceMetrics {
         private int totalRequests;

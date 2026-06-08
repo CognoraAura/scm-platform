@@ -15,19 +15,19 @@ public class TmsCarrierCommandService {
 
     private final TmsCarrierMapper tmsCarrierMapper;
 
-    @Master(reason = "保存物流商")
+    @Master(reason = "Save carrier")
     @Transactional(rollbackFor = Exception.class)
     public boolean save(TmsCarrier entity) {
         return tmsCarrierMapper.insert(entity) > 0;
     }
 
-    @Master(reason = "更新物流商")
+    @Master(reason = "Update carrier")
     @Transactional(rollbackFor = Exception.class)
     public boolean updateById(TmsCarrier entity) {
         return tmsCarrierMapper.updateById(entity) > 0;
     }
 
-    @Master(reason = "删除物流商")
+    @Master(reason = "Delete carrier")
     @Transactional(rollbackFor = Exception.class)
     public boolean removeById(String id) {
         return tmsCarrierMapper.deleteById(id) > 0;

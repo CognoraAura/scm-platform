@@ -15,19 +15,19 @@ public class TmsDeliveryAreaCommandService {
 
     private final TmsDeliveryAreaMapper tmsDeliveryAreaMapper;
 
-    @Master(reason = "保存配送区域")
+    @Master(reason = "Save delivery area")
     @Transactional(rollbackFor = Exception.class)
     public boolean save(TmsDeliveryArea entity) {
         return tmsDeliveryAreaMapper.insert(entity) > 0;
     }
 
-    @Master(reason = "更新配送区域")
+    @Master(reason = "Update delivery area")
     @Transactional(rollbackFor = Exception.class)
     public boolean updateById(TmsDeliveryArea entity) {
         return tmsDeliveryAreaMapper.updateById(entity) > 0;
     }
 
-    @Master(reason = "删除配送区域")
+    @Master(reason = "Delete delivery area")
     @Transactional(rollbackFor = Exception.class)
     public boolean removeById(String id) {
         return tmsDeliveryAreaMapper.deleteById(id) > 0;
