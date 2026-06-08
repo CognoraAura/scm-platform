@@ -139,7 +139,7 @@ public class SysAuditLogServiceImpl
     public void recordSecurityEvent(String eventType, Integer riskLevel, UUID userId, String username, String ipAddress,
                                     String resource, boolean success, String details) {
         try {
-            SysAuditLog log = SysAuditLog.builder()
+            SysAuditLog auditLog = SysAuditLog.builder()
                     .userId(userId != null ? userId.toString() : null)
                     .username(username)
                     .operationType(eventType)
@@ -150,11 +150,11 @@ public class SysAuditLogServiceImpl
                     .status(success ? 1 : 0)
                     .createTime(LocalDateTime.now())
                     .build();
-            save(log);
+            save(auditLog);
 
             if (riskLevel != null && riskLevel >= 4) {
                 log.warn("Security Alert: {}, User: {}, IP: {}",
-                        log.getOperationType(), log.getUsername(), log.getIpAddress());
+                        auditLog.getOperationType(), auditLog.getUsername(), auditLog.getIpAddress());
             }
         } catch (Exception e) {
             log.error("Failed to record security event", e);
