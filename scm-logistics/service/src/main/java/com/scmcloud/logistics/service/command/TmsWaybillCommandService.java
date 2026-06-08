@@ -21,28 +21,28 @@ public class TmsWaybillCommandService {
     private final TmsWaybillMapper tmsWaybillMapper;
     private final StatusValidator statusValidator;
 
-    @Master(reason = "保存运单")
+    @Master(reason = "Save waybill")
     @Transactional(rollbackFor = Exception.class)
     public boolean save(TmsWaybill entity) {
         return tmsWaybillMapper.insert(entity) > 0;
     }
 
-    @Master(reason = "更新运单")
+    @Master(reason = "Update waybill")
     @Transactional(rollbackFor = Exception.class)
     public boolean updateById(TmsWaybill entity) {
         return tmsWaybillMapper.updateById(entity) > 0;
     }
 
-    @Master(reason = "删除运单")
+    @Master(reason = "Delete waybill")
     @Transactional(rollbackFor = Exception.class)
     public boolean removeById(String id) {
         return tmsWaybillMapper.deleteById(id) > 0;
     }
 
-    @Master(reason = "创建运单")
+    @Master(reason = "Create waybill")
     @Transactional(rollbackFor = Exception.class)
     public TmsWaybill createWaybill(TmsWaybill waybill) {
-        log.info("创建运单: orderNo={}, carrierId={}", waybill.getOrderNo(), waybill.getCarrierId());
+        log.info("Create waybill: orderNo={}, carrierId={}", waybill.getOrderNo(), waybill.getCarrierId());
         if (waybill.getId() == null) {
             waybill.setId(java.util.UUID.randomUUID().toString());
         }
@@ -55,19 +55,19 @@ public class TmsWaybillCommandService {
         waybill.setUpdateTime(LocalDateTime.now());
         boolean success = tmsWaybillMapper.insert(waybill) > 0;
         if (!success) {
-            throw new RuntimeException("创建运单失败");
+            throw new RuntimeException("Failed to create waybill");
         }
-        log.info("运单创建成功: id={}, waybillNo={}", waybill.getId(), waybill.getWaybillNo());
+        log.info("Waybill created: id={}, waybillNo={}", waybill.getId(), waybill.getWaybillNo());
         return waybill;
     }
 
-    @Master(reason = "更新运单状态")
+    @Master(reason = "Update waybill status")
     @Transactional(rollbackFor = Exception.class)
     public boolean updateStatus(String waybillId, Integer status, String operator) {
-        log.info("更新运单状态: waybillId={}, status={}, operator={}", waybillId, status, operator);
+        log.info("Update waybill status: waybillId={}, status={}, operator={}", waybillId, status, operator);
         TmsWaybill waybill = tmsWaybillMapper.selectById(waybillId);
         if (waybill == null) {
-            log.warn("运单不存在: waybillId={}", waybillId);
+            log.warn("Waybill not found: waybillId={}", waybillId);
             return false;
         }
         waybill.setStatus(status);
@@ -78,18 +78,18 @@ public class TmsWaybillCommandService {
         }
         boolean success = tmsWaybillMapper.updateById(waybill) > 0;
         if (success) {
-            log.info("运单状态更新成功: waybillNo={}, status={}", waybill.getWaybillNo(), status);
+            log.info("Waybill status updated: waybillNo={}, status={}", waybill.getWaybillNo(), status);
         }
         return success;
     }
 
-    @Master(reason = "取消运单")
+    @Master(reason = "Cancel waybill")
     @Transactional(rollbackFor = Exception.class)
     public boolean cancelWaybill(String waybillId, String reason, String operator) {
-        log.info("取消运单: waybillId={}, reason={}, operator={}", waybillId, reason, operator);
+        log.info("Cancel waybill: waybillId={}, reason={}, operator={}", waybillId, reason, operator);
         TmsWaybill waybill = tmsWaybillMapper.selectById(waybillId);
         if (waybill == null) {
-            log.warn("运单不存在: waybillId={}", waybillId);
+            log.warn("Waybill not found: waybillId={}", waybillId);
             return false;
         }
         String cancelFromStatus;
@@ -110,7 +110,7 @@ public class TmsWaybillCommandService {
         waybill.setUpdateTime(LocalDateTime.now());
         boolean success = tmsWaybillMapper.updateById(waybill) > 0;
         if (success) {
-            log.info("运单取消成功: waybillNo={}", waybill.getWaybillNo());
+            log.info("Waybill cancelled: waybillNo={}", waybill.getWaybillNo());
         }
         return success;
     }

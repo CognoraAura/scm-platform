@@ -15,19 +15,19 @@ public class TmsRouteCommandService {
 
     private final TmsRouteMapper tmsRouteMapper;
 
-    @Master(reason = "保存配送路线")
+    @Master(reason = "Save route")
     @Transactional(rollbackFor = Exception.class)
     public boolean save(TmsRoute entity) {
         return tmsRouteMapper.insert(entity) > 0;
     }
 
-    @Master(reason = "更新配送路线")
+    @Master(reason = "Update route")
     @Transactional(rollbackFor = Exception.class)
     public boolean updateById(TmsRoute entity) {
         return tmsRouteMapper.updateById(entity) > 0;
     }
 
-    @Master(reason = "删除配送路线")
+    @Master(reason = "Delete route")
     @Transactional(rollbackFor = Exception.class)
     public boolean removeById(String id) {
         return tmsRouteMapper.deleteById(id) > 0;

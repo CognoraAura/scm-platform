@@ -56,7 +56,7 @@ public class TmsRouteController {
 
     @PostMapping
     public ApiResponse<TmsRoute> create(@RequestBody TmsRoute route) {
-        log.info("新增配送路� routeNo={}, courierId={}", route.getRouteNo(), route.getCourierId());
+        log.info("Create route: routeNo={}, courierId={}", route.getRouteNo(), route.getCourierId());
         route.setId(UUID.randomUUID().toString());
         route.setCreateTime(LocalDateTime.now());
         route.setUpdateTime(LocalDateTime.now());
@@ -66,7 +66,7 @@ public class TmsRouteController {
 
     @PutMapping("/{id}")
     public ApiResponse<TmsRoute> update(@PathVariable String id, @RequestBody TmsRoute route) {
-        log.info("修改配送路� id={}", id);
+        log.info("Update route: id={}", id);
         route.setId(id);
         route.setUpdateTime(LocalDateTime.now());
         routeService.updateById(route);
@@ -75,7 +75,7 @@ public class TmsRouteController {
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(@PathVariable String id) {
-        log.info("删除配送路� id={}", id);
+        log.info("Delete route: id={}", id);
         routeService.removeById(id);
         return ApiResponse.success();
     }

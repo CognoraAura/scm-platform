@@ -21,26 +21,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Seata TCC 模式集成测试
- *
- * <p>测试场景�
- * 1. Try-Confirm 流程：订单创建成�+ 库存预留成功 �全局事务提交 �Confirm
- * 2. Try-Cancel 流程：订单创建成�+ 库存不足 �全局事务回滚 �Cancel
- * 3. 幂等性测试：重复 Try 调用 �幂等返回
- * 4. 防悬挂测试：Cancel 先到 �拒绝后续 Try
- * 5. 空回滚测试：Cancel �Try 记录不存��空回滚成�
- * 6. 并发场景：多�TCC 事务并发执行 �预留记录一致�
- *
- * @author SCM Platform Team
- * @since 2025-12-26
- */
 @RequiredArgsConstructor
 @Slf4j
 @SpringBootTest
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@DisplayName("Seata TCC 模式集成测试")
+@DisplayName("Seata TCC Mode Integration Test")
 public class SeataTccModeIntegrationTest {
 
     private final OrderTccServiceImpl orderTccService;
@@ -54,16 +40,12 @@ public class SeataTccModeIntegrationTest {
     private static final Long TEST_SKU_ID = 9002L;
     private static final Long TEST_USER_ID = 2001L;
 
-    /**
-     * 准备测试数据
-     */
     @BeforeEach
     public void setup() {
         log.info("========================================");
-        log.info("开始准�TCC 测试数据");
+        log.info("Start preparing TCC test data");
         log.info("========================================");
 
-        // 清理测试数据
         orderMapper.delete(
                 new LambdaQueryWrapper<Order>()
                         .ge(Order::getUserId, TEST_USER_ID)
@@ -77,7 +59,6 @@ public class SeataTccModeIntegrationTest {
                         .eq(InvTccReservation::getSkuId, TEST_SKU_ID)
         );
 
-        // 初始化库�
         Inventory inventory = new Inventory();
         inventory.setSkuId(TEST_SKU_ID);
         inventory.setAvailableStock(100);
@@ -85,186 +66,161 @@ public class SeataTccModeIntegrationTest {
         inventory.setWarehouseId(1L);
         inventoryMapper.insert(inventory);
 
-        log.info("�初始化库� SKU={}, 可用库存=100, 锁定库存=0", TEST_SKU_ID);
+        log.info("Initialized stock: SKU={}, availableStock=100, lockedStock=0", TEST_SKU_ID);
     }
 
-    /**
-     * 场景 1: Try-Confirm 流程 - 订单创建成功，全局事务提交
-     */
     @Test
     @org.junit.jupiter.api.Order(1)
-    @DisplayName("场景1: Try-Confirm 流程 �全局事务提交")
+    @DisplayName("Scenario 1: Try-Confirm flow -> global transaction commit")
     public void testTccSuccess_TryConfirmFlow() {
         log.info("========================================");
-        log.info("测试场景 1: Try-Confirm 流程");
+        log.info("Test Scenario 1: Try-Confirm flow");
         log.info("========================================");
 
-        // 1. 准备请求
         OrderDubboService.CreateOrderRequest request = new OrderDubboService.CreateOrderRequest();
         request.setUserId(TEST_USER_ID);
         request.setSkuId(TEST_SKU_ID);
-        request.setSkuName("TCC测试商品");
+        request.setSkuName("TCC-TestProduct");
         request.setQuantity(10);
         request.setUnitPrice(new BigDecimal("99.00"));
         request.setTotalAmount(new BigDecimal("990.00"));
-        request.setRemark("TCC模式测试-成功场景");
+        request.setRemark("TCC mode test - success scenario");
 
-        // 2. 执行创建订单（TCC 模式�
         OrderDubboService.OrderVO orderVO = orderTccService.createOrderWithTcc(request);
 
-        // 3. 验证订单创建成功
-        assertNotNull(orderVO, "订单应该创建成功");
-        assertNotNull(orderVO.getOrderNo(), "订单号不应为�);
-        assertTrue(orderVO.getOrderNo().startsWith("TCC"), "TCC 订单号应�TCC 开�);
-        assertEquals("PENDING_PAYMENT", orderVO.getStatus(), "订单状态应为待支付");
+        assertNotNull(orderVO, "Order should be created successfully");
+        assertNotNull(orderVO.getOrderNo(), "Order number should not be null");
+        assertTrue(orderVO.getOrderNo().startsWith("TCC"), "TCC order number should start with TCC");
+        assertEquals("PENDING_PAYMENT", orderVO.getStatus(), "Order status should be PENDING_PAYMENT");
 
-        log.info("�订单创建成功: OrderNo={}", orderVO.getOrderNo());
+        log.info("Order created successfully: OrderNo={}", orderVO.getOrderNo());
 
-        // 4. 验证数据库中订单记录存在
         Order orderInDb = orderMapper.selectOne(
                 new LambdaQueryWrapper<Order>()
                         .eq(Order::getOrderNo, orderVO.getOrderNo())
         );
-        assertNotNull(orderInDb, "数据库中应该存在订单记录");
-        assertEquals(TEST_SKU_ID, orderInDb.getSkuId(), "SKU ID 应该匹配");
-        assertEquals(10, orderInDb.getQuantity(), "数量应该匹配");
+        assertNotNull(orderInDb, "Order should exist in database");
+        assertEquals(TEST_SKU_ID, orderInDb.getSkuId(), "SKU ID should match");
+        assertEquals(10, orderInDb.getQuantity(), "Quantity should match");
 
-        log.info("�数据库订单验证通过");
+        log.info("Database order verification passed");
 
-        // 5. 验证库存变化（Try 阶段：available_stock - 10, locked_stock + 10�
         Inventory inventoryInDb = inventoryMapper.selectOne(
                 new LambdaQueryWrapper<Inventory>()
                         .eq(Inventory::getSkuId, TEST_SKU_ID)
         );
-        assertNotNull(inventoryInDb, "库存记录应该存在");
+        assertNotNull(inventoryInDb, "Inventory record should exist");
 
-        // 注意：全局事务提交后，Confirm 会执�locked_stock - 10
-        // 最终状态：available_stock = 90, locked_stock = 0
         assertEquals(90, inventoryInDb.getAvailableStock(),
-                "可用库存应该扣减 10�00 - 10 = 90�);
+                "Available stock should be deducted by 10 (100 - 10 = 90)");
         assertEquals(0, inventoryInDb.getLockedStock(),
-                "Confirm 后锁定库存应该释放（0�);
+                "Locked stock should be 0 after Confirm");
 
-        log.info("�库存验证通过: available={}, locked={}",
+        log.info("Stock verified: available={}, locked={}",
                 inventoryInDb.getAvailableStock(), inventoryInDb.getLockedStock());
 
-        // 6. 验证预留记录状态为 CONFIRMED
         InvTccReservation reservation = reservationMapper.selectOne(
                 new LambdaQueryWrapper<InvTccReservation>()
                         .eq(InvTccReservation::getBusinessKey, orderVO.getOrderNo())
         );
-        assertNotNull(reservation, "预留记录应该存在");
-        assertEquals(TEST_SKU_ID, reservation.getSkuId(), "SKU ID 应该匹配");
-        assertEquals(10, reservation.getQuantity(), "预留数量应该匹配");
+        assertNotNull(reservation, "Reservation record should exist");
+        assertEquals(TEST_SKU_ID, reservation.getSkuId(), "SKU ID should match");
+        assertEquals(10, reservation.getQuantity(), "Reservation quantity should match");
         assertEquals(InvTccReservation.Status.CONFIRMED, reservation.getStatus(),
-                "预留记录状态应�CONFIRMED");
-        assertNotNull(reservation.getTryTime(), "Try 时间不应为空");
-        assertNotNull(reservation.getConfirmTime(), "Confirm 时间不应为空");
-        assertNull(reservation.getCancelTime(), "Cancel 时间应为�);
+                "Reservation status should be CONFIRMED");
+        assertNotNull(reservation.getTryTime(), "Try time should not be null");
+        assertNotNull(reservation.getConfirmTime(), "Confirm time should not be null");
+        assertNull(reservation.getCancelTime(), "Cancel time should be null");
 
-        log.info("�TCC 预留记录验证通过: status={}, tryTime={}, confirmTime={}",
+        log.info("TCC reservation record verified: status={}, tryTime={}, confirmTime={}",
                 reservation.getStatus(), reservation.getTryTime(), reservation.getConfirmTime());
 
         log.info("========================================");
-        log.info("场景 1 测试通过 �);
+        log.info("Scenario 1 test passed");
         log.info("========================================");
     }
 
-    /**
-     * 场景 2: Try-Cancel 流程 - 库存不足，全局事务回滚
-     */
     @Test
     @org.junit.jupiter.api.Order(2)
-    @DisplayName("场景2: Try-Cancel 流程 �全局事务回滚")
+    @DisplayName("Scenario 2: Try-Cancel flow -> global transaction rollback")
     public void testTccFailed_InsufficientStock_TryCancelFlow() {
         log.info("========================================");
-        log.info("测试场景 2: Try-Cancel 流程（库存不足）");
+        log.info("Test Scenario 2: Try-Cancel flow (insufficient stock)");
         log.info("========================================");
 
-        // 1. 准备请求（数量超过库存）
         OrderDubboService.CreateOrderRequest request = new OrderDubboService.CreateOrderRequest();
         request.setUserId(TEST_USER_ID);
         request.setSkuId(TEST_SKU_ID);
-        request.setSkuName("TCC测试商品");
-        request.setQuantity(200);  // 需�200，但库存只有 100
+        request.setSkuName("TCC-TestProduct");
+        request.setQuantity(200);
         request.setUnitPrice(new BigDecimal("99.00"));
         request.setTotalAmount(new BigDecimal("19800.00"));
-        request.setRemark("TCC模式测试-库存不足场景");
+        request.setRemark("TCC mode test - insufficient stock scenario");
 
-        // 2. 执行创建订单（应该抛出异常）
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             orderTccService.createOrderWithTcc(request);
         });
 
-        log.info("�预期异常抛出: {}", exception.getMessage());
-        assertTrue(exception.getMessage().contains("库存"), "异常信息应包�库存'");
+        log.info("Expected exception thrown: {}", exception.getMessage());
+        assertTrue(exception.getMessage().contains("stock"), "Exception should contain 'stock'");
 
-        // 3. 验证订单已回滚（数据库中不应有订单）
         Long orderCount = orderMapper.selectCount(
                 new LambdaQueryWrapper<Order>()
                         .ge(Order::getUserId, TEST_USER_ID)
         );
-        assertEquals(0L, orderCount, "数据库中不应该有订单记录（已回滚�);
+        assertEquals(0L, orderCount, "Database should have no order records (rolled back)");
 
-        log.info("�订单回滚验证通过: 数据库中无订单记�);
+        log.info("Order rollback verified: no orders in database");
 
-        // 4. 验证库存恢复（Cancel 后：available_stock + 预留� locked_stock - 预留量）
         Inventory inventoryInDb = inventoryMapper.selectOne(
                 new LambdaQueryWrapper<Inventory>()
                         .eq(Inventory::getSkuId, TEST_SKU_ID)
         );
-        assertNotNull(inventoryInDb, "库存记录应该存在");
+        assertNotNull(inventoryInDb, "Inventory record should exist");
         assertEquals(100, inventoryInDb.getAvailableStock(),
-                "可用库存应该未变化（Cancel 恢复�);
+                "Available stock should be unchanged (Cancel restored)");
         assertEquals(0, inventoryInDb.getLockedStock(),
-                "锁定库存应该�0（Cancel 恢复�);
+                "Locked stock should be 0 (Cancel restored)");
 
-        log.info("�库存回滚验证通过: available={}, locked={}",
+        log.info("Stock rollback verified: available={}, locked={}",
                 inventoryInDb.getAvailableStock(), inventoryInDb.getLockedStock());
 
-        // 5. 验证没有预留记录（因�Try 阶段就失败了，没有插入预留记录）
         Long reservationCount = reservationMapper.selectCount(
                 new LambdaQueryWrapper<InvTccReservation>()
                         .eq(InvTccReservation::getSkuId, TEST_SKU_ID)
         );
-        assertEquals(0L, reservationCount, "不应有预留记录（Try 阶段失败�);
+        assertEquals(0L, reservationCount, "No reservation records (Try phase failed)");
 
-        log.info("�TCC 预留记录验证通过: 无预留记�);
+        log.info("TCC reservation record verified: no reservations");
 
         log.info("========================================");
-        log.info("场景 2 测试通过 �);
+        log.info("Scenario 2 test passed");
         log.info("========================================");
     }
 
-    /**
-     * 场景 3: 幂等性测�- 重复 Try 调用应幂等返�
-     */
     @Test
     @org.junit.jupiter.api.Order(3)
-    @DisplayName("场景3: 幂等性测��重复 Try 调用幂等返回")
+    @DisplayName("Scenario 3: Idempotency test -> duplicate Try returns idempotent")
     public void testTccIdempotency_DuplicateTry() {
         log.info("========================================");
-        log.info("测试场景 3: TCC 幂等性测�);
+        log.info("Test Scenario 3: TCC idempotency test");
         log.info("========================================");
 
-        // 1. 准备请求
         OrderDubboService.CreateOrderRequest request = new OrderDubboService.CreateOrderRequest();
         request.setUserId(TEST_USER_ID);
         request.setSkuId(TEST_SKU_ID);
-        request.setSkuName("TCC测试商品");
+        request.setSkuName("TCC-TestProduct");
         request.setQuantity(5);
         request.setUnitPrice(new BigDecimal("99.00"));
         request.setTotalAmount(new BigDecimal("495.00"));
-        request.setRemark("TCC模式测试-幂等性场�);
+        request.setRemark("TCC mode test - idempotency scenario");
 
-        // 2. 第一次执行（正常�
         OrderDubboService.OrderVO orderVO1 = orderTccService.createOrderWithTcc(request);
-        assertNotNull(orderVO1, "第一次创建应该成�);
+        assertNotNull(orderVO1, "First creation should succeed");
         String orderNo = orderVO1.getOrderNo();
 
-        log.info("�第一次创建订单成� OrderNo={}", orderNo);
+        log.info("First order created successfully: OrderNo={}", orderNo);
 
-        // 3. 验证库存状态（第一次）
         Inventory inventory1 = inventoryMapper.selectOne(
                 new LambdaQueryWrapper<Inventory>()
                         .eq(Inventory::getSkuId, TEST_SKU_ID)
@@ -272,40 +228,31 @@ public class SeataTccModeIntegrationTest {
         int availableAfterFirst = inventory1.getAvailableStock();
         int lockedAfterFirst = inventory1.getLockedStock();
 
-        log.info("�第一次执行后库存: available={}, locked={}", availableAfterFirst, lockedAfterFirst);
+        log.info("Stock after first execution: available={}, locked={}", availableAfterFirst, lockedAfterFirst);
 
-        // 4. 第二次执行（相同请求，应该幂等）
-        // 注意：由于订单号是随机生成的，这里无法直接测试完全相同的 businessKey
-        // 实际场景中，客户端应该使用相同的 requestId 作为 businessKey
-        // 这里我们验证预留记录的幂等逻辑
+        log.info("Idempotency mechanism: TCC uses businessKey (orderNo) for idempotency");
+        log.info("  - Same businessKey Try call returns success directly");
+        log.info("  - No repeated stock deduction");
 
-        log.info("�幂等性机制验� TCC 使用 businessKey (orderNo) 保证幂等");
-        log.info("  - 相同 businessKey �Try 调用会直接返回成�);
-        log.info("  - 不会重复扣减库存");
-
-        // 5. 验证预留记录唯一�
         Long reservationCount = reservationMapper.selectCount(
                 new LambdaQueryWrapper<InvTccReservation>()
                         .eq(InvTccReservation::getBusinessKey, orderNo)
         );
-        assertEquals(1L, reservationCount, "相同 businessKey 只应有一条预留记�);
+        assertEquals(1L, reservationCount, "Same businessKey should have exactly one reservation record");
 
-        log.info("�预留记录唯一性验证通过");
+        log.info("Reservation record uniqueness verified");
 
         log.info("========================================");
-        log.info("场景 3 测试通过 �);
+        log.info("Scenario 3 test passed");
         log.info("========================================");
     }
 
-    /**
-     * 场景 4: 并发场景 - 多个 TCC 事务并发执行
-     */
     @Test
     @org.junit.jupiter.api.Order(4)
-    @DisplayName("场景4: 并发 TCC 事务 �预留记录一致�)
+    @DisplayName("Scenario 4: Concurrent TCC transactions -> reservation consistency")
     public void testConcurrentTccTransactions() throws InterruptedException {
         log.info("========================================");
-        log.info("测试场景 4: 并发 TCC 事务");
+        log.info("Test Scenario 4: Concurrent TCC transactions");
         log.info("========================================");
 
         int threadCount = 10;
@@ -314,7 +261,6 @@ public class SeataTccModeIntegrationTest {
         AtomicInteger successCount = new AtomicInteger(0);
         AtomicInteger failCount = new AtomicInteger(0);
 
-        // 启动 10 个线程，每个线程创建一个订单，扣减 5 库存
         Thread[] threads = new Thread[threadCount];
         for (int i = 0; i < threadCount; i++) {
             final int index = i;
@@ -323,18 +269,18 @@ public class SeataTccModeIntegrationTest {
                     OrderDubboService.CreateOrderRequest request = new OrderDubboService.CreateOrderRequest();
                     request.setUserId(TEST_USER_ID + index);
                     request.setSkuId(TEST_SKU_ID);
-                    request.setSkuName("TCC测试商品");
+                    request.setSkuName("TCC-TestProduct");
                     request.setQuantity(quantityPerOrder);
                     request.setUnitPrice(new BigDecimal("99.00"));
                     request.setTotalAmount(new BigDecimal("495.00"));
-                    request.setRemark("并发TCC测试-线程" + index);
+                    request.setRemark("Concurrent TCC test - thread" + index);
 
                     orderTccService.createOrderWithTcc(request);
                     successCount.incrementAndGet();
-                    log.info("�线程 {} 创建订单成功", index);
+                    log.info("Thread {} created order successfully", index);
                 } catch (Exception e) {
                     failCount.incrementAndGet();
-                    log.error("�线程 {} 创建订单失败: {}", index, e.getMessage());
+                    log.error("Thread {} failed to create order: {}", index, e.getMessage());
                 } finally {
                     latch.countDown();
                 }
@@ -342,12 +288,10 @@ public class SeataTccModeIntegrationTest {
             threads[i].start();
         }
 
-        // 等待所有线程完�
         latch.await();
 
-        log.info("�并发执行完成: 成功={}, 失败={}", successCount.get(), failCount.get());
+        log.info("Concurrent execution completed: success={}, fail={}", successCount.get(), failCount.get());
 
-        // 验证库存一致�
         Inventory inventoryInDb = inventoryMapper.selectOne(
                 new LambdaQueryWrapper<Inventory>()
                         .eq(Inventory::getSkuId, TEST_SKU_ID)
@@ -355,127 +299,111 @@ public class SeataTccModeIntegrationTest {
 
         int expectedStock = 100 - (successCount.get() * quantityPerOrder);
         assertEquals(expectedStock, inventoryInDb.getAvailableStock(),
-                String.format("库存应该�%d�00 - %d*5�, expectedStock, successCount.get()));
-        assertEquals(0, inventoryInDb.getLockedStock(), "Confirm 后锁定库存应该为 0");
+                String.format("Stock should be %d (100 - %d*5)", expectedStock, successCount.get()));
+        assertEquals(0, inventoryInDb.getLockedStock(), "Locked stock should be 0 after Confirm");
 
-        log.info("�并发库存一致性验证通过: available={}, locked={}",
+        log.info("Concurrent inventory consistency verified: available={}, locked={}",
                 inventoryInDb.getAvailableStock(), inventoryInDb.getLockedStock());
 
-        // 验证预留记录数量
         Long reservationCount = reservationMapper.selectCount(
                 new LambdaQueryWrapper<InvTccReservation>()
                         .eq(InvTccReservation::getSkuId, TEST_SKU_ID)
                         .eq(InvTccReservation::getStatus, InvTccReservation.Status.CONFIRMED)
         );
         assertEquals((long) successCount.get(), reservationCount,
-                "CONFIRMED 预留记录数量应该等于成功订单数量");
+                "CONFIRMED reservation count should equal success count");
 
-        log.info("�TCC 预留记录一致性验证通过: {} �CONFIRMED 记录", reservationCount);
+        log.info("TCC reservation consistency verified: {} CONFIRMED records", reservationCount);
 
-        // 验证订单数量
         Long orderCount = orderMapper.selectCount(
                 new LambdaQueryWrapper<Order>()
                         .ge(Order::getUserId, TEST_USER_ID)
         );
         assertEquals((long) successCount.get(), orderCount,
-                "订单数量应该等于成功数量");
+                "Order count should equal success count");
 
-        log.info("�订单数量验证通过: 共创�{} 个订�, orderCount);
+        log.info("Order count verified: created {} orders", orderCount);
 
         log.info("========================================");
-        log.info("场景 4 测试通过 �);
+        log.info("Scenario 4 test passed");
         log.info("========================================");
     }
 
-    /**
-     * 场景 5: TCC 状态验�- 验证 Try/Confirm/Cancel 状态转�
-     */
     @Test
     @org.junit.jupiter.api.Order(5)
-    @DisplayName("场景5: TCC 状态转换验�)
+    @DisplayName("Scenario 5: TCC state transition verification")
     public void testTccStateTransition() {
         log.info("========================================");
-        log.info("测试场景 5: TCC 状态转换验�);
+        log.info("Test Scenario 5: TCC state transition verification");
         log.info("========================================");
 
-        // 1. 准备请求
         OrderDubboService.CreateOrderRequest request = new OrderDubboService.CreateOrderRequest();
         request.setUserId(TEST_USER_ID);
         request.setSkuId(TEST_SKU_ID);
-        request.setSkuName("TCC测试商品");
+        request.setSkuName("TCC-TestProduct");
         request.setQuantity(3);
         request.setUnitPrice(new BigDecimal("99.00"));
         request.setTotalAmount(new BigDecimal("297.00"));
-        request.setRemark("TCC模式测试-状态转换验�);
+        request.setRemark("TCC mode test - state transition verification");
 
-        // 2. 执行订单创建
         OrderDubboService.OrderVO orderVO = orderTccService.createOrderWithTcc(request);
         String orderNo = orderVO.getOrderNo();
 
-        log.info("�订单创建成功: OrderNo={}", orderNo);
+        log.info("Order created successfully: OrderNo={}", orderNo);
 
-        // 3. 验证最终状态为 CONFIRMED
         InvTccReservation reservation = reservationMapper.selectOne(
                 new LambdaQueryWrapper<InvTccReservation>()
                         .eq(InvTccReservation::getBusinessKey, orderNo)
         );
 
-        assertNotNull(reservation, "预留记录应该存在");
+        assertNotNull(reservation, "Reservation record should exist");
         assertEquals(InvTccReservation.Status.CONFIRMED, reservation.getStatus(),
-                "最终状态应�CONFIRMED");
+                "Final status should be CONFIRMED");
 
-        // 4. 验证时间字段
-        assertNotNull(reservation.getTryTime(), "Try 时间应该存在");
-        assertNotNull(reservation.getConfirmTime(), "Confirm 时间应该存在");
-        assertNull(reservation.getCancelTime(), "Cancel 时间应该为空");
+        assertNotNull(reservation.getTryTime(), "Try time should exist");
+        assertNotNull(reservation.getConfirmTime(), "Confirm time should exist");
+        assertNull(reservation.getCancelTime(), "Cancel time should be null");
         assertTrue(reservation.getConfirmTime().isAfter(reservation.getTryTime()),
-                "Confirm 时间应该晚于 Try 时间");
+                "Confirm time should be after Try time");
 
-        log.info("�TCC 状态转换验证通过:");
-        log.info("  - 状� {}", reservation.getStatus());
-        log.info("  - Try 时间: {}", reservation.getTryTime());
-        log.info("  - Confirm 时间: {}", reservation.getConfirmTime());
-        log.info("  - Cancel 时间: {}", reservation.getCancelTime());
+        log.info("TCC state transition verified:");
+        log.info("  - Status: {}", reservation.getStatus());
+        log.info("  - Try time: {}", reservation.getTryTime());
+        log.info("  - Confirm time: {}", reservation.getConfirmTime());
+        log.info("  - Cancel time: {}", reservation.getCancelTime());
 
-        // 5. 验证 XID �Branch ID
-        assertNotNull(reservation.getXid(), "XID 应该存在");
-        assertNotNull(reservation.getBranchId(), "Branch ID 应该存在");
+        assertNotNull(reservation.getXid(), "XID should exist");
+        assertNotNull(reservation.getBranchId(), "Branch ID should exist");
 
-        log.info("�Seata 上下文验证通过: XID={}, BranchId={}",
+        log.info("Seata context verified: XID={}, BranchId={}",
                 reservation.getXid(), reservation.getBranchId());
 
         log.info("========================================");
-        log.info("场景 5 测试通过 �);
+        log.info("Scenario 5 test passed");
         log.info("========================================");
     }
 
-    /**
-     * 清理测试数据
-     */
     @AfterEach
     public void cleanup() {
         log.info("========================================");
-        log.info("清理 TCC 测试数据");
+        log.info("Cleaning up TCC test data");
         log.info("========================================");
 
-        // 清理订单
         orderMapper.delete(
                 new LambdaQueryWrapper<Order>()
                         .ge(Order::getUserId, TEST_USER_ID)
         );
 
-        // 清理库存
         inventoryMapper.delete(
                 new LambdaQueryWrapper<Inventory>()
                         .eq(Inventory::getSkuId, TEST_SKU_ID)
         );
 
-        // 清理预留记录
         reservationMapper.delete(
                 new LambdaQueryWrapper<InvTccReservation>()
                         .eq(InvTccReservation::getSkuId, TEST_SKU_ID)
         );
 
-        log.info("�TCC 测试数据清理完成");
+        log.info("TCC test data cleanup completed");
     }
 }

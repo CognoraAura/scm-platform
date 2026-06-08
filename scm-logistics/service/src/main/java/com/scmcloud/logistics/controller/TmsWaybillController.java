@@ -59,7 +59,7 @@ public class TmsWaybillController {
 
     @PostMapping
     public ApiResponse<TmsWaybill> create(@RequestBody TmsWaybill waybill) {
-        log.info("创建运单: orderNo={}, carrierId={}", waybill.getOrderNo(), waybill.getCarrierId());
+        log.info("Create waybill: orderNo={}, carrierId={}", waybill.getOrderNo(), waybill.getCarrierId());
         TmsWaybill created = waybillService.createWaybill(waybill);
         return ApiResponse.success(created);
     }
@@ -69,9 +69,9 @@ public class TmsWaybillController {
             @PathVariable String id,
             @RequestParam Integer status,
             @RequestParam(required = false) String operator) {
-        log.info("更新运单状�? id={}, status={}", id, status);
+        log.info("Update waybill status: id={}, status={}", id, status);
         boolean success = waybillService.updateStatus(id, status, operator);
-        return success ? ApiResponse.success() : ApiResponse.fail(500, "更新运单状态失败");
+        return success ? ApiResponse.success() : ApiResponse.fail(500, "Failed to update waybill status");
     }
 
     @PostMapping("/{id}/cancel")
@@ -79,14 +79,14 @@ public class TmsWaybillController {
             @PathVariable String id,
             @RequestParam(required = false) String reason,
             @RequestParam(required = false) String operator) {
-        log.info("取消运单: id={}, reason={}", id, reason);
+        log.info("Cancel waybill: id={}, reason={}", id, reason);
         boolean success = waybillService.cancelWaybill(id, reason, operator);
-        return success ? ApiResponse.success() : ApiResponse.fail(500, "取消运单失败");
+        return success ? ApiResponse.success() : ApiResponse.fail(500, "Failed to cancel waybill");
     }
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(@PathVariable String id) {
-        log.info("删除运单: id={}", id);
+        log.info("Delete waybill: id={}", id);
         TmsWaybill waybill = new TmsWaybill();
         waybill.setId(id);
         waybill.setDeleted(true);

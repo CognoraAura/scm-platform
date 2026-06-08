@@ -51,7 +51,7 @@ public class TmsTrackingController {
 
     @PostMapping
     public ApiResponse<TmsTracking> addTracking(@RequestBody TmsTracking tracking) {
-        log.info("添加物流轨迹: waybillNo={}, location={}, status={}", tracking.getWaybillNo(), tracking.getLocation(), tracking.getTrackStatus());
+        log.info("Add tracking: waybillNo={}, location={}, status={}", tracking.getWaybillNo(), tracking.getLocation(), tracking.getTrackStatus());
         TmsTracking created = trackingService.addTracking(tracking);
         return ApiResponse.success(created);
     }
