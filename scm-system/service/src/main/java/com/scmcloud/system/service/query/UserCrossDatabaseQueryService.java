@@ -269,6 +269,44 @@ public class UserCrossDatabaseQueryService {
         return getCountOrDefault(userId, uid -> userRoleMapper.countExpiringRoles(uid, days));
     }
 
+    /**
+     * 统计指定部门的用户数
+     *
+     * @param deptId 部门 ID
+     * @return 用户数
+     */
+    @Slave
+    public int countUsersByDeptId(UUID deptId) {
+        if (deptId == null) {
+            return 0;
+        }
+        Integer count = userMapper.countUsersByDeptId(deptId);
+        return count != null ? count : 0;
+    }
+
+    /**
+     * 批量统计指定部门的用户数
+     *
+     * @param deptIds 部门 ID 列表
+     * @return 部门 ID -> 用户数 映射
+     */
+    @Slave
+    public Map<UUID, Integer> countUsersByDeptIds(List<UUID> deptIds) {
+        if (deptIds == null || deptIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        Map<UUID, Map<String, Object>> raw = userMapper.countUsersByDeptIds(deptIds);
+        if (raw == null) {
+            return Collections.emptyMap();
+        }
+        Map<UUID, Integer> result = new HashMap<>();
+        for (Map.Entry<UUID, Map<String, Object>> entry : raw.entrySet()) {
+            Object count = entry.getValue().get("user_count");
+            result.put(entry.getKey(), count instanceof Number ? ((Number) count).intValue() : 0);
+        }
+        return result;
+    }
+
     // ==================== 私有辅助方法 ====================
 
     /**
