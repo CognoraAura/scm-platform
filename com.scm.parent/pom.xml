@@ -84,6 +84,9 @@
     <!-- Messaging -->
     <rabbitmq.version>5.14.2</rabbitmq.version>
 
+    <!-- Testcontainers -->
+    <testcontainers.version>1.20.6</testcontainers.version>
+
     <!-- Observability -->
     <sentinel.version>2025.0.0.0</sentinel.version>
     <sentinel-datasource-nacos.version>1.8.7</sentinel-datasource-nacos.version>
@@ -362,6 +365,17 @@
         <groupId>io.micrometer</groupId>
         <artifactId>micrometer-registry-prometheus</artifactId>
         <version>${micrometer.version}</version>
+      </dependency>
+
+      <!-- ==================== Testing ==================== -->
+
+      <!-- Testcontainers BOM for version management -->
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-bom</artifactId>
+        <version>${testcontainers.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
     </dependencies>
