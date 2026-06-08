@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -108,7 +109,7 @@ public class SysStatusDictServiceImpl implements ISysStatusDictService {
         }
     }
 
-    private String resolveTenantId(String tenantId) {
-        return tenantId != null ? tenantId : "global";
+    private String resolveTenantId(UUID tenantId) {
+        return tenantId != null ? tenantId.toString() : "global";
     }
 }
