@@ -1,12 +1,11 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { Layout, Avatar, Dropdown, Space, Badge, Tooltip, Switch } from 'antd'
+import { Layout, Avatar, Dropdown, Space, Tooltip, Switch } from 'antd'
 import {
   UserOutlined,
   LogoutOutlined,
   SettingOutlined,
-  BellOutlined,
   ExpandOutlined,
   SunOutlined,
   MoonOutlined,
@@ -16,6 +15,7 @@ import {
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useUIStore } from '@/stores/ui-store'
 import TenantSwitcher from '@/components/business/tenant-switcher'
+import NotificationBell from '@/features/notification/components/notification-bell'
 
 const { Header: AntHeader } = Layout
 
@@ -105,9 +105,7 @@ export default function AppHeader() {
           />
         </Tooltip>
 
-        <Badge count={0} size="small">
-          <BellOutlined style={{ cursor: 'pointer', fontSize: 16 }} />
-        </Badge>
+        <NotificationBell />
 
         <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
           <Space style={{ cursor: 'pointer' }}>
