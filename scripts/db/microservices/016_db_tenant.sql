@@ -179,6 +179,7 @@ CREATE TABLE IF NOT EXISTS tenant_subscription (
     update_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     update_by UUID,
     remark TEXT,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
 
     CONSTRAINT fk_subscription_tenant FOREIGN KEY (tenant_id) REFERENCES tenant(id),
     CONSTRAINT fk_subscription_package FOREIGN KEY (package_id) REFERENCES tenant_package(id)

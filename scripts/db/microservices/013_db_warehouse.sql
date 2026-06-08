@@ -196,6 +196,9 @@ CREATE TABLE IF NOT EXISTS wms_inbound_item (
 
     -- 元数据
     create_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    create_by VARCHAR(64),
+    update_time TIMESTAMPTZ,
+    update_by VARCHAR(64),
     remark TEXT,
 
     CONSTRAINT fk_inbound_item FOREIGN KEY (inbound_id) REFERENCES wms_inbound(id)
@@ -299,6 +302,9 @@ CREATE TABLE IF NOT EXISTS wms_outbound_item (
 
     -- 元数据
     create_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    create_by VARCHAR(64),
+    update_time TIMESTAMPTZ,
+    update_by VARCHAR(64),
     remark TEXT,
 
     CONSTRAINT fk_outbound_item FOREIGN KEY (outbound_id) REFERENCES wms_outbound(id)

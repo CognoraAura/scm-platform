@@ -5,13 +5,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.UUID;
@@ -38,16 +38,16 @@ public class MeteringInterceptor implements HandlerInterceptor {
     private static final String COUNTER_PREFIX = "metering:";
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-                             Object handler) throws Exception {
+    public boolean preHandle(@NonNull HttpServletRequest request,
+                             @NonNull HttpServletResponse response,
+                             @NonNull Object handler) throws Exception {
         UUID tenantId = TenantContextHolder.getTenantId();
         if (tenantId == null) {
-            return true; // no tenant context, skip metering
+            return true;
         }
 
-        // Check quota before allowing the request
         if (!quotaEnforcer.checkAndIncrement(tenantId)) {
-            response.setStatus(429); // Too Many Requests
+            response.setStatus(429);
             response.setContentType("application/json");
             response.getWriter().write("{\"code\":429,\"message\":\"API quota exceeded for today\"}");
             return false;

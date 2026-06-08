@@ -1,8 +1,10 @@
 package com.scmcloud.warehouse.service.command;
 
 import com.scmcloud.common.data.rw.annotation.Master;
+import com.scmcloud.common.util.UUIDv7Util;
 import com.scmcloud.warehouse.domain.entity.WmsWarehouse;
 import com.scmcloud.warehouse.mapper.WmsWarehouseMapper;
+import com.scmcloud.warehouse.service.query.WmsWarehouseQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,24 +18,41 @@ import java.time.LocalDateTime;
 public class WmsWarehouseCommandService {
 
     private final WmsWarehouseMapper warehouseMapper;
+    private final WmsWarehouseQueryService warehouseQueryService;
 
     @Master(reason = "写操作必须走主库")
     @Transactional(rollbackFor = Exception.class)
-    public int save(WmsWarehouse warehouse) {
-        return warehouseMapper.insert(warehouse);
+    public WmsWarehouse create(WmsWarehouse warehouse) {
+        if (warehouseQueryService.existsByWarehouseCode(warehouse.getWarehouseCode())) {
+            throw new IllegalStateException("仓库编码已存在: " + warehouse.getWarehouseCode());
+        }
+        warehouse.setId(UUIDv7Util.generateString());
+        warehouse.setEnabled(true);
+        warehouse.setUsedCapacity(0);
+        warehouse.setDeleted(false);
+        warehouse.setCreateTime(LocalDateTime.now());
+        warehouse.setUpdateTime(LocalDateTime.now());
+        warehouseMapper.insert(warehouse);
+        log.info("仓库创建成功: id={}, code={}", warehouse.getId(), warehouse.getWarehouseCode());
+        return warehouse;
     }
 
     @Master(reason = "写操作必须走主库")
     @Transactional(rollbackFor = Exception.class)
-    public int updateById(WmsWarehouse warehouse) {
-        return warehouseMapper.updateById(warehouse);
+    public boolean update(WmsWarehouse warehouse) {
+        WmsWarehouse existing = warehouseMapper.selectById(warehouse.getId());
+        if (existing == null || Boolean.TRUE.equals(existing.getDeleted())) {
+            return false;
+        }
+        warehouse.setUpdateTime(LocalDateTime.now());
+        return warehouseMapper.updateById(warehouse) > 0;
     }
 
     @Master(reason = "写操作必须走主库")
     @Transactional(rollbackFor = Exception.class)
     public boolean softDeleteById(String id) {
         WmsWarehouse warehouse = warehouseMapper.selectById(id);
-        if (warehouse == null) {
+        if (warehouse == null || Boolean.TRUE.equals(warehouse.getDeleted())) {
             return false;
         }
         warehouse.setDeleted(true);
@@ -46,7 +65,7 @@ public class WmsWarehouseCommandService {
     public boolean enable(String id) {
         WmsWarehouse warehouse = warehouseMapper.selectById(id);
         if (warehouse == null) {
-            log.warn("仓库不存在: id={}", id);
+            log.warn("[enable] 仓库不存在: id={}", id);
             return false;
         }
         warehouse.setEnabled(true);
@@ -63,7 +82,7 @@ public class WmsWarehouseCommandService {
     public boolean disable(String id) {
         WmsWarehouse warehouse = warehouseMapper.selectById(id);
         if (warehouse == null) {
-            log.warn("仓库不存在: id={}", id);
+            log.warn("[disable] 仓库不存在: id={}", id);
             return false;
         }
         warehouse.setEnabled(false);

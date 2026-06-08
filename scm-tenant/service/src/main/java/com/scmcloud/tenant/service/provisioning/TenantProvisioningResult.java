@@ -1,6 +1,5 @@
 package com.scmcloud.tenant.service.provisioning;
 
-import com.scmcloud.tenant.api.dto.tenant.TenantCreateCommand;
 import lombok.Builder;
 import lombok.Data;
 

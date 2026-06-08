@@ -86,4 +86,7 @@ public class TenantSubscription implements Serializable {
     @TableField("remark")
     private String remark;
 
+    @TableField("deleted")
+    private Boolean deleted;
+
 }

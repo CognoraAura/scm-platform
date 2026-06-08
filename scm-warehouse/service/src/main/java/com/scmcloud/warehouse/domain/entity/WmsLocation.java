@@ -66,16 +66,16 @@ public class WmsLocation implements Serializable {
     @TableField("enabled")
     private Boolean enabled;
 
-    @TableField("create_time")
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
-    @TableField("create_by")
+    @TableField(value = "create_by", fill = FieldFill.INSERT)
     private String createBy;
 
-    @TableField("update_time")
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
-    @TableField("update_by")
+    @TableField(value = "update_by", fill = FieldFill.INSERT_UPDATE)
     private String updateBy;
 
     @TableField("deleted")

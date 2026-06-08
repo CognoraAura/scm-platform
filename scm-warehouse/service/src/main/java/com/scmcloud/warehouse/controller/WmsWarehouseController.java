@@ -2,14 +2,13 @@ package com.scmcloud.warehouse.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.scmcloud.common.response.ApiResponse;
-import com.scmcloud.common.util.UUIDv7Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import com.scmcloud.warehouse.domain.entity.WmsWarehouse;
-import com.scmcloud.warehouse.service.IWmsWarehouseService;
+import com.scmcloud.warehouse.service.command.WmsWarehouseCommandService;
+import com.scmcloud.warehouse.service.query.WmsWarehouseQueryService;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -18,65 +17,42 @@ import java.util.List;
 @RequestMapping("/wms-warehouse")
 public class WmsWarehouseController {
 
-    private final IWmsWarehouseService warehouseService;
+    private final WmsWarehouseCommandService warehouseCommandService;
+    private final WmsWarehouseQueryService warehouseQueryService;
 
     @PostMapping
     public ApiResponse<WmsWarehouse> create(@RequestBody WmsWarehouse warehouse) {
         log.info("[API] 创建仓库: code={}, name={}", warehouse.getWarehouseCode(), warehouse.getWarehouseName());
-
-        boolean exists = warehouseService.lambdaQuery()
-                .eq(WmsWarehouse::getWarehouseCode, warehouse.getWarehouseCode())
-                .eq(WmsWarehouse::getDeleted, false)
-                .exists();
-        if (exists) {
-            return ApiResponse.fail(400, "仓库编码已存在 " + warehouse.getWarehouseCode());
+        try {
+            WmsWarehouse created = warehouseCommandService.create(warehouse);
+            log.info("[API] 仓库创建成功: id={}", created.getId());
+            return ApiResponse.success(created);
+        } catch (IllegalStateException e) {
+            return ApiResponse.fail(400, e.getMessage());
         }
-
-        warehouse.setId(UUIDv7Util.generateString());
-        warehouse.setEnabled(true);
-        warehouse.setUsedCapacity(0);
-        warehouse.setDeleted(false);
-        warehouse.setCreateTime(LocalDateTime.now());
-        warehouse.setUpdateTime(LocalDateTime.now());
-
-        warehouseService.save(warehouse);
-        log.info("[API] 仓库创建成功: id={}", warehouse.getId());
-        return ApiResponse.success(warehouse);
     }
 
     @PutMapping("/{id}")
     public ApiResponse<WmsWarehouse> update(@PathVariable String id, @RequestBody WmsWarehouse warehouse) {
         log.info("[API] 更新仓库: id={}", id);
-
-        WmsWarehouse existing = warehouseService.getById(id);
-        if (existing == null || Boolean.TRUE.equals(existing.getDeleted())) {
+        warehouse.setId(id);
+        boolean success = warehouseCommandService.update(warehouse);
+        if (!success) {
             return ApiResponse.fail(404, "仓库不存在");
         }
-
-        warehouse.setId(id);
-        warehouse.setUpdateTime(LocalDateTime.now());
-        warehouseService.updateById(warehouse);
-        return ApiResponse.success(warehouseService.getById(id));
+        return ApiResponse.success(warehouseQueryService.getById(id));
     }
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(@PathVariable String id) {
         log.info("[API] 删除仓库: id={}", id);
-
-        WmsWarehouse existing = warehouseService.getById(id);
-        if (existing == null || Boolean.TRUE.equals(existing.getDeleted())) {
-            return ApiResponse.fail(404, "仓库不存在");
-        }
-
-        existing.setDeleted(true);
-        existing.setUpdateTime(LocalDateTime.now());
-        warehouseService.updateById(existing);
-        return ApiResponse.success();
+        boolean success = warehouseCommandService.softDeleteById(id);
+        return success ? ApiResponse.success() : ApiResponse.fail(404, "仓库不存在");
     }
 
     @GetMapping("/{id}")
     public ApiResponse<WmsWarehouse> getById(@PathVariable String id) {
-        WmsWarehouse warehouse = warehouseService.getById(id);
+        WmsWarehouse warehouse = warehouseQueryService.getById(id);
         if (warehouse == null || Boolean.TRUE.equals(warehouse.getDeleted())) {
             return ApiResponse.fail(404, "仓库不存在");
         }
@@ -85,7 +61,7 @@ public class WmsWarehouseController {
 
     @GetMapping("/list")
     public ApiResponse<List<WmsWarehouse>> listEnabled() {
-        return ApiResponse.success(warehouseService.listEnabled());
+        return ApiResponse.success(warehouseQueryService.listEnabled());
     }
 
     @GetMapping("/page")
@@ -95,20 +71,20 @@ public class WmsWarehouseController {
             @RequestParam(required = false) String warehouseName,
             @RequestParam(required = false) Integer warehouseType,
             @RequestParam(required = false) Boolean enabled) {
-        return ApiResponse.success(warehouseService.pageList(page, size, warehouseName, warehouseType, enabled));
+        return ApiResponse.success(warehouseQueryService.pageList(page, size, warehouseName, warehouseType, enabled));
     }
 
     @PutMapping("/{id}/enable")
     public ApiResponse<Void> enable(@PathVariable String id) {
         log.info("[API] 启用仓库: id={}", id);
-        boolean success = warehouseService.enable(id);
+        boolean success = warehouseCommandService.enable(id);
         return success ? ApiResponse.success() : ApiResponse.fail(400, "启用失败");
     }
 
     @PutMapping("/{id}/disable")
     public ApiResponse<Void> disable(@PathVariable String id) {
         log.info("[API] 停用仓库: id={}", id);
-        boolean success = warehouseService.disable(id);
+        boolean success = warehouseCommandService.disable(id);
         return success ? ApiResponse.success() : ApiResponse.fail(400, "停用失败");
     }
 }

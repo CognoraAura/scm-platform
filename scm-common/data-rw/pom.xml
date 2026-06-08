@@ -60,6 +60,13 @@
             <artifactId>micrometer-core</artifactId>
         </dependency>
 
+        <!-- OpenTelemetry -->
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api</artifactId>
+            <version>1.40.0</version>
+        </dependency>
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>

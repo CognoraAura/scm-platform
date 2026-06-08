@@ -21,9 +21,6 @@ import java.util.List;
 @Configuration
 public class OpenApiConfig {
 
-    @Value("${spring.application.name:SCM Platform}")
-    private String appName;
-
     @Value("${server.port:8080}")
     private int serverPort;
 
