@@ -1,10 +1,8 @@
 package com.scmcloud.tenant.service.provisioning;
 
-import com.scmcloud.common.tenant.TenantContextHolder;
-import com.scmcloud.tenant.api.dto.tenant.TenantCreateCommand;
+import com.scmcloud.tenant.api.command.TenantCreateCommand;
 import com.scmcloud.tenant.domain.entity.Tenant;
 import com.scmcloud.tenant.domain.entity.TenantPackage;
-import com.scmcloud.tenant.domain.entity.TenantResourceQuota;
 import com.scmcloud.tenant.domain.entity.TenantSubscription;
 import com.scmcloud.tenant.service.command.TenantCommandService;
 import com.scmcloud.tenant.service.command.TenantSubscriptionCommandService;

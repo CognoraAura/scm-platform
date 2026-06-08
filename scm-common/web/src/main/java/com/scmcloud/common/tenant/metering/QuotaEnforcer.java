@@ -6,7 +6,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.Collections;
@@ -26,7 +25,6 @@ import java.util.concurrent.ConcurrentMap;
 @Component
 @RequiredArgsConstructor
 public class QuotaEnforcer {
-
     private final StringRedisTemplate redisTemplate;
 
     private static final String COUNTER_PREFIX = "metering:";
@@ -40,7 +38,6 @@ public class QuotaEnforcer {
      * KEYS[1] = counter key
      * ARGV[1] = daily limit
      * ARGV[2] = TTL in seconds (until end of day)
-     *
      * Returns: 1 if allowed, 0 if quota exceeded.
      */
     private static final String QUOTA_SCRIPT = """

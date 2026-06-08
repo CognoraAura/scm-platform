@@ -1,7 +1,7 @@
 package com.scmcloud.tenant.controller;
 
 import com.scmcloud.common.response.ApiResponse;
-import com.scmcloud.tenant.api.dto.tenant.TenantCreateCommand;
+import com.scmcloud.tenant.api.command.TenantCreateCommand;
 import com.scmcloud.tenant.service.provisioning.TenantProvisioningResult;
 import com.scmcloud.tenant.service.provisioning.TenantProvisioningService;
 import jakarta.validation.Valid;

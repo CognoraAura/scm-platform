@@ -18,6 +18,19 @@
     </properties>
 
     <dependencies>
+        <!-- SCM Common Core -->
+        <dependency>
+            <groupId>com.scmcloud</groupId>
+            <artifactId>scm-common-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- MyBatis-Plus -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>

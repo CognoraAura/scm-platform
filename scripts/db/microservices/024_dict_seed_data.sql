@@ -82,17 +82,33 @@ INSERT INTO sys_status_transition (id, tenant_id, biz_type, from_status, to_stat
 
 -- ============================================================
 -- 入库状态 (INBOUND)
--- ============================================================
 INSERT INTO sys_status_dict (id, tenant_id, biz_type, status_code, status_name, status_name_en, color, icon, sort_order, is_initial, is_terminal, is_cancellable, enabled) VALUES
 ('sd-inbound-00', NULL, 'INBOUND', 'WAITING', '待入库', 'Waiting', '#faad14', 'clock-circle', 0, true, false, true, true),
 ('sd-inbound-01', NULL, 'INBOUND', 'PROCESSING', '入库中', 'Processing', '#1890ff', 'loading', 1, false, false, false, true),
-('sd-inbound-02', NULL, 'INBOUND', 'FINISHED', '已完成', 'Finished', '#52c41a', 'check-circle', 2, false, true, false, true),
-('sd-inbound-03', NULL, 'INBOUND', 'CANCELLED', '已取消', 'Cancelled', '#ff4d4f', 'close-circle', 3, false, true, false, true);
+('sd-inbound-04', NULL, 'INBOUND', 'PARTIAL', '部分入库', 'Partial', '#faad14', 'warning', 2, false, false, true, true),
+('sd-inbound-02', NULL, 'INBOUND', 'COMPLETED', '已完成', 'Completed', '#52c41a', 'check-circle', 3, false, true, false, true),
+('sd-inbound-03', NULL, 'INBOUND', 'CANCELLED', '已取消', 'Cancelled', '#ff4d4f', 'close-circle', 4, false, true, false, true);
 
 INSERT INTO sys_status_transition (id, tenant_id, biz_type, from_status, to_status, action_code, action_name, action_name_en, need_approval, enabled, sort_order) VALUES
 ('st-inbound-01', NULL, 'INBOUND', 'WAITING', 'PROCESSING', 'START', '开始入库', 'Start', false, true, 0),
 ('st-inbound-02', NULL, 'INBOUND', 'WAITING', 'CANCELLED', 'CANCEL', '取消', 'Cancel', false, true, 1),
-('st-inbound-03', NULL, 'INBOUND', 'PROCESSING', 'FINISHED', 'COMPLETE', '完成', 'Complete', false, true, 0);
+('st-inbound-05', NULL, 'INBOUND', 'PROCESSING', 'COMPLETED', 'COMPLETE', '完成', 'Complete', false, true, 0),
+('st-inbound-04', NULL, 'INBOUND', 'PROCESSING', 'PARTIAL', 'PARTIAL_COMPLETE', '部分完成', 'Partial Complete', false, true, 1),
+('st-inbound-06', NULL, 'INBOUND', 'PARTIAL', 'COMPLETED', 'COMPLETE', '完成', 'Complete', false, true, 0),
+('st-inbound-07', NULL, 'INBOUND', 'PARTIAL', 'CANCELLED', 'CANCEL', '取消', 'Cancel', true, true, 1);
+
+-- 波次拣货状态 (WAVE_PICKING)
+INSERT INTO sys_status_dict (id, tenant_id, biz_type, status_code, status_name, status_name_en, color, icon, sort_order, is_initial, is_terminal, is_cancellable, enabled) VALUES
+('sd-wave-00', NULL, 'WAVE_PICKING', 'WAITING', '待拣货', 'Waiting', '#faad14', 'clock-circle', 0, true, false, true, true),
+('sd-wave-01', NULL, 'WAVE_PICKING', 'PICKING', '拣货中', 'Picking', '#1890ff', 'shopping-cart', 1, false, false, false, true),
+('sd-wave-02', NULL, 'WAVE_PICKING', 'COMPLETED', '已完成', 'Completed', '#52c41a', 'check-circle', 2, false, true, false, true),
+('sd-wave-03', NULL, 'WAVE_PICKING', 'CANCELLED', '已取消', 'Cancelled', '#ff4d4f', 'close-circle', 3, false, true, false, true);
+
+INSERT INTO sys_status_transition (id, tenant_id, biz_type, from_status, to_status, action_code, action_name, action_name_en, need_approval, enabled, sort_order) VALUES
+('st-wave-01', NULL, 'WAVE_PICKING', 'WAITING', 'PICKING', 'START_PICK', '开始拣货', 'Start Pick', false, true, 0),
+('st-wave-02', NULL, 'WAVE_PICKING', 'WAITING', 'CANCELLED', 'CANCEL', '取消', 'Cancel', false, true, 1),
+('st-wave-03', NULL, 'WAVE_PICKING', 'PICKING', 'COMPLETED', 'COMPLETE', '完成', 'Complete', false, true, 0),
+('st-wave-04', NULL, 'WAVE_PICKING', 'PICKING', 'CANCELLED', 'CANCEL', '取消', 'Cancel', true, true, 1);
 
 -- ============================================================
 -- 出库状态 (OUTBOUND)

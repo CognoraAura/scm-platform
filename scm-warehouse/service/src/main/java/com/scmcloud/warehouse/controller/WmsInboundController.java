@@ -2,14 +2,12 @@ package com.scmcloud.warehouse.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.scmcloud.common.response.ApiResponse;
-import com.scmcloud.common.util.UUIDv7Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import com.scmcloud.warehouse.domain.entity.WmsInbound;
-import com.scmcloud.warehouse.service.IWmsInboundService;
-
-import java.time.LocalDateTime;
+import com.scmcloud.warehouse.service.command.WmsInboundCommandService;
+import com.scmcloud.warehouse.service.query.WmsInboundQueryService;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -17,61 +15,42 @@ import java.time.LocalDateTime;
 @RequestMapping("/wms-inbound")
 public class WmsInboundController {
 
-    private final IWmsInboundService inboundService;
+    private final WmsInboundCommandService inboundCommandService;
+    private final WmsInboundQueryService inboundQueryService;
 
     @PostMapping
     public ApiResponse<WmsInbound> create(@RequestBody WmsInbound inbound) {
         log.info("[API] 创建入库单 warehouseId={}, type={}", inbound.getWarehouseId(), inbound.getInboundType());
-
-        inbound.setId(UUIDv7Util.generateString());
-        inbound.setInboundNo("IN" + System.currentTimeMillis());
-        inbound.setStatus(0); // 0-待入库
-        inbound.setReceivedQuantity(0);
-        inbound.setDeleted(false);
-        inbound.setCreateTime(LocalDateTime.now());
-        inbound.setUpdateTime(LocalDateTime.now());
-
-        inboundService.save(inbound);
-        log.info("[API] 入库单创建成功 id={}, inboundNo={}", inbound.getId(), inbound.getInboundNo());
-        return ApiResponse.success(inbound);
+        WmsInbound created = inboundCommandService.create(inbound);
+        log.info("[API] 入库单创建成功 id={}, inboundNo={}", created.getId(), created.getInboundNo());
+        return ApiResponse.success(created);
     }
 
     @PutMapping("/{id}")
     public ApiResponse<WmsInbound> update(@PathVariable String id, @RequestBody WmsInbound inbound) {
         log.info("[API] 更新入库单 id={}", id);
-
-        WmsInbound existing = inboundService.getById(id);
-        if (existing == null || Boolean.TRUE.equals(existing.getDeleted())) {
-            return ApiResponse.fail(404, "入库单不存在");
-        }
-        if (existing.getStatus() != 0) {
-            return ApiResponse.fail(400, "只有待入库状态的入库单才能修改");
-        }
-
         inbound.setId(id);
-        inbound.setUpdateTime(LocalDateTime.now());
-        inboundService.updateById(inbound);
-        return ApiResponse.success(inboundService.getById(id));
+        try {
+            boolean success = inboundCommandService.update(inbound);
+            if (!success) {
+                return ApiResponse.fail(404, "入库单不存在");
+            }
+            return ApiResponse.success(inboundQueryService.getById(id));
+        } catch (IllegalStateException e) {
+            return ApiResponse.fail(400, e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(@PathVariable String id) {
         log.info("[API] 删除入库单 id={}", id);
-
-        WmsInbound existing = inboundService.getById(id);
-        if (existing == null || Boolean.TRUE.equals(existing.getDeleted())) {
-            return ApiResponse.fail(404, "入库单不存在");
-        }
-
-        existing.setDeleted(true);
-        existing.setUpdateTime(LocalDateTime.now());
-        inboundService.updateById(existing);
-        return ApiResponse.success();
+        boolean success = inboundCommandService.softDeleteById(id);
+        return success ? ApiResponse.success() : ApiResponse.fail(404, "入库单不存在");
     }
 
     @GetMapping("/{id}")
     public ApiResponse<WmsInbound> getById(@PathVariable String id) {
-        WmsInbound inbound = inboundService.getById(id);
+        WmsInbound inbound = inboundQueryService.getById(id);
         if (inbound == null || Boolean.TRUE.equals(inbound.getDeleted())) {
             return ApiResponse.fail(404, "入库单不存在");
         }
@@ -85,7 +64,7 @@ public class WmsInboundController {
             @RequestParam(required = false) String warehouseId,
             @RequestParam(required = false) Integer inboundType,
             @RequestParam(required = false) Integer status) {
-        return ApiResponse.success(inboundService.pageList(page, size, warehouseId, inboundType, status));
+        return ApiResponse.success(inboundQueryService.pageList(page, size, warehouseId, inboundType, status));
     }
 
     @PutMapping("/{id}/receive")
@@ -94,9 +73,8 @@ public class WmsInboundController {
             @RequestParam String operatorId,
             @RequestParam String operatorName) {
         log.info("[API] 入库收货: id={}, operator={}", id, operatorName);
-
         try {
-            boolean success = inboundService.receive(id, operatorId, operatorName);
+            boolean success = inboundCommandService.receive(id, operatorId, operatorName);
             return success ? ApiResponse.success() : ApiResponse.fail(400, "收货失败");
         } catch (IllegalStateException e) {
             return ApiResponse.fail(400, e.getMessage());
@@ -109,9 +87,8 @@ public class WmsInboundController {
             @RequestParam String operatorId,
             @RequestParam String operatorName) {
         log.info("[API] 取消入库单 id={}, operator={}", id, operatorName);
-
         try {
-            boolean success = inboundService.cancel(id, operatorId, operatorName);
+            boolean success = inboundCommandService.cancel(id, operatorId, operatorName);
             return success ? ApiResponse.success() : ApiResponse.fail(400, "取消失败");
         } catch (IllegalStateException e) {
             return ApiResponse.fail(400, e.getMessage());

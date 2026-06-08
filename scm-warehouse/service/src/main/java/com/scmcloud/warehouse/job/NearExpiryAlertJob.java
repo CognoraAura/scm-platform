@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 
 /**
  * 临期库存告警定时任务
- *
+
  * 执行时间：每日上午09:00（cron: 0 0 9 * * ?）
- *
+
  * 功能：
  * 1. 扫描所有租户的临期库存（基于 v_near_expiry_inventory 视图）
  * 2. 临期标准：
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  *    - 邮件通知（可选）
  *    - 企业微信/钉钉通知（可选）
  * 4. 记录告警历史，避免重复发送
- *
+
  * XXL-Job 配置示例：
  * - 执行器：scm-warehouse-executor
  * - JobHandler：nearExpiryAlertJob
@@ -52,11 +52,11 @@ public class NearExpiryAlertJob {
 
     /**
      * 执行临期库存告警
-     *
+
      * 任务参数（可选）：
      * - tenantId: 指定租户ID（UUID格式），不传则扫描所有租户
      * - alertLevel: 告警级别（CRITICAL, WARNING, INFO），不传则发送所有级别
-     *
+
      * 示例：
      * - 扫描所有租户：不传参数
      * - 扫描单个租户：传入"123e4567-e89b-12d3-a456-426614174000"

@@ -24,17 +24,41 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
         this.strictInsertFill(metaObject, "createTime", LocalDateTime.class, LocalDateTime.now());
-        this.strictInsertFill(metaObject, "createBy", UUID.class,
-                securityContext.getCurrentUserId());
+
+        UUID userId = securityContext.getCurrentUserId();
+        if (userId != null) {
+            Object createByValue = metaObject.getValue("createBy");
+            if (createByValue instanceof String) {
+                this.strictInsertFill(metaObject, "createBy", String.class, userId.toString());
+            } else {
+                this.strictInsertFill(metaObject, "createBy", UUID.class, userId);
+            }
+        }
+
         this.strictInsertFill(metaObject, "updateTime", LocalDateTime.class, LocalDateTime.now());
-        this.strictInsertFill(metaObject, "updateBy", UUID.class,
-                securityContext.getCurrentUserId());
+
+        if (userId != null) {
+            Object updateByValue = metaObject.getValue("updateBy");
+            if (updateByValue instanceof String) {
+                this.strictInsertFill(metaObject, "updateBy", String.class, userId.toString());
+            } else {
+                this.strictInsertFill(metaObject, "updateBy", UUID.class, userId);
+            }
+        }
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
         this.strictUpdateFill(metaObject, "updateTime", LocalDateTime.class, LocalDateTime.now());
-        this.strictUpdateFill(metaObject, "updateBy", UUID.class,
-                securityContext.getCurrentUserId());
+
+        UUID userId = securityContext.getCurrentUserId();
+        if (userId != null) {
+            Object updateByValue = metaObject.getValue("updateBy");
+            if (updateByValue instanceof String) {
+                this.strictUpdateFill(metaObject, "updateBy", String.class, userId.toString());
+            } else {
+                this.strictUpdateFill(metaObject, "updateBy", UUID.class, userId);
+            }
+        }
     }
 }

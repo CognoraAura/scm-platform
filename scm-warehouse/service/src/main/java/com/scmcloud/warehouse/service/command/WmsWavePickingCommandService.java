@@ -2,6 +2,8 @@ package com.scmcloud.warehouse.service.command;
 
 import com.scmcloud.common.data.rw.annotation.Master;
 import com.scmcloud.common.status.StatusValidator;
+import com.scmcloud.common.util.UUIDv7Util;
+import com.scmcloud.warehouse.domain.entity.WavePickingStatus;
 import com.scmcloud.warehouse.domain.entity.WmsWavePicking;
 import com.scmcloud.warehouse.mapper.WmsWavePickingMapper;
 import lombok.RequiredArgsConstructor;
@@ -21,19 +23,38 @@ public class WmsWavePickingCommandService {
 
     @Master(reason = "写操作必须走主库")
     @Transactional(rollbackFor = Exception.class)
-    public int save(WmsWavePicking wave) {
-        return wavePickingMapper.insert(wave);
+    public WmsWavePicking create(WmsWavePicking wave) {
+        wave.setId(UUIDv7Util.generateString());
+        wave.setWaveNo("WAVE" + System.currentTimeMillis());
+        wave.setStatus(WavePickingStatus.WAITING.getCode());
+        wave.setCreateTime(LocalDateTime.now());
+        wave.setUpdateTime(LocalDateTime.now());
+        wavePickingMapper.insert(wave);
+        log.info("波次拣货单创建成功 id={}, waveNo={}", wave.getId(), wave.getWaveNo());
+        return wave;
     }
 
     @Master(reason = "写操作必须走主库")
     @Transactional(rollbackFor = Exception.class)
-    public int updateById(WmsWavePicking wave) {
-        return wavePickingMapper.updateById(wave);
+    public boolean update(WmsWavePicking wave) {
+        WmsWavePicking existing = wavePickingMapper.selectById(wave.getId());
+        if (existing == null) {
+            return false;
+        }
+        if (existing.getStatus() != WavePickingStatus.WAITING.getCode()) {
+            throw new IllegalStateException("只有待拣货状态的波次拣货单才能修改");
+        }
+        wave.setUpdateTime(LocalDateTime.now());
+        return wavePickingMapper.updateById(wave) > 0;
     }
 
     @Master(reason = "写操作必须走主库")
     @Transactional(rollbackFor = Exception.class)
     public boolean removeById(String id) {
+        WmsWavePicking wave = wavePickingMapper.selectById(id);
+        if (wave == null) {
+            return false;
+        }
         return wavePickingMapper.deleteById(id) > 0;
     }
 
@@ -42,16 +63,20 @@ public class WmsWavePickingCommandService {
     public boolean start(String waveId, String pickerId, String pickerName) {
         WmsWavePicking wave = wavePickingMapper.selectById(waveId);
         if (wave == null) {
-            log.warn("波次拣货单不存在: id={}", waveId);
+            log.warn("[start] 波次拣货单不存在: id={}", waveId);
             return false;
         }
-        statusValidator.validateTransition("WAVE_PICKING", "WAITING", "PICKING");
-        wave.setStatus(1);
+
+        WavePickingStatus currentStatus = WavePickingStatus.fromCode(wave.getStatus());
+        statusValidator.validateTransition("WAVE_PICKING", currentStatus.name(), "PICKING");
+
+        wave.setStatus(WavePickingStatus.PICKING.getCode());
         wave.setPickerId(pickerId);
         wave.setPickerName(pickerName);
         wave.setStartedAt(LocalDateTime.now());
         wave.setUpdateTime(LocalDateTime.now());
         wave.setUpdateBy(pickerId);
+
         boolean success = wavePickingMapper.updateById(wave) > 0;
         if (success) {
             log.info("波次拣货已开始: id={}, waveNo={}, picker={}", waveId, wave.getWaveNo(), pickerName);
@@ -64,14 +89,18 @@ public class WmsWavePickingCommandService {
     public boolean complete(String waveId, String operatorId) {
         WmsWavePicking wave = wavePickingMapper.selectById(waveId);
         if (wave == null) {
-            log.warn("波次拣货单不存在: id={}", waveId);
+            log.warn("[complete] 波次拣货单不存在: id={}", waveId);
             return false;
         }
-        statusValidator.validateTransition("WAVE_PICKING", "PICKING", "COMPLETED");
-        wave.setStatus(2);
+
+        WavePickingStatus currentStatus = WavePickingStatus.fromCode(wave.getStatus());
+        statusValidator.validateTransition("WAVE_PICKING", currentStatus.name(), "COMPLETED");
+
+        wave.setStatus(WavePickingStatus.COMPLETED.getCode());
         wave.setCompletedAt(LocalDateTime.now());
         wave.setUpdateTime(LocalDateTime.now());
         wave.setUpdateBy(operatorId);
+
         boolean success = wavePickingMapper.updateById(wave) > 0;
         if (success) {
             log.info("波次拣货已完成: id={}, waveNo={}", waveId, wave.getWaveNo());
@@ -84,21 +113,17 @@ public class WmsWavePickingCommandService {
     public boolean cancel(String waveId, String operatorId) {
         WmsWavePicking wave = wavePickingMapper.selectById(waveId);
         if (wave == null) {
-            log.warn("波次拣货单不存在: id={}", waveId);
+            log.warn("[cancel] 波次拣货单不存在: id={}", waveId);
             return false;
         }
-        String waveFromStatus;
-        if (wave.getStatus() == 0) {
-            waveFromStatus = "WAITING";
-        } else if (wave.getStatus() == 1) {
-            waveFromStatus = "PICKING";
-        } else {
-            waveFromStatus = "COMPLETED";
-        }
-        statusValidator.validateTransition("WAVE_PICKING", waveFromStatus, "CANCELLED");
-        wave.setStatus(3);
+
+        WavePickingStatus currentStatus = WavePickingStatus.fromCode(wave.getStatus());
+        statusValidator.validateTransition("WAVE_PICKING", currentStatus.name(), "CANCELLED");
+
+        wave.setStatus(WavePickingStatus.CANCELLED.getCode());
         wave.setUpdateTime(LocalDateTime.now());
         wave.setUpdateBy(operatorId);
+
         boolean success = wavePickingMapper.updateById(wave) > 0;
         if (success) {
             log.info("波次拣货已取消: id={}, waveNo={}", waveId, wave.getWaveNo());
