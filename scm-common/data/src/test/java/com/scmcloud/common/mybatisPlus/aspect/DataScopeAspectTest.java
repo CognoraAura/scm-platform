@@ -46,8 +46,8 @@ class DataScopeAspectTest {
         testUserId = UUID.randomUUID();
         testDeptId = UUID.randomUUID();
 
-        when(dataScopeAnnotation.userAlias()).thenReturn("u");
-        when(dataScopeAnnotation.deptAlias()).thenReturn("d");
+        lenient().when(dataScopeAnnotation.userAlias()).thenReturn("u");
+        lenient().when(dataScopeAnnotation.deptAlias()).thenReturn("d");
     }
 
     @AfterEach
@@ -96,14 +96,18 @@ class DataScopeAspectTest {
         when(securityContext.getCurrentDeptId()).thenReturn(testDeptId);
         when(securityContext.getDataScopeLevel()).thenReturn(5);
 
+        DataScopeFilter[] capturedFilter = new DataScopeFilter[1];
         Object expectedResult = "proceed-result";
-        when(joinPoint.proceed()).thenReturn(expectedResult);
+        when(joinPoint.proceed()).thenAnswer(invocation -> {
+            capturedFilter[0] = DataScopeContextHolder.get();
+            return expectedResult;
+        });
 
         Object result = aspect.around(joinPoint, dataScopeAnnotation);
 
         assertThat(result).isEqualTo(expectedResult);
 
-        DataScopeFilter filter = DataScopeContextHolder.get();
+        DataScopeFilter filter = capturedFilter[0];
         assertThat(filter).isNotNull();
         assertThat(filter.getClause()).contains("u = #{__ds_userId}::uuid");
         assertThat(filter.getParams()).containsEntry("__ds_userId", testUserId.toString());
@@ -123,14 +127,18 @@ class DataScopeAspectTest {
         when(securityContext.getCurrentDeptId()).thenReturn(testDeptId);
         when(securityContext.getDataScopeLevel()).thenReturn(3);
 
+        DataScopeFilter[] capturedFilter = new DataScopeFilter[1];
         Object expectedResult = "proceed-result";
-        when(joinPoint.proceed()).thenReturn(expectedResult);
+        when(joinPoint.proceed()).thenAnswer(invocation -> {
+            capturedFilter[0] = DataScopeContextHolder.get();
+            return expectedResult;
+        });
 
         Object result = aspect.around(joinPoint, dataScopeAnnotation);
 
         assertThat(result).isEqualTo(expectedResult);
 
-        DataScopeFilter filter = DataScopeContextHolder.get();
+        DataScopeFilter filter = capturedFilter[0];
         assertThat(filter).isNotNull();
         assertThat(filter.getClause()).contains("d = #{__ds_deptId}::uuid");
         assertThat(filter.getParams()).containsEntry("__ds_deptId", testDeptId.toString());
@@ -144,14 +152,18 @@ class DataScopeAspectTest {
         when(securityContext.getCurrentDeptId()).thenReturn(testDeptId);
         when(securityContext.getDataScopeLevel()).thenReturn(1);
 
+        DataScopeFilter[] capturedFilter = new DataScopeFilter[1];
         Object expectedResult = "proceed-result";
-        when(joinPoint.proceed()).thenReturn(expectedResult);
+        when(joinPoint.proceed()).thenAnswer(invocation -> {
+            capturedFilter[0] = DataScopeContextHolder.get();
+            return expectedResult;
+        });
 
         Object result = aspect.around(joinPoint, dataScopeAnnotation);
 
         assertThat(result).isEqualTo(expectedResult);
 
-        DataScopeFilter filter = DataScopeContextHolder.get();
+        DataScopeFilter filter = capturedFilter[0];
         assertThat(filter).isNotNull();
         assertThat(filter.getClause()).isEqualTo("1=1");
     }
@@ -164,14 +176,18 @@ class DataScopeAspectTest {
         when(securityContext.getCurrentDeptId()).thenReturn(testDeptId);
         when(securityContext.getDataScopeLevel()).thenReturn(4);
 
+        DataScopeFilter[] capturedFilter = new DataScopeFilter[1];
         Object expectedResult = "proceed-result";
-        when(joinPoint.proceed()).thenReturn(expectedResult);
+        when(joinPoint.proceed()).thenAnswer(invocation -> {
+            capturedFilter[0] = DataScopeContextHolder.get();
+            return expectedResult;
+        });
 
         Object result = aspect.around(joinPoint, dataScopeAnnotation);
 
         assertThat(result).isEqualTo(expectedResult);
 
-        DataScopeFilter filter = DataScopeContextHolder.get();
+        DataScopeFilter filter = capturedFilter[0];
         assertThat(filter).isNotNull();
         assertThat(filter.getClause()).contains("WITH RECURSIVE dept_tree");
         assertThat(filter.getClause()).contains("d IN");
@@ -186,14 +202,18 @@ class DataScopeAspectTest {
         when(securityContext.getCurrentDeptId()).thenReturn(null);
         when(securityContext.getDataScopeLevel()).thenReturn(3);
 
+        DataScopeFilter[] capturedFilter = new DataScopeFilter[1];
         Object expectedResult = "proceed-result";
-        when(joinPoint.proceed()).thenReturn(expectedResult);
+        when(joinPoint.proceed()).thenAnswer(invocation -> {
+            capturedFilter[0] = DataScopeContextHolder.get();
+            return expectedResult;
+        });
 
         Object result = aspect.around(joinPoint, dataScopeAnnotation);
 
         assertThat(result).isEqualTo(expectedResult);
 
-        DataScopeFilter filter = DataScopeContextHolder.get();
+        DataScopeFilter filter = capturedFilter[0];
         assertThat(filter).isNotNull();
         assertThat(filter.getClause()).isEqualTo("1=0");
     }
@@ -209,12 +229,16 @@ class DataScopeAspectTest {
         when(securityContext.getCurrentDeptId()).thenReturn(testDeptId);
         when(securityContext.getDataScopeLevel()).thenReturn(5);
 
+        DataScopeFilter[] capturedFilter = new DataScopeFilter[1];
         Object expectedResult = "proceed-result";
-        when(joinPoint.proceed()).thenReturn(expectedResult);
+        when(joinPoint.proceed()).thenAnswer(invocation -> {
+            capturedFilter[0] = DataScopeContextHolder.get();
+            return expectedResult;
+        });
 
         Object result = aspect.around(joinPoint, dataScopeAnnotation);
 
-        DataScopeFilter filter = DataScopeContextHolder.get();
+        DataScopeFilter filter = capturedFilter[0];
         assertThat(filter).isNotNull();
         assertThat(filter.getClause()).contains("user_table =");
     }
