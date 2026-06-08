@@ -1,41 +1,35 @@
 'use client'
 
-import { Typography, Row, Col, Card, Statistic } from 'antd'
-import {
-  UserOutlined,
-  ShoppingCartOutlined,
-  InboxOutlined,
-  TeamOutlined,
-} from '@ant-design/icons'
-
-const { Title } = Typography
+import { Row, Col } from 'antd'
+import { useDashboardStats } from '@/features/dashboard/hooks'
+import KPICards from '@/features/dashboard/components/kpi-cards'
+import SalesChart from '@/features/dashboard/components/sales-chart'
+import OrderStatusChart from '@/features/dashboard/components/order-status-chart'
+import RecentOrders from '@/features/dashboard/components/recent-orders'
+import InventoryAlerts from '@/features/dashboard/components/inventory-alerts'
 
 export default function DashboardPage() {
+  const { data, isLoading } = useDashboardStats()
+
   return (
-    <>
-      <Title level={2}>仪表盘</Title>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <KPICards kpis={data?.kpis || []} loading={isLoading} />
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic title="用户数" value={1128} prefix={<UserOutlined />} />
-          </Card>
+        <Col xs={24} lg={16}>
+          <SalesChart data={data?.salesTrend || { dates: [], series: [] }} loading={isLoading} />
         </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic title="订单数" value={9280} prefix={<ShoppingCartOutlined />} />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic title="库存量" value={25600} prefix={<InboxOutlined />} />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic title="租户数" value={28} prefix={<TeamOutlined />} />
-          </Card>
+        <Col xs={24} lg={8}>
+          <OrderStatusChart data={data?.orderStatus || []} loading={isLoading} />
         </Col>
       </Row>
-    </>
+      <Row gutter={[16, 16]}>
+        <Col xs={24} lg={12}>
+          <RecentOrders orders={data?.recentOrders || []} loading={isLoading} />
+        </Col>
+        <Col xs={24} lg={12}>
+          <InventoryAlerts alerts={data?.inventoryAlerts || []} loading={isLoading} />
+        </Col>
+      </Row>
+    </div>
   )
 }
