@@ -59,14 +59,14 @@ public class OrdOrderController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<OrdOrder> listByUserId(@PathVariable Long userId) {
+    public List<OrdOrder> listByUserId(@PathVariable String userId) {
         log.info("[API] 查询用户订单: userId={}", userId);
         return orderService.listByUserId(userId);
     }
 
     @GetMapping("/user/{userId}/page")
     public Page<OrdOrder> pageByUserId(
-            @PathVariable Long userId,
+            @PathVariable String userId,
 @RequestParam(defaultValue = "1") Integer pageNum,
 @RequestParam(defaultValue = "10") Integer pageSize) {
         log.info("[API] 分页查询用户订单: userId={}, pageNum={}, pageSize={}", userId, pageNum, pageSize);

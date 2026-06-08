@@ -14,7 +14,6 @@ import com.scmcloud.common.status.StatusValidator;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -28,7 +27,6 @@ public class OrdRefundServiceImpl extends ServiceImpl<OrdRefundMapper, OrdRefund
     public OrdRefund createRefund(OrdRefund refund) {
         log.info("创建退款记录 orderNo={}, refundAmount={}", refund.getOrderNo(), refund.getRefundAmount());
 
-        refund.setId(UUID.randomUUID().toString());
         refund.setStatus(0);
         refund.setCreateTime(LocalDateTime.now());
         refund.setUpdateTime(LocalDateTime.now());

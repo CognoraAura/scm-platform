@@ -13,7 +13,7 @@ public interface IOrdOrderService extends IService<OrdOrder> {
 
     boolean updateOrderStatus(Long orderId, Integer status);
 
-    List<OrdOrder> listByUserId(Long userId);
+    List<OrdOrder> listByUserId(String userId);
 
-    Page<OrdOrder> pageByUserId(Long userId, Integer pageNum, Integer pageSize);
+    Page<OrdOrder> pageByUserId(String userId, Integer pageNum, Integer pageSize);
 }

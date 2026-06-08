@@ -35,7 +35,7 @@ public class OrdOrderQueryService {
     }
 
     @Slave
-    public List<OrdOrder> listByUserId(Long userId) {
+    public List<OrdOrder> listByUserId(String userId) {
         LambdaQueryWrapper<OrdOrder> wrapper = Wrappers.lambdaQuery();
         wrapper.eq(OrdOrder::getUserId, userId)
                 .eq(OrdOrder::getDeleted, false)
@@ -44,7 +44,7 @@ public class OrdOrderQueryService {
     }
 
     @Slave
-    public Page<OrdOrder> pageByUserId(Long userId, Integer pageNum, Integer pageSize) {
+    public Page<OrdOrder> pageByUserId(String userId, Integer pageNum, Integer pageSize) {
         LambdaQueryWrapper<OrdOrder> wrapper = Wrappers.lambdaQuery();
         wrapper.eq(OrdOrder::getUserId, userId)
                 .eq(OrdOrder::getDeleted, false)
