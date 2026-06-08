@@ -1,2 +1,0 @@
-com.scmcloud.common.integration.config.RabbitIntegrationAutoConfiguration
-com.scmcloud.common.integration.config.KafkaIntegrationAutoConfiguration

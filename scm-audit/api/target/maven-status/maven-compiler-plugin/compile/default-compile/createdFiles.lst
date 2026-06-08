@@ -1,5 +1,0 @@
-com\scmcloud\audit\api\request\AuditQueryRequest.class
-com\scmcloud\audit\api\dto\AuditLogVO.class
-com\scmcloud\audit\api\dto\AuditQueryResult.class
-com\scmcloud\audit\api\request\AuditLogRequest.class
-com\scmcloud\audit\api\AuditDubboService.class

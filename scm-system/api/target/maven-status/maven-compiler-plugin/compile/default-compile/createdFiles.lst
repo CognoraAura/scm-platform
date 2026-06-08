@@ -1,6 +1,0 @@
-com\scmcloud\system\api\StatusMachineDubboService.class
-com\scmcloud\system\api\UserDubboService.class
-com\scmcloud\system\api\StatusMachineDubboService$AvailableActionDTO.class
-com\scmcloud\system\api\StatusMachineDubboService$TransitionCheckDTO.class
-com\scmcloud\system\api\StatusMachineDubboService$TransitionResultDTO.class
-com\scmcloud\system\api\PermissionDubboService.class
