@@ -3,9 +3,10 @@ package com.scmcloud.order;
 import com.scmcloud.order.domain.entity.OrdOrder;
 import com.scmcloud.order.domain.entity.OrderStatus;
 import com.scmcloud.order.domain.repository.OrdOrderRepository;
-import com.scmcloud.test.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -16,7 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * Integration test for full order lifecycle.
  * Tests the order aggregate with real database.
  */
-class OrderLifecycleIntegrationTest extends AbstractIntegrationTest {
+@SpringBootTest
+@ActiveProfiles("test")
+class OrderLifecycleIntegrationTest {
 
     @Autowired
     private OrdOrderRepository orderRepository;
