@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Table, Button, Tag, Space, message, Popconfirm, Modal, Form, Input } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import MainLayout from '@/components/Layout/MainLayout'
-import ProtectedRoute from '@/components/Auth/ProtectedRoute'
 import client from '@/lib/api/client'
 
 interface Role {
@@ -134,62 +132,60 @@ export default function RoleListPage() {
   }
 
   return (
-    <ProtectedRoute>
-      <MainLayout>
-        <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            size="large"
-            onClick={() => {
-              setEditingRole(null)
-              form.resetFields()
-              setModalVisible(true)
-            }}
-          >
-            新增角色
-          </Button>
-        </div>
-        <Table
-          columns={columns}
-          dataSource={roles}
-          loading={loading}
-          rowKey="id"
-        />
-        <Modal
-          title={editingRole ? '编辑角色' : '新增角色'}
-          open={modalVisible}
-          onOk={handleModalOk}
-          onCancel={() => {
-            setModalVisible(false)
-            form.resetFields()
+    <>
+      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          size="large"
+          onClick={() => {
             setEditingRole(null)
+            form.resetFields()
+            setModalVisible(true)
           }}
         >
-          <Form form={form} layout="vertical">
-            <Form.Item
-              name="name"
-              label="角色名称"
-              rules={[{ required: true, message: '请输入角色名称' }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="code"
-              label="角色编码"
-              rules={[{ required: true, message: '请输入角色编码' }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="description"
-              label="描述"
-            >
-              <Input.TextArea />
-            </Form.Item>
-          </Form>
-        </Modal>
-      </MainLayout>
-    </ProtectedRoute>
+          新增角色
+        </Button>
+      </div>
+      <Table
+        columns={columns}
+        dataSource={roles}
+        loading={loading}
+        rowKey="id"
+      />
+      <Modal
+        title={editingRole ? '编辑角色' : '新增角色'}
+        open={modalVisible}
+        onOk={handleModalOk}
+        onCancel={() => {
+          setModalVisible(false)
+          form.resetFields()
+          setEditingRole(null)
+        }}
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item
+            name="name"
+            label="角色名称"
+            rules={[{ required: true, message: '请输入角色名称' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="code"
+            label="角色编码"
+            rules={[{ required: true, message: '请输入角色编码' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="description"
+            label="描述"
+          >
+            <Input.TextArea />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
   )
 }
