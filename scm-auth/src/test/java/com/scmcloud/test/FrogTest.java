@@ -1,68 +1,25 @@
 package com.scmcloud.test;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-/**
- * 鍩虹娴嬭瘯绫荤ず锟?
- *
- * @author Deng
- * createData 2025/11/3 10:07
- */
-@RequiredArgsConstructor
-@SpringBootTest
-@ImportAutoConfiguration
-public class FrogTest {
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-    private final PasswordEncoder passwordEncoder;
+class FrogTest {
+
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Test
-    public void testExample() {
-        System.out.println("passwordEncoder = " +
-                passwordEncoder.matches("D123456", "$2a$10$IksNdaP/LeACZS9H/FATbOOvHVSieAuYurijkhZhJl1r.b14.IUDC"));
-
-        // 鏌ョ湅鍔犲瘑鍚庣殑鏁版嵁
+    void testExample() {
         String rawPassword = "Greenplate3$$!";
         String encodedPassword = passwordEncoder.encode(rawPassword);
-        System.out.println("Raw password: " + rawPassword);
-        System.out.println("Encoded password: " + encodedPassword);
-        
-        // 楠岃瘉鍔犲瘑鍚庣殑瀵嗙爜鏄惁鑳芥纭尮閰嶅師濮嬪瘑锟?
-        boolean isMatch = passwordEncoder.matches(rawPassword, encodedPassword);
-        System.out.println("Password match result: " + isMatch);
+        assertTrue(passwordEncoder.matches(rawPassword, encodedPassword));
     }
 
     @Test
-    public void testAnotherExample() {
+    void testAnotherExample() {
         String str = "Frog";
-        assertEquals("Frog", str, "strings should be equal");
         System.out.println("str = " + str);
-    }
-
-    private void assertEquals(String expected, String actual, String message) {
-        if (!expected.equals(actual)) {
-            throw new AssertionError(message);
-        }
-    }
-
-    @Configuration
-    static class TestConfig {
-        @Bean
-        public MeterRegistry meterRegistry() {
-            return new SimpleMeterRegistry();
-        }
-        
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-            return new BCryptPasswordEncoder();
-        }
     }
 }
