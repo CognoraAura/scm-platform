@@ -1,0 +1,1023 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,wght@0,400;0,500;1,400&display=swap');
+  :root {
+    --mono: 'IBM Plex Mono', monospace;
+    --serif: 'Newsreader', serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+
+  .arch-wrap { max-width: 680px; padding: 0; }
+
+  .arch-hero {
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    padding: 2rem 0 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .arch-hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .arch-hero h1 {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--color-text-primary);
+    margin-bottom: 0.75rem;
+    font-style: italic;
+  }
+  .arch-hero-sub {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    max-width: 520px;
+    font-family: var(--mono);
+  }
+
+  .toc {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 1rem 1.25rem;
+    margin-bottom: 2rem;
+    border: 0.5px solid var(--color-border-tertiary);
+  }
+  .toc-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    margin-bottom: 0.75rem;
+  }
+  .toc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 24px;
+  }
+  .toc-item {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: 3px 0;
+    border-bottom: 0.5px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .toc-item:hover { color: var(--color-text-primary); border-color: var(--color-border-secondary); }
+  .toc-num { font-family: var(--mono); font-size: 10px; color: var(--color-text-tertiary); min-width: 18px; }
+
+  .section { margin-bottom: 2.5rem; }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .section-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    min-width: 20px;
+  }
+  .section-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    letter-spacing: -0.01em;
+  }
+
+  .prose {
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--color-text-secondary);
+  }
+  .prose + .prose { margin-top: 0.75rem; }
+
+  .callout {
+    border-left: 2px solid var(--color-border-secondary);
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+    font-family: var(--serif);
+    font-size: 15px;
+    font-style: italic;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+
+  .pillar-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 1rem;
+  }
+  .pillar-card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    padding: 0.875rem 1rem;
+  }
+  .pillar-card-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    margin-bottom: 4px;
+  }
+  .pillar-card-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+  }
+  .pillar-card-desc {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+
+  .arch-diagram {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-lg);
+    border: 0.5px solid var(--color-border-tertiary);
+    padding: 1.25rem;
+    margin: 1rem 0;
+    overflow: hidden;
+  }
+  .arch-diagram svg { width: 100%; height: auto; display: block; }
+
+  .flow-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 1rem 0;
+  }
+  .flow-step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 0.75rem 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .flow-step:last-child { border-bottom: none; }
+  .flow-step-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    min-width: 20px;
+    padding-top: 2px;
+  }
+  .flow-step-body {}
+  .flow-step-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 2px;
+  }
+  .flow-step-desc {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+  .flow-step-mono {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    margin-top: 4px;
+  }
+
+  .tradeoff-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 1rem 0;
+  }
+  .tradeoff-table th {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    font-weight: 400;
+    text-align: left;
+    padding: 6px 8px 6px 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .tradeoff-table td {
+    padding: 8px 8px 8px 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    color: var(--color-text-secondary);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .tradeoff-table td:first-child {
+    color: var(--color-text-primary);
+    font-weight: 500;
+    white-space: nowrap;
+    padding-right: 16px;
+  }
+  .tradeoff-table tr:last-child td { border-bottom: none; }
+
+  .badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 99px;
+    letter-spacing: 0.04em;
+  }
+  .badge-strong { background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-secondary); }
+  .badge-eventual { background: var(--color-background-info); color: var(--color-text-info); border: 0.5px solid var(--color-border-info); }
+  .badge-convergent { background: var(--color-background-success); color: var(--color-text-success); border: 0.5px solid var(--color-border-success); }
+  .badge-ephemeral { background: var(--color-background-warning); color: var(--color-text-warning); border: 0.5px solid var(--color-border-warning); }
+
+  .consistency-rows { display: flex; flex-direction: column; gap: 0; margin: 1rem 0; }
+  .consistency-row {
+    display: grid;
+    grid-template-columns: 2fr 1.2fr 2fr;
+    gap: 12px;
+    align-items: start;
+    padding: 0.6rem 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    font-size: 12px;
+  }
+  .consistency-row:last-child { border-bottom: none; }
+  .consistency-row .op { color: var(--color-text-primary); font-weight: 500; }
+  .consistency-row .reason { color: var(--color-text-tertiary); font-family: var(--mono); font-size: 11px; line-height: 1.4; }
+
+  .slo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin: 1rem 0;
+  }
+  .slo-card {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 0.75rem;
+    border: 0.5px solid var(--color-border-tertiary);
+  }
+  .slo-op { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 8px; line-height: 1.4; }
+  .slo-vals { display: flex; gap: 4px; flex-wrap: wrap; }
+  .slo-val { font-family: var(--mono); font-size: 10px; padding: 2px 5px; border-radius: 4px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); color: var(--color-text-secondary); }
+  .slo-label { font-family: var(--mono); font-size: 9px; color: var(--color-text-tertiary); }
+
+  .nongoal-list { display: flex; flex-direction: column; gap: 0; margin-top: 0.75rem; }
+  .nongoal-item {
+    display: flex;
+    gap: 10px;
+    padding: 0.6rem 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+  .nongoal-item:last-child { border-bottom: none; }
+  .nongoal-item .ng-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+    padding-top: 2px;
+    min-width: 14px;
+  }
+
+  code {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--color-background-secondary);
+    padding: 1px 5px;
+    border-radius: 4px;
+    border: 0.5px solid var(--color-border-tertiary);
+    color: var(--color-text-primary);
+  }
+
+  .roadmap-phases { display: flex; flex-direction: column; gap: 0; margin: 0.75rem 0; }
+  .roadmap-phase {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 16px;
+    padding: 0.75rem 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    align-items: start;
+  }
+  .roadmap-phase:last-child { border-bottom: none; }
+  .roadmap-phase-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    padding-top: 2px;
+  }
+  .roadmap-items { display: flex; flex-direction: column; gap: 6px; }
+  .roadmap-item-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 2px; }
+  .roadmap-item-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+
+  .footer {
+    border-top: 0.5px solid var(--color-border-tertiary);
+    padding: 1.25rem 0 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-left { font-family: var(--mono); font-size: 11px; color: var(--color-text-tertiary); }
+  .footer-right { font-family: var(--mono); font-size: 11px; color: var(--color-text-tertiary); }
+
+  .tabs { display: flex; gap: 0; border-bottom: 0.5px solid var(--color-border-tertiary); margin-bottom: 1rem; }
+  .tab {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 6px 14px;
+    cursor: pointer;
+    color: var(--color-text-tertiary);
+    border-bottom: 1.5px solid transparent;
+    margin-bottom: -0.5px;
+    transition: color 0.15s, border-color 0.15s;
+    letter-spacing: 0.04em;
+  }
+  .tab.active { color: var(--color-text-primary); border-bottom-color: var(--color-text-primary); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+</style>
+
+<div class="arch-wrap">
+  <h2 class="sr-only">Collaborative Cloud Picture Platform — Architecture Reference</h2>
+
+  <div class="arch-hero">
+    <div class="arch-hero-eyebrow">architecture reference · v1.0</div>
+    <h1>Collaborative Cloud Picture Platform</h1>
+    <div class="arch-hero-sub">A document for engineers who care about <em>why</em>, not just what.</div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-label">Contents</div>
+    <div class="toc-grid">
+      <div class="toc-item"><span class="toc-num">01</span> Product Vision</div>
+      <div class="toc-item"><span class="toc-num">09</span> Consistency Model</div>
+      <div class="toc-item"><span class="toc-num">02</span> Design Philosophy</div>
+      <div class="toc-item"><span class="toc-num">10</span> Storage Layer</div>
+      <div class="toc-item"><span class="toc-num">03</span> Architecture Pillars</div>
+      <div class="toc-item"><span class="toc-num">11</span> Cache Strategy</div>
+      <div class="toc-item"><span class="toc-num">04</span> System Narrative</div>
+      <div class="toc-item"><span class="toc-num">12</span> Security Model</div>
+      <div class="toc-item"><span class="toc-num">05</span> Architecture Overview</div>
+      <div class="toc-item"><span class="toc-num">13</span> Observability</div>
+      <div class="toc-item"><span class="toc-num">06</span> Realtime Collaboration</div>
+      <div class="toc-item"><span class="toc-num">14</span> Roadmap</div>
+      <div class="toc-item"><span class="toc-num">07</span> AI Pipeline</div>
+      <div class="toc-item"><span class="toc-num">15</span> Non-Goals</div>
+      <div class="toc-item"><span class="toc-num">08</span> Event Flow</div>
+      <div class="toc-item"><span class="toc-num">16</span> Trade-offs</div>
+    </div>
+  </div>
+
+  <!-- 01 Vision -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">Product Vision</span>
+    </div>
+    <div class="callout">A collaborative asset platform is, at its heart, a distributed state synchronization problem with a media delivery layer on top.</div>
+    <p class="prose">Most collaborative asset platforms are feature-accumulation projects — they grow by bolting on capabilities until the architecture collapses under its own surface area. This platform is designed differently: as a small number of deeply considered primitives that compose cleanly.</p>
+    <p class="prose" style="margin-top:0.75rem;">Teams upload, annotate, version, and curate visual assets together — across time zones, network conditions, and organizational boundaries. The system must make conflict-free concurrency feel natural, AI-assisted enrichment feel invisible, and multi-tenant isolation feel effortless.</p>
+  </div>
+
+  <!-- 02 Philosophy -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">Design Philosophy</span>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <span class="flow-step-num">P1</span>
+        <div class="flow-step-body">
+          <div class="flow-step-title">Local-First, Server-Confirmed</div>
+          <div class="flow-step-desc">Collaboration state is owned locally and synchronized remotely. The server acts as a persistence and relay layer, not an authority on what the document looks like. Latency is physics — round trips make collaboration feel like working through a proxy.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <span class="flow-step-num">P2</span>
+        <div class="flow-step-body">
+          <div class="flow-step-title">Explicit Over Implicit</div>
+          <div class="flow-step-desc">Every system boundary is explicit. Storage providers implement a named interface. Cache layers have defined eviction contracts. AI pipeline stages emit typed events. Nothing is ambient.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <span class="flow-step-num">P3</span>
+        <div class="flow-step-body">
+          <div class="flow-step-title">Isolation Without Ceremony</div>
+          <div class="flow-step-desc">Tenant context is propagated through a scoped execution context, not threaded manually through every function signature. The isolation model is enforced at the persistence layer boundary, not sprinkled across business logic.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <span class="flow-step-num">P4</span>
+        <div class="flow-step-body">
+          <div class="flow-step-title">AI as Infrastructure, Not Feature</div>
+          <div class="flow-step-desc">AI tagging, captioning, and deduplication are pipeline stages that run unconditionally on every ingested asset — not user-facing features with toggle switches. The user sees accurate tags and deduplicated results without invoking anything explicitly.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <span class="flow-step-num">P5</span>
+        <div class="flow-step-body">
+          <div class="flow-step-title">Stateless Edge, Stateful Core</div>
+          <div class="flow-step-desc">The HTTP tier is stateless. JWTs carry identity. Redis carries session-adjacent state. PostgreSQL carries durable state. Nothing that matters lives in the application process. Horizontal scaling is a deployment decision, not an architectural one.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 Pillars -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">Core Architecture Pillars</span>
+    </div>
+    <div class="pillar-grid">
+      <div class="pillar-card">
+        <div class="pillar-card-label">Collaboration</div>
+        <div class="pillar-card-title">Yjs CRDT + STOMP/WebSocket</div>
+        <div class="pillar-card-desc">Convergence without coordination. Conflicts are mathematically impossible, not just unlikely.</div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-card-label">Media Delivery</div>
+        <div class="pillar-card-title">Caffeine → Redis → CDN</div>
+        <div class="pillar-card-desc">Sub-millisecond hot reads via L1 heap cache. Cost-efficient cold reads via L2 Redis.</div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-card-label">AI Enrichment</div>
+        <div class="pillar-card-title">Async typed event pipeline</div>
+        <div class="pillar-card-desc">Non-blocking ingest path. Every pipeline stage is retryable and independently observable.</div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-card-label">Storage</div>
+        <div class="pillar-card-title">ObjectStoragePort interface</div>
+        <div class="pillar-card-desc">COS/local adapters. Storage backend is a configuration decision, not an architectural one.</div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-card-label">Tenancy</div>
+        <div class="pillar-card-title">Row-level + schema-per-tier</div>
+        <div class="pillar-card-desc">Hibernate filter enforces tenantId on every session. Schema isolation for regulated tenants.</div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-card-label">Observability</div>
+        <div class="pillar-card-title">Logs + Micrometer + OTEL</div>
+        <div class="pillar-card-desc">Structured logs with correlation IDs. Business metrics per tenant. Distributed trace causality.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 Architecture Overview -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">Architecture Overview</span>
+    </div>
+    <div class="arch-diagram">
+      <svg viewBox="0 0 620 400" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Mono', monospace">
+        <defs>
+          <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill="#888780"/>
+          </marker>
+        </defs>
+
+        <!-- Client layer -->
+        <rect x="10" y="10" width="160" height="60" rx="6" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
+        <text x="90" y="32" text-anchor="middle" font-size="9" fill="#3C3489" letter-spacing="0.06em">CLIENT LAYER</text>
+        <text x="90" y="48" text-anchor="middle" font-size="10" fill="#26215C" font-weight="500">React 19 + TypeScript</text>
+        <text x="90" y="62" text-anchor="middle" font-size="9" fill="#534AB7">Yjs CRDT · Vite</text>
+
+        <!-- Gateway -->
+        <rect x="230" y="10" width="160" height="40" rx="6" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+        <text x="310" y="28" text-anchor="middle" font-size="9" fill="#5F5E5A" letter-spacing="0.06em">API GATEWAY</text>
+        <text x="310" y="42" text-anchor="middle" font-size="10" fill="#2C2C2A" font-weight="500">Nginx / Cloud LB</text>
+
+        <!-- App Tier -->
+        <rect x="230" y="70" width="160" height="60" rx="6" fill="#E1F5EE" stroke="#5DCAA5" stroke-width="0.5"/>
+        <text x="310" y="90" text-anchor="middle" font-size="9" fill="#0F6E56" letter-spacing="0.06em">APPLICATION TIER</text>
+        <text x="310" y="106" text-anchor="middle" font-size="10" fill="#04342C" font-weight="500">Spring Boot 4 · Java 21</text>
+        <text x="310" y="120" text-anchor="middle" font-size="9" fill="#0F6E56">REST API · STOMP WS</text>
+
+        <!-- Persistence -->
+        <rect x="450" y="10" width="160" height="60" rx="6" fill="#E6F1FB" stroke="#85B7EB" stroke-width="0.5"/>
+        <text x="530" y="28" text-anchor="middle" font-size="9" fill="#185FA5" letter-spacing="0.06em">PERSISTENCE</text>
+        <text x="530" y="44" text-anchor="middle" font-size="10" fill="#042C53" font-weight="500">PostgreSQL · Redis</text>
+        <text x="530" y="58" text-anchor="middle" font-size="9" fill="#185FA5">Caffeine L1</text>
+
+        <!-- Storage -->
+        <rect x="450" y="90" width="160" height="60" rx="6" fill="#FAEEDA" stroke="#EF9F27" stroke-width="0.5"/>
+        <text x="530" y="108" text-anchor="middle" font-size="9" fill="#854F0B" letter-spacing="0.06em">OBJECT STORAGE</text>
+        <text x="530" y="124" text-anchor="middle" font-size="10" fill="#412402" font-weight="500">ObjectStoragePort</text>
+        <text x="530" y="138" text-anchor="middle" font-size="9" fill="#854F0B">COS · Local</text>
+
+        <!-- AI Pipeline -->
+        <rect x="10" y="180" width="600" height="100" rx="6" fill="#FAECE7" stroke="#F0997B" stroke-width="0.5"/>
+        <text x="310" y="200" text-anchor="middle" font-size="9" fill="#993C1D" letter-spacing="0.06em">AI PIPELINE  ·  async · event-driven</text>
+        <rect x="30" y="210" width="110" height="50" rx="4" fill="#fff" stroke="#F0997B" stroke-width="0.5"/>
+        <text x="85" y="228" text-anchor="middle" font-size="9" fill="#993C1D">Event Bus</text>
+        <text x="85" y="244" text-anchor="middle" font-size="10" fill="#4A1B0C" font-weight="500">AssetIngested</text>
+        <text x="85" y="256" text-anchor="middle" font-size="9" fill="#993C1D">→ workers</text>
+
+        <rect x="155" y="210" width="100" height="50" rx="4" fill="#fff" stroke="#F0997B" stroke-width="0.5"/>
+        <text x="205" y="228" text-anchor="middle" font-size="9" fill="#993C1D">AI Tagging</text>
+        <text x="205" y="244" text-anchor="middle" font-size="10" fill="#4A1B0C" font-weight="500">Qwen-VL</text>
+        <text x="205" y="256" text-anchor="middle" font-size="9" fill="#993C1D">Spring AI</text>
+
+        <rect x="270" y="210" width="100" height="50" rx="4" fill="#fff" stroke="#F0997B" stroke-width="0.5"/>
+        <text x="320" y="228" text-anchor="middle" font-size="9" fill="#993C1D">Dedup</text>
+        <text x="320" y="244" text-anchor="middle" font-size="10" fill="#4A1B0C" font-weight="500">pHash</text>
+        <text x="320" y="256" text-anchor="middle" font-size="9" fill="#993C1D">hamming ≤ 4</text>
+
+        <rect x="385" y="210" width="100" height="50" rx="4" fill="#fff" stroke="#F0997B" stroke-width="0.5"/>
+        <text x="435" y="228" text-anchor="middle" font-size="9" fill="#993C1D">Moderation</text>
+        <text x="435" y="244" text-anchor="middle" font-size="10" fill="#4A1B0C" font-weight="500">Content Safety</text>
+        <text x="435" y="256" text-anchor="middle" font-size="9" fill="#993C1D">Alibaba Cloud</text>
+
+        <rect x="500" y="210" width="100" height="50" rx="4" fill="#fff" stroke="#F0997B" stroke-width="0.5"/>
+        <text x="550" y="228" text-anchor="middle" font-size="9" fill="#993C1D">Thumbnails</text>
+        <text x="550" y="244" text-anchor="middle" font-size="10" fill="#4A1B0C" font-weight="500">WebP variants</text>
+        <text x="550" y="256" text-anchor="middle" font-size="9" fill="#993C1D">400w / 800w</text>
+
+        <!-- Domain Events -->
+        <rect x="10" y="300" width="600" height="85" rx="6" fill="#EAF3DE" stroke="#97C459" stroke-width="0.5"/>
+        <text x="310" y="320" text-anchor="middle" font-size="9" fill="#3B6D11" letter-spacing="0.06em">DOMAIN EVENTS</text>
+        <text x="90" y="345" text-anchor="middle" font-size="9" fill="#27500A">AssetIngested</text>
+        <text x="190" y="345" text-anchor="middle" font-size="9" fill="#27500A">AssetTagged</text>
+        <text x="290" y="345" text-anchor="middle" font-size="9" fill="#27500A">AssetModerated</text>
+        <text x="400" y="345" text-anchor="middle" font-size="9" fill="#27500A">AssetVersioned</text>
+        <text x="520" y="345" text-anchor="middle" font-size="9" fill="#27500A">TenantProvisioned</text>
+        <text x="310" y="372" text-anchor="middle" font-size="9" fill="#3B6D11">→ Audit Log · Search Index · Notifications · Webhooks</text>
+
+        <!-- Arrows -->
+        <line x1="170" y1="40" x2="228" y2="40" stroke="#888780" stroke-width="0.5" marker-end="url(#arr)"/>
+        <line x1="390" y1="40" x2="448" y2="40" stroke="#888780" stroke-width="0.5" marker-end="url(#arr)"/>
+        <line x1="310" y1="50" x2="310" y2="68" stroke="#888780" stroke-width="0.5" marker-end="url(#arr)"/>
+        <line x1="390" y1="110" x2="448" y2="110" stroke="#888780" stroke-width="0.5" marker-end="url(#arr)"/>
+        <line x1="310" y1="130" x2="310" y2="178" stroke="#888780" stroke-width="0.5" marker-end="url(#arr)"/>
+        <line x1="310" y1="280" x2="310" y2="298" stroke="#888780" stroke-width="0.5" marker-end="url(#arr)"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 06 Realtime -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <span class="section-title">Realtime Collaboration Model</span>
+    </div>
+    <div class="callout">CRDTs do not require coordination — any two clients can merge states independently and arrive at the same result. OT requires a central server to maintain canonical operation order. That server becomes a coordination bottleneck.</div>
+    <p class="prose">For asset metadata editing — tags, descriptions, annotations, category assignments — the Yjs document model maps cleanly. Concurrent edits to different fields never conflict. Concurrent edits to the same field use last-write-wins semantics at the character level.</p>
+    <p class="prose" style="margin-top:0.75rem;"><strong style="font-weight:500;color:var(--color-text-primary)">Awareness protocol:</strong> Cursor positions and presence indicators are ephemeral — transmitted as Yjs Awareness updates but stored in Redis with a 30-second TTL, never persisted to the document state.</p>
+
+    <div class="arch-diagram" style="margin-top:1rem;">
+      <svg viewBox="0 0 620 280" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Mono', monospace">
+        <defs>
+          <marker id="arr2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill="#888780"/>
+          </marker>
+        </defs>
+        <!-- Swimlanes -->
+        <rect x="10" y="30" width="130" height="240" rx="4" fill="#EEEDFE" fill-opacity="0.4" stroke="#AFA9EC" stroke-width="0.5"/>
+        <text x="75" y="48" text-anchor="middle" font-size="9" fill="#534AB7" letter-spacing="0.04em">CLIENT A</text>
+
+        <rect x="160" y="30" width="130" height="240" rx="4" fill="#E1F5EE" fill-opacity="0.4" stroke="#5DCAA5" stroke-width="0.5"/>
+        <text x="225" y="48" text-anchor="middle" font-size="9" fill="#0F6E56" letter-spacing="0.04em">STOMP RELAY</text>
+
+        <rect x="310" y="30" width="130" height="240" rx="4" fill="#E6F1FB" fill-opacity="0.4" stroke="#85B7EB" stroke-width="0.5"/>
+        <text x="375" y="48" text-anchor="middle" font-size="9" fill="#185FA5" letter-spacing="0.04em">POSTGRESQL</text>
+
+        <rect x="460" y="30" width="150" height="240" rx="4" fill="#EEEDFE" fill-opacity="0.4" stroke="#AFA9EC" stroke-width="0.5"/>
+        <text x="535" y="48" text-anchor="middle" font-size="9" fill="#534AB7" letter-spacing="0.04em">CLIENT B</text>
+
+        <!-- Steps -->
+        <rect x="20" y="60" width="110" height="28" rx="3" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
+        <text x="75" y="78" text-anchor="middle" font-size="9" fill="#26215C">SUBSCRIBE asset/1</text>
+        <line x1="130" y1="74" x2="158" y2="74" stroke="#888780" stroke-width="0.5" marker-end="url(#arr2)"/>
+
+        <rect x="470" y="60" width="130" height="28" rx="3" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
+        <text x="535" y="78" text-anchor="middle" font-size="9" fill="#26215C">SUBSCRIBE asset/1</text>
+        <line x1="460" y1="74" x2="292" y2="74" stroke="#888780" stroke-width="0.5" marker-end="url(#arr2)"/>
+
+        <rect x="170" y="100" width="110" height="28" rx="3" fill="#E1F5EE" stroke="#5DCAA5" stroke-width="0.5"/>
+        <text x="225" y="118" text-anchor="middle" font-size="9" fill="#04342C">SELECT crdt_state</text>
+        <line x1="280" y1="114" x2="308" y2="114" stroke="#888780" stroke-width="0.5" marker-end="url(#arr2)"/>
+
+        <rect x="320" y="100" width="110" height="28" rx="3" fill="#E6F1FB" stroke="#85B7EB" stroke-width="0.5"/>
+        <text x="375" y="118" text-anchor="middle" font-size="9" fill="#042C53">binary Y.Doc</text>
+        <line x1="310" y1="114" x2="282" y2="114" stroke="#888780" stroke-width="0.5" marker-end="url(#arr2)"/>
+
+        <text x="225" y="148" text-anchor="middle" font-size="9" fill="#0F6E56">SYNC_INIT →</text>
+        <line x1="160" y1="143" x2="132" y2="143" stroke="#888780" stroke-width="0.5" marker-end="url(#arr2)"/>
+        <line x1="290" y1="143" x2="458" y2="143" stroke="#888780" stroke-width="0.5" marker-end="url(#arr2)"/>
+
+        <rect x="20" y="160" width="110" height="28" rx="3" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
+        <text x="75" y="178" text-anchor="middle" font-size="9" fill="#26215C">SEND update bytes</text>
+        <line x1="130" y1="174" x2="158" y2="174" stroke="#888780" stroke-width="0.5" marker-end="url(#arr2)"/>
+
+        <rect x="170" y="160" width="110" height="28" rx="3" fill="#E1F5EE" stroke="#5DCAA5" stroke-width="0.5"/>
+        <text x="225" y="178" text-anchor="middle" font-size="9" fill="#04342C">merge + persist</text>
+        <line x1="280" y1="174" x2="308" y2="174" stroke="#888780" stroke-width="0.5" marker-end="url(#arr2)"/>
+        <line x1="290" y1="174" x2="458" y2="174" stroke="#888780" stroke-width="0.5" marker-end="url(#arr2)"/>
+
+        <rect x="470" y="160" width="130" height="28" rx="3" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
+        <text x="535" y="178" text-anchor="middle" font-size="9" fill="#26215C">applyUpdate(bytes)</text>
+
+        <text x="310" y="215" text-anchor="middle" font-size="9" fill="#5F5E5A">↓ both clients converge to identical state ↓</text>
+        <text x="310" y="232" text-anchor="middle" font-size="10" fill="#2C2C2A" font-weight="500">no server round trip required for merge</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 07 AI Pipeline -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <span class="section-title">AI Pipeline</span>
+    </div>
+    <p class="prose">Every asset passing through the upload endpoint unconditionally triggers the AI pipeline. There is no opt-in. Tags, deduplication signals, and content policy decisions should be properties of every asset in the system, not optional metadata for well-behaved clients.</p>
+
+    <div class="tabs" style="margin-top:1rem;">
+      <div class="tab active" onclick="switchTab('ingest')">ingest contract</div>
+      <div class="tab" onclick="switchTab('tagging')">tagging architecture</div>
+      <div class="tab" onclick="switchTab('dedup')">perceptual dedup</div>
+    </div>
+
+    <div id="tab-ingest" class="tab-content active">
+      <div class="flow-steps">
+        <div class="flow-step">
+          <span class="flow-step-num">①</span>
+          <div class="flow-step-body">
+            <div class="flow-step-title">HTTP POST /assets — synchronous path</div>
+            <div class="flow-step-desc">Validate JWT, resolve tenant context, stream binary to ObjectStorage. Returns AssetId the moment storage durability is confirmed. Does not wait for AI.</div>
+            <div class="flow-step-mono">latency target: P95 &lt; 800ms</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <span class="flow-step-num">②</span>
+          <div class="flow-step-body">
+            <div class="flow-step-title">AssetIngested event — handoff to pipeline</div>
+            <div class="flow-step-desc">Published immediately after storage write. All pipeline stages subscribe to this event. Workers execute independently; stages with no data dependencies run in parallel.</div>
+            <div class="flow-step-mono">event: { assetId, storageKey, tenantId, contentType }</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <span class="flow-step-num">③</span>
+          <div class="flow-step-body">
+            <div class="flow-step-title">Pipeline stages — async, retryable</div>
+            <div class="flow-step-desc">Perceptual hashing, AI tagging (Qwen-VL), content moderation, thumbnail generation. Each stage emits its own completion event for downstream consumers (search indexer, notification center, audit log).</div>
+            <div class="flow-step-mono">idempotent by design — safe to re-run on failure</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-tagging" class="tab-content">
+      <div class="flow-steps">
+        <div class="flow-step">
+          <span class="flow-step-num">①</span>
+          <div class="flow-step-body">
+            <div class="flow-step-title">Download thumbnail from ObjectStorage</div>
+            <div class="flow-step-desc">The tagging worker fetches the 400w WebP thumbnail, not the original. This reduces API payload size and Qwen-VL inference cost without meaningfully degrading tag quality for content categorization tasks.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <span class="flow-step-num">②</span>
+          <div class="flow-step-body">
+            <div class="flow-step-title">ChatClient.call(image + structured prompt)</div>
+            <div class="flow-step-desc">Spring AI's ChatClient abstraction targets Qwen-VL. The prompt requests a JSON array of tags with confidence scores. Response is parsed as typed output.</div>
+            <div class="flow-step-mono">response: [{"tag": "outdoor", "confidence": 0.94}, ...]</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <span class="flow-step-num">③</span>
+          <div class="flow-step-body">
+            <div class="flow-step-title">Taxonomy normalization per tenant</div>
+            <div class="flow-step-desc">Raw tags are normalized against the tenant's configured taxonomy before writing. Enables per-tenant tag vocabularies — a legal team sees "contract", "clause"; a design team sees "brand", "illustration" — without changing the pipeline code.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <span class="flow-step-num">④</span>
+          <div class="flow-step-body">
+            <div class="flow-step-title">Batch INSERT to asset_tags</div>
+            <div class="flow-step-desc">All normalized tags written in a single batched statement. Emits AssetTagged event consumed by the search indexer and notification center.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-dedup" class="tab-content">
+      <div class="flow-steps">
+        <div class="flow-step">
+          <span class="flow-step-num">①</span>
+          <div class="flow-step-body">
+            <div class="flow-step-title">Normalize to 32×32 grayscale luminance</div>
+            <div class="flow-step-desc">The original image is downsampled to a 32×32 thumbnail operating on the luminance channel. This removes color, resolution, and minor encoding differences from the comparison surface.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <span class="flow-step-num">②</span>
+          <div class="flow-step-body">
+            <div class="flow-step-title">Compute 64-bit pHash</div>
+            <div class="flow-step-desc">DCT-based perceptual hash produces a 64-bit fingerprint. Stored alongside the asset record.</div>
+            <div class="flow-step-mono">column: assets.phash BIGINT NOT NULL</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <span class="flow-step-num">③</span>
+          <div class="flow-step-body">
+            <div class="flow-step-title">Nearest-neighbor query (Hamming distance ≤ 4)</div>
+            <div class="flow-step-desc">Catches re-encoded JPEGs, resized versions, and minor crops — not just byte-identical files. Threshold of 4 bits empirically avoids false positives for similar-but-distinct images while catching true perceptual duplicates.</div>
+            <div class="flow-step-mono">result: duplicate_of FK | null</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 09 Consistency -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <span class="section-title">Consistency Model</span>
+    </div>
+    <p class="prose">The system does not chase global strong consistency. It chooses the consistency level appropriate to each operation's failure semantics, and is explicit about those choices in the data model and API contracts.</p>
+    <div class="consistency-rows" style="margin-top:1rem;">
+      <div class="consistency-row">
+        <div class="op">Asset upload</div>
+        <div><span class="badge badge-strong">strong</span></div>
+        <div class="reason">Upload must be durable before client receives ACK</div>
+      </div>
+      <div class="consistency-row">
+        <div class="op">AI tag writes</div>
+        <div><span class="badge badge-eventual">eventual</span></div>
+        <div class="reason">Enrichment — slight delay is acceptable</div>
+      </div>
+      <div class="consistency-row">
+        <div class="op">CRDT metadata edits</div>
+        <div><span class="badge badge-convergent">convergent</span></div>
+        <div class="reason">Conflicts resolved mathematically, not avoided</div>
+      </div>
+      <div class="consistency-row">
+        <div class="op">Tenant provisioning</div>
+        <div><span class="badge badge-strong">strong</span></div>
+        <div class="reason">Partial tenant state is dangerous</div>
+      </div>
+      <div class="consistency-row">
+        <div class="op">Cache reads</div>
+        <div><span class="badge badge-eventual">eventual</span></div>
+        <div class="reason">Stale-while-revalidate acceptable for media URLs</div>
+      </div>
+      <div class="consistency-row">
+        <div class="op">Presence / awareness</div>
+        <div><span class="badge badge-ephemeral">ephemeral</span></div>
+        <div class="reason">Loss on network partition is acceptable</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11 Cache -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <span class="section-title">Cache Strategy</span>
+    </div>
+    <div class="arch-diagram">
+      <svg viewBox="0 0 620 160" xmlns="http://www.w3.org/2000/svg" font-family="'IBM Plex Mono', monospace">
+        <defs>
+          <marker id="arr3" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill="#888780"/>
+          </marker>
+          <marker id="arr3r" markerWidth="6" markerHeight="6" refX="1" refY="3" orient="auto">
+            <path d="M6,0 L6,6 L0,3 z" fill="#1D9E75"/>
+          </marker>
+        </defs>
+
+        <rect x="10" y="50" width="100" height="60" rx="4" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
+        <text x="60" y="74" text-anchor="middle" font-size="9" fill="#534AB7" letter-spacing="0.04em">REQUEST</text>
+        <text x="60" y="90" text-anchor="middle" font-size="9" fill="#26215C" font-weight="500">GET /assets</text>
+        <text x="60" y="104" text-anchor="middle" font-size="9" fill="#534AB7">/id/url</text>
+
+        <rect x="140" y="30" width="100" height="100" rx="4" fill="#E1F5EE" stroke="#5DCAA5" stroke-width="0.5"/>
+        <text x="190" y="52" text-anchor="middle" font-size="8" fill="#0F6E56" letter-spacing="0.04em">L1 CAFFEINE</text>
+        <text x="190" y="68" text-anchor="middle" font-size="9" fill="#04342C" font-weight="500">JVM heap</text>
+        <text x="190" y="84" text-anchor="middle" font-size="8" fill="#0F6E56">~10k entries</text>
+        <text x="190" y="98" text-anchor="middle" font-size="8" fill="#0F6E56">TTL 5 min</text>
+        <text x="190" y="112" text-anchor="middle" font-size="8" fill="#0F6E56">&lt;2ms hit</text>
+
+        <rect x="270" y="30" width="100" height="100" rx="4" fill="#E6F1FB" stroke="#85B7EB" stroke-width="0.5"/>
+        <text x="320" y="52" text-anchor="middle" font-size="8" fill="#185FA5" letter-spacing="0.04em">L2 REDIS</text>
+        <text x="320" y="68" text-anchor="middle" font-size="9" fill="#042C53" font-weight="500">network shared</text>
+        <text x="320" y="84" text-anchor="middle" font-size="8" fill="#185FA5">~500k entries</text>
+        <text x="320" y="98" text-anchor="middle" font-size="8" fill="#185FA5">TTL 30 min</text>
+        <text x="320" y="112" text-anchor="middle" font-size="8" fill="#185FA5">&lt;10ms hit</text>
+
+        <rect x="400" y="30" width="100" height="100" rx="4" fill="#FAEEDA" stroke="#EF9F27" stroke-width="0.5"/>
+        <text x="450" y="52" text-anchor="middle" font-size="8" fill="#854F0B" letter-spacing="0.04em">ORIGIN</text>
+        <text x="450" y="68" text-anchor="middle" font-size="9" fill="#412402" font-weight="500">PostgreSQL</text>
+        <text x="450" y="84" text-anchor="middle" font-size="8" fill="#854F0B">+ presign</text>
+        <text x="450" y="98" text-anchor="middle" font-size="8" fill="#854F0B">ObjectStorage</text>
+        <text x="450" y="112" text-anchor="middle" font-size="8" fill="#854F0B">URL TTL 15m</text>
+
+        <rect x="520" y="50" width="90" height="60" rx="4" fill="#EAF3DE" stroke="#97C459" stroke-width="0.5"/>
+        <text x="565" y="74" text-anchor="middle" font-size="9" fill="#3B6D11" letter-spacing="0.04em">RESPONSE</text>
+        <text x="565" y="90" text-anchor="middle" font-size="9" fill="#173404" font-weight="500">presigned URL</text>
+        <text x="565" y="104" text-anchor="middle" font-size="8" fill="#3B6D11">to client</text>
+
+        <!-- miss path -->
+        <line x1="110" y1="80" x2="138" y2="80" stroke="#888780" stroke-width="0.5" marker-end="url(#arr3)"/>
+        <text x="124" y="75" text-anchor="middle" font-size="8" fill="#888780">req</text>
+
+        <line x1="240" y1="70" x2="268" y2="70" stroke="#E24B4A" stroke-width="0.5" marker-end="url(#arr3)"/>
+        <text x="254" y="65" text-anchor="middle" font-size="8" fill="#E24B4A">miss</text>
+
+        <line x1="370" y1="70" x2="398" y2="70" stroke="#E24B4A" stroke-width="0.5" marker-end="url(#arr3)"/>
+        <text x="384" y="65" text-anchor="middle" font-size="8" fill="#E24B4A">miss</text>
+
+        <line x1="500" y1="80" x2="518" y2="80" stroke="#888780" stroke-width="0.5" marker-end="url(#arr3)"/>
+
+        <!-- populate path -->
+        <line x1="370" y1="95" x2="242" y2="95" stroke="#1D9E75" stroke-width="0.5" marker-end="url(#arr3r)"/>
+        <line x1="240" y1="110" x2="142" y2="110" stroke="#1D9E75" stroke-width="0.5" marker-end="url(#arr3r)"/>
+        <text x="306" y="92" text-anchor="middle" font-size="7" fill="#1D9E75">populate L2</text>
+        <text x="191" y="107" text-anchor="middle" font-size="7" fill="#1D9E75">populate L1</text>
+      </svg>
+    </div>
+    <p class="prose"><strong style="font-weight:500;color:var(--color-text-primary)">Write strategy: write-around.</strong> Cache is populated on read, not on write. Newly uploaded assets do not pre-warm the cache — the first access triggers population. This avoids cache churn on batch uploads.</p>
+  </div>
+
+  <!-- 13 Observability -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">13</span>
+      <span class="section-title">Observability</span>
+    </div>
+    <div class="callout">Observability is not logging. Logs record events. Metrics record rates. Traces record causality. All three are required to answer: why did P95 latency spike for tenant X at 14:32?</div>
+    <p class="prose">Every inbound request receives a <code>X-Request-ID</code> header. Every async event carries a <code>correlationId</code> derived from the originating request. Every log line includes both. This makes it possible to trace a single upload across the synchronous API response and every async pipeline stage that follows.</p>
+
+    <div style="margin-top:1rem;">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:0.75rem;">SLO Targets</div>
+      <div class="slo-grid">
+        <div class="slo-card">
+          <div class="slo-op">Asset URL — L1 cache hit</div>
+          <div class="slo-vals">
+            <div><div class="slo-label">P50</div><div class="slo-val">&lt;2ms</div></div>
+            <div><div class="slo-label">P95</div><div class="slo-val">&lt;5ms</div></div>
+            <div><div class="slo-label">P99</div><div class="slo-val">&lt;10ms</div></div>
+          </div>
+        </div>
+        <div class="slo-card">
+          <div class="slo-op">Asset URL — L2 Redis hit</div>
+          <div class="slo-vals">
+            <div><div class="slo-label">P50</div><div class="slo-val">&lt;10ms</div></div>
+            <div><div class="slo-label">P95</div><div class="slo-val">&lt;25ms</div></div>
+            <div><div class="slo-label">P99</div><div class="slo-val">&lt;50ms</div></div>
+          </div>
+        </div>
+        <div class="slo-card">
+          <div class="slo-op">Upload acknowledgment</div>
+          <div class="slo-vals">
+            <div><div class="slo-label">P50</div><div class="slo-val">&lt;200ms</div></div>
+            <div><div class="slo-label">P95</div><div class="slo-val">&lt;800ms</div></div>
+            <div><div class="slo-label">P99</div><div class="slo-val">&lt;2s</div></div>
+          </div>
+        </div>
+        <div class="slo-card">
+          <div class="slo-op">CRDT operation relay</div>
+          <div class="slo-vals">
+            <div><div class="slo-label">P50</div><div class="slo-val">&lt;50ms</div></div>
+            <div><div class="slo-label">P95</div><div class="slo-val">&lt;150ms</div></div>
+            <div><div class="slo-label">P99</div><div class="slo-val">&lt;500ms</div></div>
+          </div>
+        </div>
+        <div class="slo-card">
+          <div class="slo-op">AI tagging (async)</div>
+          <div class="slo-vals">
+            <div><div class="slo-label">P50</div><div class="slo-val">&lt;3s</div></div>
+            <div><div class="slo-label">P95</div><div class="slo-val">&lt;10s</div></div>
+            <div><div class="slo-label">P99</div><div class="slo-val">&lt;30s</div></div>
+          </div>
+        </div>
+        <div class="slo-card">
+          <div class="slo-op">Tenant provisioning</div>
+          <div class="slo-vals">
+            <div><div class="slo-label">P50</div><div class="slo-val">&lt;500ms</div></div>
+            <div><div class="slo-label">P95</div><div class="slo-val">&lt;2s</div></div>
+            <div><div class="slo-label">P99</div><div class="slo-val">&lt;5s</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 14 Roadmap -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">14</span>
+      <span class="section-title">Future Roadmap</span>
+    </div>
+    <div class="roadmap-phases">
+      <div class="roadmap-phase">
+        <div class="roadmap-phase-label">Near Term</div>
+        <div class="roadmap-items">
+          <div><div class="roadmap-item-title">Asset versioning with diff visualization</div><div class="roadmap-item-desc">Content-addressed binary deltas between versions. Perceptual diffs for image assets.</div></div>
+          <div><div class="roadmap-item-title">Webhook delivery — at-least-once</div><div class="roadmap-item-desc">Persistent outbox table, exponential backoff retry, dead-letter queue.</div></div>
+          <div><div class="roadmap-item-title">Full-text search</div><div class="roadmap-item-desc">Elasticsearch or PostgreSQL tsvector for tag + description search within tenant scope.</div></div>
+        </div>
+      </div>
+      <div class="roadmap-phase">
+        <div class="roadmap-phase-label">Medium Term</div>
+        <div class="roadmap-items">
+          <div><div class="roadmap-item-title">Pluggable event bus</div><div class="roadmap-item-desc">Formalize DomainEventPublisher with a Kafka adapter. Zero business logic changes required.</div></div>
+          <div><div class="roadmap-item-title">AI model routing</div><div class="roadmap-item-desc">Route tagging to Qwen-VL, GPT-4o-Vision, or Gemini by tenant tier or content type.</div></div>
+          <div><div class="roadmap-item-title">Edge presigned URLs</div><div class="roadmap-item-desc">CDN-signed tokens enabling edge caching of authenticated asset delivery.</div></div>
+        </div>
+      </div>
+      <div class="roadmap-phase">
+        <div class="roadmap-phase-label">Long Term</div>
+        <div class="roadmap-items">
+          <div><div class="roadmap-item-title">Federated collaboration</div><div class="roadmap-item-desc">Cross-tenant asset sharing via capability-based link model with explicit grant scoping and audit trail.</div></div>
+          <div><div class="roadmap-item-title">WASM-accelerated CRDT</div><div class="roadmap-item-desc">Compile Yjs merge functions to WASM, reducing GC pressure in the relay tier.</div></div>
+          <div><div class="roadmap-item-title">Differential sync</div><div class="roadmap-item-desc">Vector-clock-based differential sync on reconnect, reducing payload for large documents.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 15 Non-Goals -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">15</span>
+      <span class="section-title">Non-Goals</span>
+    </div>
+    <div class="nongoal-list">
+      <div class="nongoal-item"><span class="ng-tag">✕</span><span><strong style="color:var(--color-text-primary);font-weight:500">Video/audio processing.</strong> The pipeline is designed for still images. Video ingest, transcoding, and streaming require a separate media processing tier.</span></div>
+      <div class="nongoal-item"><span class="ng-tag">✕</span><span><strong style="color:var(--color-text-primary);font-weight:500">Public CDN hosting.</strong> Presigned URLs provide time-bounded authenticated access. Anonymous public delivery is not a design target.</span></div>
+      <div class="nongoal-item"><span class="ng-tag">✕</span><span><strong style="color:var(--color-text-primary);font-weight:500">Branching or merge workflows.</strong> Asset versioning is linear. Git-style branching of metadata trees is not modeled.</span></div>
+      <div class="nongoal-item"><span class="ng-tag">✕</span><span><strong style="color:var(--color-text-primary);font-weight:500">Cross-region replication.</strong> The storage abstraction supports plugging in a multi-region backend, but the application layer does not implement region-aware routing.</span></div>
+      <div class="nongoal-item"><span class="ng-tag">✕</span><span><strong style="color:var(--color-text-primary);font-weight:500">Real-time annotation drawing.</strong> Yjs-backed text metadata editing is in scope. Pixel-level collaborative drawing (Figma-style canvas) is not.</span></div>
+    </div>
+  </div>
+
+  <!-- 16 Trade-offs -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">16</span>
+      <span class="section-title">Trade-offs</span>
+    </div>
+    <table class="tradeoff-table">
+      <thead>
+        <tr>
+          <th>Decision</th>
+          <th>Upside</th>
+          <th>Downside + Mitigation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>In-process event bus over Kafka</td>
+          <td>Zero infra dependency. No consumer lag. No broker on upload path.</td>
+          <td>Events lost on process crash. Mitigated by idempotent pipeline stages and admin requeue endpoint. DomainEventPublisher interface is the Kafka escape hatch.</td>
+        </tr>
+        <tr>
+          <td>JWT over server sessions</td>
+          <td>Stateless pods. No sticky sessions. Tenant context in token, no per-request DB lookup.</td>
+          <td>Token revocation requires short expiry or Redis revocation set. Current: 24h expiry + Redis revocation set checked only on sensitive operations.</td>
+        </tr>
+        <tr>
+          <td>Yjs over ShareDB / Phoenix</td>
+          <td>Battle-tested CRDT, strong TypeScript support, offline resilience, rich type ecosystem.</td>
+          <td>Binary opaque state complicates ops inspection. Server-side CRDT requires GraalVM Polyglot to run Yjs merge function. Non-trivial operational overhead.</td>
+        </tr>
+        <tr>
+          <td>Row-level tenant isolation</td>
+          <td>Operationally simple. One pool, one migration path, one schema version.</td>
+          <td>Misconfigured Hibernate filter could expose cross-tenant data. Mitigated by integration tests asserting isolation on every tenant-scoped query. Schema-per-tenant available for enterprise tier.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <div class="footer-left">ARCHITECTURE.md · v1.0</div>
+    <div class="footer-right">reviewed 2025 · subject to revision</div>
+  </div>
+</div>
+
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>

@@ -1,0 +1,610 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root {
+    --ds: 'Instrument Serif', serif;
+    --dm: 'JetBrains Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .dp-wrap { max-width: 680px; }
+
+  .dp-hero {
+    padding: 2rem 0 1.75rem;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    margin-bottom: 2rem;
+  }
+  .dp-hero-tag {
+    font-family: var(--dm);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    margin-bottom: 1rem;
+  }
+  .dp-hero h1 {
+    font-family: var(--ds);
+    font-size: 34px;
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--color-text-primary);
+    margin-bottom: 1rem;
+  }
+  .dp-hero-epigraph {
+    font-family: var(--ds);
+    font-size: 15px;
+    font-style: italic;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    padding-left: 1rem;
+    border-left: 2px solid var(--color-border-secondary);
+  }
+
+  .nav-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 2rem;
+  }
+  .nav-pill {
+    font-family: var(--dm);
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    border: 0.5px solid var(--color-border-tertiary);
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    letter-spacing: 0.04em;
+  }
+  .nav-pill:hover, .nav-pill.active {
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    border-color: var(--color-border-secondary);
+  }
+
+  .dp-section {
+    margin-bottom: 2.75rem;
+    display: none;
+  }
+  .dp-section.visible { display: block; }
+
+  .dp-section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 1.25rem;
+  }
+  .dp-roman {
+    font-family: var(--dm);
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.06em;
+    min-width: 24px;
+  }
+  .dp-section-title {
+    font-family: var(--ds);
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--color-text-primary);
+    line-height: 1.2;
+  }
+
+  .dp-prose {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--color-text-secondary);
+    margin-bottom: 1rem;
+  }
+  .dp-prose strong {
+    color: var(--color-text-primary);
+    font-weight: 500;
+  }
+
+  .dp-callout {
+    border-left: 2px solid var(--color-border-primary);
+    padding: 0.75rem 1.25rem;
+    margin: 1.25rem 0;
+    font-family: var(--ds);
+    font-size: 16px;
+    font-style: italic;
+    color: var(--color-text-primary);
+    line-height: 1.55;
+  }
+
+  .dp-tradeoff {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    border: 0.5px solid var(--color-border-tertiary);
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+  }
+  .dp-tradeoff-head {
+    font-family: var(--dm);
+    font-size: 10px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    margin-bottom: 0.75rem;
+  }
+  .dp-tradeoff-rows { display: flex; flex-direction: column; gap: 0; }
+  .dp-tradeoff-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 12px;
+    padding: 0.5rem 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    font-size: 13px;
+    line-height: 1.5;
+    align-items: start;
+  }
+  .dp-tradeoff-row:last-child { border-bottom: none; }
+  .dp-tradeoff-label {
+    font-family: var(--dm);
+    font-size: 10px;
+    padding-top: 2px;
+    letter-spacing: 0.04em;
+  }
+  .label-chosen { color: var(--color-text-success); }
+  .label-rejected { color: var(--color-text-danger); }
+  .label-cost { color: var(--color-text-warning); }
+  .dp-tradeoff-text { color: var(--color-text-secondary); }
+
+  .dp-principle-list { display: flex; flex-direction: column; gap: 0; margin: 1rem 0; }
+  .dp-principle {
+    display: flex;
+    gap: 14px;
+    padding: 0.75rem 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    align-items: flex-start;
+  }
+  .dp-principle:last-child { border-bottom: none; }
+  .dp-principle-glyph {
+    font-family: var(--dm);
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    padding-top: 2px;
+    min-width: 16px;
+  }
+  .dp-principle-body {}
+  .dp-principle-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 3px;
+  }
+  .dp-principle-desc {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+
+  .dp-nongoal {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 1rem 0;
+  }
+  .dp-nongoal-row {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    gap: 12px;
+    padding: 0.65rem 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+  }
+  .dp-nongoal-row:last-child { border-bottom: none; }
+  .dp-nongoal-x { color: var(--color-text-danger); font-family: var(--dm); font-size: 11px; padding-top: 2px; }
+  .dp-nongoal-title { color: var(--color-text-primary); font-weight: 500; }
+
+  .dp-scale-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 1rem 0;
+  }
+  .dp-scale-card {
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    padding: 0.875rem 1rem;
+    background: var(--color-background-primary);
+  }
+  .dp-scale-label {
+    font-family: var(--dm);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .dp-scale-label-easy { color: var(--color-text-success); }
+  .dp-scale-label-hard { color: var(--color-text-warning); }
+  .dp-scale-label-defer { color: var(--color-text-tertiary); }
+  .dp-scale-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+  .dp-scale-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+
+  .dp-footer {
+    border-top: 0.5px solid var(--color-border-tertiary);
+    padding: 1.25rem 0 0.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+  }
+  .dp-footer-l { font-family: var(--dm); font-size: 10px; color: var(--color-text-tertiary); letter-spacing: 0.04em; }
+  .dp-footer-r { font-family: var(--ds); font-style: italic; font-size: 13px; color: var(--color-text-tertiary); }
+
+  code {
+    font-family: var(--dm);
+    font-size: 11px;
+    background: var(--color-background-secondary);
+    padding: 1px 5px;
+    border-radius: 4px;
+    border: 0.5px solid var(--color-border-tertiary);
+    color: var(--color-text-primary);
+  }
+</style>
+
+<div class="dp-wrap">
+  <h2 class="sr-only">Design Philosophy — Collaborative Cloud Picture Platform</h2>
+
+  <div class="dp-hero">
+    <div class="dp-hero-tag">design philosophy · v1.0</div>
+    <h1>Why We Built It This Way</h1>
+    <div class="dp-hero-epigraph">Opinions are architecture. Every technical decision is a value judgment in disguise.</div>
+  </div>
+
+  <div class="nav-strip" id="nav">
+    <div class="nav-pill active" onclick="show('all')">All</div>
+    <div class="nav-pill" onclick="show('collab')">Collaboration</div>
+    <div class="nav-pill" onclick="show('events')">Event-Driven</div>
+    <div class="nav-pill" onclick="show('cache')">Cache</div>
+    <div class="nav-pill" onclick="show('ai')">AI Pipeline</div>
+    <div class="nav-pill" onclick="show('storage')">Storage</div>
+    <div class="nav-pill" onclick="show('tenancy')">Tenancy</div>
+    <div class="nav-pill" onclick="show('scale')">Scaling</div>
+    <div class="nav-pill" onclick="show('ops')">Operations</div>
+    <div class="nav-pill" onclick="show('nongoals')">Non-Goals</div>
+  </div>
+
+  <!-- I Collaboration -->
+  <div class="dp-section visible" data-tags="all collab">
+    <div class="dp-section-head">
+      <span class="dp-roman">I</span>
+      <span class="dp-section-title">Collaboration Is the Primary Abstraction</span>
+    </div>
+    <div class="dp-prose">Most systems treat collaboration as a layer added on top of a storage system. You upload a file, the system stores it, and collaboration is grafted on — comments here, version history there, real-time cursors as a premium feature.</div>
+    <div class="dp-callout">When collaboration is primary, the data model is shaped around concurrent access from the start. When it is added later, you get locks, optimistic concurrency errors surfaced to users, and "someone else is editing this" warnings — which are not UX failures. They are architectural failures that have leaked into the interface.</div>
+    <div class="dp-prose">The inversion means: a single user uploading an asset in isolation is a degenerate case of the collaboration model, not the primary case that the collaboration model is bolted onto.</div>
+  </div>
+
+  <!-- II CRDT -->
+  <div class="dp-section visible" data-tags="all collab">
+    <div class="dp-section-head">
+      <span class="dp-roman">II</span>
+      <span class="dp-section-title">Why Yjs CRDT — and Why Not OT</span>
+    </div>
+    <div class="dp-prose">The choice of synchronization primitive is the most consequential decision in any collaborative system. Get it wrong and you spend years fighting your consistency model.</div>
+
+    <div class="dp-tradeoff">
+      <div class="dp-tradeoff-head">Decision record</div>
+      <div class="dp-tradeoff-rows">
+        <div class="dp-tradeoff-row">
+          <span class="dp-tradeoff-label label-rejected">rejected</span>
+          <span class="dp-tradeoff-text"><strong>Operational Transformation.</strong> Requires a central server for canonical operation ordering. That server is a coordination bottleneck. Transformation functions for rich structured data are combinatorially complex and notoriously difficult to prove correct.</span>
+        </div>
+        <div class="dp-tradeoff-row">
+          <span class="dp-tradeoff-label label-chosen">chosen</span>
+          <span class="dp-tradeoff-text"><strong>Yjs CRDT.</strong> Data structures closed under a commutative, associative, idempotent merge function. Any two replicas merge independently and arrive at the same state, regardless of operation order. Convergence is a property of the data structure, not the implementation.</span>
+        </div>
+        <div class="dp-tradeoff-row">
+          <span class="dp-tradeoff-label label-cost">cost</span>
+          <span class="dp-tradeoff-text">Yjs document state is binary and opaque. Inspecting state requires a deserializer. Server-side merge requires GraalVM Polyglot to execute the Yjs JavaScript merge function. Real operational overhead that teams consistently underestimate.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dp-principle-list">
+      <div class="dp-principle">
+        <span class="dp-principle-glyph">→</span>
+        <div class="dp-principle-body">
+          <div class="dp-principle-title">Offline resilience</div>
+          <div class="dp-principle-desc">A client accumulates edits while disconnected and merges on reconnect without coordination. The server does not need to know the client was offline.</div>
+        </div>
+      </div>
+      <div class="dp-principle">
+        <span class="dp-principle-glyph">→</span>
+        <div class="dp-principle-body">
+          <div class="dp-principle-title">Peer-to-peer capability</div>
+          <div class="dp-principle-desc">The server is a relay and persistence layer, not a merge authority. The architecture doesn't use P2P exchange — but the property constrains us toward better designs.</div>
+        </div>
+      </div>
+      <div class="dp-principle">
+        <span class="dp-principle-glyph">→</span>
+        <div class="dp-principle-body">
+          <div class="dp-principle-title">Mathematical correctness</div>
+          <div class="dp-principle-desc">You cannot write a bug that causes divergence without breaking CRDT invariants. Correctness is structural, not behavioral.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- III Events -->
+  <div class="dp-section visible" data-tags="all events">
+    <div class="dp-section-head">
+      <span class="dp-roman">III</span>
+      <span class="dp-section-title">Event-Driven Synchronization — Philosophy, Not Pattern</span>
+    </div>
+    <div class="dp-callout">A system that communicates through events is a system where operations complete when they are recorded, where consumers discover events rather than being wired to producers, and where the event log is a first-class artifact that can be replayed, audited, and extended.</div>
+    <div class="dp-prose">Event-driven architecture is often adopted as a pattern: "we should decouple these services." That framing is too shallow. We adopted it as a philosophy about what the system should be able to observe, replay, and evolve.</div>
+    <div class="dp-prose"><strong>The event as boundary:</strong> Every domain event is a boundary between what the system knows and what it is doing about it. <code>AssetIngested</code> means the system knows this asset exists durably. What it does about that fact — tagging, deduplication, notifications — is downstream of that knowledge, not part of it.</div>
+
+    <div class="dp-tradeoff" style="margin-top:1rem;">
+      <div class="dp-tradeoff-head">Rejected alternative</div>
+      <div class="dp-tradeoff-rows">
+        <div class="dp-tradeoff-row">
+          <span class="dp-tradeoff-label label-rejected">rejected</span>
+          <span class="dp-tradeoff-text"><strong>Synchronous pipeline.</strong> An AI API timeout at 15 seconds becomes the user's upload latency. A moderation service outage blocks all uploads. Adding a new enrichment step requires changing the upload handler and its error handling. Failure modes are unacceptable.</span>
+        </div>
+        <div class="dp-tradeoff-row">
+          <span class="dp-tradeoff-label label-cost">cost</span>
+          <span class="dp-tradeoff-text">Asynchrony is harder to debug. Events can be lost. Consumers can fail. Ordering is not guaranteed. Managed through idempotent consumers, retryable stages, and correlation IDs that make causality traceable across async boundaries.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IV Cache -->
+  <div class="dp-section visible" data-tags="all cache">
+    <div class="dp-section-head">
+      <span class="dp-roman">IV</span>
+      <span class="dp-section-title">Cache-Aware Media Delivery — First Principles</span>
+    </div>
+    <div class="dp-prose">A cache is not a performance optimization bolted onto a correct system. In a media delivery system, the cache architecture <em>is</em> the performance architecture. Getting it wrong means the correct behavior is also the slow behavior.</div>
+
+    <div class="dp-principle-list">
+      <div class="dp-principle">
+        <span class="dp-principle-glyph">L1</span>
+        <div class="dp-principle-body">
+          <div class="dp-principle-title">Caffeine — JVM heap, ~1µs</div>
+          <div class="dp-principle-desc">~10k entries, TTL 5 min. The hot set — top assets by access frequency. For an active campaign, everything the team looked at in the last hour is here. Zero Redis RTT.</div>
+        </div>
+      </div>
+      <div class="dp-principle">
+        <span class="dp-principle-glyph">L2</span>
+        <div class="dp-principle-body">
+          <div class="dp-principle-title">Redis — shared across pods, ~1ms</div>
+          <div class="dp-principle-desc">~500k entries, TTL 30 min. Warm set. A cache warm from pod A is immediately available to pod B. Presigned URLs aligned to URL expiry minus safety margin.</div>
+        </div>
+      </div>
+      <div class="dp-principle">
+        <span class="dp-principle-glyph">⊘</span>
+        <div class="dp-principle-body">
+          <div class="dp-principle-title">Write-around strategy — not write-through</div>
+          <div class="dp-principle-desc">Batch uploads are read-rarely-after-write. Pre-warming the cache on upload evicts genuinely hot assets. Write-around accepts slightly higher latency on first access; the cache reflects actual access patterns, not upload patterns.</div>
+        </div>
+      </div>
+      <div class="dp-principle">
+        <span class="dp-principle-glyph">✕</span>
+        <div class="dp-principle-body">
+          <div class="dp-principle-title">Strong invalidation on mutation</div>
+          <div class="dp-principle-desc">On asset deletion or version update, both L1 and L2 are synchronously invalidated. Stale window is zero. We pay a synchronous Redis write on every mutation — correct for a read-dominated system.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V Storage -->
+  <div class="dp-section visible" data-tags="all storage">
+    <div class="dp-section-head">
+      <span class="dp-roman">V</span>
+      <span class="dp-section-title">Storage Abstraction — The Future-Proofing Argument</span>
+    </div>
+    <div class="dp-prose">Storage backends change. Not because engineers are indecisive — because the economics change, the compliance requirements change, the deployment targets change, and the vendors change their pricing models.</div>
+    <div class="dp-callout">A system that has Tencent COS SDK calls distributed across its business logic has made a permanent architectural commitment to Tencent COS. The <code>ObjectStoragePort</code> interface is a one-time investment that makes future migrations cheap.</div>
+
+    <div class="dp-tradeoff">
+      <div class="dp-tradeoff-head">Interface contract</div>
+      <div class="dp-tradeoff-rows">
+        <div class="dp-tradeoff-row">
+          <span class="dp-tradeoff-label label-chosen">principle</span>
+          <span class="dp-tradeoff-text">The interface encodes <em>what</em> the business logic needs, not <em>how</em> a specific backend provides it. <code>presignedGet(key, ttl)</code> is a business concept. Whether the URL is signed by COS, S3, or a local file server is the adapter's concern.</span>
+        </div>
+        <div class="dp-tradeoff-row">
+          <span class="dp-tradeoff-label label-rejected">rejected</span>
+          <span class="dp-tradeoff-text"><strong>Direct SDK integration.</strong> Faster to write initially. The problem is what happens over two years: the team discovers a new deployment requirement, and the system has COS assumptions scattered through twenty service methods.</span>
+        </div>
+        <div class="dp-tradeoff-row">
+          <span class="dp-tradeoff-label label-cost">cost</span>
+          <span class="dp-tradeoff-text">Two additional hours of initial implementation time. Saves weeks of migration work later. The math is not close.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VI AI -->
+  <div class="dp-section visible" data-tags="all ai">
+    <div class="dp-section-head">
+      <span class="dp-roman">VI</span>
+      <span class="dp-section-title">AI as Ingest Infrastructure</span>
+    </div>
+    <div class="dp-prose">The conventional approach: a user selects assets, clicks "Generate Tags," waits for a spinner, and reviews the results. This treats AI as a user-invoked tool. It is better than nothing. It is not good enough.</div>
+    <div class="dp-callout">When AI tagging is part of the ingest contract — an unconditional pipeline stage that runs on every asset — the system has a consistent enrichment baseline. Every asset is tagged. The search index has consistent coverage. Deduplication signals are available for every upload. The user sees better results without taking any additional action.</div>
+
+    <div class="dp-principle-list">
+      <div class="dp-principle">
+        <span class="dp-principle-glyph">→</span>
+        <div class="dp-principle-body">
+          <div class="dp-principle-title">Unconditional — no opt-in</div>
+          <div class="dp-principle-desc">When tagging is a user action, most assets are never tagged. Manual actions are often skipped. The ingest pipeline removes the human decision from the loop for enrichment that should always happen.</div>
+        </div>
+      </div>
+      <div class="dp-principle">
+        <span class="dp-principle-glyph">→</span>
+        <div class="dp-principle-body">
+          <div class="dp-principle-title">Async — off the upload critical path</div>
+          <div class="dp-principle-desc">Qwen-VL inference for a high-resolution image can take seconds. Upload returns when storage is durable. Enrichment completes within seconds. The asset is usable immediately.</div>
+        </div>
+      </div>
+      <div class="dp-principle">
+        <span class="dp-principle-glyph">→</span>
+        <div class="dp-principle-body">
+          <div class="dp-principle-title">Taxonomy normalization at the pipeline boundary</div>
+          <div class="dp-principle-desc">The AI call is tenant-agnostic — the same model serves all tenants. The normalization stage maps raw semantic labels to the tenant's vocabulary. Separation of concerns at the pipeline boundary, not the API call.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VII Tenancy -->
+  <div class="dp-section visible" data-tags="all tenancy">
+    <div class="dp-section-head">
+      <span class="dp-roman">VII</span>
+      <span class="dp-section-title">Multi-Tenant Isolation — Defense in Depth</span>
+    </div>
+    <div class="dp-prose">Multi-tenancy is not a feature. It is a security property. The consequences of getting it wrong are not performance degradation or a confusing UI — they are data breaches, compliance failures, and loss of customer trust that cannot be recovered.</div>
+
+    <div class="dp-tradeoff">
+      <div class="dp-tradeoff-head">Isolation layers</div>
+      <div class="dp-tradeoff-rows">
+        <div class="dp-tradeoff-row">
+          <span class="dp-tradeoff-label label-chosen">primary</span>
+          <span class="dp-tradeoff-text"><strong>Hibernate filter</strong> adds <code>WHERE tenant_id = ?</code> to every query on tenant-scoped tables. Activated at session creation. Cannot be disabled from application code. The defense is in the infrastructure, not in the developer's attention.</span>
+        </div>
+        <div class="dp-tradeoff-row">
+          <span class="dp-tradeoff-label label-chosen">storage</span>
+          <span class="dp-tradeoff-text"><strong>Storage key prefix</strong> — <code>{tenantId}/{year}/{month}/{assetId}/{variant}</code>. A signed URL for tenant A cannot access tenant B's data. Also enables per-tenant cost attribution at the billing level without querying the database.</span>
+        </div>
+        <div class="dp-tradeoff-row">
+          <span class="dp-tradeoff-label label-chosen">enterprise</span>
+          <span class="dp-tradeoff-text"><strong>Schema-per-tenant</strong> via routing DataSource for regulated tenants. Application code is identical. Routing happens at the JDBC connection level. Available for compliance requirements that demand physical data separation.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dp-prose">The threat model is not a sophisticated attacker who has compromised the application server. It is an application bug — a missing filter clause, a misconfigured query, a shared cache key — that allows one tenant's request to return another tenant's data. These bugs are the most common multi-tenancy failure mode, and the hardest to catch in testing.</div>
+  </div>
+
+  <!-- VIII Non-Goals -->
+  <div class="dp-section visible" data-tags="all nongoals">
+    <div class="dp-section-head">
+      <span class="dp-roman">VIII</span>
+      <span class="dp-section-title">What This System Does Not Solve</span>
+    </div>
+    <div class="dp-prose">A system's non-goals are as important as its goals. A system that tries to solve everything solves nothing well.</div>
+    <div class="dp-nongoal">
+      <div class="dp-nongoal-row">
+        <span class="dp-nongoal-x">✕</span>
+        <span><span class="dp-nongoal-title">Video processing. </span>Video is a different problem domain — transcoding pipelines, streaming protocols, adaptive bitrate delivery. Adding video would mean a media processing infrastructure that dwarfs the existing system in complexity.</span>
+      </div>
+      <div class="dp-nongoal-row">
+        <span class="dp-nongoal-x">✕</span>
+        <span><span class="dp-nongoal-title">Global strong consistency. </span>The consistency model is deliberately mixed. A system that requires global strong consistency across all operations cannot achieve the latency targets that make real-time collaboration feel real.</span>
+      </div>
+      <div class="dp-nongoal-row">
+        <span class="dp-nongoal-x">✕</span>
+        <span><span class="dp-nongoal-title">Cross-region replication at the application layer. </span>The storage abstraction supports a multi-region-capable backend. The application does not implement region-aware routing. Cross-region replication is a deployment decision, not an application feature.</span>
+      </div>
+      <div class="dp-nongoal-row">
+        <span class="dp-nongoal-x">✕</span>
+        <span><span class="dp-nongoal-title">Public anonymous delivery. </span>Presigned URLs provide authenticated, time-bounded access. Building a public CDN with anonymous access and edge caching is a different product with different security properties.</span>
+      </div>
+      <div class="dp-nongoal-row">
+        <span class="dp-nongoal-x">✕</span>
+        <span><span class="dp-nongoal-title">Pixel-level collaborative drawing. </span>Figma's problem. This system solves the asset management problem adjacent to it, not the canvas collaboration problem itself.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- IX Scaling -->
+  <div class="dp-section visible" data-tags="all scale">
+    <div class="dp-section-head">
+      <span class="dp-roman">IX</span>
+      <span class="dp-section-title">Scaling Philosophy</span>
+    </div>
+    <div class="dp-callout">Scale on demand, not in advance. Every premature scaling decision adds complexity that must be maintained, debugged, and explained to new team members. Add complexity when the problem is demonstrated, not when it is anticipated.</div>
+    <div class="dp-scale-grid">
+      <div class="dp-scale-card">
+        <div class="dp-scale-label dp-scale-label-easy">scales horizontally</div>
+        <div class="dp-scale-title">HTTP API tier</div>
+        <div class="dp-scale-desc">Stateless pods. JWT-carried identity. No shared process state. Adding a pod requires zero coordination.</div>
+      </div>
+      <div class="dp-scale-card">
+        <div class="dp-scale-label dp-scale-label-hard">harder problem</div>
+        <div class="dp-scale-title">WebSocket / STOMP tier</div>
+        <div class="dp-scale-desc">Stateful connections. Redis pub/sub serves as cross-pod broadcast. Introduces Redis availability dependency on the collaboration path.</div>
+      </div>
+      <div class="dp-scale-card">
+        <div class="dp-scale-label dp-scale-label-easy">scales independently</div>
+        <div class="dp-scale-title">AI pipeline workers</div>
+        <div class="dp-scale-desc">Stateless event consumers. Adding workers adds throughput. The event bus is the backpressure mechanism.</div>
+      </div>
+      <div class="dp-scale-card">
+        <div class="dp-scale-label dp-scale-label-defer">deferred</div>
+        <div class="dp-scale-title">Event bus + PostgreSQL</div>
+        <div class="dp-scale-desc">In-process event bus by default. PostgreSQL not sharded. The DomainEventPublisher interface and a well-tuned PG instance are the seams. Cross them when the ceiling is reached.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- X Ops -->
+  <div class="dp-section visible" data-tags="all ops">
+    <div class="dp-section-head">
+      <span class="dp-roman">X</span>
+      <span class="dp-section-title">Operational Philosophy</span>
+    </div>
+    <div class="dp-prose">A system that is correct but unoperatable is not correct in production. Operational concerns are not second-class — they are part of the design.</div>
+
+    <div class="dp-principle-list">
+      <div class="dp-principle">
+        <span class="dp-principle-glyph">①</span>
+        <div class="dp-principle-body">
+          <div class="dp-principle-title">Observability is not optional</div>
+          <div class="dp-principle-desc">Structured logs, distributed traces, and business metrics are written alongside the features they observe, not added after the system works. A feature that cannot be observed is not complete. Every async operation carries a correlation ID that makes causality traceable across service boundaries.</div>
+        </div>
+      </div>
+      <div class="dp-principle">
+        <span class="dp-principle-glyph">②</span>
+        <div class="dp-principle-body">
+          <div class="dp-principle-title">Idempotency is a contract</div>
+          <div class="dp-principle-desc">Every pipeline stage is idempotent. Running a stage twice produces the same result as running it once. In a distributed system, at-least-once delivery is easier to achieve than exactly-once. We design for at-least-once by making consumers correct under repeated delivery.</div>
+        </div>
+      </div>
+      <div class="dp-principle">
+        <span class="dp-principle-glyph">③</span>
+        <div class="dp-principle-body">
+          <div class="dp-principle-title">Failure is normal — degrade gracefully</div>
+          <div class="dp-principle-desc">The system is designed to fail gracefully, not to prevent failure. AI API timeout → retry, fall back to untagged. Storage error → fail upload, do not emit domain event. Redis unavailable → fall through to PostgreSQL, degrade on WS broadcast. A system that has not specified its failure behavior has not finished its design.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Closing -->
+  <div class="dp-section visible" data-tags="all">
+    <div class="dp-section-head">
+      <span class="dp-roman">―</span>
+      <span class="dp-section-title">Closing</span>
+    </div>
+    <div class="dp-prose">Every opinion in this document is falsifiable. We believe CRDT convergence is worth the operational cost of binary document state. We believe write-around cache strategy is correct for upload-heavy creative workflows. We believe event-driven async pipelines are worth the debugging complexity they introduce.</div>
+    <div class="dp-callout">Good architecture is opinionated and evolvable. Opinions that cannot be revised are dogma, not design.</div>
+    <div class="dp-prose" style="font-style:italic; color: var(--color-text-tertiary); font-family: var(--ds);">If these beliefs are wrong for your deployment context, the architecture tells you where to change them. The port interfaces are the seams. The event bus is replaceable. The cache strategy is configurable.</div>
+  </div>
+
+  <div class="dp-footer">
+    <div class="dp-footer-l">DESIGN_PHILOSOPHY.md · v1.0</div>
+    <div class="dp-footer-r">Beliefs should change when evidence changes.</div>
+  </div>
+</div>
+
+<script>
+function show(tag) {
+  document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('.dp-section').forEach(s => {
+    const tags = s.dataset.tags || '';
+    s.classList.toggle('visible', tags.includes(tag));
+  });
+}
+</script>
