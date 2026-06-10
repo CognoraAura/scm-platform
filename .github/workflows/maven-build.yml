@@ -41,7 +41,7 @@ jobs:
         run: mvn test -B -f com.scm.parent/pom.xml
 
       - name: Generate Test Coverage Report
-        run: mvn jacoco:report
+        run: mvn jacoco:report -f com.scm.parent/pom.xml
 
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v4
