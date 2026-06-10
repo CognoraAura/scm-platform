@@ -67,8 +67,6 @@ class SecurityConfigurationValidatorTest {
         // Given: Missing configuration in production mode
         ReflectionTestUtils.setField(validator, "webAppSecret", "");
         ReflectionTestUtils.setField(validator, "activeProfile", "production");
-        org.mockito.Mockito.when(signatureProperties.getNonceTtl()).thenReturn(Duration.ofMinutes(5));
-        org.mockito.Mockito.when(signatureProperties.getAllowedClockSkew()).thenReturn(Duration.ofMinutes(5));
 
         // When & Then: Should throw IllegalStateException
         assertThrows(IllegalStateException.class, () -> validator.validateSecurityConfiguration());
@@ -136,8 +134,6 @@ class SecurityConfigurationValidatorTest {
         for (String profile : productionProfiles) {
             ReflectionTestUtils.setField(validator, "activeProfile", profile);
             ReflectionTestUtils.setField(validator, "webAppSecret", "");
-            org.mockito.Mockito.when(signatureProperties.getNonceTtl()).thenReturn(Duration.ofMinutes(5));
-            org.mockito.Mockito.when(signatureProperties.getAllowedClockSkew()).thenReturn(Duration.ofMinutes(5));
 
             // Should throw exception for production-like environments
             assertThrows(IllegalStateException.class,
@@ -164,8 +160,6 @@ class SecurityConfigurationValidatorTest {
         ReflectionTestUtils.setField(validator, "internalServiceSecret", "");
         ReflectionTestUtils.setField(validator, "identitySignatureSecret", "");
         ReflectionTestUtils.setField(validator, "activeProfile", "production");
-        org.mockito.Mockito.when(signatureProperties.getNonceTtl()).thenReturn(Duration.ofMinutes(5));
-        org.mockito.Mockito.when(signatureProperties.getAllowedClockSkew()).thenReturn(Duration.ofMinutes(5));
 
         // When & Then: Should throw exception with all missing configs
         IllegalStateException exception = assertThrows(IllegalStateException.class,
