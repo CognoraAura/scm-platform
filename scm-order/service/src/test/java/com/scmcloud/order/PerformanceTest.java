@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Tag;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
@@ -29,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @RequiredArgsConstructor
 @Slf4j
 @SpringBootTest
+@Tag("integration")
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DisplayName("Seata Distributed Transaction Performance Test")
