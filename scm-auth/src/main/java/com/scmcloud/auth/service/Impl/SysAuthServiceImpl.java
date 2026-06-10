@@ -63,8 +63,8 @@ public class SysAuthServiceImpl implements ISysAuthService {
 
         // 1. 妫€鏌ヨ处鎴锋槸鍚﹁閿佸畾
         if (isAccountLocked(username)) {
-            auditLogService.recordLoginFailure(username, ipAddress, "璐︽埛宸查攣瀹?);
-            throw new LockedException("璐︽埛宸查攣瀹氾紝璇风◢鍚庡啀璇?);
+            auditLogService.recordLoginFailure(username, ipAddress, "Account locked");
+            throw new LockedException("Account locked, please try later");
         }
 
         // 2. 妫€鏌ョ櫥褰曞け璐ユ锟?
@@ -72,7 +72,7 @@ public class SysAuthServiceImpl implements ISysAuthService {
         if (attempts >= securityProperties.getMaxLoginAttempts()) {
             lockAccount(username);
             auditLogService.recordLoginFailure(username, ipAddress, "鐧诲綍澶辫触娆℃暟杩囧");
-            throw new LockedException("鐧诲綍澶辫触娆℃暟杩囧锛岃处鎴峰凡琚攣瀹?);
+            throw new LockedException("Excessive login failures, account locked");
         }
 
         try {

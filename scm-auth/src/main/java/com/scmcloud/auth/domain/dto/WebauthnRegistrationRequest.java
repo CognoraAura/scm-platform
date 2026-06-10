@@ -53,10 +53,10 @@ public class WebauthnRegistrationRequest {
     @Size(max = 100, message = "Transport length cannot exceed 100")
     private String transports;
 
-    @Pattern(regexp = "^(platform|cross-platform)$", message = "璁よ瘉鍣ㄧ被鍨嬩笉姝ｇ‘")
+    @Pattern(regexp = "^(platform|cross-platform)$", message = "Invalid authenticator type")
     private String authenticatorAttachment;
 
-    @Pattern(regexp = "^(required|preferred|discouraged)$", message = "鐢ㄦ埛楠岃瘉鏂规硶涓嶆纭?)
+    @Pattern(regexp = "^(required|preferred|discouraged)$", message = "Invalid user verification method")
     private String userVerification;
 
     private Boolean backupState;

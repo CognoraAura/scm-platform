@@ -75,14 +75,14 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
         // 妫€鏌ュ嚟璇佹槸鍚﹀凡瀛樺湪
         WebauthnCredential existing = credentialMapper.findByUserIdAndCredId(userId, request.getCredentialId());
         if (existing != null) {
-            throw new IllegalStateException("鍑瘉 ID宸插瓨鍦?);
+            throw new IllegalStateException("Credential ID already exists");
         }
 
         // 鑾峰彇骞堕獙璇佹寫锟?
         String challengeKey = WA_REG_CHALLENGE_PREFIX + userId + ":" + request.getDeviceId();
         Object expectedChallenge = redisTemplate.opsForValue().get(challengeKey);
         if (expectedChallenge == null) {
-            throw new IllegalStateException("娉ㄥ唽鎸戞垬宸茶繃鏈熸垨涓嶅瓨鍦?);
+            throw new IllegalStateException("Registration challenge expired or does not exist");
         }
 
         // 浣跨敤 WebAuthn4J 楠岃瘉娉ㄥ唽鍝嶅簲
@@ -189,13 +189,13 @@ public class WebauthnCredentialServiceImpl extends ServiceImpl<WebauthnCredentia
         String key = WA_CHALLENGE_PREFIX + userId + ":" + deviceId;
         Object expectedChallenge = redisTemplate.opsForValue().get(key);
         if (expectedChallenge == null) {
-            throw new IllegalStateException("WebAuthn 鎸戞垬宸茶繃鏈熸垨涓嶅瓨鍦?);
+            throw new IllegalStateException("WebAuthn challenge expired or does not exist");
         }
 
         // 鑾峰彇鍑瘉
         WebauthnCredential credential = credentialMapper.findByUserIdAndCredId(userId, request.getCredentialId());
         if (credential == null || !credential.isAvailable()) {
-            throw new IllegalStateException("鍑瘉涓嶅瓨鍦ㄦ垨宸插仠鐢?);
+            throw new IllegalStateException("Credential does not exist or is disabled");
         }
 
         // 楠岃瘉绛惧悕璁℃暟鍣紙闃插厠闅嗘敾鍑伙級- 棰勬锟?
