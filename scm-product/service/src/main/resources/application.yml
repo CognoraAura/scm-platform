@@ -27,7 +27,6 @@ spring:
       minimum-idle: 5
       connection-timeout: 30000
 
-    Redis 閰嶇疆
   data:
     redis:
       host: ${REDIS_HOST:localhost}
@@ -42,7 +41,6 @@ spring:
           min-idle: 5
           max-wait: 3000ms
 
-  MyBatis-Plus 閰嶇疆
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
@@ -69,7 +67,6 @@ mybatis-plus:
       username: nacos
       password: nacos
 
-    浣跨敤 Nacos 浣滀负娉ㄥ唽涓績
   registry:
     type: nacos
     nacos:
@@ -116,7 +113,6 @@ mybatis-plus:
     health:
       show-details: always
 
-  XXL-Job 閰嶇疆
 xxl:
   job:
     admin:
@@ -130,7 +126,6 @@ xxl:
       logretentiondays: 30
     accessToken: default_token
 
-  鏃ュ織閰嶇疆
 logging:
   level:
     root: INFO
