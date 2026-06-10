@@ -108,11 +108,12 @@ public class ReconciliationRecordServiceImpl extends ServiceImpl<ReconciliationR
         ReconciliationRecord record = getById(id);
         if (record == null || Boolean.TRUE.equals(record.getDeleted())) {
             throw new IllegalArgumentException("Reconciliation record not found: " + id);
+        }
         record.setDiffReason(diffReason);
         record.setUpdateTime(LocalDateTime.now());
 
         updateById(record);
-        log.info("瀵硅处宸紓鏍囪鎴愬姛: id={}", id);
+
         return record;
     }
 
