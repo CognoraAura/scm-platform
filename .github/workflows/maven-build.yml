@@ -165,9 +165,9 @@ jobs:
       - name: Build JAR
         run: |
           if [ -d "${{ matrix.service }}/service" ]; then
-            cd ${{ matrix.service }}/service && mvn clean package -DskipTests
-          elif [ -d "${{ matrix.service }}" ]; then
-            cd ${{ matrix.service }} && mvn clean package -DskipTests
+            mvn clean package -DskipTests -pl ../${{ matrix.service }}/service -am -f com.scm.parent/pom.xml
+          else
+            mvn clean package -DskipTests -pl ../${{ matrix.service }} -am -f com.scm.parent/pom.xml
           fi
 
       - name: Set up Docker Buildx
