@@ -65,10 +65,10 @@ public class SysUserRole {
      */
     @Getter
     public enum ApprovalStatus {
-        PENDING(0, "寰呭鎵?),
-        IN_PROGRESS(1, "瀹℃壒涓?),
-        APPROVED(2, "宸叉壒鍑?),
-        REJECTED(3, "宸叉嫆缁?);
+        PENDING(0, "Pending"),
+        IN_PROGRESS(1, "In Progress"),
+        APPROVED(2, "Approved"),
+        REJECTED(3, "Rejected");
 
         private final int code;
         private final String desc;

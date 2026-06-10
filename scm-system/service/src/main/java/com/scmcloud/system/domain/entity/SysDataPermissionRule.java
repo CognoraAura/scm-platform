@@ -76,11 +76,11 @@ public class SysDataPermissionRule {
      */
     @Getter
     public enum RuleType {
-        ALL(1, "鍏ㄩ儴鏁版嵁"),
-        CUSTOM_SQL(2, "鑷畾涔塖QL"),
-        DEPT(3, "鏈儴闂?),
-        DEPT_AND_CHILDREN(4, "鏈儴闂ㄥ強浠ヤ笅"),
-        SELF(5, "浠呮湰浜?);
+        ALL(1, "All Data"),
+        CUSTOM_SQL(2, "Custom SQL"),
+        DEPT(3, "This Department"),
+        DEPT_AND_CHILDREN(4, "Department and Below"),
+        SELF(5, "Self Only");
 
         private final int code;
         private final String desc;

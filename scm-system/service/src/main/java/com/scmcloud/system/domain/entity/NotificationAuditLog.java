@@ -89,12 +89,12 @@ public class NotificationAuditLog {
      */
     @Getter
     public enum Channel {
-        EMAIL("EMAIL", "閭欢"),
-        SMS("SMS", "鐭俊"),
-        WECHAT("WECHAT", "寰俊"),
-        DINGTALK("DINGTALK", "閽夐拤"),
-        FEISHU("FEISHU", "椋炰功"),
-        PUSH("PUSH", "鎺ㄩ€?);
+        EMAIL("EMAIL", "Email"),
+        SMS("SMS", "SMS"),
+        WECHAT("WECHAT", "WeChat"),
+        DINGTALK("DINGTALK", "DingTalk"),
+        FEISHU("FEISHU", "Feishu"),
+        PUSH("PUSH", "Push");
     
         private final String code;
         private final String desc;
@@ -110,10 +110,10 @@ public class NotificationAuditLog {
      */
     @Getter
     public enum Status {
-        PENDING("PENDING", "寰呭彂閫?),
-        SENT("SENT", "宸插彂閫?),
-        FAILED("FAILED", "鍙戦€佸け璐?),
-        CANCELLED("CANCELLED", "宸插彇娑?);
+        PENDING("PENDING", "Pending"),
+        SENT("SENT", "Sent"),
+        FAILED("FAILED", "Failed"),
+        CANCELLED("CANCELLED", "Cancelled");
 
         private final String code;
         private final String desc;
