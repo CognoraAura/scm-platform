@@ -93,7 +93,7 @@ public class PlatformFeeCalculationJob {
             }
 
             String scope = tenantId == null ? "All tenants" : "Tenant " + tenantId;
-            log.info("寮€濮嬭绠梴} {} 骞冲彴鏈嶅姟璐?, targetMonth, scope);
+            log.info("Starting platform fee calculation for {} {}", targetMonth, scope);
 
             // 鎵ц璁¤垂璁＄畻
             int calculatedCount = platformFeeService.calculateMonthlyFees(targetMonth, tenantId);
