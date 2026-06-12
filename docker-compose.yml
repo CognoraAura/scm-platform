@@ -91,7 +91,7 @@ services:
     networks:
       - scm-network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-a", "redis123", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -122,7 +122,7 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://192.168.80.140:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -134,7 +134,7 @@ services:
     networks:
       - scm-network
     healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "192.168.80.140:9092"]
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -179,7 +179,7 @@ services:
     networks:
       - scm-network
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://192.168.80.140:9200/_cluster/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -345,24 +345,66 @@ services:
   # If you only need MySQL CDC (e.g., for Nacos/XXL-Job MySQL instances), Canal can remain
   # but reconfigure canal.instance.master.address to point to a MySQL instance.
   # ============================================================
-  canal-server:
-    image: canal/canal-server:v1.1.7
-    container_name: scm-canal
-    ports:
-      - "11111:11111"
-    environment:
-      canal.auto.scan: "false"
-      canal.destinations: product
-      canal.instance.master.address: postgres:5432
-      canal.instance.dbUsername: admin
-      canal.instance.dbPassword: admin123
+
+  # ============================================================
+  # Redis Sentinel - 高可用Redis集群
+  # ============================================================
+  redis-master:
+    image: redis:7.2-alpine
+    command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
-      - ./config/canal:/home/admin/canal-server/conf
-      - canal_logs:/home/admin/canal-server/logs
+      - ./deploy/redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - redis-master:/data
+    ports:
+      - "6379:6379"
+
+  redis-slave-1:
+    image: redis:7.2-alpine
+    command: redis-server /usr/local/etc/redis/redis.conf --replicaof redis-master 6379
+    volumes:
+      - ./deploy/redis/redis.conf:/usr/local/etc/redis/redis.conf
     depends_on:
-      - postgres
-    networks:
-      - scm-network
+      - redis-master
+
+  redis-slave-2:
+    image: redis:7.2-alpine
+    command: redis-server /usr/local/etc/redis/redis.conf --replicaof redis-master 6379
+    volumes:
+      - ./deploy/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    depends_on:
+      - redis-master
+
+  redis-sentinel-1:
+    image: redis:7.2-alpine
+    command: redis-sentinel /usr/local/etc/redis/sentinel.conf
+    volumes:
+      - ./deploy/redis/sentinel.conf:/usr/local/etc/redis/sentinel.conf
+    ports:
+      - "26379:26379"
+    depends_on:
+      - redis-master
+      - redis-slave-1
+      - redis-slave-2
+
+  redis-sentinel-2:
+    image: redis:7.2-alpine
+    command: redis-sentinel /usr/local/etc/redis/sentinel.conf
+    volumes:
+      - ./deploy/redis/sentinel.conf:/usr/local/etc/redis/sentinel.conf
+    depends_on:
+      - redis-master
+      - redis-slave-1
+      - redis-slave-2
+
+  redis-sentinel-3:
+    image: redis:7.2-alpine
+    command: redis-sentinel /usr/local/etc/redis/sentinel.conf
+    volumes:
+      - ./deploy/redis/sentinel.conf:/usr/local/etc/redis/sentinel.conf
+    depends_on:
+      - redis-master
+      - redis-slave-1
+      - redis-slave-2
 
 # ============================================================
 # 网络配置
@@ -405,5 +447,8 @@ volumes:
   prometheus_data:
   grafana_data:
 
+  # Redis Sentinel
+  redis-master:
+
   # 其他
-  canal_logs:
+
