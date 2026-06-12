@@ -1,0 +1,29 @@
+# CODEOWNERS - Auto review assignment
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything
+* @CognoraAura/developers
+
+# Backend services
+scm-order/ @CognoraAura/developers
+scm-inventory/ @CognoraAura/developers
+scm-product/ @CognoraAura/developers
+scm-auth/ @CognoraAura/developers
+scm-gateway/ @CognoraAura/developers
+scm-common/ @CognoraAura/developers
+
+# DevOps and infrastructure
+deploy/ @CognoraAura/ops
+.github/ @CognoraAura/ops
+scripts/ @CognoraAura/ops
+docker-compose*.yml @CognoraAura/ops
+
+# Security-related files
+**/security/ @CognoraAura/security
+**/pom.xml @CognoraAura/security
+**/application.yml @CognoraAura/security
+**/application.yaml @CognoraAura/security
+
+# Documentation
+docs/ @CognoraAura/developers @CognoraAura/ops
+*.md @CognoraAura/developers
