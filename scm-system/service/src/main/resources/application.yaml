@@ -268,6 +268,17 @@ management:
       exposure:
         include: health,info,prometheus,metrics
       base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+  health:
+    db:
+      enabled: true
+    redis:
+      enabled: true
+    diskspace:
+      enabled: true
 
   # Micrometer metrics configuration
   metrics:

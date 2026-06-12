@@ -105,15 +105,22 @@ seata:
     log:
       exceptionRate: 100
 
-# Actuator health check
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,seata
+        include: health,info,metrics,prometheus,seata
   endpoint:
     health:
       show-details: always
+      show-components: always
+  health:
+    db:
+      enabled: true
+    redis:
+      enabled: true
+    diskspace:
+      enabled: true
 
 # XXL-Job
 xxl:
