@@ -7,17 +7,17 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: ${NACOS_SERVER:192.168.80.140:8848}
+        server-addr: ${NACOS_SERVER:localhost:8848}
         namespace: ${NACOS_NAMESPACE:}
       config:
-        server-addr: ${NACOS_SERVER:192.168.80.140:8848}
+        server-addr: ${NACOS_SERVER:localhost:8848}
         namespace: ${NACOS_NAMESPACE:}
         file-extension: yaml
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${DB_HOST:192.168.80.140}:${DB_PORT:5432}/${DB_NAME:db_notify}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:db_notify}
     username: ${DB_USERNAME:admin}
-    password: ${DB_PASSWORD:admin123}
+    password: ${DB_PASSWORD:changeme}
   mail:
     host: ${MAIL_HOST:smtp.example.com}
     port: ${MAIL_PORT:587}
@@ -30,10 +30,19 @@ spring:
           starttls:
             enable: true
   rabbitmq:
-    host: ${RABBITMQ_HOST:192.168.80.140}
+    host: ${RABBITMQ_HOST:localhost}
     port: ${RABBITMQ_PORT:5672}
-    username: ${RABBITMQ_USERNAME:guest}
-    password: ${RABBITMQ_PASSWORD:guest}
+    username: ${RABBITMQ_USERNAME:admin}
+    password: ${RABBITMQ_PASSWORD:changeme}
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
+    validate-on-migrate: true
+    out-of-order: false
+    table: flyway_schema_history
 
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
