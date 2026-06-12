@@ -78,23 +78,85 @@ services:
       retries: 5
 
   # ============================================================
-  # Redis - 缓存与分布式锁
+  # Redis Sentinel - 高可用Redis集群
   # ============================================================
   redis:
     image: redis:7.2-alpine
-    container_name: scm-redis
-    command: redis-server --requirepass redis123 --appendonly yes
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./deploy/redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - redis-master:/data
     ports:
       - "6379:6379"
-    volumes:
-      - redis_data:/data
     networks:
       - scm-network
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "redis123", "ping"]
+      test: ["CMD", "redis-cli", "-a", "admin123", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  redis-slave-1:
+    image: redis:7.2-alpine
+    command: redis-server /usr/local/etc/redis/redis.conf --replicaof redis 6379
+    volumes:
+      - ./deploy/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    depends_on:
+      - redis
+    networks:
+      - scm-network
+
+  redis-slave-2:
+    image: redis:7.2-alpine
+    command: redis-server /usr/local/etc/redis/redis.conf --replicaof redis 6379
+    volumes:
+      - ./deploy/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    depends_on:
+      - redis
+    networks:
+      - scm-network
+
+  redis-sentinel-1:
+    image: redis:7.2-alpine
+    command: redis-sentinel /usr/local/etc/redis/sentinel.conf
+    volumes:
+      - ./deploy/redis/sentinel.conf:/usr/local/etc/redis/sentinel.conf
+    ports:
+      - "26379:26379"
+    depends_on:
+      - redis
+      - redis-slave-1
+      - redis-slave-2
+    networks:
+      - scm-network
+
+  redis-sentinel-2:
+    image: redis:7.2-alpine
+    command: redis-sentinel /usr/local/etc/redis/sentinel.conf
+    volumes:
+      - ./deploy/redis/sentinel.conf:/usr/local/etc/redis/sentinel.conf
+    ports:
+      - "26380:26379"
+    depends_on:
+      - redis
+      - redis-slave-1
+      - redis-slave-2
+    networks:
+      - scm-network
+
+  redis-sentinel-3:
+    image: redis:7.2-alpine
+    command: redis-sentinel /usr/local/etc/redis/sentinel.conf
+    volumes:
+      - ./deploy/redis/sentinel.conf:/usr/local/etc/redis/sentinel.conf
+    ports:
+      - "26381:26379"
+    depends_on:
+      - redis
+      - redis-slave-1
+      - redis-slave-2
+    networks:
+      - scm-network
 
   # ============================================================
   # Kafka - 消息队列（高吞吐量）
@@ -345,66 +407,6 @@ services:
   # If you only need MySQL CDC (e.g., for Nacos/XXL-Job MySQL instances), Canal can remain
   # but reconfigure canal.instance.master.address to point to a MySQL instance.
   # ============================================================
-
-  # ============================================================
-  # Redis Sentinel - 高可用Redis集群
-  # ============================================================
-  redis-master:
-    image: redis:7.2-alpine
-    command: redis-server /usr/local/etc/redis/redis.conf
-    volumes:
-      - ./deploy/redis/redis.conf:/usr/local/etc/redis/redis.conf
-      - redis-master:/data
-    ports:
-      - "6379:6379"
-
-  redis-slave-1:
-    image: redis:7.2-alpine
-    command: redis-server /usr/local/etc/redis/redis.conf --replicaof redis-master 6379
-    volumes:
-      - ./deploy/redis/redis.conf:/usr/local/etc/redis/redis.conf
-    depends_on:
-      - redis-master
-
-  redis-slave-2:
-    image: redis:7.2-alpine
-    command: redis-server /usr/local/etc/redis/redis.conf --replicaof redis-master 6379
-    volumes:
-      - ./deploy/redis/redis.conf:/usr/local/etc/redis/redis.conf
-    depends_on:
-      - redis-master
-
-  redis-sentinel-1:
-    image: redis:7.2-alpine
-    command: redis-sentinel /usr/local/etc/redis/sentinel.conf
-    volumes:
-      - ./deploy/redis/sentinel.conf:/usr/local/etc/redis/sentinel.conf
-    ports:
-      - "26379:26379"
-    depends_on:
-      - redis-master
-      - redis-slave-1
-      - redis-slave-2
-
-  redis-sentinel-2:
-    image: redis:7.2-alpine
-    command: redis-sentinel /usr/local/etc/redis/sentinel.conf
-    volumes:
-      - ./deploy/redis/sentinel.conf:/usr/local/etc/redis/sentinel.conf
-    depends_on:
-      - redis-master
-      - redis-slave-1
-      - redis-slave-2
-
-  redis-sentinel-3:
-    image: redis:7.2-alpine
-    command: redis-sentinel /usr/local/etc/redis/sentinel.conf
-    volumes:
-      - ./deploy/redis/sentinel.conf:/usr/local/etc/redis/sentinel.conf
-    depends_on:
-      - redis-master
-      - redis-slave-1
-      - redis-slave-2
 
 # ============================================================
 # 网络配置
