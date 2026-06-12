@@ -120,7 +120,6 @@ jobs:
             -Dsonar.projectKey=scm-platform \
             -Dsonar.organization=${{ vars.SONAR_ORG }} \
             -Dsonar.host.url=https://sonarcloud.io
-        continue-on-error: true
 
   security-scan:
     name: Security Vulnerability Scan
@@ -143,7 +142,6 @@ jobs:
           mvn org.owasp:dependency-check-maven:check \
             -f com.scm.parent/pom.xml \
             -DfailBuildOnCVSS=7
-        continue-on-error: true
 
       - name: Upload Security Report
         if: always()
