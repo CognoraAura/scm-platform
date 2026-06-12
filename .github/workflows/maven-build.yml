@@ -281,9 +281,9 @@ jobs:
 
       - name: Deploy to production namespace
         run: |
-          kubectl set image deployment/scm-auth scm-auth=${{ secrets.DOCKERHUB_USERNAME }}/scm-auth:${{ github.sha }} -n scm-prod
-          kubectl set image deployment/scm-gateway scm-gateway=${{ secrets.DOCKERHUB_USERNAME }}/scm-gateway:${{ github.sha }} -n scm-prod
-          kubectl set image deployment/scm-system scm-system=${{ secrets.DOCKERHUB_USERNAME }}/scm-system:${{ github.sha }} -n scm-prod
+          kubectl set image deployment/scm-auth scm-auth=${{ secrets.DOCKERHUB_USERNAME }}/scm-auth:master-${{ github.sha }} -n scm-prod
+          kubectl set image deployment/scm-gateway scm-gateway=${{ secrets.DOCKERHUB_USERNAME }}/scm-gateway:master-${{ github.sha }} -n scm-prod
+          kubectl set image deployment/scm-system scm-system=${{ secrets.DOCKERHUB_USERNAME }}/scm-system:master-${{ github.sha }} -n scm-prod
           kubectl rollout status deployment/scm-auth -n scm-prod
           kubectl rollout status deployment/scm-gateway -n scm-prod
           kubectl rollout status deployment/scm-system -n scm-prod
