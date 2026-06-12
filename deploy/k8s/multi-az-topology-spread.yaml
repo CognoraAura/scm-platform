@@ -1,0 +1,65 @@
+# Topology Spread Constraints for Multi-AZ Deployment
+# Ensures pods are evenly distributed across availability zones
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scm-auth
+  namespace: scm-prod
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: scm-auth
+  template:
+    metadata:
+      labels:
+        app: scm-auth
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: scm-auth
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - scm-auth
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: scm-auth
+          image: ${DOCKERHUB_USERNAME}/scm-auth:latest
+          ports:
+            - containerPort: 8106
+          envFrom:
+            - configMapRef:
+                name: scm-config
+            - secretRef:
+                name: scm-secrets
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8106
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8106
+            initialDelaySeconds: 60
+            periodSeconds: 30

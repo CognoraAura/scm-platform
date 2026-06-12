@@ -1,206 +1,32 @@
-# SCM Platform Helm Values - Default
-global:
-  imageRegistry: ""
-  imagePullSecrets: []
-  storageClass: ""
+namespace: scm-prod
+replicaCount:
+  auth: 3
+  gateway: 3
+  system: 3
 
-# Service configurations
-services:
+image:
+  repository: docker.io
+  pullPolicy: IfNotPresent
+
+env:
+  nacosServer: nacos:8848
+  dbHost: postgresql
+  dbPort: "5432"
+  redisHost: redis
+  redisPort: "6379"
+
+resources:
+  auth:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
   gateway:
-    enabled: true
-    replicas: 2
-    port: 8761
-    image:
-      repository: scm-platform/scm-gateway
-      tag: latest
-    resources:
-      requests:
-        cpu: 250m
-        memory: 512Mi
-      limits:
-        cpu: 1000m
-        memory: 1Gi
-
-  auth:
-    enabled: true
-    replicas: 2
-    port: 8106
-    image:
-      repository: scm-platform/scm-auth
-      tag: latest
-    resources:
-      requests:
-        cpu: 200m
-        memory: 256Mi
-      limits:
-        cpu: 500m
-        memory: 512Mi
-
-  system:
-    enabled: true
-    replicas: 2
-    port: 8081
-    image:
-      repository: scm-platform/scm-system
-      tag: latest
-    resources:
-      requests:
-        cpu: 200m
-        memory: 256Mi
-      limits:
-        cpu: 500m
-        memory: 512Mi
-
-  product:
-    enabled: true
-    replicas: 1
-    port: 8201
-    image:
-      repository: scm-platform/scm-product
-      tag: latest
-
-  inventory:
-    enabled: true
-    replicas: 2
-    port: 8202
-    image:
-      repository: scm-platform/scm-inventory
-      tag: latest
-
-  order:
-    enabled: true
-    replicas: 2
-    port: 8203
-    image:
-      repository: scm-platform/scm-order
-      tag: latest
-
-  warehouse:
-    enabled: true
-    replicas: 1
-    port: 8204
-    image:
-      repository: scm-platform/scm-warehouse
-      tag: latest
-
-  logistics:
-    enabled: true
-    replicas: 1
-    port: 8205
-    image:
-      repository: scm-platform/scm-logistics
-      tag: latest
-
-  supplier:
-    enabled: true
-    replicas: 1
-    port: 8206
-    image:
-      repository: scm-platform/scm-supplier
-      tag: latest
-
-  finance:
-    enabled: true
-    replicas: 1
-    port: 8207
-    image:
-      repository: scm-platform/scm-finance
-      tag: latest
-
-  purchase:
-    enabled: true
-    replicas: 1
-    port: 8208
-    image:
-      repository: scm-platform/scm-purchase
-      tag: latest
-
-  tenant:
-    enabled: true
-    replicas: 1
-    port: 8209
-    image:
-      repository: scm-platform/scm-tenant
-      tag: latest
-
-  approval:
-    enabled: true
-    replicas: 1
-    port: 8210
-    image:
-      repository: scm-platform/scm-approval
-      tag: latest
-
-  audit:
-    enabled: true
-    replicas: 1
-    port: 8211
-    image:
-      repository: scm-platform/scm-audit
-      tag: latest
-
-  notify:
-    enabled: true
-    replicas: 1
-    port: 8212
-    image:
-      repository: scm-platform/scm-notify
-      tag: latest
-
-# Infrastructure dependencies
-postgresql:
-  enabled: true
-  auth:
-    postgresPassword: admin123
-    database: db_user
-  primary:
-    persistence:
-      size: 10Gi
-
-redis:
-  enabled: true
-  auth:
-    password: redis123
-  master:
-    persistence:
-      size: 2Gi
-
-kafka:
-  enabled: true
-  persistence:
-    size: 5Gi
-  zookeeper:
-    persistence:
-      size: 2Gi
-
-nacos:
-  enabled: true
-  standalone:
-    enabled: true
-  persistence:
-    enabled: true
-    size: 2Gi
-
-# Ingress
-ingress:
-  enabled: true
-  className: nginx
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-  hosts:
-    - host: scm.scmcloud.com
-      paths:
-        - path: /
-          pathType: Prefix
-  tls:
-    - secretName: scm-tls
-      hosts:
-        - scm.scmcloud.com
-
-# Autoscaling
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 10
-  targetCPUUtilizationPercentage: 80
-  targetMemoryUtilizationPercentage: 80
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "250m"
