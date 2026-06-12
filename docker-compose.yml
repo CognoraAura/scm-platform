@@ -408,6 +408,27 @@ services:
   # but reconfigure canal.instance.master.address to point to a MySQL instance.
   # ============================================================
 
+  # ============================================================
+  # PgBouncer - 连接池
+  # ============================================================
+  pgbouncer:
+    image: edoburu/pgbouncer:1.23.1
+    container_name: scm-pgbouncer
+    volumes:
+      - ./deploy/pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro
+      - ./deploy/pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt:ro
+    ports:
+      - "6432:6432"
+    depends_on:
+      - postgresql
+    networks:
+      - scm-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -p 6432 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 # ============================================================
 # 网络配置
 # ============================================================
