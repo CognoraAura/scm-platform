@@ -24,7 +24,7 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://192.168.80.140:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
@@ -55,7 +55,7 @@ services:
     networks:
       - scm-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://192.168.80.140:8083/"]
+      test: ["CMD", "curl", "-f", "http://localhost:8083/"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -66,7 +66,7 @@ services:
     container_name: scm-postgres
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: scm_password_2025
+      POSTGRES_PASSWORD: ${DB_PASSWORD:changeme}
       POSTGRES_DB: db_product
     ports:
       - "5432:5432"
