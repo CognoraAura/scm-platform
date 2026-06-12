@@ -71,6 +71,16 @@
         </dependency>
         <!-- database end -->
 
+        <!-- Flyway -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
+
         <!-- spring start -->
         <dependency>
             <groupId>org.springframework</groupId>

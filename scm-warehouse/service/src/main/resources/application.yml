@@ -1,11 +1,12 @@
-锘縮erver:
+server:
   port: 8204
 
 spring:
   application:
     name: scm-warehouse
 
-    Nacos 鏈嶅姟鍙戠幇涓庨厤缃腑锟?  cloud:
+  # Nacos service discovery and config center
+  cloud:
     nacos:
       discovery:
         server-addr: ${NACOS_SERVER:localhost:8848}
@@ -17,22 +18,23 @@ spring:
         group: DEFAULT_GROUP
         file-extension: yml
 
-    鏁版嵁婧愰厤锟?  datasource:
+  # Datasource
+  datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/db_warehouse
     username: ${DB_USERNAME:admin}
-    password: ${DB_PASSWORD:admin}
+    password: ${DB_PASSWORD:changeme}
     hikari:
       maximum-pool-size: 20
       minimum-idle: 5
       connection-timeout: 30000
 
-    Redis 閰嶇疆
+  # Redis
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:}
+      password: ${REDIS_PASSWORD:changeme}
       database: 3
       timeout: 5000ms
       lettuce:
@@ -42,7 +44,16 @@ spring:
           min-idle: 5
           max-wait: 3000ms
 
-  MyBatis-Plus 閰嶇疆
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
+    validate-on-migrate: true
+    out-of-order: false
+    table: flyway_schema_history
+
+# MyBatis-Plus
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
@@ -53,12 +64,13 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
 
-  Seata 鍒嗗竷寮忎簨鍔￠厤锟?seata:
+# Seata distributed transaction
+seata:
   enabled: true
   application-id: ${spring.application.name}
   tx-service-group: ${spring.application.name}-tx-group
 
-    浣跨敤 Nacos 浣滀负閰嶇疆涓績
+  # Use Nacos as config center
   config:
     type: nacos
     nacos:
@@ -69,7 +81,7 @@ mybatis-plus:
       username: nacos
       password: nacos
 
-    浣跨敤 Nacos 浣滀负娉ㄥ唽涓績
+  # Use Nacos as registry center
   registry:
     type: nacos
     nacos:
@@ -81,7 +93,8 @@ mybatis-plus:
       username: nacos
       password: nacos
 
-    瀹㈡埛绔厤锟?  client:
+  # Client config
+  client:
     rm:
       async-commit-buffer-limit: 10000
       report-retry-count: 5
@@ -107,16 +120,24 @@ mybatis-plus:
     log:
       exceptionRate: 100
 
-  Actuator 鍋ュ悍妫€锟?management:
+management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,seata
+        include: health,info,metrics,prometheus,seata
   endpoint:
     health:
       show-details: always
+      show-components: always
+  health:
+    db:
+      enabled: true
+    redis:
+      enabled: true
+    diskspace:
+      enabled: true
 
-  XXL-Job 閰嶇疆
+# XXL-Job
 xxl:
   job:
     admin:
@@ -130,7 +151,16 @@ xxl:
       logretentiondays: 30
     accessToken: default_token
 
-  鏃ュ織閰嶇疆
+# Logging
+frog:
+  security:
+    headers:
+      content-type-options-enabled: true
+      frame-options: DENY
+      hsts-enabled: true
+      hsts-max-age: 31536000
+      hsts-include-subdomains: true
+
 logging:
   level:
     root: INFO

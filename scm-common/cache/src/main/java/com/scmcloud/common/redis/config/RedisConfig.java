@@ -14,6 +14,8 @@ import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Primary;
 import com.scmcloud.common.cache.spring.TwoLevelCacheManager;
@@ -57,6 +59,7 @@ public class RedisConfig {
     }
 
     @Bean
+    @ConditionalOnProperty(name = "scm.cache.two-level.enabled", havingValue = "true", matchIfMissing = false)
     public RedisMessageListenerContainer twoLevelCacheListenerContainer(
             RedisConnectionFactory connectionFactory,
             TwoLevelCacheInvalidationListener twoLevelListener) {
@@ -68,6 +71,7 @@ public class RedisConfig {
 
     @Bean
     @Primary
+    @ConditionalOnProperty(name = "scm.cache.two-level.enabled", havingValue = "true", matchIfMissing = false)
     public CacheManager twoLevelCacheManager(RedisTemplate<String, Object> redisTemplate) {
         Duration defaultTtl = Duration.ofHours(1);
         Map<String, Duration> ttls = new HashMap<>();
@@ -104,7 +108,8 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
+    @ConditionalOnMissingBean(TwoLevelCacheManager.class)
+    public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer()))

@@ -1,9 +1,11 @@
-锘縮erver:
+server:
   port: 8212
 
 spring:
   application:
     name: scm-tenant
+
+  # Nacos service discovery and config center
   cloud:
     nacos:
       discovery:
@@ -13,12 +15,24 @@ spring:
         server-addr: ${NACOS_SERVER:localhost:8848}
         namespace: ${NACOS_NAMESPACE:}
         file-extension: yaml
+
+  # Datasource
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:db_tenant}
     username: ${DB_USERNAME:admin}
-    password: ${DB_PASSWORD:admin123}
+    password: ${DB_PASSWORD:changeme}
 
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
+    validate-on-migrate: true
+    out-of-order: false
+    table: flyway_schema_history
+
+# MyBatis-Plus
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
   type-aliases-package: com.scmcloud.tenant.domain.entity
@@ -27,19 +41,19 @@ mybatis-plus:
     cache-enabled: false
     log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
 
-  XXL-Job Configuration
+# XXL-Job
 xxl:
   job:
     admin:
       addresses: ${XXL_JOB_ADMIN_ADDR:http://localhost:8088/xxl-job-admin}
     executor:
       appname: scm-tenant-executor
-      port: 9998
+      port: 9993
       logpath: ${user.home}/logs/scm-tenant/xxl-job
       logretentiondays: 30
     accessToken: ${XXL_JOB_ACCESS_TOKEN:}
 
-  Seata 鍒嗗竷寮忎簨鍔￠厤锟?
+# Seata distributed transaction
 seata:
   enabled: true
   application-id: ${spring.application.name}
@@ -94,7 +108,27 @@ management:
     web:
       exposure:
         include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+  health:
+    db:
+      enabled: true
+    redis:
+      enabled: true
+    diskspace:
+      enabled: true
   metrics:
     export:
       prometheus:
         enabled: true
+
+frog:
+  security:
+    headers:
+      content-type-options-enabled: true
+      frame-options: DENY
+      hsts-enabled: true
+      hsts-max-age: 31536000
+      hsts-include-subdomains: true

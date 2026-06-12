@@ -20,9 +20,42 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin123
+          POSTGRES_DB: db_user
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U admin"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7.2-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Initialize databases
+        env:
+          PG_ADMIN_USER: admin
+          PG_ADMIN_PASSWORD: admin123
+        run: |
+          sudo apt-get install -y postgresql-client
+          cd scripts/db && bash init-all-databases.sh
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -87,7 +120,6 @@ jobs:
             -Dsonar.projectKey=scm-platform \
             -Dsonar.organization=${{ vars.SONAR_ORG }} \
             -Dsonar.host.url=https://sonarcloud.io
-        continue-on-error: true
 
   security-scan:
     name: Security Vulnerability Scan
@@ -110,7 +142,6 @@ jobs:
           mvn org.owasp:dependency-check-maven:check \
             -f com.scm.parent/pom.xml \
             -DfailBuildOnCVSS=7
-        continue-on-error: true
 
       - name: Upload Security Report
         if: always()
@@ -207,8 +238,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # TODO: Implement deployment to development environment
-      # e.g., kubectl apply, docker-compose pull & restart, SSH deploy, etc.
+      - name: Configure kubectl
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG_DEV }}
+
+      - name: Deploy to dev namespace
+        run: |
+          kubectl set image deployment/scm-auth scm-auth=${{ secrets.DOCKERHUB_USERNAME }}/scm-auth:develop-${{ github.sha }} -n scm-dev
+          kubectl set image deployment/scm-gateway scm-gateway=${{ secrets.DOCKERHUB_USERNAME }}/scm-gateway:develop-${{ github.sha }} -n scm-dev
+          kubectl set image deployment/scm-system scm-system=${{ secrets.DOCKERHUB_USERNAME }}/scm-system:develop-${{ github.sha }} -n scm-dev
+          kubectl rollout status deployment/scm-auth -n scm-dev
+          kubectl rollout status deployment/scm-gateway -n scm-dev
+          kubectl rollout status deployment/scm-system -n scm-dev
+
+      - name: Verify deployment
+        run: |
+          kubectl get pods -n scm-dev -l app=scm-auth
+          kubectl get pods -n scm-dev -l app=scm-gateway
+          kubectl get pods -n scm-dev -l app=scm-system
 
   deploy-prod:
     name: Deploy to Production
@@ -222,4 +271,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # TODO: Implement deployment to production environment
+      - name: Configure kubectl
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG_PROD }}
+
+      - name: Deploy to production namespace
+        run: |
+          kubectl set image deployment/scm-auth scm-auth=${{ secrets.DOCKERHUB_USERNAME }}/scm-auth:master-${{ github.sha }} -n scm-prod
+          kubectl set image deployment/scm-gateway scm-gateway=${{ secrets.DOCKERHUB_USERNAME }}/scm-gateway:master-${{ github.sha }} -n scm-prod
+          kubectl set image deployment/scm-system scm-system=${{ secrets.DOCKERHUB_USERNAME }}/scm-system:master-${{ github.sha }} -n scm-prod
+          kubectl rollout status deployment/scm-auth -n scm-prod
+          kubectl rollout status deployment/scm-gateway -n scm-prod
+          kubectl rollout status deployment/scm-system -n scm-prod
+
+      - name: Verify deployment
+        run: |
+          kubectl get pods -n scm-prod -l app=scm-auth
+          kubectl get pods -n scm-prod -l app=scm-gateway
+          kubectl get pods -n scm-prod -l app=scm-system

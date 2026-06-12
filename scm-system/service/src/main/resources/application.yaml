@@ -33,44 +33,44 @@ spring:
         # User datasource - sys_user, sys_user_oauth, webauthn_credential
         user:
           driver-class-name: org.postgresql.Driver
-          url: jdbc:postgresql://${DB_HOST:192.168.80.140}:5432/db_user
+          url: jdbc:postgresql://${DB_HOST:localhost}:5432/db_user
           username: ${DB_USERNAME:admin}
-          password: ${DB_PASSWORD:123456}
+          password: ${DB_PASSWORD:changeme}
 
         # Org datasource - sys_dept
         org:
           driver-class-name: org.postgresql.Driver
-          url: jdbc:postgresql://${DB_HOST:192.168.80.140}:5432/db_org
+          url: jdbc:postgresql://${DB_HOST:localhost}:5432/db_org
           username: ${DB_USERNAME:admin}
-          password: ${DB_PASSWORD:123456}
+          password: ${DB_PASSWORD:changeme}
 
         # Permission datasource - sys_role, sys_permission, sys_user_role, etc.
         permission:
           driver-class-name: org.postgresql.Driver
-          url: jdbc:postgresql://${DB_HOST:192.168.80.140}:5432/db_permission
+          url: jdbc:postgresql://${DB_HOST:localhost}:5432/db_permission
           username: ${DB_USERNAME:admin}
-          password: ${DB_PASSWORD:123456}
+          password: ${DB_PASSWORD:changeme}
 
         # Approval datasource - sys_permission_approval
         approval:
           driver-class-name: org.postgresql.Driver
-          url: jdbc:postgresql://${DB_HOST:192.168.80.140}:5432/db_approval
+          url: jdbc:postgresql://${DB_HOST:localhost}:5432/db_approval
           username: ${DB_USERNAME:admin}
-          password: ${DB_PASSWORD:123456}
+          password: ${DB_PASSWORD:changeme}
 
         # Audit datasource - sys_audit_log, sys_sensitive_operation_log
         audit:
           driver-class-name: org.postgresql.Driver
-          url: jdbc:postgresql://${DB_HOST:192.168.80.140}:5432/db_audit
+          url: jdbc:postgresql://${DB_HOST:localhost}:5432/db_audit
           username: ${DB_USERNAME:admin}
-          password: ${DB_PASSWORD:123456}
+          password: ${DB_PASSWORD:changeme}
 
         # Notify datasource - sys_notification_audit, sys_notification_template, etc.
         notify:
           driver-class-name: org.postgresql.Driver
-          url: jdbc:postgresql://${DB_HOST:192.168.80.140}:5432/db_notify
+          url: jdbc:postgresql://${DB_HOST:localhost}:5432/db_notify
           username: ${DB_USERNAME:admin}
-          password: ${DB_PASSWORD:123456}
+          password: ${DB_PASSWORD:changeme}
 
     # ========== Read-Write Separation (Master-Slave) ==========
     # Uses common/data ReadWriteRoutingDataSource for per-datasource master/slave routing
@@ -96,25 +96,25 @@ spring:
         # User datasource
         user:
           master:
-            url: jdbc:postgresql://${DB_MASTER_HOST:192.168.80.140}:5432/db_user
+            url: jdbc:postgresql://${DB_MASTER_HOST:localhost}:5432/db_user
             username: ${DB_USERNAME:admin}
-            password: ${DB_PASSWORD:123456}
+            password: ${DB_PASSWORD:changeme}
             driver-class-name: org.postgresql.Driver
             minimum-idle: 5
             maximum-pool-size: 20
           slaves:
             - name: slave1
-              url: jdbc:postgresql://${DB_SLAVE1_HOST:192.168.80.140}:5432/db_user
+              url: jdbc:postgresql://${DB_SLAVE1_HOST:localhost}:5432/db_user
               username: ${DB_USERNAME:admin}
-              password: ${DB_PASSWORD:123456}
+              password: ${DB_PASSWORD:changeme}
               driver-class-name: org.postgresql.Driver
               weight: 2
               minimum-idle: 3
               maximum-pool-size: 15
             - name: slave2
-              url: jdbc:postgresql://${DB_SLAVE2_HOST:192.168.80.140}:5432/db_user
+              url: jdbc:postgresql://${DB_SLAVE2_HOST:localhost}:5432/db_user
               username: ${DB_USERNAME:admin}
-              password: ${DB_PASSWORD:123456}
+              password: ${DB_PASSWORD:changeme}
               driver-class-name: org.postgresql.Driver
               weight: 1
               minimum-idle: 3
@@ -123,102 +123,110 @@ spring:
         # Org datasource
         org:
           master:
-            url: jdbc:postgresql://${DB_MASTER_HOST:192.168.80.140}:5432/db_org
+            url: jdbc:postgresql://${DB_MASTER_HOST:localhost}:5432/db_org
             username: ${DB_USERNAME:admin}
-            password: ${DB_PASSWORD:123456}
+            password: ${DB_PASSWORD:changeme}
             driver-class-name: org.postgresql.Driver
             minimum-idle: 5
             maximum-pool-size: 20
           slaves:
             - name: slave1
-              url: jdbc:postgresql://${DB_SLAVE1_HOST:192.168.80.140}:5432/db_org
+              url: jdbc:postgresql://${DB_SLAVE1_HOST:localhost}:5432/db_org
               username: ${DB_USERNAME:admin}
-              password: ${DB_PASSWORD:123456}
+              password: ${DB_PASSWORD:changeme}
               driver-class-name: org.postgresql.Driver
               weight: 2
             - name: slave2
-              url: jdbc:postgresql://${DB_SLAVE2_HOST:192.168.80.140}:5432/db_org
+              url: jdbc:postgresql://${DB_SLAVE2_HOST:localhost}:5432/db_org
               username: ${DB_USERNAME:admin}
-              password: ${DB_PASSWORD:123456}
+              password: ${DB_PASSWORD:changeme}
               driver-class-name: org.postgresql.Driver
               weight: 1
 
         # Permission datasource
         permission:
           master:
-            url: jdbc:postgresql://${DB_MASTER_HOST:192.168.80.140}:5432/db_permission
+            url: jdbc:postgresql://${DB_MASTER_HOST:localhost}:5432/db_permission
             username: ${DB_USERNAME:admin}
-            password: ${DB_PASSWORD:123456}
+            password: ${DB_PASSWORD:changeme}
             driver-class-name: org.postgresql.Driver
             minimum-idle: 5
             maximum-pool-size: 20
           slaves:
             - name: slave1
-              url: jdbc:postgresql://${DB_SLAVE1_HOST:192.168.80.140}:5432/db_permission
+              url: jdbc:postgresql://${DB_SLAVE1_HOST:localhost}:5432/db_permission
               username: ${DB_USERNAME:admin}
-              password: ${DB_PASSWORD:123456}
+              password: ${DB_PASSWORD:changeme}
               driver-class-name: org.postgresql.Driver
               weight: 2
             - name: slave2
-              url: jdbc:postgresql://${DB_SLAVE2_HOST:192.168.80.140}:5432/db_permission
+              url: jdbc:postgresql://${DB_SLAVE2_HOST:localhost}:5432/db_permission
               username: ${DB_USERNAME:admin}
-              password: ${DB_PASSWORD:123456}
+              password: ${DB_PASSWORD:changeme}
               driver-class-name: org.postgresql.Driver
               weight: 1
 
         # Approval datasource
         approval:
           master:
-            url: jdbc:postgresql://${DB_MASTER_HOST:192.168.80.140}:5432/db_approval
+            url: jdbc:postgresql://${DB_MASTER_HOST:localhost}:5432/db_approval
             username: ${DB_USERNAME:admin}
-            password: ${DB_PASSWORD:123456}
+            password: ${DB_PASSWORD:changeme}
             driver-class-name: org.postgresql.Driver
             minimum-idle: 3
             maximum-pool-size: 10
           slaves:
             - name: slave1
-              url: jdbc:postgresql://${DB_SLAVE1_HOST:192.168.80.140}:5432/db_approval
+              url: jdbc:postgresql://${DB_SLAVE1_HOST:localhost}:5432/db_approval
               username: ${DB_USERNAME:admin}
-              password: ${DB_PASSWORD:123456}
+              password: ${DB_PASSWORD:changeme}
               driver-class-name: org.postgresql.Driver
               weight: 1
 
         # Audit datasource
         audit:
           master:
-            url: jdbc:postgresql://${DB_MASTER_HOST:192.168.80.140}:5432/db_audit
+            url: jdbc:postgresql://${DB_MASTER_HOST:localhost}:5432/db_audit
             username: ${DB_USERNAME:admin}
-            password: ${DB_PASSWORD:123456}
+            password: ${DB_PASSWORD:changeme}
             driver-class-name: org.postgresql.Driver
             minimum-idle: 3
             maximum-pool-size: 10
           slaves:
             - name: slave1
-              url: jdbc:postgresql://${DB_SLAVE1_HOST:192.168.80.140}:5432/db_audit
+              url: jdbc:postgresql://${DB_SLAVE1_HOST:localhost}:5432/db_audit
               username: ${DB_USERNAME:admin}
-              password: ${DB_PASSWORD:123456}
+              password: ${DB_PASSWORD:changeme}
               driver-class-name: org.postgresql.Driver
               weight: 1
 
         # Notify datasource
         notify:
           master:
-            url: jdbc:postgresql://${DB_MASTER_HOST:192.168.80.140}:5432/db_notify
+            url: jdbc:postgresql://${DB_MASTER_HOST:localhost}:5432/db_notify
             username: ${DB_USERNAME:admin}
-            password: ${DB_PASSWORD:123456}
+            password: ${DB_PASSWORD:changeme}
             driver-class-name: org.postgresql.Driver
             minimum-idle: 3
             maximum-pool-size: 10
           slaves:
             - name: slave1
-              url: jdbc:postgresql://${DB_SLAVE1_HOST:192.168.80.140}:5432/db_notify
+              url: jdbc:postgresql://${DB_SLAVE1_HOST:localhost}:5432/db_notify
               username: ${DB_USERNAME:admin}
-              password: ${DB_PASSWORD:123456}
+              password: ${DB_PASSWORD:changeme}
               driver-class-name: org.postgresql.Driver
               weight: 1
   security:
-    default-password: 123456
+    default-password: ${DEFAULT_PASSWORD:changeme}
 
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
+    validate-on-migrate: true
+    out-of-order: false
+    table: flyway_schema_history
 
 mybatis-plus:
   # Mapper XML 文件位置
@@ -260,6 +268,17 @@ management:
       exposure:
         include: health,info,prometheus,metrics
       base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+  health:
+    db:
+      enabled: true
+    redis:
+      enabled: true
+    diskspace:
+      enabled: true
 
   # Micrometer metrics configuration
   metrics:
@@ -295,6 +314,15 @@ management:
       tomcat: true
       hikaricp: true
       logback: true
+
+frog:
+  security:
+    headers:
+      content-type-options-enabled: true
+      frame-options: DENY
+      hsts-enabled: true
+      hsts-max-age: 31536000
+      hsts-include-subdomains: true
 
 # ========== Logging Configuration ==========
 logging:

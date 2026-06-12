@@ -88,3 +88,20 @@ security:
     truststore-path: ${TRUSTSTORE_PATH:classpath:certs/truststore.p12}
     # SECURITY: Password MUST be provided via environment variable
     truststore-password: ${TRUSTSTORE_PASSWORD:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+  health:
+    db:
+      enabled: true
+    redis:
+      enabled: true
+    diskspace:
+      enabled: true

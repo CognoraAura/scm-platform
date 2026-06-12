@@ -8,3 +8,34 @@ target/
 .DS_Store
 Thumbs.db
 node_modules/
+
+# Environment files (NEVER commit secrets)
+.env
+.env.local
+.env.*.local
+
+# Build output
+build/
+dist/
+*.tar.gz
+
+# OS files
+desktop.ini
+
+# IDE
+.vscode/
+*.swp
+*.swo
+*~
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+
+# Docker
+.docker/
+
+# Kubernetes secrets
+*.pem
+*.key
+*.p12
+!scripts/**/*.p12

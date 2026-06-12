@@ -43,6 +43,7 @@
         <module name="scm-warehouse-service" />
         <module name="service" />
         <module name="scm-audit-api" />
+        <module name="scm-common-data-rw-stub" />
         <module name="scm-common-monitoring" />
         <module name="scm-tenant-service" />
       </profile>
@@ -87,6 +88,7 @@
       <module name="scm-common-core" options="-parameters" />
       <module name="scm-common-data" options="-parameters" />
       <module name="scm-common-data-rw" options="-parameters" />
+      <module name="scm-common-data-rw-stub" options="-parameters" />
       <module name="scm-common-integration" options="-parameters" />
       <module name="scm-common-monitoring" options="-parameters" />
       <module name="scm-common-security-api" options="-parameters" />

@@ -6,6 +6,7 @@ import com.scmcloud.common.security.handler.JwtAccessDeniedHandler;
 import com.scmcloud.common.security.handler.JwtAuthenticationEntryPoint;
 import com.scmcloud.common.security.stepup.StepUpFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -45,7 +46,8 @@ public class SecurityConfig {
     private final SqlInjectionFilter sqlInjectionFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-    private final StepUpFilter stepUpFilter;
+    @Autowired(required = false)
+    private StepUpFilter stepUpFilter;
     private final SecurityHeadersProperties securityHeadersProperties;
 
     /**
@@ -130,8 +132,11 @@ public class SecurityConfig {
 
                 // 8锔忊儯 娣诲姞鑷畾涔夎繃婊ゅ櫒
                 .addFilterBefore(sqlInjectionFilter, LogoutFilter.class)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(stepUpFilter, JwtAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        if (stepUpFilter != null) {
+            http.addFilterAfter(stepUpFilter, JwtAuthenticationFilter.class);
+        }
 
         return http.build();
     }
@@ -150,7 +155,7 @@ public class SecurityConfig {
                 "http://localhost:*"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Tenant-Id", "X-Request-ID", "X-Timestamp", "X-Nonce", "X-Signature", "X-App-Id", "X-Sign-Version"));
         configuration.setExposedHeaders(Arrays.asList(
                 "Authorization",
                 "X-Total-Count",

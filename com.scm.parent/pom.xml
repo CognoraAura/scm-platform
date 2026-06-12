@@ -87,6 +87,9 @@
     <!-- Testcontainers -->
     <testcontainers.version>1.20.6</testcontainers.version>
 
+    <!-- Database Migration -->
+    <flyway.version>10.15.0</flyway.version>
+
     <!-- Observability -->
     <sentinel.version>2025.0.0.0</sentinel.version>
     <sentinel-datasource-nacos.version>1.8.7</sentinel-datasource-nacos.version>
@@ -260,6 +263,20 @@
         <version>${mybatis-plus.version}</version>
       </dependency>
 
+      <!-- ==================== Database Migration ==================== -->
+
+      <!-- Flyway -->
+      <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-core</artifactId>
+        <version>${flyway.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-database-postgresql</artifactId>
+        <version>${flyway.version}</version>
+      </dependency>
+
       <!-- ==================== Search & Data Sync ==================== -->
 
       <!-- Elasticsearch -->
@@ -378,6 +395,14 @@
         <scope>import</scope>
       </dependency>
 
+      <!-- Pact Contract Testing -->
+      <dependency>
+        <groupId>au.com.dius.pact.consumer</groupId>
+        <artifactId>junit5</artifactId>
+        <version>4.6.5</version>
+        <scope>test</scope>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
@@ -467,7 +492,52 @@
               <goal>report</goal>
             </goals>
           </execution>
+          <execution>
+            <id>check</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <skip>${jacoco.skip}</skip>
+              <rules>
+                <rule>
+                  <element>BUNDLE</element>
+                  <limits>
+                    <limit>
+                      <counter>LINE</counter>
+                      <value>COVEREDRATIO</value>
+                      <minimum>0.70</minimum>
+                    </limit>
+                    <limit>
+                      <counter>BRANCH</counter>
+                      <value>COVEREDRATIO</value>
+                      <minimum>0.60</minimum>
+                    </limit>
+                  </limits>
+                </rule>
+              </rules>
+            </configuration>
+          </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pitest</groupId>
+        <artifactId>pitest-maven</artifactId>
+        <version>1.16.1</version>
+        <configuration>
+          <targetClasses>
+            <param>com.scmcloud.*</param>
+          </targetClasses>
+          <targetTests>
+            <param>com.scmcloud.*</param>
+          </targetTests>
+          <outputFormats>
+            <outputFormat>HTML</outputFormat>
+            <outputFormat>XML</outputFormat>
+          </outputFormats>
+          <timestampedReports>false</timestampedReports>
+        </configuration>
       </plugin>
     </plugins>
   </build>
