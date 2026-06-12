@@ -23,7 +23,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/db_product
     username: ${DB_USERNAME:admin}
-    password: ${DB_PASSWORD:admin}
+    password: ${DB_PASSWORD:changeme}
     hikari:
       maximum-pool-size: 20
       minimum-idle: 5
@@ -33,7 +33,7 @@ spring:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:}
+      password: ${REDIS_PASSWORD:changeme}
       database: 2
       timeout: 5000ms
       lettuce:
