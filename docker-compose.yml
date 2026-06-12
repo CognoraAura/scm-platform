@@ -429,6 +429,28 @@ services:
       timeout: 5s
       retries: 5
 
+  # ============================================================
+  # Schema Registry - Kafka Schema管理
+  # ============================================================
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.6.0
+    container_name: scm-schema-registry
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka:9092
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+    ports:
+      - "8081:8081"
+    depends_on:
+      - kafka
+    networks:
+      - scm-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/subjects"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
 # ============================================================
 # 网络配置
 # ============================================================
