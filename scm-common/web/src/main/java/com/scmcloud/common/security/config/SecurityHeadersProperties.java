@@ -20,7 +20,7 @@ public class SecurityHeadersProperties {
     private boolean hstsIncludeSubdomains = true;
 
     // kept disabled by default to preserve previous behavior; enable to emit X-Content-Type-Options
-    private boolean contentTypeOptionsEnabled = false;
+    private boolean contentTypeOptionsEnabled = true;
     private boolean frameOptionsEnabled = true;
     private boolean referrerPolicyEnabled = true;
     private String referrerPolicy = "STRICT_ORIGIN_WHEN_CROSS_ORIGIN";

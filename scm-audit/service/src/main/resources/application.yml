@@ -113,3 +113,12 @@ management:
     export:
       prometheus:
         enabled: true
+
+frog:
+  security:
+    headers:
+      content-type-options-enabled: true
+      frame-options: DENY
+      hsts-enabled: true
+      hsts-max-age: 31536000
+      hsts-include-subdomains: true
