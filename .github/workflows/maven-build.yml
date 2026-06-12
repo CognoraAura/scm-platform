@@ -240,8 +240,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # TODO: Implement deployment to development environment
-      # e.g., kubectl apply, docker-compose pull & restart, SSH deploy, etc.
+      - name: Configure kubectl
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG_DEV }}
+
+      - name: Deploy to dev namespace
+        run: |
+          kubectl set image deployment/scm-auth scm-auth=${{ secrets.DOCKERHUB_USERNAME }}/scm-auth:develop-${{ github.sha }} -n scm-dev
+          kubectl set image deployment/scm-gateway scm-gateway=${{ secrets.DOCKERHUB_USERNAME }}/scm-gateway:develop-${{ github.sha }} -n scm-dev
+          kubectl set image deployment/scm-system scm-system=${{ secrets.DOCKERHUB_USERNAME }}/scm-system:develop-${{ github.sha }} -n scm-dev
+          kubectl rollout status deployment/scm-auth -n scm-dev
+          kubectl rollout status deployment/scm-gateway -n scm-dev
+          kubectl rollout status deployment/scm-system -n scm-dev
+
+      - name: Verify deployment
+        run: |
+          kubectl get pods -n scm-dev -l app=scm-auth
+          kubectl get pods -n scm-dev -l app=scm-gateway
+          kubectl get pods -n scm-dev -l app=scm-system
 
   deploy-prod:
     name: Deploy to Production
@@ -255,4 +273,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # TODO: Implement deployment to production environment
+      - name: Configure kubectl
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG_PROD }}
+
+      - name: Deploy to production namespace
+        run: |
+          kubectl set image deployment/scm-auth scm-auth=${{ secrets.DOCKERHUB_USERNAME }}/scm-auth:${{ github.sha }} -n scm-prod
+          kubectl set image deployment/scm-gateway scm-gateway=${{ secrets.DOCKERHUB_USERNAME }}/scm-gateway:${{ github.sha }} -n scm-prod
+          kubectl set image deployment/scm-system scm-system=${{ secrets.DOCKERHUB_USERNAME }}/scm-system:${{ github.sha }} -n scm-prod
+          kubectl rollout status deployment/scm-auth -n scm-prod
+          kubectl rollout status deployment/scm-gateway -n scm-prod
+          kubectl rollout status deployment/scm-system -n scm-prod
+
+      - name: Verify deployment
+        run: |
+          kubectl get pods -n scm-prod -l app=scm-auth
+          kubectl get pods -n scm-prod -l app=scm-gateway
+          kubectl get pods -n scm-prod -l app=scm-system
