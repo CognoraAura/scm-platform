@@ -10,7 +10,13 @@ global:
 
 # Alert rules
 rule_files:
-  # - "alerts/*.yml"
+  - "alert-rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
 
 # Scrape targets
 scrape_configs:
